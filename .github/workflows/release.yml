@@ -1,0 +1,65 @@
+# Builds the NHCX package when a release is published on GitHub and attaches it to the
+# release as nhcx-package-v<version>.zip, the version being the tag without a leading v.
+# `make package` rebuilds docs/ and fails if they differ from the committed ones, and writes
+# MANIFEST for the version. The corpus is not indexed here, as that needs the chatbot's
+# Bedrock key: the release carries the committed corpus/. The FHIR bundle validator is off
+# for now; set FHIR_VALIDATE: 1 in the build step's env to run it again.
+name: Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: The release tag to build and attach the package to, such as v1.2.0
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
+
+jobs:
+  package:
+    name: nhcx-package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ env.TAG }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: system/package-lock.json
+
+      - name: Install the tooling
+        run: npm ci --prefix system --no-audit --no-fund
+
+      - name: Build the package
+        run: |
+          version="${TAG#v}"
+          make package VERSION="$version"
+          echo "ZIP=dist/release/nhcx-package-v$version.zip" >> "$GITHUB_ENV"
+
+      - name: Attach it to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$TAG" "$ZIP" --clobber
+
+      - name: Keep the zip, and the validation report when the validator ran
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nhcx-package-${{ env.TAG }}
+          path: |
+            dist/release/nhcx-package-v*.zip
+            dist/reports/
+          if-no-files-found: ignore

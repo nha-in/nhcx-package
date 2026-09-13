@@ -1,0 +1,49 @@
+# ==============================================================================
+# Use Case D2: Authenticate the beneficiary - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: ABHA biometric auth init and verify (not NHCX)
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: ABHA Auth Token
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "D2"
+title: "Authenticate the beneficiary"
+side: "provider"
+api: "ABHA biometric auth init and verify (not NHCX)"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "ABHA Auth Token"
+profiles:
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+description: "Biometric or OTP authentication of beneficiary against ABDM registry prior to PMJAY admission."
+fields:
+  - key: "abhaNumber"
+    label: "ABHA Number"
+    group: "Auth"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=ABHA].value"
+    example_value: "91234567890123"
+  - key: "authMode"
+    label: "Authentication Mode"
+    group: "Auth"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth)"
+    fhir_path: "Request.authMode"
+    example_value: "DEMOGRAPHICS"
+  - key: "authToken"
+    label: "Biometric Consent Token"
+    group: "Auth"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth)"
+    fhir_path: "Response.token"
+    example_value: "bio-token-778899"

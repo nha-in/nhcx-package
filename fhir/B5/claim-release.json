@@ -1,0 +1,173 @@
+{
+  "id": "claim-release-request-generic",
+  "resourceType": "Bundle",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/claim/release",
+      "resource": {
+        "resourceType": "Task",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "requested",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/financialtaskcode",
+              "code": "release"
+            }
+          ]
+        },
+        "description": "Release the balance amount for claim EO26AA2700001",
+        "authoredOn": "2026-03-05T11:20:00+05:30",
+        "requester": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "owner": {
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "reasonCode": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+              "code": "partialpayment",
+              "display": "Reprocess request due to partial payment by payer"
+            }
+          ]
+        },
+        "basedOn": [
+          {
+            "identifier": {
+              "type": {
+                "coding": [
+                  {
+                    "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                    "code": "CLN",
+                    "display": "Claim number"
+                  }
+                ]
+              },
+              "system": "https://nhcx.abdm.gov.in",
+              "value": "EO26AA2700001"
+            },
+            "display": "Claim EO26AA2700001"
+          }
+        ],
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "claimNumber",
+                  "display": "ClaimNumber"
+                }
+              ]
+            },
+            "valueString": "EO26AA2700001"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/task-input-type",
+                  "code": "amount",
+                  "display": "Amount"
+                }
+              ]
+            },
+            "valueMoney": {
+              "value": 1650,
+              "currency": "INR"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "Facility Name"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "1518"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "pay",
+                "display": "Payer"
+              }
+            ]
+          }
+        ],
+        "name": "Insurance Company"
+      }
+    }
+  ]
+}

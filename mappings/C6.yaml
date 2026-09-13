@@ -1,0 +1,42 @@
+# ==============================================================================
+# Use Case C6: Raise a communication - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/communication/request
+# Callback API: /v1/communication/on_request
+# Carries JWE: true
+# Focal Resource: CommunicationRequest / Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest
+# ==============================================================================
+
+code: "C6"
+title: "Raise a communication"
+side: "payer"
+api: "/v1/communication/request"
+callback: "/v1/communication/on_request"
+workflow: "24 (Preauth queried), 27 (Claim queried), N02 (Notification)"
+carries_jwe: true
+focal_resource: "CommunicationRequest / Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
+profiles:
+  CommunicationRequest: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Request additional clinical investigations, ask queries, or notify turnaround time alerts."
+fields:
+  - key: "taskReason"
+    label: "Query Reason"
+    group: "Query"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.reasonCode.coding[0].code"
+    example_value: "additionalinfo"
+  - key: "queryText"
+    label: "Query Questions"
+    group: "Query"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "CommunicationRequest"
+    fhir_path: "CommunicationRequest.payload[0].contentString"
+    example_value: "Please attach pre-operative ultrasound scan."

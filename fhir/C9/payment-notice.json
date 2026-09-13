@@ -1,0 +1,324 @@
+{
+  "resourceType": "Bundle",
+  "id": "CLM-00236",
+  "meta": {
+    "lastUpdated": "2026-09-08T09:49:57.764+05:30",
+    "tag": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+        "code": "SUBSETTED",
+        "display": "Resource encoded in summary mode"
+      }
+    ]
+  },
+  "identifier": {
+    "system": "https://payer.pmajy.nha.gov.in",
+    "value": "CLM-00236"
+  },
+  "type": "collection",
+  "timestamp": "2026-09-08T09:49:57.764+05:30",
+  "entry": [
+    {
+      "fullUrl": "https://payer.nha.gov.in/task/v1/paymentnotice/request/CLM-00236",
+      "resource": {
+        "resourceType": "Task",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "SUBSETTED",
+              "display": "Resource encoded in summary mode"
+            }
+          ]
+        },
+        "status": "requested",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes",
+              "code": "deliver",
+              "display": "deliver"
+            }
+          ]
+        },
+        "description": "Payment initiated",
+        "authoredOn": "2026-09-08T09:49:57+05:30",
+        "requester": {
+          "reference": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/payer/1518"
+        },
+        "owner": {
+          "reference": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/provider/IN1910000151"
+        },
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/financialtaskinputtype",
+                  "code": "status",
+                  "display": "Status code"
+                }
+              ]
+            },
+            "valueReference": {
+              "reference": "https://payer.nha.gov.in/v1/paymentnotice/request/CLM-00236"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://payer.nha.gov.in/v1/paymentnotice/request/CLM-00236",
+      "resource": {
+        "resourceType": "PaymentNotice",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "SUBSETTED",
+              "display": "Resource encoded in summary mode"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "CLN",
+                  "display": "Claim number"
+                }
+              ]
+            },
+            "system": "https://hcx.pmjay.gov.in/v1/preauthorization",
+            "value": "CLM-00236"
+          }
+        ],
+        "status": "active",
+        "created": "2026-09-08T09:49:57+05:30",
+        "payment": {
+          "reference": "https://payer.nha.gov.in/v1/paymentnotice/request/paymentreconciliation/CLM-00236"
+        },
+        "recipient": {
+          "reference": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/provider/IN1910000151"
+        },
+        "amount": {
+          "value": 1656.0,
+          "currency": "INR"
+        },
+        "paymentStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/paymentstatus",
+              "code": "paid",
+              "display": "Paid"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "https://payer.nha.gov.in/v1/paymentnotice/request/paymentreconciliation/CLM-00236",
+      "fullUrl": "https://payer.nha.gov.in/v1/paymentnotice/request/paymentreconciliation/CLM-00236",
+      "resource": {
+        "resourceType": "PaymentReconciliation",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "SUBSETTED",
+              "display": "Resource encoded in summary mode"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "CLN",
+                  "display": "Claim number"
+                }
+              ]
+            },
+            "system": "https://hcx.pmjay.gov.in/v1/preauthorization",
+            "value": "CLM-00236"
+          }
+        ],
+        "status": "active",
+        "created": "2026-09-08T09:49:57+05:30",
+        "disposition": "Payment initiated",
+        "paymentDate": "2026-09-08",
+        "paymentAmount": {
+          "value": 1656.0,
+          "currency": "INR"
+        },
+        "paymentIdentifier": {
+          "type": {
+            "coding": [
+              {
+                "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                "code": "UTR",
+                "display": "Unique Transaction Reference"
+              }
+            ]
+          },
+          "system": "https://payer.gov.in",
+          "value": "PMJAY/HP/S/2024/R2/2026090810000157/Normal"
+        },
+        "detail": [
+          {
+            "id": "1652/2026090810000157/RF",
+            "identifier": {
+              "type": {
+                "coding": [
+                  {
+                    "system": "https://https://nrces.in/ndhm/fhir/r4/ValueSet-ndhm-identifier-type-code.html",
+                    "code": "PLAC",
+                    "display": "Placer Identifier"
+                  }
+                ]
+              },
+              "system": "https://hcx.pmjay.gov.in/v1/claim",
+              "value": "1652/2026090810000157/RF"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/payment-type",
+                  "code": "RF",
+                  "display": "RF"
+                }
+              ]
+            },
+            "date": "2026-09-08",
+            "amount": {
+              "value": 414.0
+            }
+          },
+          {
+            "id": "1652/2026090810000157/N",
+            "identifier": {
+              "type": {
+                "coding": [
+                  {
+                    "system": "https://https://nrces.in/ndhm/fhir/r4/ValueSet-ndhm-identifier-type-code.html",
+                    "code": "PLAC",
+                    "display": "Placer Identifier"
+                  }
+                ]
+              },
+              "system": "https://hcx.pmjay.gov.in/v1/claim",
+              "value": "1652/2026090810000157/N"
+            },
+            "type": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/ValueSet/payment-type",
+                  "code": "Payment",
+                  "display": "Payment"
+                }
+              ]
+            },
+            "date": "2026-09-08",
+            "amount": {
+              "value": 1656.0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/provider/IN1910000151",
+      "fullUrl": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/provider/IN1910000151",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "IN1910000151",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "SUBSETTED",
+              "display": "Resource encoded in summary mode"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
+            "system": "https://facility.abdm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "CITY SUPERSPECIALITY HOSPITAL"
+      }
+    },
+    {
+      "id": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/payer/1518",
+      "fullUrl": "https://payer.nha.gov.in/v1/paymentnotice/request/organization/payer/1518",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "1518",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationValue",
+              "code": "SUBSETTED",
+              "display": "Resource encoded in summary mode"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://facility.abdm.gov.in",
+            "value": "1518"
+          }
+        ],
+        "active": true,
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "pay",
+                "display": "Payer"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

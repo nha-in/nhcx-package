@@ -1,0 +1,100 @@
+# Base URLs: every host an NHCX integration calls, in the sandbox and in
+# production.
+#
+# This file is the maintained source, edited here. build-docs renders it into
+# every chapter that carries a <!-- build-docs:baseurls --> block (Base URLs in
+# Getting Started, Environments and Addresses in Reference), and the devtools
+# console reads it from the package release to show both bases on every API
+# in its catalogue.
+#
+# variable names the Bruno environment variable (apis/environments/sandbox.bru)
+# whose requests the service serves; build-docs warns when the two disagree or
+# when a request starts from a variable no service names. A service with no
+# variable is an address people open rather than one the collection calls.
+# sandbox is the base a request's path is appended to. production is null
+# where no production address is published, and production_note then says how
+# it is obtained.
+#
+# Sources: the sandbox bases are the collection's own environment. The
+# participant service's production address is NHA's. The ABDM gateway's
+# production host and the X-CM-ID values are ABDM's published documentation.
+
+environments:
+  sandbox:
+    label: Sandbox
+    cm_id: sbx
+  production:
+    label: Production
+    cm_id: abdm
+
+services:
+  - id: sessions
+    name: ABDM session token
+    used_for: The session token every other call carries, at /api/hiecm/gateway/v3/sessions
+    variable: sessionsUrl
+    sandbox: https://dev.abdm.gov.in
+    production: https://apis.abdm.gov.in
+    production_note: ABDM's published production gateway. Confirm it in your onboarding letter.
+
+  - id: nhcx
+    name: NHCX exchange
+    used_for: Every use-case call under /v1, fingerprint and iris authentication under /abha
+    variable: nhcxBase
+    sandbox: https://apisbx.abdm.gov.in/hcx
+    production: null
+    production_note: Shared by NHA after sandbox exit.
+
+  - id: registry
+    name: Participant service
+    used_for: Creating and updating a participant, the registry search, certificates and policies
+    variable: registryBase
+    sandbox: https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice
+    production: https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice
+    production_note: null
+
+  - id: abdm-proxy
+    name: ABDM proxy
+    used_for: Face authentication for PMJAY biometrics
+    variable: abdmProxyBase
+    sandbox: https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy
+    production: null
+    production_note: Not published. Confirm at onboarding.
+
+  - id: payer-role
+    name: PMJAY payer service, role lookup
+    used_for: The roles a PMJAY adjudicator user holds, at /pmjay/sbxhcx/nhcxpayerservice/v1/get/user-role
+    variable: adjudicatorRoleUrl
+    sandbox: https://apisbx.abdm.gov.in
+    production: null
+    production_note: Not published. Confirm at onboarding.
+
+  - id: payer-process
+    name: PMJAY payer service, act on a case
+    used_for: Acting on a PMJAY case, at /pmjay/hcx/nhcxpayerservice/wrapper/process/case
+    variable: adjudicatorProcessUrl
+    sandbox: https://apisbeta.nha.gov.in
+    production: null
+    production_note: Not published. Confirm at onboarding.
+
+  - id: dummy-payer
+    name: Dummy payer
+    used_for: The sandbox test hooks that make the dummy payer answer
+    variable: dummyPayerBase
+    sandbox: https://apisbx.abdm.gov.in/pmjay/sbxhcx/dummyhcxpayer
+    production: null
+    production_note: A sandbox test hook only.
+
+  - id: portal
+    name: NHCX portal
+    used_for: The portal, the live Swagger specifications it publishes, and notification subscribe
+    variable: portalBase
+    sandbox: https://hcxsbx.abdm.gov.in
+    production: null
+    production_note: Not published.
+
+  - id: face-auth-page
+    name: Face authentication page
+    used_for: The QR page a patient opens to complete face authentication, with ?txnId=<txnId>
+    sandbox: https://phrsbx.abdm.gov.in/face-auth
+    production: null
+    production_note: Not published.

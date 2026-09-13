@@ -1,0 +1,51 @@
+# ==============================================================================
+# Use Case C1: Link ABHA with policy - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /participant/link/abha/policy
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: Policy Link Record (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "C1"
+title: "Link ABHA with policy"
+side: "payer"
+api: "/participant/link/abha/policy"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "Policy Link Record (JSON)"
+profiles:
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+  Coverage: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+  Organization: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+description: "Bind beneficiary ABHA number and mobile to policy records in the registry upon policy issuance."
+fields:
+  - key: "abhaNumber"
+    label: "ABHA Number"
+    group: "Link"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=ABHA].value"
+    example_value: "91234567890123"
+  - key: "policyNumber"
+    label: "Policy Number"
+    group: "Link"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Coverage"
+    fhir_path: "Coverage.identifier[0].value"
+    example_value: "POL-HOSP-2026-0045"
+  - key: "payerId"
+    label: "Insurer Participant Code"
+    group: "Link"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Organization"
+    fhir_path: "Organization.identifier.value"
+    example_value: "1000003538@hcx"

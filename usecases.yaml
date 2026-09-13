@@ -1,0 +1,605 @@
+# Every use case, from both places this repository describes one.
+#
+# nha_use_cases is NHA's own numbering: the A series is shared by everyone,
+# B is what a provider calls, C what a payer calls, D is the PMJAY handbook
+# read the same way, and E is the patient app. builder_use_cases is what the
+# FHIR Builder offers: a bundle type and the lifecycle step it is for, with
+# the workflow code the Simulator sends with it.
+#
+# This file is the maintained source, edited here. build-docs renders it into
+# docs/01-Overview/05-NHCX Use Cases.md, and the devtools console reads it from the package release.
+#
+# sides names and describes each family; pairs says which use case answers
+# which, since every request on one side is answered by a callback on the other.
+#
+# request, where several Bruno requests share a use case's endpoint, names the
+# one it shows as <folder>/<file>.bru under apis/; without it the first request
+# on the api path is shown.
+
+counts:
+  nha_use_cases: 40
+  builder_use_cases: 17
+  sides: 5
+  pairs: 9
+sides:
+  - id: shared
+    label: Shared
+    blurb: Registry and session calls, the same whichever side you are on. None carries a workflow code.
+  - id: provider
+    label: Provider
+    blurb: What a hospital calls, and the callbacks it hosts to hear back.
+  - id: pmjay
+    label: PMJAY provider
+    blurb: 'The D-series: the same endpoints as the provider list, with the scheme''s behaviour around them. What must be fetched first, what must be proved before a request is accepted, and how a query is answered.'
+  - id: payer
+    label: Payer
+    blurb: What an insurer, scheme or TPA calls, and the callbacks it hosts. Each one answers a provider use case.
+  - id: patient
+    label: Patient app
+    blurb: A personal health record app that listens for a beneficiary and never sends a claim message.
+nha_use_cases:
+  - code: A1
+    title: Get participant list
+    side: shared
+    api: '/fetch/participants/list'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: The participants in the registry, by role. How a provider finds a payer and a payer finds a provider.
+    console_page: '/participants'
+  - code: A2
+    title: Get policy
+    side: shared
+    api: '/participant/get/policies'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: The policies a beneficiary holds, by mobile number or ABHA. Each names the insurer and the processor, and the processor is the recipient for every claim-side call.
+    console_page: '/search'
+  - code: A3
+    title: Get public key
+    side: shared
+    api: '/fetch/certs'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: The recipient's certificate, which is what the bundle is encrypted with. Fetched before anything is addressed to a participant.
+    console_page: '/participants'
+  - code: A4
+    title: Get auth token
+    side: shared
+    api: '/get/session'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: The ABDM session token every NHCX call carries, minted with the Milestone 1 client id and secret.
+    console_page: '/session'
+  - code: A5
+    title: Get status
+    side: shared
+    api: '/v1/status'
+    callback: '/v1/on_status'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: Where any request you made got to, by its correlation id. The sandbox's own status page answers without a token.
+    console_page: '/status'
+  - code: A6
+    title: Receive errors
+    side: shared
+    api: '(hosted only)'
+    callback: '/v1/error'
+    carries_jwe: false
+    documented: concepts only
+    what_it_does: Where the exchange tells you a request could not be delivered after five attempts. Without it a sender never learns that a request died, which looks exactly like a case still under review.
+  - code: B1
+    title: Check coverage eligibility
+    side: provider
+    api: '/v1/coverageeligibility/check'
+    callback: '/v1/coverageeligibility/on_check'
+    workflow: 'none; sits beside registration 10 and admission 11'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Is the policy in force, what is left in the wallet, and what must be attached. One endpoint, four purposes: discovery, validation, benefits, auth-requirements.'
+  - code: B2
+    title: Request insurance plan
+    side: provider
+    api: '/v1/insuranceplan/request'
+    callback: '/v1/insuranceplan/on_request'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'A Task with code poll, keyed on policy number and provider id. The answer is the policy as a benefit structure: packages, rates, documents, questionnaires.'
+  - code: B3
+    title: Submit pre-authorisation
+    side: provider
+    api: '/v1/preauth/submit'
+    callback: '/v1/preauth/on_submit'
+    workflow: '12 new, 121 resubmission, 13 enhancement; under PMJAY 19 answers a query and 131 an enhancement query'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Permission to treat. A resubmission, an enhancement and a query answer all reuse the same bundle with a new correlation id and the original reference; only the workflow code tells them apart. The acknowledgement on 20 brings the payer''s own case number, and the desk files everything under it.'
+  - code: B4
+    title: Respond to a communication
+    side: provider
+    api: '/v1/communication/on_request'
+    callback: '/v1/communication/request'
+    workflow: 24, 241 or 27, echoed from the payer's request
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Acknowledge or answer a message the payer sent about a case. A generic or IRDAI payer raises its query here, as a CommunicationRequest task bundle carrying 24, 241 or 27; the answer is a Communication task bundle on on_request that echoes the request''s correlation id and workflow id. The payer''s reason code says what kind of message it was.'
+  - code: B5
+    title: Submit claim
+    side: provider
+    api: '/v1/claim/submit'
+    callback: '/v1/claim/on_submit'
+    workflow: 15 claim, 161 query answer under PMJAY, 14 provisional discharge where a payer supports one
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Reimbursement after discharge. The amount may not exceed what the pre-authorisation approved. The acknowledgement on 25 brings the payer''s case number. PMJAY takes a claim query answer on 161 only; 151, 19 and 16 are refused with PAYR-1321.'
+  - code: B6
+    title: Search claims
+    side: provider
+    api: '/v1/search/submit'
+    callback: '/v1/search/on_submit'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Look up claim information by criteria. The provider sandbox exit checklist names /v1/search/submit for claim search, while the Technical Specifications route /search/submit from NHA through NHCX to the payer: a cross-payer search for NHA or a regulator. A provider''s search over its own cases is /claim/search in the protocol, which the access-control policy allows for requests that originated from the provider. No source confirms which of the two the sandbox accepts from a provider.'
+  - code: B7
+    title: Acknowledge payment notice
+    side: provider
+    api: '/v1/paymentnotice/on_request'
+    callback: '/v1/paymentnotice/request'
+    workflow: '30 echoed from the notice on the generic network; 17 under PMJAY'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'The receipt for a payment notice, as a Task on this endpoint. The notice arrives on a new thread of its own; a generic payer takes the acknowledgement with the notice''s 30 echoed, PMJAY with 17.'
+  - code: B8
+    request_headers: { x-hcx-workflow_id: PC01 }
+    title: Reprocess or cancel
+    side: provider
+    api: '/v1/task/submit'
+    callback: '/v1/task/on_submit'
+    workflow: PC01 cancel, 36 reprocess or shortfall
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'One endpoint, several jobs, told apart by the Task''s code and reason: reprocess with claimrejected, shortfall with partialpayment, cancel. A reprocess goes on 36 and is acknowledged on 37; a cancel goes on PC01 and is done on PC02. Both carry the input intimationNumber. A supporting document is mandatory on a reprocess.'
+  - code: B9
+    title: Submit predetermination
+    side: provider
+    api: '/v1/predetermination/submit'
+    callback: '/v1/predetermination/on_submit'
+    carries_jwe: true
+    documented: concepts only
+    what_it_does: 'What would the payer approve for this treatment? Same bundle shape as a pre-authorisation, asked before committing to one.'
+  - code: D1
+    title: Fetch the insurance plan
+    side: pmjay
+    api: '/v1/insuranceplan/request'
+    callback: '/v1/insuranceplan/on_request'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Keyed on provider id, policy code and participant id. The answer is the scheme configuration for this hospital: specialities, packages, rates, Claim-Condition flags, mandatory documents and questionnaires. Over twenty megabytes; store it queryable, version it, refresh weekly and on any policychange communication.'
+  - code: D2
+    title: Authenticate the beneficiary
+    side: pmjay
+    api: ABHA biometric auth init and verify (not NHCX)
+    carries_jwe: false
+    documented: concepts only
+    what_it_does: 'Fingerprint, iris or face; all three must be built. Success yields a user token valid thirty minutes that rides on the eligibility check and the pre-authorisation; a fresh one rides on the claim. Where biometrics are impossible, a signed exemption consent and the matching questionnaire stand in, except on a cyclic case.'
+  - code: D3
+    title: Check coverage eligibility
+    side: pmjay
+    api: '/v1/coverageeligibility/check'
+    callback: '/v1/coverageeligibility/on_check'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: Validation after registration returns the wallet, one benefit entry per wallet with allowed and used. Benefits and auth-requirements before a pre-authorisation return what the package needs attached. Register only after coverage is validated, and validate again every time treatment is added.
+  - code: D4
+    title: Submit pre-authorisation
+    side: pmjay
+    api: '/v1/preauth/submit'
+    callback: '/v1/preauth/on_submit'
+    workflow: '12'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: Not more than one day before admission, with the biometric token or the consent response, the documents the auth-requirements answer asked for, the STG questionnaire for each package, and the registration and admission dates as supporting info. Auto-approved only if it is the first pre-authorisation for the case and every package allows it.
+    console_page: '/builder?family=preauth&usecase=initiate'
+  - code: D5
+    request_headers: { x-hcx-workflow_id: '121', x-hcx-use_case: Resubmit }
+    title: Resubmit pre-authorisation
+    side: pmjay
+    api: '/v1/preauth/submit'
+    callback: '/v1/preauth/on_submit'
+    workflow: '121'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Revises an approved or rejected case for a different amount or package. Nullifies every earlier instance; the payer treats it as the new base request.'
+    console_page: '/builder?family=preauth&usecase=resubmit'
+  - code: D6
+    title: Raise an enhancement
+    side: pmjay
+    api: '/v1/preauth/submit'
+    callback: '/v1/preauth/on_submit'
+    workflow: 13, and 131 to answer an enhancement query raised on 241
+    request: 03-preauth/v1-preauth-enhancement.bru
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: Adds to an approved pre-authorisation, as many times as needed until discharge, one at a time, and only for packages whose plan flag allows it. The bundle carries the approved items and the ones now sought. A query on it arrives as a ClaimResponse on 241, on the case's own thread, and is answered by a fresh submit on 131.
+    console_page: '/builder?family=preauth&usecase=enhance'
+  - code: D7
+    request_headers: { x-hcx-workflow_id: '19' }
+    title: Answer a pre-authorisation query
+    side: pmjay
+    api: '/v1/preauth/submit'
+    callback: '/v1/preauth/on_submit'
+    workflow: '19'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The query arrived as a ClaimResponse on 24, on the case's own thread, with the question in the item adjudication, not on the communication API. Answer with a fresh submit of the same bundle shape on this code, never as a new 12, which opens a second case.
+    console_page: '/builder?family=preauth&usecase=query-answer'
+  - code: D8
+    request_headers: { x-hcx-workflow_id: PC01 }
+    title: Cancel pre-authorisation
+    side: pmjay
+    api: '/v1/task/submit'
+    callback: '/v1/task/on_submit'
+    workflow: PC01
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'A Task with code cancel, the case number as input and one of seven reasons: treatmentplanchanged, patientrequest, financialconstraints, alternativetreatment, duplicateclaim, administrativeerror, other. Allowed at any point until the claim is raised.'
+    console_page: '/builder?family=preauth&usecase=cancel'
+  - code: D9
+    title: Submit claim
+    side: pmjay
+    api: '/v1/claim/submit'
+    callback: '/v1/claim/on_submit'
+    workflow: '15'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'There is no discharge submission: the claim asserts the discharge and carries its details. Four dates, the discharge type under category DIS with the stage as its value, a fresh biometric token, and LM100 as the single procedure in place of the approved items on a LAMA or DAMA discharge before or during surgery. The amount may not exceed what was approved.'
+    console_page: '/builder?family=claim&usecase=submit'
+  - code: D10
+    request_headers: { x-hcx-workflow_id: '161' }
+    title: Answer a claim query
+    side: pmjay
+    api: '/v1/claim/submit'
+    callback: '/v1/claim/on_submit'
+    workflow: '161'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'As D7, on the claim endpoint: the query is a ClaimResponse on 27, the answer a fresh submit on 161. The sandbox refuses 151, 19 and 16 with PAYR-1321. The final adjudication then arrives with outcome complete and, often, a deductible adjudication naming why the eligible amount is less than the claimed one.'
+    console_page: '/builder?family=claim&usecase=query-answer'
+  - code: D11
+    request_headers: { x-hcx-workflow_id: '36' }
+    title: Reprocess a rejected claim
+    side: pmjay
+    api: '/v1/task/submit'
+    callback: '/v1/task/on_submit'
+    workflow: '36'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'An appeal, not a resubmission: a Task with code reprocess and reason claimrejected, a supporting document attached, no amount. Raise it the moment the rejection arrives. Once only; the Claim Review Committee is final.'
+    console_page: '/builder?family=claim&usecase=reprocess'
+  - code: D12
+    request_headers: { x-hcx-workflow_id: '36' }
+    title: Claim a shortfall
+    side: pmjay
+    api: '/v1/task/submit'
+    callback: '/v1/task/on_submit'
+    workflow: '36'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The same Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17. Once only, and never after a reprocess.
+    console_page: '/builder?family=claim&usecase=shortfall'
+  - code: D13
+    title: Acknowledge the payment notice
+    side: pmjay
+    api: '/v1/paymentnotice/on_request'
+    callback: '/v1/paymentnotice/request'
+    workflow: '17'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'Three notices may arrive: 30 when the transfer is initiated, 31 when the bank processes it, 33 when it settles with the UTR. The reconciliation splits the amount into what was paid and what was deducted as tax. Keep the UTR; it is the reference for any dispute.'
+    console_page: '/builder?family=paymentnotice&usecase=acknowledge'
+  - code: C1
+    title: Link ABHA with policy
+    side: payer
+    api: '/participant/link/abha/policy'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: Tie the ABHA number, mobile and member id to the policy's products at policy creation, naming the payer and the processor. This is what makes A2 answer.
+    console_page: '/participants'
+  - code: C2
+    title: De-link ABHA from policy
+    side: payer
+    api: '/participant/delink/abha/policy'
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: Undo C1. Only the party named as payer or processor on the link may do this.
+  - code: C3
+    title: Respond to coverage eligibility
+    side: payer
+    api: '/v1/coverageeligibility/on_check'
+    callback: '/v1/coverageeligibility/check'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The eligibility and plan details for the beneficiary asked about. A payer may instead answer with a forward instruction, asking the exchange to pass the request to another payer.
+  - code: C4
+    title: Respond to insurance plan request
+    side: payer
+    api: '/v1/insuranceplan/on_request'
+    callback: '/v1/insuranceplan/request'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The plan as a benefit structure. Under PMJAY this is the scheme configuration for one hospital and can exceed twenty megabytes.
+  - code: C5
+    title: Respond to pre-authorisation
+    side: payer
+    api: '/v1/preauth/on_submit'
+    callback: '/v1/preauth/submit'
+    workflow: 20 received, 21 approved, 23 rejected, 24 queried, 22 enhancement approved, 231 denied, 241 queried
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'The adjudicated pre-authorisation. The acknowledgement on 20 travels as response.partial and carries the payer''s own case number; the decisions travel as response.complete. Read outcome and the adjudication amounts together: complete covers approval and denial alike. Under PMJAY a query is this ClaimResponse on 24 or 241, on the case''s own thread.'
+  - code: C6
+    title: Raise a communication
+    side: payer
+    api: '/v1/communication/request'
+    callback: '/v1/communication/on_request'
+    workflow: '24, 241, 27 for a generic payer''s queries; N02 and the intimation codes for the rest'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'A message about a case, typed by its reason code: additionalinfo, tatquery for a turnaround breach, grievance, walletupdate, policychange, claimArbitration. A generic or IRDAI payer raises its document queries here, as a CommunicationRequest task bundle carrying 24, 241 or 27, and takes the answer as a Communication task bundle on on_request echoing the correlation id and workflow id. PMJAY does not use it for queries; its query is the ClaimResponse on the case''s own thread.'
+  - code: C7
+    title: Respond to claim
+    side: payer
+    api: '/v1/claim/on_submit'
+    callback: '/v1/claim/submit'
+    workflow: 25 received, 26 approved, 27 queried, 28 in process, 29 forwarded, 291 denied
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The adjudicated claim, item by item, with any deduction and its reason. The acknowledgement on 25 travels as response.partial with the payer's case number. Under PMJAY a query is this ClaimResponse on 27, answered by a fresh submit on 161.
+  - code: C8
+    title: Respond to search
+    side: payer
+    api: '/v1/search/on_submit'
+    callback: '/v1/search/submit'
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: The ClaimResponse objects matching the criteria asked for.
+  - code: C9
+    title: Send payment notice
+    side: payer
+    api: '/v1/paymentnotice/request'
+    callback: '/v1/paymentnotice/on_request'
+    workflow: 30 initiated, 31 processed, 33 settled
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'The money, on a new thread of its own, with the reconciliation itemised by type: approved, claimed, tds, servicetax, advance, recovered, penality. The bank''s UTR rides on the settled notice.'
+  - code: C10
+    title: Respond to a Task
+    side: payer
+    api: '/v1/task/on_submit'
+    callback: '/v1/task/submit'
+    workflow: 251 acknowledged, 252 approved, 253 rejected, 254 queried, PC02 cancelled, 37 arbitration acknowledged
+    carries_jwe: true
+    documented: api catalogue
+    what_it_does: 'The answer to a reprocess, shortfall or cancel. A cancellation done is PC02 and carries the case''s ClaimResponse in its output; a reprocess on 36 is acknowledged on 37 as arbitration. Both payers answer this way.'
+  - code: C11
+    title: Respond to predetermination
+    side: payer
+    api: '/v1/predetermination/on_submit'
+    callback: '/v1/predetermination/submit'
+    carries_jwe: true
+    documented: concepts only
+    what_it_does: What the payer would approve for the proposed treatment.
+  - code: E1
+    title: Subscribe to notifications
+    side: patient
+    api: '/v1/notification/subscribe'
+    callback: '/v1/notification/on_subscribe'
+    workflow: N01 to a payer, N02 to a provider, N03 to a beneficiary, N04 acknowledgement
+    carries_jwe: false
+    documented: api catalogue
+    what_it_does: 'A patient app subscribes when the beneficiary logs in with their ABHA, and the most recent subscription wins. Topics: workflow_events for claim progress, network_events for exchange maintenance, participant_events for changes to payers and providers.'
+# The exchange-side twin: each use case in asks is answered by the one in answers.
+pairs:
+  - asks: B1
+    answers: C3
+  - asks: B2
+    answers: C4
+  - asks: B3
+    answers: C5
+  - asks: B5
+    answers: C7
+  - asks: B6
+    answers: C8
+  - asks: B8
+    answers: C10
+  - asks: B9
+    answers: C11
+  - asks: C6
+    answers: B4
+  - asks: C9
+    answers: B7
+builder_use_cases:
+  - bundle: coverage
+    bundle_label: Coverage eligibility
+    step: discovery
+    label: Discovery
+    template: coverage-eligibility
+    endpoint: v1/coverageeligibility/check
+    flow: request
+    api_type: coverage
+    presets:
+      purpose: discovery
+    what_it_is: 'Which policy does this beneficiary hold? The fallback when policy lookup has not answered it.'
+  - bundle: coverage
+    bundle_label: Coverage eligibility
+    step: validation
+    label: Validation
+    template: coverage-eligibility
+    endpoint: v1/coverageeligibility/check
+    flow: request
+    api_type: coverage
+    presets:
+      purpose: validation
+    what_it_is: Is the policy in force today, and what is left in the wallet. Called after registration.
+  - bundle: coverage
+    bundle_label: Coverage eligibility
+    step: auth-requirements
+    label: Auth-requirements
+    template: coverage-eligibility
+    endpoint: v1/coverageeligibility/check
+    flow: request
+    api_type: coverage
+    presets:
+      purpose: auth-requirements
+    what_it_is: Is this package covered here, and what must the pre-authorisation carry. The call to make before every pre-authorisation.
+  - bundle: coverage
+    bundle_label: Coverage eligibility
+    step: benefits
+    label: Benefits
+    template: coverage-eligibility
+    endpoint: v1/coverageeligibility/check
+    flow: request
+    api_type: coverage
+    presets:
+      purpose: benefits
+    what_it_is: How much cover remains, against which packages. Called before a pre-authorisation.
+  - bundle: insurance
+    bundle_label: Insurance plan
+    step: request
+    label: Fetch the plan
+    template: insurance-plan
+    endpoint: v1/insuranceplan/request
+    flow: request
+    api_type: insurance
+    what_it_is: A poll Task keyed on the policy number and the provider id. The answer is the policy as a benefit structure.
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: initiate
+    label: Initiate
+    template: claim
+    endpoint: v1/preauth/submit
+    flow: request
+    api_type: preauth
+    workflow: '12'
+    presets:
+      use: preauthorization
+    what_it_is: 'The first pre-authorisation for a case: permission to treat.'
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: resubmit
+    label: Resubmit
+    template: claim
+    endpoint: v1/preauth/submit
+    flow: request
+    api_type: preauth
+    workflow: '121'
+    presets:
+      use: preauthorization
+    what_it_is: 'Revise an approved or rejected case. Nullifies every earlier instance; keep the same case number.'
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: enhance
+    label: Enhancement
+    template: claim
+    endpoint: v1/preauth/submit
+    flow: request
+    api_type: preauth
+    workflow: '13'
+    presets:
+      use: preauthorization
+    what_it_is: Add to an approved pre-authorisation. Quote its approval reference, and only add packages the plan allows to be enhanced.
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: query-answer
+    label: Answer a query
+    template: claim
+    endpoint: v1/preauth/submit
+    flow: request
+    api_type: preauth
+    workflow: '19'
+    presets:
+      use: preauthorization
+    what_it_is: 'The payer asked for more. Same bundle, same case number, the extra documents attached; never a fresh 12.'
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: predetermination
+    label: Predetermination
+    template: claim
+    endpoint: v1/predetermination/submit
+    flow: request
+    api_type: predetermination
+    presets:
+      use: predetermination
+    what_it_is: 'What would the payer approve for this treatment? Asked before committing to a pre-authorisation, on its own endpoint.'
+  - bundle: preauth
+    bundle_label: Pre-authorisation
+    step: cancel
+    label: Cancel
+    template: claim-cancel
+    endpoint: v1/task/submit
+    flow: request
+    api_type: preauth
+    workflow: PC01
+    what_it_is: Withdraw an active pre-authorisation with a Task. Allowed at any point until the claim is raised.
+  - bundle: claim
+    bundle_label: Claim
+    step: submit
+    label: Submit
+    template: claim
+    endpoint: v1/claim/submit
+    flow: request
+    api_type: claim
+    workflow: '15'
+    presets:
+      use: claim
+    what_it_is: Reimbursement after discharge. Under PMJAY this also asserts the discharge, so it carries the discharge type and dates.
+  - bundle: claim
+    bundle_label: Claim
+    step: query-answer
+    label: Answer a query
+    template: claim
+    endpoint: v1/claim/submit
+    flow: request
+    api_type: claim
+    workflow: '151'
+    presets:
+      use: claim
+    what_it_is: The claim processing doctor asked for more. Same bundle, same case number, the extra evidence attached.
+  - bundle: claim
+    bundle_label: Claim
+    step: reprocess
+    label: Reprocess
+    template: claim-reprocess
+    endpoint: v1/task/submit
+    flow: request
+    api_type: task
+    workflow: '36'
+    what_it_is: 'Appeal a rejected claim with a Task and a supporting document. Once only; the Committee is final.'
+  - bundle: claim
+    bundle_label: Claim
+    step: shortfall
+    label: Shortfall
+    template: claim-release
+    endpoint: v1/task/submit
+    flow: request
+    api_type: task
+    workflow: '36'
+    what_it_is: The claim was paid short. Ask for the difference, after payment notice 33 has been acknowledged.
+  - bundle: paymentnotice
+    bundle_label: Payment notice
+    step: acknowledge
+    label: Acknowledge
+    template: payment-ack
+    endpoint: v1/paymentnotice/on_request
+    flow: on_request
+    api_type: paymentnotice
+    workflow: '17'
+    what_it_is: The receipt for a payment notice. Acknowledging does not resolve whatever the notice was about.
+  - bundle: search
+    bundle_label: Status and search
+    step: search
+    label: Search
+    template: search
+    endpoint: v1/search/submit
+    flow: request
+    api_type: search
+    what_it_is: Where a case got to, asked as a Task. Check Status answers the same question without a bundle.

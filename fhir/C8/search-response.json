@@ -1,0 +1,94 @@
+{
+  "resourceType": "Bundle",
+  "id": "SR-RESP-00000001",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "type": "collection",
+  "timestamp": "2026-02-26T12:05:00+05:30",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:e0000001-0000-0000-0000-000000000010",
+      "resource": {
+        "resourceType": "Task",
+        "id": "task-search-resp-1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes",
+              "code": "search",
+              "display": "Search"
+            }
+          ]
+        },
+        "output": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/resource-types",
+                  "code": "ClaimResponse"
+                }
+              ]
+            },
+            "valueReference": {
+              "reference": "urn:uuid:e0000001-0000-0000-0000-000000000011"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e0000001-0000-0000-0000-000000000011",
+      "resource": {
+        "resourceType": "ClaimResponse",
+        "id": "cr-search-result-1",
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "code": "institutional"
+            }
+          ]
+        },
+        "use": "claim",
+        "patient": {
+          "reference": "Patient/1"
+        },
+        "insurer": {
+          "reference": "Organization/2"
+        },
+        "outcome": "complete"
+      }
+    },
+    {
+      "fullUrl": "Patient/1",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "1",
+        "name": [
+          {
+            "text": "Ramesh Sharma"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/2",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2",
+        "name": "Payer Insurance Co"
+      }
+    }
+  ]
+}

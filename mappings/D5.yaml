@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case D5: Resubmit pre-authorisation - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/preauth/submit
+# Callback API: /v1/preauth/on_submit
+# Carries JWE: true
+# Focal Resource: Claim
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim
+# ==============================================================================
+
+code: "D5"
+title: "Resubmit pre-authorisation"
+side: "provider"
+api: "/v1/preauth/submit"
+callback: "/v1/preauth/on_submit"
+workflow: "121 (Resubmission)"
+carries_jwe: true
+focal_resource: "Claim"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+profiles:
+  Claim: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+description: "Resubmit pre-authorisation request with modified clinical package or STG justifications following rejection."
+fields:
+  - key: "claimNumber"
+    label: "Existing Case Number"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.identifier[0].value"
+    example_value: "VB26AA2600001"
+  - key: "workflowId"
+    label: "Workflow Code"
+    group: "Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-workflow_id"
+    example_value: "121"

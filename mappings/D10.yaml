@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case D10: Answer a claim query - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/claim/submit
+# Callback API: /v1/claim/on_submit
+# Carries JWE: true
+# Focal Resource: Claim
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim
+# ==============================================================================
+
+code: "D10"
+title: "Answer a claim query"
+side: "provider"
+api: "/v1/claim/submit"
+callback: "/v1/claim/on_submit"
+workflow: "161 (Claim document query answered)"
+carries_jwe: true
+focal_resource: "Claim"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+profiles:
+  Claim: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+description: "Submit additional bills or clinical records queried by PMJAY Claim Processing Desk (CPD)."
+fields:
+  - key: "claimNumber"
+    label: "Claim Number"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.identifier[0].value"
+    example_value: "CL26AA2600001"
+  - key: "workflowId"
+    label: "Workflow Code"
+    group: "Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-workflow_id"
+    example_value: "161"

@@ -1,0 +1,39 @@
+# ==============================================================================
+# Use Case A5: Get status - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: /v1/status
+# Callback API: /v1/on_status
+# Carries JWE: true
+# Focal Resource: none; the payload is an empty string, protected headers only
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A5"
+title: "Get status"
+side: "shared"
+api: "/v1/status"
+callback: "/v1/on_status"
+workflow: "none"
+carries_jwe: true
+focal_resource: "None; the payload is an empty string and the protected header carries the call"
+profiles: {}
+description: "Query the status of a request you sent, named by its api_call_id; the payload is an empty string."
+fields:
+  - key: "correlationId"
+    label: "API call ID of the request being checked"
+    group: "Header"
+    data_type: "uuid"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-correlation_id"
+    example_value: "4f9d2b80-13b4-4e2a-9e12-8f9024a56789"
+  - key: "status"
+    label: "Dispatch Status"
+    group: "Callback Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-status"
+    example_value: "request.dispatched"

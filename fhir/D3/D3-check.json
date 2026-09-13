@@ -1,0 +1,323 @@
+{
+  "id": "coverage-authrequirements-request-generic",
+  "resourceType": "Bundle",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequestBundle"
+    ]
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/coverage-eligibility/request",
+      "resource": {
+        "resourceType": "CoverageEligibilityRequest",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequest"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://nhcx.abdm.gov.in"
+          }
+        ],
+        "status": "active",
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+              "code": "normal",
+              "display": "Normal"
+            }
+          ]
+        },
+        "purpose": [
+          "auth-requirements"
+        ],
+        "patient": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "created": "2026-09-11T00:32:39+05:30",
+        "enterer": {
+          "reference": "https://nhcx.abdm.gov.in/practitioner-role"
+        },
+        "provider": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "insurer": {
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "facility": {
+          "reference": "https://nhcx.abdm.gov.in/location"
+        },
+        "insurance": [
+          {
+            "focal": true,
+            "coverage": {
+              "reference": "https://nhcx.abdm.gov.in/coverage"
+            }
+          }
+        ],
+        "item": [
+          {
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/category-code",
+                  "code": "MG",
+                  "display": "General Medicine"
+                }
+              ]
+            },
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/product-code",
+                  "code": "MG0111A",
+                  "display": "Pleural Effusion (Pleural Effusion)"
+                }
+              ]
+            },
+            "quantity": {
+              "value": 1
+            },
+            "modifier": [
+              {
+                "coding": [
+                  {
+                    "code": "STRAT006a",
+                    "display": "Routine Ward"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/category-code",
+                  "code": "MG",
+                  "display": "General Medicine"
+                }
+              ]
+            },
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/product-code",
+                  "code": "MG072C",
+                  "display": "Acute Haemodialysis (Acute Haemodialysis)"
+                }
+              ]
+            },
+            "quantity": {
+              "value": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/patient",
+      "resource": {
+        "resourceType": "Patient",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "PMJAY",
+                  "display": "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID"
+                }
+              ]
+            },
+            "value": "PMJAY0000X"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MB",
+                  "display": "Member Number"
+                }
+              ]
+            },
+            "value": "PMJAY0000X"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "KyroCare Multispeciality Hospital"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "1518"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "pay",
+                "display": "Payer"
+              }
+            ]
+          }
+        ],
+        "name": "PMJAY / Ayushman Bharat"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/location",
+      "resource": {
+        "resourceType": "Location",
+        "name": "KyroCare Multispeciality Hospital",
+        "managingOrganization": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/coverage",
+      "resource": {
+        "resourceType": "Coverage",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+          ]
+        },
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              "code": "HIP",
+              "display": "health insurance plan policy"
+            }
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NH",
+                  "display": "National Health Plan Identifier"
+                }
+              ]
+            },
+            "value": "PMJAY/HP/S/G"
+          }
+        ],
+        "subscriber": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "subscriberId": "PMJAY0000X",
+        "beneficiary": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self"
+            }
+          ]
+        },
+        "payor": [
+          {
+            "reference": "https://nhcx.abdm.gov.in/payer"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/practitioner-role",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PractitionerRole"
+          ]
+        },
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "307988006",
+                "display": "Medical technician"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

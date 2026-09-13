@@ -1,0 +1,96 @@
+meta {
+  name: Claim submit (internal) (adapter)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{nhcxBase}}/internal/v1/claim/submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 15
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-use_case: New
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Claim submit (internal)
+
+  `POST /internal/v1/claim/submit`
+
+  ## Summary
+
+  Internal twin of /v1/claim/submit (operationId claimSubmitPostInternal) with the same JWEPayload body and response set.
+
+  ## Business purpose
+
+  The claim service publishes its submit operation twice, at /v1 and at /internal/v1. Both let a provider submit or resubmit the final claim bundle for adjudication and settlement. The internal path is documented only as a distinct operationId on the same contract; no separate business purpose is described for it.
+
+  ## When to use
+
+  Documented as the internal variant of claim submit, consumed by providers with a JWEPayload body. The same workflow discriminators apply: 15 for the final claim, 151 for a claim query response, with x-hcx-use_case New or Resubmit and x-hcx-status request.initiated. The OpenAPI specs expose this operation twice, at /v1/... and at /internal/v1/..., with identical descriptions, request bodies and response sets; only the operationId differs (an Internal suffix). The specs do not document what makes the internal variant different beyond that suffix, so treat it as a mirror of the public path and integrate against the public /v1 path unless NHCX onboarding tells you otherwise.
+
+  ## Preconditions
+
+  Identical to /v1/claim/submit: an approved preauth for the case, Claim.use set to claim with preAuthRef and final amounts, the complete document set and discharge information, PMJAY authentication or consent questionnaire, a valid Bearer token, the payer certificate, JWE encryption and a fresh correlation ID. Nothing additional is documented for the internal route.
+
+  ## Postconditions
+
+  Same as the public path: HTTP 202 Accepted with a StatusSuccessResponse acknowledgement, asynchronous forwarding to the payer, and one or more ClaimResponseBundles on the claim callback (the internal twin /internal/v1/claim/on_submit exists with the same body). 400, 404 and 500 carry the same schema.
+
+  ## Common mistakes
+
+  - Assuming a different body or semantics for the internal route; the spec gives it the same JWEPayload body and responses.
+  - Using it without confirmation from NHCX onboarding and then chasing a 404; try the alternate host and prefix shape before escalating.
+  - Every public claim-submit pitfall applies unchanged: no approved preauth (PAYR-1302), duplicate claim (PAYR-1301), amount above the approved preauth (PAYR-1012), wrong workflow ID (PAYR-1321), reused correlation ID (NHCX-1006).
+
+  ## Best practices
+
+  - Default to /v1/claim/submit and keep the internal path as a configuration option only.
+  - Share one client implementation across both paths so header hygiene, encryption and correlation handling cannot diverge.
+  - Record which variant carried each correlation ID for support conversations.
+
+  ## Related scenario
+
+  A hospital's HMIS vendor reading the claimhcxservice OpenAPI notices claimSubmitPost and claimSubmitPostInternal side by side. They implement a single claim client against /v1/claim/submit, parameterise the base path, and ask NHCX support whether the internal twin is relevant to their deployment. The end-to-end flow is unchanged: the claim goes out under workflow 15 after discharge, returns a 202, and the payer's adjudication arrives on the claim callback.
+
+  ## Specification
+
+  Chapter 05.12 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+    "correlation_id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "claim",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

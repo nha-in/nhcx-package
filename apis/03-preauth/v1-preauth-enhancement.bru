@@ -1,0 +1,101 @@
+meta {
+  name: Pre-authorisation enhancement
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{nhcxBase}}/v1/preauth/submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 13
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-use_case: Enhancement
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Pre-authorisation enhancement
+
+  `POST /v1/preauth/submit`
+
+  ## Summary
+
+  Provider asks for more against an approved pre-authorisation, a longer stay or an added package, on the same endpoint and case number as the first request, under workflow 13 with x-hcx-use_case Enhancement.
+
+  ## Business purpose
+
+  Treatment changes after approval: the stay runs longer, or a package is added. An enhancement asks the payer to extend what it approved on the case it already holds, rather than opening a second case. Nothing in the payload declares an enhancement; the workflow code and x-hcx-use_case do.
+
+  ## When to use
+
+  Only against a pre-authorisation already approved on 21, while the patient is admitted, one request at a time, as many times as needed until discharge. Send x-hcx-workflow_id 13 (ENHANCEMENT_REQUEST_INITIATED), x-hcx-use_case Enhancement and x-hcx-status request.initiated, with a new correlation id. A query on the enhancement arrives on /v1/preauth/on_submit under 241 and is answered by a fresh submit under 131, not 19. Under PMJAY only packages flagged EnhancementAllowed Y may be added.
+
+  ## Preconditions
+
+  - An approved pre-authorisation on the case (PAYR-1212 otherwise) and no other request open on it (PAYR-1213).
+  - The pre-authorisation Claim bundle with Claim.use preauthorization and the case number unchanged. It carries the approved items and the ones now sought, and Claim.total is the sum of all of them.
+  - Claim.related is absent; the case number and your stored correlation ids are the thread.
+  - Payer certificate fetched, bundle JWE-encrypted, recipient code taken from processingID, timestamp in IST, as for any pre-authorisation submit.
+
+  ## Postconditions
+
+  NHCX returns HTTP 202 Accepted with a StatusSuccessResponse acknowledgement (entity_type preauth, protocol_status request.queued or request.dispatched). The payer answers on /v1/preauth/on_submit: 22 enhancement approved, 231 enhancement denied or 241 enhancement queried. Under PMJAY the benefit total on the response is the increment and the wallet's eligible total is cumulative, and the acknowledgement carries no preAuthRef.
+
+  ## Common mistakes
+
+  - Sending it under 12 or use_case New. The payload does not declare an enhancement, and a new 12 when an approved preauth already exists is refused (PAYR-1217).
+  - Sending it before the pre-authorisation is approved (PAYR-1212) or while another request on the case is open (PAYR-1213).
+  - Sending only the added items; the enhancement is cumulative.
+  - Answering an enhancement query (241) under 19 instead of 131.
+  - Raising it retrospectively at discharge (PAYR-1018, time limit for submission expired).
+
+  ## Best practices
+
+  - Persist x-hcx-workflow_id and x-hcx-use_case with the correlation id and the case number.
+  - Read response items by itemSequence; they can come back out of order.
+  - Order a case's messages by receipt, not by Bundle.timestamp.
+
+  ## Related scenario
+
+  Two days after a corneal grafting pre-authorisation is approved under 21, the surgeon needs a higher bed category. The hospital posts the case again to /v1/preauth/submit under 13 with use_case Enhancement and a new correlation id, carrying the approved items and the new one, and waits for 22, 231 or 241 on /v1/preauth/on_submit.
+
+  ## Specification
+
+  Chapter 05.08 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "21/03/2026 10:12:08:441",
+    "api_call_id": "b7c8d9e0-f1a2-4b3c-9d4e-5f6a7b8c9d0e",
+    "correlation_id": "c1d2e3f4-a5b6-4c7d-8e9f-0a1b2c3d4e5f",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "preauth",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

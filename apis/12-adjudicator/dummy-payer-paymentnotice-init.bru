@@ -1,0 +1,69 @@
+meta {
+  name: Dummy payer, send a payment notice
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{dummyPayerBase}}/paymentNotice/init
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "providerId": "{{participantCode}}",
+    "claimNumber": ""
+  }
+}
+
+docs {
+  # Dummy payer, send a payment notice
+
+  `POST /paymentNotice/init`
+
+  ## Summary
+
+  Makes the sandbox dummy payer send a payment notice to the provider named, on `/v1/paymentnotice/request`.
+
+  ## Business purpose
+
+  A payment notice only follows a settled claim, which is slow to reach in a test. This hook makes the sandbox's dummy payer, `1000003538@hcx`, send one on demand, so a provider can build and test its payment notice handling and acknowledgement without waiting for a settlement.
+
+  ## When to use
+
+  Sandbox testing of the payment notice flow, once your `/v1/paymentnotice/request` callback is in place. The body names your participant code in `providerId`. It also carries a `claimNumber` field, left empty in this collection, whose effect the documentation does not describe.
+
+  ## Preconditions
+
+  - Your participant is registered on the sandbox with a reachable callback address.
+  - You host `/v1/paymentnotice/request` and answer it 202 within 30 seconds.
+  - An ordinary ABDM session token.
+
+  ## Postconditions
+
+  The dummy payer sends a payment notice to the provider named, arriving on `/v1/paymentnotice/request`. The provider acknowledges it on `/v1/paymentnotice/on_request`.
+
+  ## Common mistakes
+
+  - Triggering the notice before the `/v1/paymentnotice/request` handler is in place.
+  - Sending another participant's code in `providerId`.
+  - Receiving the notice and never sending the acknowledgement on `/v1/paymentnotice/on_request`.
+
+  ## Best practices
+
+  - Test both the receipt and the acknowledgement.
+  - Keep this hook out of production code paths. It exists only in the sandbox.
+
+  ## Related scenario
+
+  A provider has built its payment notice handler. It posts this hook with its own participant code in `providerId`. A payment notice from the dummy payer arrives on its `/v1/paymentnotice/request`. The handler answers 202, opens and records the notice, and sends the acknowledgement on `/v1/paymentnotice/on_request`.
+
+  ## Specification
+
+  Chapter 01.05 of the NHCX integration specification.
+
+  ## Example response
+
+  The package does not document the hook's own reply. The payment notice it triggers arrives on your callback.
+}

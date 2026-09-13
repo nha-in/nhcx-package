@@ -1,0 +1,92 @@
+{
+  "resourceType": "Bundle",
+  "id": "SR0000000001",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "type": "collection",
+  "timestamp": "2026-02-26T12:00:00+05:30",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:e0000001-0000-0000-0000-000000000001",
+      "resource": {
+        "resourceType": "Task",
+        "id": "task-search-1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "identifier": [
+          {
+            "system": "https://nhcx.gov.in/task",
+            "value": "SR0000000001"
+          }
+        ],
+        "status": "requested",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes",
+              "code": "search",
+              "display": "Search"
+            }
+          ]
+        },
+        "description": "Search claim records for case CL0000000001",
+        "authoredOn": "2026-02-26T12:00:00+05:30",
+        "requester": {
+          "reference": "urn:uuid:e0000001-0000-0000-0000-000000000002"
+        },
+        "owner": {
+          "reference": "urn:uuid:e0000001-0000-0000-0000-000000000003"
+        },
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "ClaimNumber",
+                  "display": "Claim Number"
+                }
+              ]
+            },
+            "valueString": "CL0000000001"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e0000001-0000-0000-0000-000000000002",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-provider-1",
+        "name": "Provider Hospital",
+        "identifier": [
+          {
+            "system": "https://facility.abdm.gov.in",
+            "value": "IN0000000001"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e0000001-0000-0000-0000-000000000003",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "org-payer-1",
+        "name": "Payer Insurance Co",
+        "identifier": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "value": "1000"
+          }
+        ]
+      }
+    }
+  ]
+}

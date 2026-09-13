@@ -1,0 +1,59 @@
+# ==============================================================================
+# Use Case C5: Respond to pre-authorisation - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/preauth/on_submit
+# Callback API: /v1/preauth/submit
+# Carries JWE: true
+# Focal Resource: ClaimResponse
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse
+# ==============================================================================
+
+code: "C5"
+title: "Respond to pre-authorisation"
+side: "payer"
+api: "/v1/preauth/on_submit"
+callback: "/v1/preauth/submit"
+workflow: "20 (Received), 21 (Approved), 22 (Enhancement approved), 23 (Rejected), 24 (Queried)"
+carries_jwe: true
+focal_resource: "ClaimResponse"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+profiles:
+  ClaimResponse: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+description: "Deliver pre-authorisation auto-adjudication and manual medical desk verdicts."
+fields:
+  - key: "outcome"
+    label: "Verdict Outcome"
+    group: "Verdict"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.outcome"
+    example_value: "complete"
+  - key: "preAuthRef"
+    label: "Payer Case Tracking ID"
+    group: "Verdict"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.preAuthRef"
+    example_value: "APPR-2026-HP-00891"
+  - key: "approvedAmount"
+    label: "Approved Pre-auth Sanction"
+    group: "Financials"
+    data_type: "decimal"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.total[category=benefit].amount.value"
+    example_value: "15500.00"
+  - key: "disposition"
+    label: "Adjudicator Remarks"
+    group: "Verdict"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.disposition"
+    example_value: "Approved by PPD-Trust committee"

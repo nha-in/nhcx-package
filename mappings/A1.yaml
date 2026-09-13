@@ -1,0 +1,69 @@
+# ==============================================================================
+# Use Case A1: Get participant list - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: /fetch/participants/list
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: Participant Registry List (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A1"
+title: "Get participant list"
+side: "shared"
+api: "/fetch/participants/list"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "Participant Registry List (JSON)"
+profiles:
+  Organization: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+description: "Retrieve list of active participants (payers, providers, TPAs) registered on the network filtered by role."
+fields:
+  - key: "roles"
+    label: "Requested Role Filter"
+    group: "Request"
+    data_type: "array[string]"
+    cardinality: "1..*"
+    required: true
+    fhir_resource: "N/A (REST Param)"
+    fhir_path: "Request.roles"
+    example_value: "[\"payor\"]"
+  - key: "participantCode"
+    label: "Participant ID (@hcx)"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Organization"
+    fhir_path: "Organization.identifier[system=https://nhcx.gov.in].value"
+    also_at:
+      - "Header.x-hcx-recipient_code"
+    example_value: "1000003538@hcx"
+  - key: "participantName"
+    label: "Entity Name"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Organization"
+    fhir_path: "Organization.name"
+    example_value: "State Health Agency Himachal"
+  - key: "endpointUrl"
+    label: "Gateway Callback URL"
+    group: "Response"
+    data_type: "url"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Endpoint"
+    fhir_path: "Endpoint.address"
+    example_value: "https://payer.example.org/nhcx/v1"
+  - key: "encryptionCertPath"
+    label: "Encryption Certificate Path"
+    group: "Response"
+    data_type: "url"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Crypto)"
+    fhir_path: "Response.encryption_cert_path"
+    example_value: "https://apisbx.abdm.gov.in/certs/1000003538.pem"

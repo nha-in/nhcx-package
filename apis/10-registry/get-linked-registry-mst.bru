@@ -1,0 +1,74 @@
+meta {
+  name: Get linked registry master (internal)
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{registryBase}}/get/linked/registry/mst
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "_body": "No request body or parameters are documented in the OpenAPI entry for this internal operation."
+  }
+}
+
+docs {
+  # Get linked registry master (internal)
+
+  `POST /get/linked/registry/mst`
+
+  ## Summary
+
+  Internal-use participant-service operation that fetches the linked registry master; listed in the OpenAPI but not intended for integrators.
+
+  ## Business purpose
+
+  The participant registry can be extended from or linked to external registries such as the ABDM Health Facility Registry and the payer registry, and participant records carry linked_registry_codes in identifier@registry form with supported registry codes configured at instance level. This operation, described in the OpenAPI as for internal use and fetching the linked registry, appears to serve that master configuration to the platform itself. It is documented here for completeness of the 63-endpoint index, not as an integration point.
+
+  ## When to use
+
+  Do not call it from an integration. The Participant Registry chapter names it, together with /get/session in its OpenAPI form, as one of two internal-use endpoints that should not be called by integrators. If you need registry linkage information for a participant, read linked_registry_codes from /participant/search or /participant/details, and use the Valid Registry Enums (HFR 10001, NIN 10002, ROHINI 10003, PAYER 10004) documented for onboarding. No workflow or x-hcx-status codes apply.
+
+  ## Preconditions
+
+  - Served under the participanthcxservice prefix with the Registry APIs tag, so the usual bearer_auth Bearer token and Accept: application/json headers would apply.
+  - The OpenAPI entry documents no request body and no parameters.
+  - Access to internal operations is controlled by the NHCX instance provider; the chapter states integrators should not call it.
+
+  ## Postconditions
+
+  The OpenAPI declares a 200 response of type string, with 400 Client Error, 404 Resource not found and 500 Downstream systems down each returning the ErrorResponse envelope (timestamp plus error code, message and trace). No state change is described and no callback follows. The content of the returned string is not documented.
+
+  ## Common mistakes
+
+  - Treating it as a public registry lookup and building a dependency on an operation the platform reserves for internal use.
+  - Confusing it with linked_registry_codes on a participant record, which is the documented way to see a participant's external registry identifiers.
+  - Confusing the registry master with the Valid Registry Enums used in registrytype during onboarding.
+
+  ## Best practices
+
+  - Leave it out of client libraries and Postman collections used for certification.
+  - Source registry codes from the onboarding documentation and participant records instead.
+  - If an onboarding contact directs you to it, record their exact instruction, since the specification documents neither a body nor the response content.
+
+  ## Related scenario
+
+  While generating a client from the participanthcxservice OpenAPI document, a hospital integrator notices /get/linked/registry/mst next to /participant/search and asks whether to wire it into the payer picker. The answer from the documentation is no: it is an internal operation, and the picker should be built on /fetch/participants/list, with each selected payer confirmed through /participant/search and its linked_registry_codes read from that record. The generated method is left unused and excluded from the sandbox-exit test evidence.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "_contentType": "string",
+    "_body": "<string as declared by the OpenAPI 200 response; content not documented>"
+  }
+  ```
+}

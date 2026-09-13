@@ -1,0 +1,95 @@
+meta {
+  name: Participant details (v2 search)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{registryBase}}/participant/details
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "participant_code": "100001@sbx"
+  }
+}
+
+docs {
+  # Participant details (v2 search)
+
+  `POST /participant/details`
+
+  ## Summary
+
+  V2 variant of participant search: takes participant_code and returns the matching full registry records.
+
+  ## Business purpose
+
+  This is the second of two endpoints that read a single participant by code. It exists as the v2 generation of the registry lookup (operationId participantV2SearchPost) and serves the same business need as /participant/search: confirming that a counterparty exists, is active, holds the expected role and publishes an encryption certificate and callback endpoint before any encrypted transaction is addressed to it.
+
+  ## When to use
+
+  Use it wherever /participant/search would be used: after payer discovery via /fetch/participants/list, before the first JWE to a new recipient, or to verify your own record after an update. The OpenAPI gives both endpoints the identical description and the same ParticipantSearchReq and ParticipantSearchResponse schemas, and documents no behavioural difference beyond the operationId; the chapter advises treating them as interchangeable unless your HCX instance says otherwise. Synchronous JSON, no workflow or x-hcx-status codes.
+
+  ## Preconditions
+
+  - Bearer token from /get/session in bearer_auth with the Bearer prefix; Accept and Content-Type: application/json.
+  - Body per ParticipantSearchReq: participant_code (string, required) in xxxxx@hcx or @sbx form.
+  - Served under the participanthcxservice prefix on the environment gateway base.
+
+  ## Postconditions
+
+  HTTP 200 with ParticipantSearchResponse: timestamp and a participants array of full participant records (participant_code, linked_registry_codes, participant_name, scheme_code, roles, address, contact fields, status, signing_cert_path, encryption_cert, endpoint_url, payment_details). Read-only; nothing changes and no callback follows. 400, 404 and 500 return the ErrorResponse envelope with timestamp and error code, message and trace.
+
+  ## Common mistakes
+
+  - Expecting a different or richer response than /participant/search; the documented schemas are identical.
+  - Using participantcode or participantid instead of participant_code.
+  - Treating encryption_cert (a URI or file path in the schema) as the PEM itself instead of calling /fetch/certs.
+  - Omitting the Accept header or the Bearer prefix.
+  - Hard-coding one of the two lookup paths without a fallback when the instance serves only the other.
+
+  ## Best practices
+
+  - Wrap both lookup endpoints behind one client function so the path can be switched by configuration.
+  - Check status and roles before choosing a recipient code.
+  - Cache the record and refresh on routing or decryption errors rather than on every transaction.
+  - Do not log payment_details.
+
+  ## Related scenario
+
+  A payer's inbound gateway receives a /v1/claim/submit whose protected header names x-hcx-sender_code 100001@sbx. Before decrypting and processing, its integration calls /participant/details with that participant_code to confirm the sender is a registered provider with status Active and to record participant_name for the adjudication file. The claim is then decrypted with the payer's private key and passed to the claims team, whose decision goes back on /v1/claim/on_submit.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": 1716204567358,
+    "participants": [
+      {
+        "participant_code": "100001@sbx",
+        "participant_name": "Demo Multispeciality Hospital",
+        "linked_registry_codes": [
+          "IN2910001234@hfr"
+        ],
+        "roles": [
+          "provider"
+        ],
+        "status": [
+          "Active"
+        ],
+        "primaryEmail": "claims@demohospital.example.in",
+        "primaryMobile": "9800000000",
+        "encryption_cert": "https://registry.example.in/certs/100001.pem",
+        "endpoint_url": "https://nhcx.demohospital.example.in"
+      }
+    ]
+  }
+  ```
+}

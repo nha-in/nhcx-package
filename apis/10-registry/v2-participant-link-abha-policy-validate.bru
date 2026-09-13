@@ -1,0 +1,71 @@
+meta {
+  name: Validate ABHA policy link (v2)
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{registryBase}}/v2/participant/link/abha/policy/validate
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Validate ABHA policy link (v2)
+
+  `GET /v2/participant/link/abha/policy/validate`
+
+  ## Summary
+
+  Second half of the two-step v2 link: confirms an initiated ABHA policy link with the passcode and transactionId query parameters.
+
+  ## Business purpose
+
+  This GET endpoint closes the approval loop opened by /v2/participant/link/abha/policy/init. By requiring a passcode tied to a transactionId, it ensures that a member-layer write attributed to a payer or TPA was actually authorised by that organisation, in the same way that participant creation and update are confirmed through /validate and /update/validate. The value to the ecosystem is trust in the registry: providers rely on the policy lookup, so the links behind it should be deliberate and traceable.
+
+  ## When to use
+
+  Call it after a successful init call, once the passcode is available, passing both required query parameters: passcode (string) and transactionId (string). It is the last step of the confirmed link flow and must be completed before the link is relied on. It has no role in claim-side workflows (eligibility, preauthorisation, claim) beyond making the member discoverable so that those flows can start.
+
+  ## Preconditions
+
+  - A prior POST /v2/participant/link/abha/policy/init that returned a transaction identifier.
+  - The passcode associated with that transaction; the documentation for the sibling participant flows says the passcode is specific to each transaction id and valid for 24 hours.
+  - A valid Bearer token in bearer_auth: Bearer <token>, plus Accept: application/json; there is no request body, and no JWE or x-hcx-* headers are involved.
+  - The participant service base path, sandbox https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice.
+
+  ## Postconditions
+
+  On success the endpoint returns HTTP 200 with ParticipantLinkAbhaResponse (optional result and errormessage). The initiated link is confirmed and the beneficiary's products become discoverable through the policy lookup endpoints. No asynchronous callback follows. Errors return 400, 404 or 500 with the ErrorResponse envelope. If the transaction cannot be found or the passcode is wrong, the documented remedy for the sibling participant flows is to trigger the init request again, which generates a new transaction id and passcode.
+
+  ## Common mistakes
+
+  - Sending passcode and transactionId in a JSON body instead of as query parameters; this is a GET with two required query parameters.
+  - Using a transactionId from a different init call or from a participant create/update flow.
+  - Letting the passcode age out; the sibling flows document a 24-hour validity for transaction id and passcode.
+  - Calling with a token from a client_id other than the one used at participant creation, which fails the link authorisation check.
+  - Omitting the Accept header or the Bearer prefix on bearer_auth.
+
+  ## Best practices
+
+  - URL-encode both query parameters and log the transactionId with the outcome.
+  - Treat a 404 or an errormessage as a signal to restart from init rather than retrying the same passcode indefinitely.
+  - Verify the confirmed link with /participant/get/policies using the same ABHA number.
+  - Keep the init and validate calls under the same participant token so the identity check passes.
+
+  ## Related scenario
+
+  A TPA's operations desk initiated a policy link for a new member earlier in the day through /v2/participant/link/abha/policy/init and stored the transaction identifier against the case. When the authorised approver supplies the passcode, the system calls GET /v2/participant/link/abha/policy/validate?passcode=...&transactionId=... and receives a 200 with a result string. The desk then runs /V2/participant/get/policies for the member's ABHA number, sees the product listed, and closes the linking task; the next call in the member's journey will be the hospital's coverage-eligibility check.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "result": "success"
+  }
+  ```
+}

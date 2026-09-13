@@ -1,0 +1,1102 @@
+# Every workflow ID NHA publishes, from both sources that publish them.
+#
+# The PMJAY handbook splits the cashless mainline by who authors the message.
+# NHA's Workflow Status Sheet is wider and also names the x-hcx-status each
+# stage travels with. Where they disagree, prefer the sheet.
+#
+# A code is not a message on its own: several are reused across the
+# initiation, the acknowledgement and the error path, and only the pair with
+# x-hcx-status tells them apart. Those carry reused: true and list every
+# status they appear under.
+#
+# Spellings are as published, typos included, so a value seen in a payload
+# can be searched for.
+#
+# sheet is NHA's Workflow Status Sheet row by row, in its order: a reused
+# code has one row per x-hcx-status, which the per-code lists cannot pair up.
+# disagreements lists where the handbook and the sheet differ.
+#
+# This file is the maintained source, edited here. build-docs renders it into
+# docs/01-Overview/06-Workflow Codes.md, and the devtools console reads it from the package release.
+
+counts:
+  codes: 74
+  sheet_rows: 86
+  reused: 8
+  disagreements: 7
+families:
+  - prefix: R
+    name: Reimbursement
+    covers: Mirrors the numeric cashless codes for the reimbursement route - the patient paid, and is claiming it back.
+  - prefix: G
+    name: Grievance
+    covers: Raising a grievance, its acknowledgement, and its failure path.
+  - prefix: RP
+    name: Return payment
+    covers: Money going back the other way.
+  - prefix: N
+    name: Notifications
+    covers: Push notifications addressed to payer, provider or beneficiary.
+  - prefix: DC
+    name: Discharge correction
+    covers: Correcting a discharge already submitted.
+  - prefix: PC
+    name: Preauth cancellation
+    covers: 'Withdrawing a pre-authorisation. Raised on /v1/task/submit with code `cancel`, not on the preauth endpoint.'
+codes:
+  - code: '10'
+    name: Patient Registered
+    constant: PATIENT_REGISTERED
+    authored_by: provider
+    use_case: Registration
+    means: Patient registered in system
+    statuses:
+      - request.initiated
+    stages:
+      - Patient Registered
+    outcomes: []
+  - code: '11'
+    name: Patient Admitted
+    constant: PATIENT_ADMITTED
+    authored_by: provider
+    use_case: Admission
+    means: Patient admitted to hospital
+    statuses:
+      - request.initiated
+    stages:
+      - Patient Admitted
+    outcomes: []
+  - code: '12'
+    name: Preauth Request Initiated
+    constant: PREAUTH_REQUEST_INITIATED
+    authored_by: provider
+    use_case: New PreAuth
+    means: New preauth submission
+    statuses:
+      - request.initiated
+    stages:
+      - Preauth  Request Initiated
+    outcomes:
+      - NR
+  - code: '121'
+    name: Preauth Request Resubmitted
+    constant: PREAUTH_REQUEST_RESUBMITTED
+    authored_by: provider
+    use_case: Resubmit
+    means: Resubmission after query/rejection
+    statuses:
+      - request.initiated
+    stages:
+      - PreAuth Reprocess(Resubmission) Initimation
+    outcomes:
+      - NR
+  - code: PC01
+    name: Preauth Cancel Initiated
+    constant: PREAUTH_CANCEL_INITIATED
+    authored_by: provider
+    use_case: PreAuth Cancel
+    means: Cancel an existing preauth
+    statuses:
+      - request.initiated
+    stages:
+      - Preauthorization Cancellation
+    outcomes: []
+  - code: '19'
+    name: Preauth Query Response Submitted
+    constant: PREAUTH_QUERY_RESPONSE_SUBMITTED
+    authored_by: provider
+    use_case: Query Response
+    means: Response to payer's query on preauth
+    statuses:
+      - response.complete
+    stages:
+      - PreAuth Query Response Submitted
+    outcomes: []
+  - code: '13'
+    name: Enhancement Request Initiated
+    constant: ENHANCEMENT_REQUEST_INITIATED
+    authored_by: provider
+    use_case: Enhancement
+    means: Enhancement (additional amount) request
+    statuses:
+      - request.initiated
+    stages:
+      - Enhancement Request Initiated
+    outcomes:
+      - NR
+  - code: '131'
+    name: Enhancement Query Response Submitted
+    constant: ENHANCEMENT_QUERY_RESPONSE_SUBMITTED
+    authored_by: provider
+    use_case: Enhancement Query
+    means: Response to enhancement query
+    statuses:
+      - response.partial
+      - response.error
+      - response.complete
+    stages:
+      - Enhancement Query Ack Success
+      - Enhancement Query Ack Failed
+      - Enhancement Query Response Submitted
+    outcomes:
+      - This should be handled as protocal error
+    reused: true
+  - code: '14'
+    name: Discharge Submitted
+    constant: DISCHARGE_SUBMITTED
+    authored_by: provider
+    use_case: Discharge
+    means: Discharge summary submitted
+    statuses:
+      - request.initiated
+    stages:
+      - Discharge Submitted
+    outcomes: []
+  - code: '141'
+    name: Discharge Query Response Submitted
+    constant: DISCHARGE_QUERY_RESPONSE_SUBMITTED
+    authored_by: provider
+    use_case: Discharge Query
+    means: Response to discharge query
+    statuses:
+      - response.complete
+    stages:
+      - Discharge Query Response Submitted
+    outcomes: []
+  - code: '15'
+    name: Claim Request Initiated
+    constant: CLAIM_REQUEST_INITIATED
+    authored_by: provider
+    use_case: Claim Submit
+    means: Final claim submission
+    statuses:
+      - request.initiated
+    stages:
+      - Claim Request Initiated
+    outcomes:
+      - NR
+  - code: '151'
+    name: Claim Query Response Submitted
+    constant: CLAIM_QUERY_RESPONSE_SUBMITTED
+    authored_by: provider
+    use_case: Claim Query
+    means: 'Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response)'
+    statuses:
+      - response.complete
+    stages:
+      - Claim Query Response Submitted
+    outcomes: []
+  - code: '17'
+    name: Payment Received
+    constant: PAYMENT_RECEIVED
+    authored_by: provider
+    use_case: Payment
+    means: 'Payment received acknowledgment under PMJAY; a generic payer takes it with the notice''s 30 echoed'
+    statuses:
+      - response.complete
+    stages:
+      - Payment Notice Recived
+    outcomes: []
+  - code: '36'
+    name: Claim Arbitration Request Submitted
+    constant: CLAIM_ARBITRATION_REQUEST_SUBMITTED
+    authored_by: provider
+    use_case: Reprocess
+    means: 'Reprocess/Erroneous request, with input intimationNumber; acknowledged on 37'
+    statuses:
+      - request.initiated
+    stages:
+      - Claim Arbitration Intimation
+    outcomes: []
+  - code: '20'
+    name: Preauth Request Received
+    constant: PREAUTH_REQUEST_RECEIVED
+    authored_by: payer
+    means: Payer has received and acknowledged the preauth request
+    statuses:
+      - response.partial
+      - response.error
+    stages:
+      - PreAuth Ack Success
+      - PreAuth Ack Failed
+    outcomes:
+      - queued
+      - error
+    reused: true
+  - code: '21'
+    name: Preauth Request Approved
+    constant: PREAUTH_REQUEST_APPROVED
+    authored_by: payer
+    means: Preauth fully approved - proceed with treatment
+    statuses:
+      - response.complete
+    stages:
+      - Preauth Request Approved
+    outcomes:
+      - partial
+  - code: '22'
+    name: Enhancement Request Approved
+    constant: ENHANCEMENT_REQUEST_APPROVED
+    authored_by: payer
+    means: Enhancement request approved by payer
+    statuses:
+      - response.complete
+    stages:
+      - Enhancement Request Approved
+    outcomes:
+      - partial
+  - code: '23'
+    name: Preauth Request Rejected
+    constant: PREAUTH_REQUEST_REJECTED
+    authored_by: payer
+    means: Preauth rejected - review error/processNote for reason
+    statuses:
+      - response.complete
+    stages:
+      - PreAuth Request Rejected
+    outcomes:
+      - complete
+  - code: '24'
+    name: Preauth Request Queried
+    constant: PREAUTH_REQUEST_QUERIED
+    authored_by: payer
+    means: Payer needs more information - respond using workflow 19
+    statuses:
+      - request.initiated
+    stages:
+      - PreAuth Request Queried
+    outcomes:
+      - NR
+  - code: '241'
+    name: Enhancement Request Queried
+    constant: ENHANCEMENT_REQUEST_QUERIED
+    authored_by: payer
+    means: Enhancement request queried by payer
+    statuses:
+      - request.initiated
+    stages:
+      - Enhancement Query Raise
+    outcomes:
+      - NR
+  - code: '25'
+    name: Claim Request Received
+    constant: CLAIM_REQUEST_RECEIVED
+    authored_by: payer
+    means: Final claim received by payer
+    statuses:
+      - response.partial
+      - response.error
+    stages:
+      - Claim Doc Ack Success
+      - Claim Doc Ack Failed
+    outcomes:
+      - queued
+      - error
+    reused: true
+  - code: '26'
+    name: Claim Request Approved
+    constant: CLAIM_REQUEST_APPROVED
+    authored_by: payer
+    means: Final claim approved
+    statuses:
+      - response.complete
+    stages:
+      - Claim Request Approved
+    outcomes:
+      - complete
+  - code: '27'
+    name: Claim Request Queried
+    constant: CLAIM_REQUEST_QUERIED
+    authored_by: payer
+    means: 'Final claim queried - payer needs additional documents; under PMJAY answer with 161'
+    statuses:
+      - request.initiated
+      - response.partial/complete
+    stages:
+      - Claim Request Queried
+      - Claim Request Queried
+    outcomes:
+      - NR
+      - This should be handled as protocal error
+    reused: true
+  - code: '28'
+    name: Claim Request In Process
+    constant: CLAIM_REQUEST_IN_PROCESS
+    authored_by: payer
+    means: Final claim is being processed by payer
+    statuses:
+      - response.partial
+    stages:
+      - Claim Request in process
+    outcomes: []
+  - code: '29'
+    name: Claim Forwarded
+    constant: CLAIM_FORWARDED
+    authored_by: payer
+    means: Claim forwarded to another processing entity
+    statuses:
+      - response.partial
+    stages:
+      - Claim Forwarded
+    outcomes: []
+  - code: '251'
+    name: Reprocess Request Received
+    constant: REPROCESS_REQUEST_RECEIVED
+    authored_by: payer
+    means: Reprocess request received
+    statuses:
+      - response.complete
+    stages:
+      - PreAuth Reprocess Ack
+    outcomes: []
+  - code: '252'
+    name: Reprocess Request Approved
+    constant: REPROCESS_REQUEST_APPROVED
+    authored_by: payer
+    means: Reprocess request approved
+    statuses:
+      - response.complete
+    stages:
+      - Reprocess Request Approved
+    outcomes:
+      - NA
+  - code: '253'
+    name: Reprocess Request Rejected
+    constant: REPROCESS_REQUEST_REJECTED
+    authored_by: payer
+    means: Reprocess request rejected
+    statuses:
+      - response.complete
+    stages:
+      - Reprocess Request Rejected
+    outcomes:
+      - NA
+  - code: '254'
+    name: Reprocess Request Queried
+    constant: REPROCESS_REQUEST_QUERIED
+    authored_by: payer
+    means: Reprocess request queried
+    statuses:
+      - request.initiated
+    stages:
+      - Reprocess Request Queried
+    outcomes:
+      - NA
+  - code: '261'
+    name: Discharge Request Approved
+    constant: DISCHARGE_REQUEST_APPROVED
+    authored_by: payer
+    means: Discharge summary approved
+    statuses:
+      - response.partial
+    stages:
+      - Discharge Request Approved
+    outcomes: []
+  - code: '262'
+    name: Discharge Request Rejected
+    constant: DISCHARGE_REQUEST_REJECTED
+    authored_by: payer
+    means: Discharge summary rejected
+    statuses:
+      - response.complete
+    stages:
+      - Discharge Request Rejected
+    outcomes: []
+  - code: '263'
+    name: Discharge Request Queried
+    constant: DISCHARGE_REQUEST_QUERIED
+    authored_by: payer
+    means: Discharge summary queried
+    statuses:
+      - request.initiated
+    stages:
+      - Discharge Request Queried
+    outcomes: []
+  - code: '30'
+    name: Payment Initiated
+    constant: PAYMENT_INITIATED
+    authored_by: payer
+    means: Payment initiated by payer, on a new thread
+    statuses:
+      - request.initiated
+      - response.partial
+      - response.error
+    stages:
+      - Payment Notice Initmation
+      - Payment Notice Ack Success
+      - Payment Notice Ack Failed
+    outcomes:
+      - This should be handled as protocal error
+    reused: true
+  - code: '31'
+    name: Payment Processed
+    constant: PAYMENT_PROCESSED
+    authored_by: payer
+    means: Payment has been processed
+    statuses:
+      - request.initiated
+    stages:
+      - Payment Processed
+    outcomes: []
+  - code: '33'
+    name: Payment Settled
+    constant: PAYMENT_SETTLED
+    authored_by: payer
+    means: Payment has been fully settled
+    statuses:
+      - request.initiated
+    stages:
+      - Payment Settled
+    outcomes: []
+  - code: '45'
+    name: Final Bill Initimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+      - response.partial
+      - response.error
+    stages:
+      - Final Bill Initimation
+      - Final Bill Ack Success
+      - Final Bill Ack Failed
+    outcomes:
+      - NR
+      - queued This should be handled as protocal error
+      - error This should be handled as protocal error
+    reused: true
+  - code: '181'
+    name: Final Bill Query Response
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Final Bill Query Response
+    outcomes: []
+  - code: '161'
+    name: Claim Doc Query Response
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Claim Doc Query Response
+    outcomes: []
+  - code: '18'
+    name: Preauth Query Ack Success
+    authored_by: status sheet only
+    statuses:
+      - response.partial
+      - response.error
+    stages:
+      - PreAuth Query Ack Success
+      - PreAuth Query Ack Failed
+    outcomes:
+      - This should be handled as protocal error
+    reused: true
+  - code: '231'
+    name: Enhancement Deny
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Enhancement Deny
+    outcomes:
+      - complete
+  - code: '46'
+    name: Final Bill Approve
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Final Bill Approve
+    outcomes:
+      - partial
+  - code: '47'
+    name: Final Bill Query Raise
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+      - response.partial
+      - response.error
+    stages:
+      - Final Bill Query Raise
+      - Final Bill Query Ack Success
+      - Final Bill Query Ack Failed
+    outcomes:
+      - NR
+      - This should be handled as protocal error
+    reused: true
+  - code: '491'
+    name: Final Bill Deny
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Final Bill Deny
+    outcomes:
+      - complete
+  - code: '291'
+    name: Claim Doc Deny
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Claim Doc Deny
+    outcomes:
+      - complete
+  - code: R122
+    name: Reimburstment Claim Reprocess Requested
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Reimburstment Claim Reprocess Requested
+    outcomes: []
+  - code: R15
+    name: Reimburstment Claim Submitted
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Reimburstment Claim Submitted
+    outcomes: []
+  - code: R151
+    name: Reimburstment Claim Query Response Submitted
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Reimburstment Claim Query Response Submitted
+    outcomes: []
+  - code: R252
+    name: Reimburstment Claim Reprocess Request Approved
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Reimburstment Claim Reprocess Request Approved
+    outcomes: []
+  - code: R253
+    name: Reimburstment Claim Reprocess Request Rejected
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Reimburstment Claim Reprocess Request Rejected
+    outcomes: []
+  - code: R254
+    name: Reimburstment Claim Reprocess Request Queried
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Reimburstment Claim Reprocess Request Queried
+    outcomes: []
+  - code: R26
+    name: Reimburstment Claim Approved
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Reimburstment Claim Approved
+    outcomes: []
+  - code: R27
+    name: Reimburstment Claim Queried
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Reimburstment Claim Queried
+    outcomes: []
+  - code: R28
+    name: Reimburstment Claim Evaluation In Process
+    authored_by: status sheet only
+    statuses:
+      - response.partial
+    stages:
+      - Reimburstment Claim evaluation in process
+    outcomes: []
+  - code: R291
+    name: Reimburstment Claim Rejected
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Reimburstment Claim Rejected
+    outcomes: []
+  - code: '34'
+    name: Wallet Upgrade Intimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Wallet Upgrade Intimation
+    outcomes: []
+  - code: '38'
+    name: Fraud Alert
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Fraud Alert
+    outcomes: []
+  - code: '35'
+    name: Wallet Upgrade Acknowledgement
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Wallet Upgrade Acknowledgement
+    outcomes: []
+  - code: '37'
+    name: Claim Arbitration Acknowledgement
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Claim Arbitration Acknowledgement
+    outcomes: []
+  - code: '39'
+    name: Fraud Alert Acknowledgement
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Fraud Alert Acknowledgement
+    outcomes: []
+  - code: G11
+    name: Grievance Intimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Grievance Intimation
+    outcomes: []
+  - code: G12
+    name: Grievance Acknowledment
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Grievance Acknowledment
+    outcomes: []
+  - code: G13
+    name: Grievance Intimation Failure
+    authored_by: status sheet only
+    statuses:
+      - response.error
+    stages:
+      - Grievance Intimation Failure
+    outcomes: []
+  - code: '41'
+    name: Preauth Arbitration Intimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Preauth Arbitration Intimation
+    outcomes: []
+  - code: '42'
+    name: Preauth Arbitration Acknowledgement
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Preauth Arbitration Acknowledgement
+    outcomes: []
+  - code: RP1
+    name: Return Payment Intimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Return Payment Intimation
+    outcomes: []
+  - code: RP2
+    name: Return Payment Acknowledgement
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Return Payment Acknowledgement
+    outcomes: []
+  - code: RP3
+    name: Return Payment Failure
+    authored_by: status sheet only
+    statuses:
+      - response.error
+    stages:
+      - Return Payment Failure
+    outcomes: []
+  - code: N01
+    name: Notifications Intended To Payer
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Notifications Intended to Payer
+    outcomes: []
+  - code: N02
+    name: Notifications Intended To Provider
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Notifications Intended to Provider
+    outcomes: []
+  - code: N03
+    name: Notifications Intended To Beneficiary
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Notifications Intended to Beneficiary
+    outcomes: []
+  - code: N04
+    name: Acknowledgement Of The Notificaion
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Acknowledgement of the Notificaion
+    outcomes: []
+  - code: DC01
+    name: Discharge Correction Intimation
+    authored_by: status sheet only
+    statuses:
+      - request.initiated
+    stages:
+      - Discharge Correction Intimation
+    outcomes: []
+  - code: DC02
+    name: Acknowledgement For Discharge Correction
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Acknowledgement for Discharge Correction
+    outcomes: []
+  - code: PC02
+    name: Preauthorization Cancellation Accomplished
+    authored_by: status sheet only
+    statuses:
+      - response.complete
+    stages:
+      - Preauthorization Cancellation Accomplished
+    outcomes: []
+# NHA's Workflow Status Sheet, every row in the order it is published.
+sheet:
+  - stage: Patient Registered
+    code: '10'
+    status: request.initiated
+  - stage: Patient Admitted
+    code: '11'
+    status: request.initiated
+  - stage: Preauth  Request Initiated
+    code: '12'
+    status: request.initiated
+    outcome: NR
+  - stage: Discharge Submitted
+    code: '14'
+    status: request.initiated
+  - stage: Claim Request in process
+    code: '28'
+    status: response.partial
+  - stage: Claim Forwarded
+    code: '29'
+    status: response.partial
+  - stage: Payment Processed
+    code: '31'
+    status: request.initiated
+  - stage: Payment Settled
+    code: '33'
+    status: request.initiated
+  - stage: Discharge Query Response Submitted
+    code: '141'
+    status: response.complete
+  - stage: Claim Query Response Submitted
+    code: '151'
+    status: response.complete
+  - stage: Reprocess Request Approved
+    code: '252'
+    status: response.complete
+    outcome: NA
+  - stage: Reprocess Request Rejected
+    code: '253'
+    status: response.complete
+    outcome: NA
+  - stage: Reprocess Request Queried
+    code: '254'
+    status: request.initiated
+    outcome: NA
+  - stage: Discharge Request Approved
+    code: '261'
+    status: response.partial
+  - stage: Discharge Request Rejected
+    code: '262'
+    status: response.complete
+  - stage: Discharge Request Queried
+    code: '263'
+    status: request.initiated
+  - stage: PreAuth Reprocess(Resubmission) Initimation
+    code: '121'
+    status: request.initiated
+    outcome: NR
+  - stage: Enhancement Request Initiated
+    code: '13'
+    status: request.initiated
+    outcome: NR
+  - stage: Enhancement Query Ack Success
+    code: '131'
+    status: response.partial
+    outcome: This should be handled as protocal error
+  - stage: Enhancement Query Ack Failed
+    code: '131'
+    status: response.error
+    outcome: This should be handled as protocal error
+  - stage: Enhancement Query Response Submitted
+    code: '131'
+    status: response.complete
+  - stage: Final Bill Initimation
+    code: '45'
+    status: request.initiated
+    outcome: NR
+  - stage: Final Bill Ack Success
+    code: '45'
+    status: response.partial
+    outcome: queued This should be handled as protocal error
+  - stage: Final Bill Ack Failed
+    code: '45'
+    status: response.error
+    outcome: error This should be handled as protocal error
+  - stage: Claim Request Initiated
+    code: '15'
+    status: request.initiated
+    outcome: NR
+  - stage: Final Bill Query Response
+    code: '181'
+    status: response.complete
+  - stage: Claim Doc Query Response
+    code: '161'
+    status: response.complete
+  - stage: Payment Notice Recived
+    code: '17'
+    status: response.complete
+  - stage: PreAuth Query Ack Success
+    code: '18'
+    status: response.partial
+  - stage: PreAuth Query Ack Failed
+    code: '18'
+    status: response.error
+    outcome: This should be handled as protocal error
+  - stage: PreAuth Query Response Submitted
+    code: '19'
+    status: response.complete
+  - stage: PreAuth Ack Success
+    code: '20'
+    status: response.partial
+    outcome: queued
+  - stage: PreAuth Ack Failed
+    code: '20'
+    status: response.error
+    outcome: error
+  - stage: Preauth Request Approved
+    code: '21'
+    status: response.complete
+    outcome: partial
+  - stage: Enhancement Request Approved
+    code: '22'
+    status: response.complete
+    outcome: partial
+  - stage: PreAuth Request Rejected
+    code: '23'
+    status: response.complete
+    outcome: complete
+  - stage: Enhancement Deny
+    code: '231'
+    status: response.complete
+    outcome: complete
+  - stage: PreAuth Request Queried
+    code: '24'
+    status: request.initiated
+    outcome: NR
+  - stage: Enhancement Query Raise
+    code: '241'
+    status: request.initiated
+    outcome: NR
+  - stage: Claim Doc Ack Success
+    code: '25'
+    status: response.partial
+    outcome: queued
+  - stage: Claim Doc Ack Failed
+    code: '25'
+    status: response.error
+    outcome: error
+  - stage: PreAuth Reprocess Ack
+    code: '251'
+    status: response.complete
+  - stage: Final Bill Approve
+    code: '46'
+    status: response.complete
+    outcome: partial
+  - stage: Claim Request Approved
+    code: '26'
+    status: response.complete
+    outcome: complete
+  - stage: Final Bill Query Raise
+    code: '47'
+    status: request.initiated
+    outcome: NR
+  - stage: Final Bill Query Ack Success
+    code: '47'
+    status: response.partial
+    outcome: This should be handled as protocal error
+  - stage: Final Bill Query Ack Failed
+    code: '47'
+    status: response.error
+    outcome: This should be handled as protocal error
+  - stage: Claim Request Queried
+    code: '27'
+    status: request.initiated
+    outcome: NR
+  - stage: Claim Request Queried
+    code: '27'
+    status: response.partial/complete
+    outcome: This should be handled as protocal error
+  - stage: Final Bill Deny
+    code: '491'
+    status: response.complete
+    outcome: complete
+  - stage: Claim Doc Deny
+    code: '291'
+    status: response.complete
+    outcome: complete
+  - stage: Payment Notice Initmation
+    code: '30'
+    status: request.initiated
+  - stage: Payment Notice Ack Success
+    code: '30'
+    status: response.partial
+    outcome: This should be handled as protocal error
+  - stage: Payment Notice Ack Failed
+    code: '30'
+    status: response.error
+    outcome: This should be handled as protocal error
+  - stage: Reimburstment Claim Reprocess Requested
+    code: R122
+    status: request.initiated
+  - stage: Reimburstment Claim Submitted
+    code: R15
+    status: request.initiated
+  - stage: Reimburstment Claim Query Response Submitted
+    code: R151
+    status: response.complete
+  - stage: Reimburstment Claim Reprocess Request Approved
+    code: R252
+    status: response.complete
+  - stage: Reimburstment Claim Reprocess Request Rejected
+    code: R253
+    status: response.complete
+  - stage: Reimburstment Claim Reprocess Request Queried
+    code: R254
+    status: request.initiated
+  - stage: Reimburstment Claim Approved
+    code: R26
+    status: response.complete
+  - stage: Reimburstment Claim Queried
+    code: R27
+    status: request.initiated
+  - stage: Reimburstment Claim evaluation in process
+    code: R28
+    status: response.partial
+  - stage: Reimburstment Claim Rejected
+    code: R291
+    status: response.complete
+  - stage: Wallet Upgrade Intimation
+    code: '34'
+    status: request.initiated
+  - stage: Claim Arbitration Intimation
+    code: '36'
+    status: request.initiated
+  - stage: Fraud Alert
+    code: '38'
+    status: request.initiated
+  - stage: Wallet Upgrade Acknowledgement
+    code: '35'
+    status: response.complete
+  - stage: Claim Arbitration Acknowledgement
+    code: '37'
+    status: response.complete
+  - stage: Fraud Alert Acknowledgement
+    code: '39'
+    status: response.complete
+  - stage: Grievance Intimation
+    code: G11
+    status: request.initiated
+  - stage: Grievance Acknowledment
+    code: G12
+    status: response.complete
+  - stage: Grievance Intimation Failure
+    code: G13
+    status: response.error
+  - stage: Preauth Arbitration Intimation
+    code: '41'
+    status: request.initiated
+  - stage: Preauth Arbitration Acknowledgement
+    code: '42'
+    status: response.complete
+  - stage: Return Payment Intimation
+    code: RP1
+    status: request.initiated
+  - stage: Return Payment Acknowledgement
+    code: RP2
+    status: response.complete
+  - stage: Return Payment Failure
+    code: RP3
+    status: response.error
+  - stage: Notifications Intended to Payer
+    code: N01
+    status: request.initiated
+  - stage: Notifications Intended to Provider
+    code: N02
+    status: request.initiated
+  - stage: Notifications Intended to Beneficiary
+    code: N03
+    status: request.initiated
+  - stage: Acknowledgement of the Notificaion
+    code: N04
+    status: response.complete
+  - stage: Discharge Correction Intimation
+    code: DC01
+    status: request.initiated
+  - stage: Acknowledgement for Discharge Correction
+    code: DC02
+    status: response.complete
+  - stage: Preauthorization Cancellation
+    code: PC01
+    status: request.initiated
+  - stage: Preauthorization Cancellation Accomplished
+    code: PC02
+    status: response.complete
+# Where the PMJAY handbook and the status sheet disagree. Prefer the sheet.
+disagreements:
+  - code: '17'
+    handbook: PAYMENT_RECEIVED, provider-side - "Payment received acknowledgment"
+    sheet: '"Payment Notice Recived", response.complete'
+  - code: '24'
+    handbook: Payer-side response code, PREAUTH_REQUEST_QUERIED
+    sheet: '"PreAuth Request Queried", header request.initiated'
+  - code: '27'
+    handbook: Payer-side response code, CLAIM_REQUEST_QUERIED
+    sheet: '"Claim Request Queried", header request.initiated'
+  - code: '30'
+    handbook: Payer-side, PAYMENT_INITIATED
+    sheet: '"Payment Notice Initmation", request.initiated'
+  - code: 31 / 33
+    handbook: Payer-side response codes
+    sheet: header request.initiated
+  - code: '251'
+    handbook: REPROCESS_REQUEST_RECEIVED
+    sheet: '"PreAuth Reprocess Ack"'
+  - code: '36'
+    handbook: CLAIM_ARBITRATION_REQUEST_SUBMITTED, use case "Reprocess/Erroneous request"
+    sheet: '"Claim Arbitration Intimation"'

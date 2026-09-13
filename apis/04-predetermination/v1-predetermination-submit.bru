@@ -1,0 +1,92 @@
+meta {
+  name: Predetermination request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{nhcxBase}}/v1/predetermination/submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  x-hcx-sender_code: {{participantCode}}
+  x-hcx-recipient_code: {{recipientCode}}
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+}
+
+body:json {
+  {
+    "payload": "<compact JWE>"
+  }
+}
+
+docs {
+  # Predetermination request
+
+  `POST /v1/predetermination/submit`
+
+  ## Summary
+
+  Provider asks the payer what it would approve for a proposed treatment before committing to a pre-authorisation. The bundle has the pre-authorisation's shape with `Claim.use` `predetermination`. This is use case B9.
+
+  ## Business purpose
+
+  A hospital planning a treatment can learn the benefit a payer would approve for it before the patient is admitted, and plan the admission and the patient's share of the cost around the answer. The payer gives an estimate only. Nothing is reserved, and the treatment still needs a pre-authorisation when it happens.
+
+  ## When to use
+
+  Before a planned admission, with a payer that has confirmed it supports predetermination. The exchange is specified but seldom used, so confirm support with the payer before building it. Send `x-hcx-status` `request.initiated` with a new correlation ID. The payer's answer, use case C11, arrives on `/v1/predetermination/on_submit`.
+
+  ## Preconditions
+
+  - The payer has confirmed that it answers predetermination requests.
+  - The bundle carries `Claim`, `Patient`, the provider and payer `Organization`, `Coverage`, `Practitioner` and `Procedure`, shaped as in the pre-authorisation chapters.
+  - `Claim.use` is `predetermination`, and `Claim.identifier[0].value` carries your predetermination reference.
+  - A valid session token, the recipient's certificate, and the bundle sealed as a JWE in `payload`, with the protected headers mirrored onto the wire.
+  - A fresh `x-hcx-api_call_id` and a new `x-hcx-correlation_id` for the cycle.
+
+  ## Postconditions
+
+  NHCX returns HTTP 202 with the acknowledgement and forwards the request asynchronously. The payer answers on `/v1/predetermination/on_submit` with a `ClaimResponse` whose `use` is `predetermination`, carrying the estimated approved benefit in `ClaimResponse.total` under category `benefit`. Nothing is reserved against the policy.
+
+  ## Common mistakes
+
+  - Building the exchange before the payer has confirmed it supports it.
+  - Leaving `Claim.use` as `preauthorization` when reusing the pre-authorisation builder.
+  - Treating the estimate as an approval and skipping the pre-authorisation at admission.
+  - Reusing a correlation ID from an earlier cycle, which NHCX refuses as a duplicate (`NHCX-1006`).
+
+  ## Best practices
+
+  - Reuse the pre-authorisation bundle builder and change only `Claim.use` and the reference.
+  - Store the answer against the planned case, labelled as an estimate.
+  - Key the request on its correlation ID, and host `/v1/error` so an undelivered request does not look like one still under review.
+
+  ## Related scenario
+
+  A hospital planning an elective admission asks the payer what it would approve for procedure `MG004A`. It builds the pre-authorisation bundle with `Claim.use` `predetermination` and reference `PD0000000001`, posts it here with a new correlation ID, and gets 202 back. The payer's `ClaimResponse` arrives later on `/v1/predetermination/on_submit` with an estimated benefit of 15500.00. The desk records it as an estimate, and raises a pre-authorisation when the patient is admitted.
+
+  ## Specification
+
+  Chapter 05.18 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "{{$guid}}",
+    "correlation_id": "{{correlationId}}",
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

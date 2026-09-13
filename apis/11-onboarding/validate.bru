@@ -1,0 +1,77 @@
+meta {
+  name: Validate participant creation
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{registryBase}}/validate
+  body: none
+  auth: inherit
+}
+
+params:query {
+  transactionId: {{transactionId}}
+  passcode: {{passcode}}
+}
+
+docs {
+  # Validate participant creation
+
+  `GET /validate`
+
+  ## Summary
+
+  Confirms a participant creation by presenting the SMS passcode and the transactionId returned by /v2/participant/create.
+
+  ## Business purpose
+
+  Registering an organisation on a national claims exchange must be authorised by someone who actually controls that organisation's registered contact channel. The create call therefore only stages the record and sends a passcode to the mobile number held in HFR or the NHCX payer details; this validation call closes the loop by proving possession of that passcode. It is step 2 of the four-step production onboarding sequence and is what turns a staged participant into a confirmed one.
+
+  ## When to use
+
+  Call it after /v2/participant/create has returned a transactionid and the passcode has arrived by SMS, and before attempting /v2/participant/update, whose validations require that creation confirmation is already completed. The production URL is https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/validate?transactionId=""&passcode="". The pair is valid for 24 hours. It is one of only three GET operations in the participant service and carries no workflow or x-hcx-status codes.
+
+  ## Preconditions
+
+  - A completed /v2/participant/create whose response supplied the transactionid.
+  - The passcode delivered to the registered mobile number for that specific transaction; passcodes are bound to a transaction id and cannot be reused across attempts.
+  - Both values presented as query parameters passcode and transactionId within 24 hours of the create call.
+  - A Bearer token in bearer_auth with the Bearer prefix and Accept: application/json, as for every registry call.
+
+  ## Postconditions
+
+  HTTP 200 with a bare string body; the OpenAPI declares the 200 response type as string and the operation (particiapntValidate) as validating approval from the participant for participant creation. The participant is now confirmed in the registry and satisfies the precondition for /v2/participant/update, which uploads the encryption certificate and callback endpoint. There is no asynchronous callback. A wrong or expired passcode, or an unknown transaction id, returns the registry ErrorResponse envelope on 400 or 404.
+
+  ## Common mistakes
+
+  - Waiting more than 24 hours; both the transaction id and the passcode expire and the create call must be repeated.
+  - Re-triggering /v2/participant/create while a passcode is pending, which issues a new transaction id and passcode and orphans the earlier pair.
+  - Using a passcode from a different transaction id; passcodes are specific to the transaction that generated them.
+  - Calling /update/validate by mistake; that endpoint confirms updates, not creation.
+  - Losing the transaction id: the documented recovery is to create the request again.
+
+  ## Best practices
+
+  - Treat the passcode like a one-time credential: never log it, and hand it from the phone holder to the integrator through a controlled channel.
+  - Store transactionid with a 24-hour expiry so the operator dashboard can show whether confirmation is still possible.
+  - Send parameters as query string values on a GET; there is no JSON body.
+  - After success, proceed straight to /v2/participant/update so the certificate and endpoint are in place before any counterparty tries to fetch them.
+
+  ## Related scenario
+
+  A hospital's production onboarding started with /v2/participant/create, which returned transactionid 1vouv8tlz2tnl-1fpspjhwj07c6 and triggered a passcode to the medical superintendent's registered phone. The superintendent reads the passcode to the integration engineer, who calls GET /validate?transactionId=1vouv8tlz2tnl-1fpspjhwj07c6&passcode=482913 with the Bearer token. The registry returns 200 and the participant is confirmed. The engineer then calls /v2/participant/update with the Base64 certificate and callback URL, and completes that change with /update/validate.
+
+  ## Specification
+
+  Chapter 02.04 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "_contentType": "string",
+    "_body": "<confirmation string as declared by the OpenAPI 200 response>"
+  }
+  ```
+}

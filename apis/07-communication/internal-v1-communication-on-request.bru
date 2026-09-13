@@ -1,0 +1,103 @@
+meta {
+  name: Communication acknowledgement callback (internal variant) (adapter)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{nhcxBase}}/internal/v1/communication/on_request
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 15
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: response.complete
+  x-hcx-ben-abha-id: 91711234567890
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOiIxMDAwMDA0NDQ2QGhjeCJ9.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Communication acknowledgement callback (internal variant)
+
+  `POST /internal/v1/communication/on_request`
+
+  ## Summary
+
+  Internal twin of /v1/communication/on_request: the provider acknowledgement Task bundle, operationId communicationOnRequestPostInternal.
+
+  ## Business purpose
+
+  This is the internal-path form of the provider acknowledgement that closes a payer communication. The OpenAPI document lists it with the same description and bare object request body as the public callback and distinguishes it only by the operationId suffix. Its business role is unchanged: give the payer auditable confirmation that a TAT alert, grievance, wallet or policy update or additional-information request reached the hospital, so adjudication and SLA tracking can proceed inside NHCX rather than over phone or email.
+
+  ## When to use
+
+  Use it in the same circumstances as the public on_request callback: after receiving, acknowledging with a synchronous 202, and persisting a communication request, the provider posts a mirror-image Task bundle with the same reasonCode, Task.code poll, Task.intent proposal, Task.status completed and the same x-hcx-correlation_id. The responder status is response.complete, response.partial or response.error. The specs do not say when the internal path is used instead of the public one; follow your onboarding instructions.
+
+  ## Preconditions
+
+  - The inbound communication was decrypted and its correlation id, status and workflow id captured.
+  - A valid Bearer token and the payer's certificate for encrypting the acknowledgement.
+  - The acknowledgement bundle mirrors the request, provider Organization first, timestamps updated.
+  - Protected header echoes the request's x-hcx-correlation_id, carries a fresh x-hcx-api_call_id, an IST timestamp and a responder status; x-hcx-workflow_id is validated at the gateway.
+  - Confirm the internal prefix is the route you were onboarded to before using it.
+
+  ## Postconditions
+
+  Same as the public callback: HTTP 202 with the StatusSuccessResponse envelope, or 400, 404 or 500 in the same shape; the bundle is forwarded to the payer, who links it to the original notification by correlation id and by the shared claim or preauth reference. The underlying issue remains open until resolved through the preauth or claim path. No additional behaviour is documented for the internal variant.
+
+  ## Common mistakes
+
+  - Expecting the internal path to relax any rule; it carries the same validation and the same errors (NHCX-1010 for an unknown correlation id, NHCX-1011 for a bad status value).
+  - Minting a new correlation id on the acknowledgement.
+  - Sending this call in place of the synchronous 202, which triggers the five-attempt retry loop and deletion of the request.
+  - Closing the case because Communication.status is completed.
+  - Using an unconfigurable path prefix that cannot switch between public and internal forms.
+
+  ## Best practices
+
+  - Share one acknowledgement builder with the public callback; only the path differs.
+  - Return 202 within 30 seconds first, then post the acknowledgement asynchronously.
+  - Be idempotent on correlation id; expect redeliveries.
+  - Route on Task.reasonCode and log reason, category, priority and correlation id.
+  - Keep IST timestamps and a fresh api_call_id on every call.
+
+  ## Related scenario
+
+  A hospital integrator generating client code from the communicationhcxservice Swagger finds two acknowledgement operations, communicationOnRequestPost and communicationOnRequestPostInternal, with identical descriptions. The team implements one handler for inbound communications, answers 202 immediately, and posts the acknowledgement Task to the public /v1/communication/on_request path as the handbook documents, leaving the internal form selectable by configuration. When a walletupdate arrives for a patient mid-admission, the same handler refreshes the benefit cache before the enhancement request goes out on /v1/preauth/submit.
+
+  ## Specification
+
+  Chapter 05.17 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "25/08/2026 12:15:00:377",
+    "api_call_id": "d4e5f6a7-b8c9-0123-def0-234567890123",
+    "correlation_id": "22334455-6677-8899-aabb-ccddeeff0011",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "task",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

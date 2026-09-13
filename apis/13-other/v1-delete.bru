@@ -1,0 +1,78 @@
+meta {
+  name: Delete records (troubleshooting)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{nhcxBase}}/v1/delete
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "correlationid": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+    "action": "/v1/claim/submit"
+  }
+}
+
+docs {
+  # Delete records (troubleshooting)
+
+  `POST /v1/delete`
+
+  ## Summary
+
+  Internal troubleshooting operation on the claim service that deletes records by correlationid and action; not part of the business transaction flows.
+
+  ## Business purpose
+
+  The claim service OpenAPI lists /v1/delete as an internal troubleshooting operation for deleting records identified by a correlationid and an action. It exists to clear stuck or erroneous records during integration testing and support, not to move a claim through its lifecycle. The published documentation gives no further business context and does not state which participant roles may call it.
+
+  ## When to use
+
+  Only in troubleshooting, and only as directed by NHCX support. The endpoint index describes it as internal troubleshooting, deleting records by correlationid plus action. It does not appear in any transaction flow, sample bundle or workflow-code table, and it carries no x-hcx-workflow_id semantics. It is unrelated to the platform behaviour in which NHCX itself deletes a request after five failed delivery attempts; that deletion is automatic and needs no call.
+
+  ## Preconditions
+
+  - A valid Bearer token and the HTTP headers Accept: application/json, Content-Type: application/json and bearer_auth.
+  - The correlation ID of the record to be removed and the action it was recorded under; the docs name these two inputs (correlationid and action) but do not publish a schema, sample body or authorisation rule.
+  - Agreement from NHCX support that deletion is the right remedy; the documentation does not describe any business validation performed by the endpoint.
+
+  ## Postconditions
+
+  The endpoint sits in the claim service, whose domain operations all return 202 Accepted, 400 Request Validation failed, 404 Requested resource was not found and 500 Downstream systems down, each carrying StatusSuccessResponse. No worked response body, callback or state change is documented for /v1/delete beyond the removal of the record identified by correlationid and action. After deletion a fresh request cycle with a new correlation UUID is the documented way to proceed, since a deleted or inactive correlation ID cannot be resumed.
+
+  ## Common mistakes
+
+  - Treating /v1/delete as a way to cancel a preauth or claim; cancellation is a Task on /v1/task/submit (code cancel, workflow PC01 or 122) and reprocess is workflow 36 on the same endpoint.
+  - Calling it to recover from a failed delivery and then reusing the same correlation ID; NHCX marks failed correlation IDs inactive and a new cycle is required.
+  - Assuming the input names or authorisation are documented; only correlationid and action are named, and the specs do not say who may call it.
+  - Using it in production without NHCX support involvement; it is described as internal troubleshooting.
+
+  ## Best practices
+
+  - Reserve this call for sandbox troubleshooting and only on NHCX support's instruction.
+  - Record the correlation ID, action and reason for every deletion in your own audit log, since the docs describe no NHCX-side confirmation beyond the HTTP status.
+  - Prefer /v1/status to inspect a stuck correlation ID before deleting anything.
+  - Mint a new correlation UUID for any re-submission after a deletion.
+
+  ## Related scenario
+
+  During sandbox testing a hospital's integrator submits a claim whose callback keeps failing because their endpoint returned 200 instead of 202. NHCX support asks them to fix the acknowledgement and then clears the stuck record by correlation ID and action using /v1/delete so the test case can be rerun cleanly. The integrator resubmits the claim to /v1/claim/submit under a new correlation UUID, receives a 202, and this time the on_submit callback is acknowledged correctly.
+
+  ## Specification
+
+  No chapter of the current documentation covers this operation. It appears only in the claim service's OpenAPI.
+
+  ## Example response
+
+  ```json response
+  {
+    "httpStatus": 202,
+    "schema": "StatusSuccessResponse",
+    "note": "The claim service spec lists 202, 400, 404 and 500, all carrying StatusSuccessResponse; no worked response body is published for /v1/delete."
+  }
+  ```
+}

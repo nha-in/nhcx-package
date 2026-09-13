@@ -1,0 +1,91 @@
+meta {
+  name: Predetermination callback
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{nhcxBase}}/v1/predetermination/on_submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  x-hcx-sender_code: {{participantCode}}
+  x-hcx-recipient_code: {{recipientCode}}
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: response.complete
+}
+
+body:json {
+  {
+    "payload": "<compact JWE>"
+  }
+}
+
+docs {
+  # Predetermination callback
+
+  `POST /v1/predetermination/on_submit`
+
+  ## Summary
+
+  Payer returns its estimate for a predetermination request to the provider: a `ClaimResponse` with `use` `predetermination` and the benefit it would approve. This is use case C11.
+
+  ## Business purpose
+
+  The callback carries the payer's view of what it would pay for a proposed treatment, so the hospital can plan the admission and counsel the patient before any money is committed. For the payer it is the record of the estimate it gave.
+
+  ## When to use
+
+  Called by the payer after it has assessed a request received on `/v1/predetermination/submit`, echoing that request's correlation ID with `x-hcx-status` `response.complete`. Only payers that have agreed to support predetermination send it.
+
+  ## Preconditions
+
+  - A predetermination request with this correlation ID exists in NHCX. A callback for an unknown one is refused with `NHCX-1010`.
+  - The bundle carries `ClaimResponse`, `Patient`, the payer and provider `Organization` and `Coverage`.
+  - `ClaimResponse.use` is `predetermination`, and the estimated approved benefit is in `ClaimResponse.total` under category `benefit`.
+  - The payer holds a valid session token and the provider's certificate, and seals the bundle for the provider.
+  - `x-hcx-correlation_id` echoes the request, `x-hcx-api_call_id` is new, and the sender and recipient codes are swapped.
+
+  ## Postconditions
+
+  NHCX returns HTTP 202 with the acknowledgement and delivers the callback to the provider, which must answer 202 with a receipt within 30 seconds. A delivery that is not acknowledged is retried five times, after which the exchange retires the correlation ID and reports the failure on `/v1/error`. The estimate reserves nothing against the policy.
+
+  ## Common mistakes
+
+  - Minting a new correlation ID instead of echoing the request's.
+  - Reading the estimate as an approval on the provider side.
+  - The provider answering with anything other than 202 and the receipt, which triggers retries.
+
+  ## Best practices
+
+  - Provider: acknowledge first, then decrypt, then store the estimate against the planned case.
+  - Provider: make the handler idempotent, since a missed receipt means the same message arrives again with the same `x-hcx-api_call_id`.
+  - Payer: explain the estimate in `ClaimResponse.disposition`, as the reference sample does.
+
+  ## Related scenario
+
+  A payer receives a predetermination request for procedure `MG004A` under reference `PD0000000001`. Its adjudicator assesses the proposed treatment, and the payer posts a `ClaimResponse` with `use` `predetermination`, outcome `complete` and a benefit total of 15500.00 to this endpoint on the request's correlation ID. The hospital's callback answers 202 within 30 seconds and files the figure as an estimate for the planned admission.
+
+  ## Specification
+
+  Chapter 05.18 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "{{$guid}}",
+    "correlation_id": "{{correlationId}}",
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

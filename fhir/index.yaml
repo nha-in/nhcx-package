@@ -1,0 +1,1190 @@
+# Catalogue of every sample FHIR bundle in package/fhir/.
+#
+# One entry per use case directory, in NHA's order (letter, then number):
+#
+#   title          the use case, from usecases.yaml
+#   folder         the directory, from the package root
+#   bundle_count   how many bundles it holds
+#   files          one entry per bundle:
+#
+#     file           the file name inside the folder
+#     resource_type  always Bundle
+#     entries        how many entries the bundle carries
+#     label          a short name for the bundle, as a gallery would show it
+#     summary        what the bundle is and what to read in it
+#     direction      request: it opens an exchange (a submit, check, request or a
+#                    payer-initiated notice); response: it answers one (an on_* call)
+#     side           who puts it on the wire: provider or payer
+#     scheme         generic: any payer on the exchange; pmjay: sent to or by the
+#                    PMJAY State Health Agency
+#     workflow       the x-hcx-workflow_id it travels with, as a string, or null
+#                    where the exchange carries none or the bundle is not a capture
+#     focal          the resource the bundle is about
+#     leads_with     only where the first entry is not the focal resource: an
+#                    eligibility response echoes the request it answers first
+#     api            the NHCX endpoint that carries it
+#     builder        only for bundles a provider builds: the builder use case, as
+#                    <bundle>/<step> from builder_use_cases in usecases.yaml
+#     origin         wire: taken from a live sandbox exchange, identifiers of the
+#                    beneficiary replaced; example: written to the specification,
+#                    placeholders throughout
+#     note           only where there is something to know before reading it
+#
+# A gallery reads each side in two sets. A provider's bundles split by origin:
+# the examples, written to the specification in the generic shape any payer
+# takes, IRDAI-regulated insurers and TPAs included; and the captures from the
+# sandbox run against the PMJAY payer. A payer's split by scheme: the generic
+# payer's messages, and the PMJAY State Health Agency's own.
+#
+# Generated from the bundles and the metadata kept with them; validate the
+# bundles with system/validate-bundles.mjs after adding one.
+use_cases:
+  B1:
+    title: Check coverage eligibility
+    folder: package/fhir/B1
+    bundle_count: 5
+    files:
+      - file: B1-check.json
+        resource_type: Bundle
+        entries: 7
+        label: Auth-requirements check
+        summary: "The eligibility check that opens a case, with purpose auth-requirements: is this package covered for this member at this hospital, and what has to be attached."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/auth-requirements
+        origin: wire
+      - file: auth-requirements.json
+        resource_type: Bundle
+        entries: 7
+        label: Auth-requirements request
+        summary: "purpose ['auth-requirements']: is this package covered for this member at this hospital, and what has to be attached. The call worth making before every pre-authorisation."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/auth-requirements
+        origin: example
+      - file: benefits.json
+        resource_type: Bundle
+        entries: 7
+        label: Benefits request
+        summary: "purpose ['benefits']: how much cover remains, against which categories."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/benefits
+        origin: example
+      - file: discovery.json
+        resource_type: Bundle
+        entries: 7
+        label: Discovery request
+        summary: "purpose ['discovery']: which policy does this beneficiary hold? The fallback when policy lookup has not already answered it."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/discovery
+        origin: example
+      - file: validation.json
+        resource_type: Bundle
+        entries: 7
+        label: Validation request
+        summary: "purpose ['validation']: is the policy in force today, and what is left in the wallet."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/validation
+        origin: example
+  B2:
+    title: Request insurance plan
+    folder: package/fhir/B2
+    bundle_count: 2
+    files:
+      - file: B2-request.json
+        resource_type: Bundle
+        entries: 1
+        label: Plan request
+        summary: "The package master asked for: a poll Task with the policy number and the provider id as inputs."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/insuranceplan/request
+        builder: insurance/request
+        origin: wire
+      - file: insurance-plan-request.json
+        resource_type: Bundle
+        entries: 1
+        label: Plan request
+        summary: A poll Task with the policy number and the provider id as inputs. At least one of the two is required; both narrow the answer.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/insuranceplan/request
+        builder: insurance/request
+        origin: example
+  B3:
+    title: Submit pre-authorisation
+    folder: package/fhir/B3
+    bundle_count: 6
+    files:
+      - file: B3-enhancement.json
+        resource_type: Bundle
+        entries: 9
+        label: Pre-auth enhancement
+        summary: "More cover asked against an approval: the same case with a second package added, two items and a total that is the sum of the nets."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: "13"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/enhance
+        origin: wire
+      - file: B3-request.json
+        resource_type: Bundle
+        entries: 8
+        label: Pre-auth request
+        summary: A new pre-authorisation (Claim.use preauthorization) for one package, with the investigations, the onset and the stay facts as supportingInfo.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: "12"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/initiate
+        origin: wire
+      - file: preauth-cancel.json
+        resource_type: Bundle
+        entries: 3
+        label: Pre-auth cancellation
+        summary: A cancel Task with the claim number and the intimation number as inputs. Only a submitted or approved case can be cancelled.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/task/submit
+        builder: preauth/cancel
+        origin: example
+      - file: preauth-enhancement.json
+        resource_type: Bundle
+        entries: 8
+        label: Pre-auth enhancement
+        summary: A second package added to an approved pre-authorisation. Two items, and a total that is the sum of the nets.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/enhance
+        origin: example
+      - file: preauth-queryupdate.json
+        resource_type: Bundle
+        entries: 7
+        label: Pre-auth query reply
+        summary: "The pre-authorisation resubmitted with the reply to a query as an NMI supportingInfo entry. Same case number: a new one starts a new case."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/query-answer
+        origin: example
+      - file: preauth-request.json
+        resource_type: Bundle
+        entries: 7
+        label: Pre-auth request
+        summary: "use 'preauthorization': permission to treat. Diagnosis, procedure, care team, the supporting documents and the stay dates as supportingInfo."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/initiate
+        origin: example
+  B4:
+    title: Respond to a communication
+    folder: package/fhir/B4
+    bundle_count: 5
+    files:
+      - file: B4-claim-query-answer.json
+        resource_type: Bundle
+        entries: 9
+        label: Claim query answer
+        summary: "The answer to a payer's query on a claim: a deliver Task carrying a Communication with the reply text and the documents as attachments."
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: "27"
+        focal: Task
+        api: /v1/communication/on_request
+        origin: wire
+      - file: B4-preauth-query-answer.json
+        resource_type: Bundle
+        entries: 9
+        label: Pre-auth query answer
+        summary: "The answer to a payer's query on a pre-authorisation: a deliver Task carrying a Communication with the reply text and the documents as attachments."
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: "24"
+        focal: Task
+        api: /v1/communication/on_request
+        origin: wire
+      - file: communication-acknowledgement.json
+        resource_type: Bundle
+        entries: 3
+        label: Communication acknowledgement
+        summary: "The receipt: a completed status Task whose output is the acknowledgement. Acknowledging does not resolve whatever the message was about."
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/communication/on_request
+        origin: example
+      - file: communication-request.json
+        resource_type: Bundle
+        entries: 8
+        label: Communication request
+        summary: "The payer side of B4: a poll Task carrying a CommunicationRequest about a pre-authorisation. B4 is the answer to a message of this shape."
+        direction: request
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/communication/request
+        origin: example
+      - file: communication-response.json
+        resource_type: Bundle
+        entries: 9
+        label: Communication reply
+        summary: A deliver Task carrying a Communication that answers the CommunicationRequest it repeats, with the reply text and an attachment.
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/communication/on_request
+        origin: example
+  B5:
+    title: Submit claim
+    folder: package/fhir/B5
+    bundle_count: 5
+    files:
+      - file: B5-request.json
+        resource_type: Bundle
+        entries: 7
+        label: Claim request
+        summary: "The final bill after discharge: Claim.use claim, the approval quoted as insurance.preAuthRef, and the discharge facts as supportingInfo."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: "15"
+        focal: Claim
+        api: /v1/claim/submit
+        builder: claim/submit
+        origin: wire
+      - file: claim-queryupdate.json
+        resource_type: Bundle
+        entries: 7
+        label: Claim query reply
+        summary: The claim resubmitted with the reply to a query as an NMI supportingInfo entry.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/claim/submit
+        builder: claim/query-answer
+        origin: example
+      - file: claim-release.json
+        resource_type: Bundle
+        entries: 3
+        label: Release request
+        summary: "Asking for a balance amount to be released after a partial payment: a release Task with the claim number and the amount as inputs."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/task/submit
+        builder: claim/shortfall
+        origin: example
+      - file: claim-reprocess.json
+        resource_type: Bundle
+        entries: 3
+        label: Reprocess request
+        summary: "Disputing an adjudication: a reprocess Task naming the claim and intimation numbers, with the fresh evidence as document inputs."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/task/submit
+        builder: claim/reprocess
+        origin: example
+      - file: claim-request.json
+        resource_type: Bundle
+        entries: 7
+        label: Claim request
+        summary: "use 'claim': the pre-authorisation with the use changed, final amounts, the complete document set, and the approval reference in insurance.preAuthRef."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/claim/submit
+        builder: claim/submit
+        origin: example
+  B6:
+    title: Search claims
+    folder: package/fhir/B6
+    bundle_count: 1
+    files:
+      - file: claim-search.json
+        resource_type: Bundle
+        entries: 3
+        label: Claim search
+        summary: A search Task asking the payer for the claims matching a claim number.
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/search/submit
+        builder: search/search
+        origin: example
+  B7:
+    title: Acknowledge payment notice
+    folder: package/fhir/B7
+    bundle_count: 2
+    files:
+      - file: B7-acknowledgement.json
+        resource_type: Bundle
+        entries: 3
+        label: Payment acknowledgement
+        summary: "The payment notice acknowledged: a completed status Task. The workflow id echoes the notice's."
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: "30"
+        focal: Task
+        api: /v1/paymentnotice/on_request
+        builder: paymentnotice/acknowledge
+        origin: wire
+      - file: payment-notice-ack.json
+        resource_type: Bundle
+        entries: 3
+        label: Payment acknowledgement
+        summary: "The provider closing the loop: a completed Task whose output is the acknowledgement status and the claim number."
+        direction: response
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/paymentnotice/on_request
+        builder: paymentnotice/acknowledge
+        origin: example
+  B8:
+    title: Reprocess or cancel
+    folder: package/fhir/B8
+    bundle_count: 2
+    files:
+      - file: B8-cancel.json
+        resource_type: Bundle
+        entries: 3
+        label: Pre-auth cancellation
+        summary: "A live pre-authorisation withdrawn: a cancel Task with the claim and intimation numbers."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: PC01
+        focal: Task
+        api: /v1/task/submit
+        builder: preauth/cancel
+        origin: wire
+      - file: B8-reprocess.json
+        resource_type: Bundle
+        entries: 3
+        label: Reprocess request
+        summary: "A decided claim sent back for another look: a reprocess Task with the claim and intimation numbers."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: "36"
+        focal: Task
+        api: /v1/task/submit
+        builder: claim/reprocess
+        origin: wire
+  B9:
+    title: Submit predetermination
+    folder: package/fhir/B9
+    bundle_count: 1
+    files:
+      - file: predetermination-request.json
+        resource_type: Bundle
+        entries: 7
+        label: Predetermination request
+        summary: "Claim.use predetermination: what the treatment would cost and what the policy would cover, asked before anything is decided."
+        direction: request
+        side: provider
+        scheme: generic
+        workflow: null
+        focal: Claim
+        api: /v1/predetermination/submit
+        builder: preauth/predetermination
+        origin: example
+  C3:
+    title: Respond to coverage eligibility
+    folder: package/fhir/C3
+    bundle_count: 7
+    files:
+      - file: C3-benefits-pmjay.json
+        resource_type: Bundle
+        entries: 11
+        label: Benefits response
+        summary: "purpose benefits for a named package. Read insurance[].item[].excluded and the benefit amounts together: this run asked about a package the policy does not cover, and the payer says so here rather than at pre-authorisation."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: null
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: wire
+        note: Captured from the SHA HP sandbox payer in February 2026. The beneficiary, the practitioner and the operators were replaced with placeholders; nothing else the payer wrote was changed.
+      - file: C3-response-generic.json
+        resource_type: Bundle
+        entries: 5
+        label: Auth-requirements response
+        summary: "The cover confirmed: inforce true and authorizationRequired on the item. The response resource leads; the request it answers follows it."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityResponse
+        api: /v1/coverageeligibility/on_check
+        origin: wire
+      - file: C3-response-pmjay.json
+        resource_type: Bundle
+        entries: 12
+        label: Auth-requirements response
+        summary: "What the pre-authorisation must carry for two packages: authorizationRequired and the authorizationSupporting codes. The request is echoed first, so the response resource is not the first entry."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "5"
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: wire
+      - file: benefits-response.json
+        resource_type: Bundle
+        entries: 9
+        label: Benefits response
+        summary: Balances as insurance[].item[].benefit allowedMoney and usedMoney pairs, the request echoed first.
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: example
+      - file: coverage-eligibility.json
+        resource_type: Bundle
+        entries: 12
+        label: Validation response
+        summary: "The wallet, as PMJAY returns it after validation: inforce true and one benefit entry with allowedMoney and usedMoney. The request is echoed first."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: null
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: wire
+      - file: discovery-response.json
+        resource_type: Bundle
+        entries: 9
+        label: Discovery response
+        summary: The policy identifier and its period. The payer echoes the request bundle it answered before its own response resource.
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: example
+      - file: validation-response.json
+        resource_type: Bundle
+        entries: 9
+        label: Validation response
+        summary: inforce true and the benefit period. The one field to read is insurance[].inforce; outcome only says the payer finished looking.
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: CoverageEligibilityResponse
+        leads_with: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/on_check
+        origin: example
+  C4:
+    title: Respond to insurance plan request
+    folder: package/fhir/C4
+    bundle_count: 2
+    files:
+      - file: C4-response-generic.json
+        resource_type: Bundle
+        entries: 7
+        label: Plan response
+        summary: The package master as an InsurancePlan, with the questionnaires a claim names beside it.
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: InsurancePlan
+        api: /v1/insuranceplan/on_request
+        origin: wire
+      - file: C4-response-pmjay.json
+        resource_type: Bundle
+        entries: 7
+        label: Plan response
+        summary: "The scheme's package master for one hospital: the Claim-Condition flags on every package, the cost list by speciality, and the questionnaires a claim names by URL."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "5"
+        focal: InsurancePlan
+        api: /v1/insuranceplan/on_request
+        origin: wire
+        note: Abridged to a handful of packages per category, and says so in its identifier. It keeps five of the questionnaires the plan names; the documentationUrl links to the ones it no longer carries were removed, so every reference resolves. The whole answer validated; this copy was not run again.
+  C5:
+    title: Respond to pre-authorisation
+    folder: package/fhir/C5
+    bundle_count: 10
+    files:
+      - file: C5-approved-wf21-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth approved
+        summary: "Approved by the scheme: outcome complete, each item adjudicated with an eligible amount, and the pre-authorisation number to quote on the claim."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "21"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-approved-wf21.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth approved
+        summary: "Approved: outcome complete and the pre-authorisation reference to quote on the claim as insurance.preAuthRef."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "21"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-enhancement-approved-wf22-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Enhancement approved
+        summary: "The answer to an enhancement (workflow 13): one more item adjudicated against the same pre-authorisation, and the approved total revised upwards."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "22"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+        note: Captured from the SHA HP sandbox payer in February 2026. The beneficiary, the practitioner and the operators were replaced with placeholders; nothing else the payer wrote was changed.
+      - file: C5-enhancement-approved-wf22.json
+        resource_type: Bundle
+        entries: 5
+        label: Enhancement approved
+        summary: "The enhancement approved: both packages adjudicated and the approved total revised upwards."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "22"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-queried-wf24.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth queried
+        summary: "Queried: outcome partial, with the query on the item adjudication as status Queried. This is how a PMJAY query arrives, not on the communication API."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "24"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-received-wf20-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth received
+        summary: "The acknowledgement: outcome queued, sent as response.partial, carrying the SHA's case number."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "20"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-received-wf20.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth received
+        summary: "The acknowledgement: outcome queued, sent as response.partial. The decision follows on the same correlation id."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "20"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-rejected-wf23-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth rejected
+        summary: "Rejected by the scheme: outcome error, with the reason in the disposition."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "23"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: C5-rejected-wf23.json
+        resource_type: Bundle
+        entries: 5
+        label: Pre-auth rejected
+        summary: "Rejected, with the reason in the disposition. Read outcome and the amounts together: only the adjudication tells approval and denial apart."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "23"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: wire
+      - file: preauth-queried.json
+        resource_type: Bundle
+        entries: 8
+        label: Pre-auth queried
+        summary: "outcome partial and no benefit amount: the payer has not finished, the case stays open, and the disposition says what is missing."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "24"
+        focal: ClaimResponse
+        api: /v1/preauth/on_submit
+        origin: example
+  C6:
+    title: Raise a communication
+    folder: package/fhir/C6
+    bundle_count: 3
+    files:
+      - file: C6-claim-query-wf27.json
+        resource_type: Bundle
+        entries: 8
+        label: Claim query
+        summary: A query on the claim, as a poll Task carrying a CommunicationRequest with reason additionalinfo. Answered by B4.
+        direction: request
+        side: payer
+        scheme: generic
+        workflow: "27"
+        focal: Task
+        api: /v1/communication/request
+        origin: wire
+      - file: C6-notification-wfN02.json
+        resource_type: Bundle
+        entries: 4
+        label: Notification to provider
+        summary: "A notification to the provider: a poll Task with a CommunicationRequest, sent by the SHA."
+        direction: request
+        side: payer
+        scheme: pmjay
+        workflow: N02
+        focal: Task
+        api: /v1/communication/request
+        origin: wire
+      - file: C6-preauth-query-wf24.json
+        resource_type: Bundle
+        entries: 8
+        label: Pre-auth query
+        summary: A query on the pre-authorisation, as a poll Task carrying a CommunicationRequest with reason additionalinfo. Answered by B4.
+        direction: request
+        side: payer
+        scheme: generic
+        workflow: "24"
+        focal: Task
+        api: /v1/communication/request
+        origin: wire
+  C7:
+    title: Respond to claim
+    folder: package/fhir/C7
+    bundle_count: 9
+    files:
+      - file: C7-approved-deduction-wf26-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim approved, with a deduction
+        summary: "The final adjudication: eligible 2,430 against 2,700 claimed, and the deductible adjudication carrying the reason code DEDUCT/01. The amount here is what the payment notice reconciles against."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "26"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+        note: Captured from the SHA HP sandbox payer in February 2026. The beneficiary, the practitioner and the operators were replaced with placeholders; nothing else the payer wrote was changed.
+      - file: C7-approved-wf26-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim approved
+        summary: "Approved: outcome complete, with the eligible amount on the item adjudication."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "26"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-approved-wf26.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim approved
+        summary: "Approved for settlement: outcome complete. Payment notices follow as separate messages."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "26"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-queried-wf27.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim queried
+        summary: "The claim processing doctor's query: outcome partial, item status Queried. Answer it on /v1/claim/submit with workflow 161."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "27"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-received-wf25-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim received
+        summary: "The acknowledgement: outcome queued, carrying the pre-authorisation reference the claim was raised against."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "25"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-received-wf25.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim received
+        summary: "The acknowledgement: outcome queued, sent as response.partial."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "25"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-rejected-wf291-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim rejected
+        summary: "Rejected after the committee: outcome error, with the reason in the disposition."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "291"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: C7-rejected-wf291.json
+        resource_type: Bundle
+        entries: 5
+        label: Claim rejected
+        summary: "Rejected, with the reason in the disposition: outcome error."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "291"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: wire
+      - file: claim-queried.json
+        resource_type: Bundle
+        entries: 8
+        label: Claim queried
+        summary: "outcome partial: the claim is still live. Keep watching the correlation id for further callbacks on the same case."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "27"
+        focal: ClaimResponse
+        api: /v1/claim/on_submit
+        origin: example
+  C8:
+    title: Respond to search
+    folder: package/fhir/C8
+    bundle_count: 1
+    files:
+      - file: search-response.json
+        resource_type: Bundle
+        entries: 4
+        label: Search response
+        summary: The search Task completed, with the matching ClaimResponse as its output.
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: Task
+        api: /v1/search/on_submit
+        origin: example
+  C9:
+    title: Send payment notice
+    folder: package/fhir/C9
+    bundle_count: 3
+    files:
+      - file: C9-notice-tds-wf30-pmjay.json
+        resource_type: Bundle
+        entries: 5
+        label: Payment notice, with TDS
+        summary: "The money for the claim approved with a deduction: the PaymentNotice with paymentStatus paid, and the PaymentReconciliation splitting 2,430 into 2,187 paid and 243 TDS."
+        direction: request
+        side: payer
+        scheme: pmjay
+        workflow: "30"
+        focal: Task
+        api: /v1/paymentnotice/request
+        origin: wire
+        note: Captured from the SHA HP sandbox payer in February 2026. The beneficiary, the practitioner and the operators were replaced with placeholders; nothing else the payer wrote was changed.
+      - file: C9-notice-wf30.json
+        resource_type: Bundle
+        entries: 5
+        label: Payment notice
+        summary: "The payment notice, on a new thread: a deliver Task with the PaymentNotice and the PaymentReconciliation that splits the amount into what was paid and the TDS withheld."
+        direction: request
+        side: payer
+        scheme: generic
+        workflow: "30"
+        focal: Task
+        api: /v1/paymentnotice/request
+        origin: wire
+      - file: payment-notice.json
+        resource_type: Bundle
+        entries: 5
+        label: Payment notice
+        summary: "A PMJAY payment notice: a deliver Task, the PaymentNotice with paymentStatus paid, and the PaymentReconciliation splitting the amount into the payment and an RF deduction."
+        direction: request
+        side: payer
+        scheme: pmjay
+        workflow: null
+        focal: Task
+        api: /v1/paymentnotice/request
+        origin: wire
+  C10:
+    title: Respond to a Task
+    folder: package/fhir/C10
+    bundle_count: 4
+    files:
+      - file: C10-arbitration-wf37-pmjay.json
+        resource_type: Bundle
+        entries: 6
+        label: Arbitration acknowledged
+        summary: "Arbitration acknowledged: an accepted Task whose output points at a ClaimResponse with outcome queued."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: "37"
+        focal: Task
+        api: /v1/task/on_submit
+        origin: wire
+        note: The payer's Coverage pointed its beneficiary and payor at the claim response's addresses; they are repointed to the Patient and payer entries this bundle carries, so every reference resolves.
+      - file: C10-arbitration-wf37.json
+        resource_type: Bundle
+        entries: 6
+        label: Arbitration acknowledged
+        summary: "The reprocess taken: an accepted Task whose output points at the reopened ClaimResponse."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: "37"
+        focal: Task
+        api: /v1/task/on_submit
+        origin: wire
+      - file: C10-cancelled-wfPC02-pmjay.json
+        resource_type: Bundle
+        entries: 6
+        label: Cancellation done
+        summary: "The cancellation done: a completed Task with the ClaimResponse beside it, repeating the disposition the hospital gave."
+        direction: response
+        side: payer
+        scheme: pmjay
+        workflow: PC02
+        focal: Task
+        api: /v1/task/on_submit
+        origin: wire
+        note: The payer's Coverage pointed its beneficiary and payor at the claim response's addresses; they are repointed to the Patient and payer entries this bundle carries, so every reference resolves.
+      - file: C10-cancelled-wfPC02.json
+        resource_type: Bundle
+        entries: 6
+        label: Cancellation done
+        summary: "The cancellation done: a completed Task whose output points at a ClaimResponse in the same bundle."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: PC02
+        focal: Task
+        api: /v1/task/on_submit
+        origin: wire
+  C11:
+    title: Respond to predetermination
+    folder: package/fhir/C11
+    bundle_count: 1
+    files:
+      - file: predetermination-response.json
+        resource_type: Bundle
+        entries: 5
+        label: Predetermination response
+        summary: "The verdict on a predetermination: a ClaimResponse with use predetermination and outcome complete. Nothing is authorised by it."
+        direction: response
+        side: payer
+        scheme: generic
+        workflow: null
+        focal: ClaimResponse
+        api: /v1/predetermination/on_submit
+        origin: wire
+  D1:
+    title: Fetch the insurance plan
+    folder: package/fhir/D1
+    bundle_count: 1
+    files:
+      - file: D1-request.json
+        resource_type: Bundle
+        entries: 1
+        label: Plan request
+        summary: "The scheme's package master asked for: a poll Task with the policy number and the provider id."
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: null
+        focal: Task
+        api: /v1/insuranceplan/request
+        builder: insurance/request
+        origin: wire
+  D3:
+    title: Check coverage eligibility
+    folder: package/fhir/D3
+    bundle_count: 1
+    files:
+      - file: D3-check.json
+        resource_type: Bundle
+        entries: 7
+        label: Auth-requirements check
+        summary: The eligibility check the SHA answers with the wallet and the documents a pre-authorisation must carry.
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: null
+        focal: CoverageEligibilityRequest
+        api: /v1/coverageeligibility/check
+        builder: coverage/auth-requirements
+        origin: wire
+  D4:
+    title: Submit pre-authorisation
+    folder: package/fhir/D4
+    bundle_count: 1
+    files:
+      - file: D4-request.json
+        resource_type: Bundle
+        entries: 9
+        label: Pre-auth request
+        summary: "A new pre-authorisation with the scheme's forms and documents: the questionnaire responses travel as INF supportingInfo."
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "12"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/initiate
+        origin: wire
+  D6:
+    title: Raise an enhancement
+    folder: package/fhir/D6
+    bundle_count: 2
+    files:
+      - file: D6-enhancement-query-answer.json
+        resource_type: Bundle
+        entries: 10
+        label: Enhancement query answer
+        summary: The queried enhancement answered, with the reply as an NMI supportingInfo entry.
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "131"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/query-answer
+        origin: wire
+      - file: D6-enhancement.json
+        resource_type: Bundle
+        entries: 10
+        label: Enhancement
+        summary: "A package added against the approval: two items on the same case."
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "13"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/enhance
+        origin: wire
+  D7:
+    title: Answer a pre-authorisation query
+    folder: package/fhir/D7
+    bundle_count: 1
+    files:
+      - file: D7-query-answer.json
+        resource_type: Bundle
+        entries: 9
+        label: Pre-auth query answer
+        summary: The queried pre-authorisation answered on the same endpoint, with the desk's reply as an NMI supportingInfo entry.
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "19"
+        focal: Claim
+        api: /v1/preauth/submit
+        builder: preauth/query-answer
+        origin: wire
+  D8:
+    title: Cancel pre-authorisation
+    folder: package/fhir/D8
+    bundle_count: 1
+    files:
+      - file: D8-cancel.json
+        resource_type: Bundle
+        entries: 3
+        label: Pre-auth cancellation
+        summary: "A live pre-authorisation withdrawn: a cancel Task with the claim and intimation numbers."
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: PC01
+        focal: Task
+        api: /v1/task/submit
+        builder: preauth/cancel
+        origin: wire
+  D9:
+    title: Submit claim
+    folder: package/fhir/D9
+    bundle_count: 1
+    files:
+      - file: D9-request.json
+        resource_type: Bundle
+        entries: 11
+        label: Claim request
+        summary: The claim after discharge, quoting the pre-authorisation number and carrying the discharge facts and the questionnaire responses as supportingInfo.
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "15"
+        focal: Claim
+        api: /v1/claim/submit
+        builder: claim/submit
+        origin: wire
+  D10:
+    title: Answer a claim query
+    folder: package/fhir/D10
+    bundle_count: 1
+    files:
+      - file: D10-query-answer.json
+        resource_type: Bundle
+        entries: 13
+        label: Claim query answer
+        summary: The queried claim answered with the reply as an NMI supportingInfo entry.
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "161"
+        focal: Claim
+        api: /v1/claim/submit
+        builder: claim/query-answer
+        origin: wire
+        note: The sandbox refuses 151, 19 and 16 for a claim query answer with PAYR-1321 and takes 161.
+  D11:
+    title: Reprocess a rejected claim
+    folder: package/fhir/D11
+    bundle_count: 1
+    files:
+      - file: D11-reprocess.json
+        resource_type: Bundle
+        entries: 3
+        label: Reprocess request
+        summary: "The arbitration request for a rejected claim: a reprocess Task with the claim and intimation numbers and a document."
+        direction: request
+        side: provider
+        scheme: pmjay
+        workflow: "36"
+        focal: Task
+        api: /v1/task/submit
+        builder: claim/reprocess
+        origin: wire
+  D13:
+    title: Acknowledge the payment notice
+    folder: package/fhir/D13
+    bundle_count: 1
+    files:
+      - file: D13-acknowledgement.json
+        resource_type: Bundle
+        entries: 3
+        label: Payment acknowledgement
+        summary: "The payment notice acknowledged: a completed status Task with the claim number."
+        direction: response
+        side: provider
+        scheme: pmjay
+        workflow: "17"
+        focal: Task
+        api: /v1/paymentnotice/on_request
+        builder: paymentnotice/acknowledge
+        origin: wire

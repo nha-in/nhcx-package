@@ -1,0 +1,3975 @@
+{
+  "source": "package",
+  "workflow_codes": {
+    "10": {
+      "code": "10",
+      "name": "Patient Registered",
+      "description": "Patient registered in system",
+      "constant": "PATIENT_REGISTERED",
+      "use_case": "Registration",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "11": {
+      "code": "11",
+      "name": "Patient Admitted",
+      "description": "Patient admitted to hospital",
+      "constant": "PATIENT_ADMITTED",
+      "use_case": "Admission",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "12": {
+      "code": "12",
+      "name": "Preauth Request Initiated",
+      "description": "New preauth submission",
+      "constant": "PREAUTH_REQUEST_INITIATED",
+      "use_case": "New PreAuth",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "13": {
+      "code": "13",
+      "name": "Enhancement Request Initiated",
+      "description": "Enhancement (additional amount) request",
+      "constant": "ENHANCEMENT_REQUEST_INITIATED",
+      "use_case": "Enhancement",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "14": {
+      "code": "14",
+      "name": "Discharge Submitted",
+      "description": "Discharge summary submitted",
+      "constant": "DISCHARGE_SUBMITTED",
+      "use_case": "Discharge",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "15": {
+      "code": "15",
+      "name": "Claim Request Initiated",
+      "description": "Final claim submission",
+      "constant": "CLAIM_REQUEST_INITIATED",
+      "use_case": "Claim Submit",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "17": {
+      "code": "17",
+      "name": "Payment Received",
+      "description": "Payment received acknowledgment under PMJAY; a generic payer takes it with the notice's 30 echoed",
+      "constant": "PAYMENT_RECEIVED",
+      "use_case": "Payment",
+      "side": "provider",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "18": {
+      "code": "18",
+      "name": "Preauth Query Ack Success",
+      "side": "status sheet only",
+      "statuses": "response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "19": {
+      "code": "19",
+      "name": "Preauth Query Response Submitted",
+      "description": "Response to payer's query on preauth",
+      "constant": "PREAUTH_QUERY_RESPONSE_SUBMITTED",
+      "use_case": "Query Response",
+      "side": "provider",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "20": {
+      "code": "20",
+      "name": "Preauth Request Received",
+      "description": "Payer has received and acknowledged the preauth request",
+      "constant": "PREAUTH_REQUEST_RECEIVED",
+      "side": "payer",
+      "statuses": "response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "21": {
+      "code": "21",
+      "name": "Preauth Request Approved",
+      "description": "Preauth fully approved - proceed with treatment",
+      "constant": "PREAUTH_REQUEST_APPROVED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "22": {
+      "code": "22",
+      "name": "Enhancement Request Approved",
+      "description": "Enhancement request approved by payer",
+      "constant": "ENHANCEMENT_REQUEST_APPROVED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "23": {
+      "code": "23",
+      "name": "Preauth Request Rejected",
+      "description": "Preauth rejected - review error/processNote for reason",
+      "constant": "PREAUTH_REQUEST_REJECTED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "24": {
+      "code": "24",
+      "name": "Preauth Request Queried",
+      "description": "Payer needs more information - respond using workflow 19",
+      "constant": "PREAUTH_REQUEST_QUERIED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "25": {
+      "code": "25",
+      "name": "Claim Request Received",
+      "description": "Final claim received by payer",
+      "constant": "CLAIM_REQUEST_RECEIVED",
+      "side": "payer",
+      "statuses": "response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "26": {
+      "code": "26",
+      "name": "Claim Request Approved",
+      "description": "Final claim approved",
+      "constant": "CLAIM_REQUEST_APPROVED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "27": {
+      "code": "27",
+      "name": "Claim Request Queried",
+      "description": "Final claim queried - payer needs additional documents; under PMJAY answer with 161",
+      "constant": "CLAIM_REQUEST_QUERIED",
+      "side": "payer",
+      "statuses": "request.initiated, response.partial/complete",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "28": {
+      "code": "28",
+      "name": "Claim Request In Process",
+      "description": "Final claim is being processed by payer",
+      "constant": "CLAIM_REQUEST_IN_PROCESS",
+      "side": "payer",
+      "statuses": "response.partial",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "29": {
+      "code": "29",
+      "name": "Claim Forwarded",
+      "description": "Claim forwarded to another processing entity",
+      "constant": "CLAIM_FORWARDED",
+      "side": "payer",
+      "statuses": "response.partial",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "30": {
+      "code": "30",
+      "name": "Payment Initiated",
+      "description": "Payment initiated by payer, on a new thread",
+      "constant": "PAYMENT_INITIATED",
+      "side": "payer",
+      "statuses": "request.initiated, response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "31": {
+      "code": "31",
+      "name": "Payment Processed",
+      "description": "Payment has been processed",
+      "constant": "PAYMENT_PROCESSED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "33": {
+      "code": "33",
+      "name": "Payment Settled",
+      "description": "Payment has been fully settled",
+      "constant": "PAYMENT_SETTLED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "34": {
+      "code": "34",
+      "name": "Wallet Upgrade Intimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "35": {
+      "code": "35",
+      "name": "Wallet Upgrade Acknowledgement",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "36": {
+      "code": "36",
+      "name": "Claim Arbitration Request Submitted",
+      "description": "Reprocess/Erroneous request, with input intimationNumber; acknowledged on 37",
+      "constant": "CLAIM_ARBITRATION_REQUEST_SUBMITTED",
+      "use_case": "Reprocess",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "37": {
+      "code": "37",
+      "name": "Claim Arbitration Acknowledgement",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "38": {
+      "code": "38",
+      "name": "Fraud Alert",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "39": {
+      "code": "39",
+      "name": "Fraud Alert Acknowledgement",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "41": {
+      "code": "41",
+      "name": "Preauth Arbitration Intimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "42": {
+      "code": "42",
+      "name": "Preauth Arbitration Acknowledgement",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "45": {
+      "code": "45",
+      "name": "Final Bill Initimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated, response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "46": {
+      "code": "46",
+      "name": "Final Bill Approve",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "47": {
+      "code": "47",
+      "name": "Final Bill Query Raise",
+      "side": "status sheet only",
+      "statuses": "request.initiated, response.partial, response.error",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "121": {
+      "code": "121",
+      "name": "Preauth Request Resubmitted",
+      "description": "Resubmission after query/rejection",
+      "constant": "PREAUTH_REQUEST_RESUBMITTED",
+      "use_case": "Resubmit",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "131": {
+      "code": "131",
+      "name": "Enhancement Query Response Submitted",
+      "description": "Response to enhancement query",
+      "constant": "ENHANCEMENT_QUERY_RESPONSE_SUBMITTED",
+      "use_case": "Enhancement Query",
+      "side": "provider",
+      "statuses": "response.partial, response.error, response.complete",
+      "reused": "yes: only the pair with x-hcx-status tells its messages apart",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "141": {
+      "code": "141",
+      "name": "Discharge Query Response Submitted",
+      "description": "Response to discharge query",
+      "constant": "DISCHARGE_QUERY_RESPONSE_SUBMITTED",
+      "use_case": "Discharge Query",
+      "side": "provider",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "151": {
+      "code": "151",
+      "name": "Claim Query Response Submitted",
+      "description": "Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response)",
+      "constant": "CLAIM_QUERY_RESPONSE_SUBMITTED",
+      "use_case": "Claim Query",
+      "side": "provider",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "161": {
+      "code": "161",
+      "name": "Claim Doc Query Response",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "181": {
+      "code": "181",
+      "name": "Final Bill Query Response",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "231": {
+      "code": "231",
+      "name": "Enhancement Deny",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "241": {
+      "code": "241",
+      "name": "Enhancement Request Queried",
+      "description": "Enhancement request queried by payer",
+      "constant": "ENHANCEMENT_REQUEST_QUERIED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "251": {
+      "code": "251",
+      "name": "Reprocess Request Received",
+      "description": "Reprocess request received",
+      "constant": "REPROCESS_REQUEST_RECEIVED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "252": {
+      "code": "252",
+      "name": "Reprocess Request Approved",
+      "description": "Reprocess request approved",
+      "constant": "REPROCESS_REQUEST_APPROVED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "253": {
+      "code": "253",
+      "name": "Reprocess Request Rejected",
+      "description": "Reprocess request rejected",
+      "constant": "REPROCESS_REQUEST_REJECTED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "254": {
+      "code": "254",
+      "name": "Reprocess Request Queried",
+      "description": "Reprocess request queried",
+      "constant": "REPROCESS_REQUEST_QUERIED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "261": {
+      "code": "261",
+      "name": "Discharge Request Approved",
+      "description": "Discharge summary approved",
+      "constant": "DISCHARGE_REQUEST_APPROVED",
+      "side": "payer",
+      "statuses": "response.partial",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "262": {
+      "code": "262",
+      "name": "Discharge Request Rejected",
+      "description": "Discharge summary rejected",
+      "constant": "DISCHARGE_REQUEST_REJECTED",
+      "side": "payer",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "263": {
+      "code": "263",
+      "name": "Discharge Request Queried",
+      "description": "Discharge summary queried",
+      "constant": "DISCHARGE_REQUEST_QUERIED",
+      "side": "payer",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "291": {
+      "code": "291",
+      "name": "Claim Doc Deny",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "491": {
+      "code": "491",
+      "name": "Final Bill Deny",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PC01": {
+      "code": "PC01",
+      "name": "Preauth Cancel Initiated",
+      "description": "Cancel an existing preauth",
+      "constant": "PREAUTH_CANCEL_INITIATED",
+      "use_case": "PreAuth Cancel",
+      "side": "provider",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R122": {
+      "code": "R122",
+      "name": "Reimburstment Claim Reprocess Requested",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R15": {
+      "code": "R15",
+      "name": "Reimburstment Claim Submitted",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R151": {
+      "code": "R151",
+      "name": "Reimburstment Claim Query Response Submitted",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R252": {
+      "code": "R252",
+      "name": "Reimburstment Claim Reprocess Request Approved",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R253": {
+      "code": "R253",
+      "name": "Reimburstment Claim Reprocess Request Rejected",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R254": {
+      "code": "R254",
+      "name": "Reimburstment Claim Reprocess Request Queried",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R26": {
+      "code": "R26",
+      "name": "Reimburstment Claim Approved",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R27": {
+      "code": "R27",
+      "name": "Reimburstment Claim Queried",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R28": {
+      "code": "R28",
+      "name": "Reimburstment Claim Evaluation In Process",
+      "side": "status sheet only",
+      "statuses": "response.partial",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "R291": {
+      "code": "R291",
+      "name": "Reimburstment Claim Rejected",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "G11": {
+      "code": "G11",
+      "name": "Grievance Intimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "G12": {
+      "code": "G12",
+      "name": "Grievance Acknowledment",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "G13": {
+      "code": "G13",
+      "name": "Grievance Intimation Failure",
+      "side": "status sheet only",
+      "statuses": "response.error",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "RP1": {
+      "code": "RP1",
+      "name": "Return Payment Intimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "RP2": {
+      "code": "RP2",
+      "name": "Return Payment Acknowledgement",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "RP3": {
+      "code": "RP3",
+      "name": "Return Payment Failure",
+      "side": "status sheet only",
+      "statuses": "response.error",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "N01": {
+      "code": "N01",
+      "name": "Notifications Intended To Payer",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "N02": {
+      "code": "N02",
+      "name": "Notifications Intended To Provider",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "N03": {
+      "code": "N03",
+      "name": "Notifications Intended To Beneficiary",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "N04": {
+      "code": "N04",
+      "name": "Acknowledgement Of The Notificaion",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DC01": {
+      "code": "DC01",
+      "name": "Discharge Correction Intimation",
+      "side": "status sheet only",
+      "statuses": "request.initiated",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DC02": {
+      "code": "DC02",
+      "name": "Acknowledgement For Discharge Correction",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PC02": {
+      "code": "PC02",
+      "name": "Preauthorization Cancellation Accomplished",
+      "side": "status sheet only",
+      "statuses": "response.complete",
+      "cite": "01-overview/06-workflow-codes.md"
+    }
+  },
+  "status_values": {
+    "request.initiated": {
+      "value": "request.initiated",
+      "workflow_codes": "10, 11, 12, 121, PC01, 13, 14, 15, 36, 24, 241, 27, 254, 263, 30, 31, 33, 45, 47, R122, R15, R254, R27, 34, 38, G11, 41, RP1, N01, N02, N03, DC01",
+      "cite": "01-overview/06-workflow-codes.md",
+      "meaning": "Starting the request cycle",
+      "layer": "Status words",
+      "defined_in": "06-reference/03-envelope-fields.md"
+    },
+    "response.complete": {
+      "value": "response.complete",
+      "workflow_codes": "19, 131, 141, 151, 17, 21, 22, 23, 26, 251, 252, 253, 262, 181, 161, 231, 46, 491, 291, R151, R252, R253, R26, R291, 35, 37, 39, G12, 42, RP2, N04, DC02, PC02",
+      "cite": "01-overview/06-workflow-codes.md",
+      "meaning": "The final response, closing the cycle",
+      "layer": "Status words",
+      "defined_in": "06-reference/03-envelope-fields.md"
+    },
+    "response.partial": {
+      "value": "response.partial",
+      "workflow_codes": "131, 20, 25, 28, 29, 261, 30, 45, 18, 47, R28",
+      "cite": "01-overview/06-workflow-codes.md",
+      "meaning": "A partial response, or an acknowledgement of the request",
+      "layer": "Status words",
+      "defined_in": "06-reference/03-envelope-fields.md"
+    },
+    "response.error": {
+      "value": "response.error",
+      "workflow_codes": "131, 20, 25, 30, 45, 18, 47, G13, RP3",
+      "cite": "01-overview/06-workflow-codes.md",
+      "meaning": "The request was rejected, or an error was met",
+      "layer": "Status words",
+      "defined_in": "06-reference/03-envelope-fields.md"
+    },
+    "response.partial/complete": {
+      "value": "response.partial/complete",
+      "workflow_codes": "27",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "request.queued": {
+      "value": "request.queued",
+      "cite": "06-reference/03-envelope-fields.md",
+      "meaning": "Queued at NHCX, waiting to be processed",
+      "layer": "Status words"
+    },
+    "request.dispatched": {
+      "value": "request.dispatched",
+      "cite": "06-reference/03-envelope-fields.md",
+      "meaning": "Successfully reached the recipient's system",
+      "layer": "Status words"
+    },
+    "request.stopped": {
+      "value": "request.stopped",
+      "cite": "06-reference/03-envelope-fields.md",
+      "meaning": "Stopped completely after failed attempts to reach the recipient",
+      "layer": "Status words"
+    }
+  },
+  "constants": {
+    "PATIENT_REGISTERED": {
+      "value": "10",
+      "meaning": "Patient registered in system",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PATIENT_ADMITTED": {
+      "value": "11",
+      "meaning": "Patient admitted to hospital",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_INITIATED": {
+      "value": "12",
+      "meaning": "New preauth submission",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_RESUBMITTED": {
+      "value": "121",
+      "meaning": "Resubmission after query/rejection",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_CANCEL_INITIATED": {
+      "value": "PC01",
+      "meaning": "Cancel an existing preauth",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_QUERY_RESPONSE_SUBMITTED": {
+      "value": "19",
+      "meaning": "Response to payer's query on preauth",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "ENHANCEMENT_REQUEST_INITIATED": {
+      "value": "13",
+      "meaning": "Enhancement (additional amount) request",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "ENHANCEMENT_QUERY_RESPONSE_SUBMITTED": {
+      "value": "131",
+      "meaning": "Response to enhancement query",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DISCHARGE_SUBMITTED": {
+      "value": "14",
+      "meaning": "Discharge summary submitted",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DISCHARGE_QUERY_RESPONSE_SUBMITTED": {
+      "value": "141",
+      "meaning": "Response to discharge query",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_REQUEST_INITIATED": {
+      "value": "15",
+      "meaning": "Final claim submission",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_QUERY_RESPONSE_SUBMITTED": {
+      "value": "151",
+      "meaning": "Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response)",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PAYMENT_RECEIVED": {
+      "value": "17",
+      "meaning": "Payment received acknowledgment under PMJAY; a generic payer takes it with the notice's 30 echoed",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_ARBITRATION_REQUEST_SUBMITTED": {
+      "value": "36",
+      "meaning": "Reprocess/Erroneous request, with input intimationNumber; acknowledged on 37",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_RECEIVED": {
+      "value": "20",
+      "meaning": "Payer has received and acknowledged the preauth request",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_APPROVED": {
+      "value": "21",
+      "meaning": "Preauth fully approved - proceed with treatment",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "ENHANCEMENT_REQUEST_APPROVED": {
+      "value": "22",
+      "meaning": "Enhancement request approved by payer",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_REJECTED": {
+      "value": "23",
+      "meaning": "Preauth rejected - review error/processNote for reason",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PREAUTH_REQUEST_QUERIED": {
+      "value": "24",
+      "meaning": "Payer needs more information - respond using workflow 19",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "ENHANCEMENT_REQUEST_QUERIED": {
+      "value": "241",
+      "meaning": "Enhancement request queried by payer",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_REQUEST_RECEIVED": {
+      "value": "25",
+      "meaning": "Final claim received by payer",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_REQUEST_APPROVED": {
+      "value": "26",
+      "meaning": "Final claim approved",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_REQUEST_QUERIED": {
+      "value": "27",
+      "meaning": "Final claim queried - payer needs additional documents; under PMJAY answer with 161",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_REQUEST_IN_PROCESS": {
+      "value": "28",
+      "meaning": "Final claim is being processed by payer",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "CLAIM_FORWARDED": {
+      "value": "29",
+      "meaning": "Claim forwarded to another processing entity",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "REPROCESS_REQUEST_RECEIVED": {
+      "value": "251",
+      "meaning": "Reprocess request received",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "REPROCESS_REQUEST_APPROVED": {
+      "value": "252",
+      "meaning": "Reprocess request approved",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "REPROCESS_REQUEST_REJECTED": {
+      "value": "253",
+      "meaning": "Reprocess request rejected",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "REPROCESS_REQUEST_QUERIED": {
+      "value": "254",
+      "meaning": "Reprocess request queried",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DISCHARGE_REQUEST_APPROVED": {
+      "value": "261",
+      "meaning": "Discharge summary approved",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DISCHARGE_REQUEST_REJECTED": {
+      "value": "262",
+      "meaning": "Discharge summary rejected",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "DISCHARGE_REQUEST_QUERIED": {
+      "value": "263",
+      "meaning": "Discharge summary queried",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PAYMENT_INITIATED": {
+      "value": "30",
+      "meaning": "Payment initiated by payer, on a new thread",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PAYMENT_PROCESSED": {
+      "value": "31",
+      "meaning": "Payment has been processed",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "PAYMENT_SETTLED": {
+      "value": "33",
+      "meaning": "Payment has been fully settled",
+      "cite": "01-overview/06-workflow-codes.md"
+    },
+    "Supporting-info categories": {
+      "value": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+      "cite": "05-fhir-reference/19-codes-and-value-sets.md"
+    },
+    "Supporting-info codes": {
+      "value": "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code",
+      "cite": "05-fhir-reference/19-codes-and-value-sets.md"
+    },
+    "Task input types and output values": {
+      "value": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+      "cite": "05-fhir-reference/19-codes-and-value-sets.md"
+    }
+  },
+  "error_codes": {
+    "NHCX-401": {
+      "code": "NHCX-401",
+      "group": "Gateway",
+      "description": "User Unauthorized",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1001": {
+      "code": "NHCX-1001",
+      "group": "Gateway",
+      "description": "Receiver system is not reachable.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1002": {
+      "code": "NHCX-1002",
+      "group": "Gateway",
+      "description": "Sender not registered in NHCX. Please register in NHCX portal and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1003": {
+      "code": "NHCX-1003",
+      "group": "Gateway",
+      "description": "Receiver not registered in NHCX. Please try again with valid receiver details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1004": {
+      "code": "NHCX-1004",
+      "group": "Gateway",
+      "description": "No receiver registered in NHCX for the requested scheme. Please try again with valid receiver details for the scheme.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1005": {
+      "code": "NHCX-1005",
+      "group": "Gateway",
+      "description": "Invalid request header. Please try again with valid headers.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1006": {
+      "code": "NHCX-1006",
+      "group": "Gateway",
+      "description": "Duplicate request. Request with same correlation id already exist in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1007": {
+      "code": "NHCX-1007",
+      "group": "Gateway",
+      "description": "Something went wrong while processing the request. Please check the request structure and values and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1008": {
+      "code": "NHCX-1008",
+      "group": "Gateway",
+      "description": "Something went wrong while processing the request. Please try again after sometime.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1009": {
+      "code": "NHCX-1009",
+      "group": "Gateway",
+      "description": "Something went wrong while processing the request. Please check log for more details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1010": {
+      "code": "NHCX-1010",
+      "group": "Gateway",
+      "description": "No Data with given Correlation id for call back request, please check status for more details",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1011": {
+      "code": "NHCX-1011",
+      "group": "Gateway",
+      "description": "Invalid Status, please check x-hcx-status value from the protected header",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1012": {
+      "code": "NHCX-1012",
+      "group": "Gateway",
+      "description": "No records found with the requested api caller id. Please try again with a valid api caller id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1013": {
+      "code": "NHCX-1013",
+      "group": "Gateway",
+      "description": "Invalid or blank request found.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1014": {
+      "code": "NHCX-1014",
+      "group": "Gateway",
+      "description": "Unable to send protocol response to sender.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1015": {
+      "code": "NHCX-1015",
+      "group": "Gateway",
+      "description": "Invalid response received from receiver.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1016": {
+      "code": "NHCX-1016",
+      "group": "Gateway",
+      "description": "Invalid Api Action, please check the request action for this correlationId before trying again",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1017": {
+      "code": "NHCX-1017",
+      "group": "Gateway",
+      "description": "Invalid response received from receiver",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "NHCX-1018": {
+      "code": "NHCX-1018",
+      "group": "Gateway",
+      "description": "Invalid ABHA number received. ABHA number should be sent in the format XX-XXXX-XXXX-XXXX",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1001": {
+      "code": "PAYR-1001",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Error while decrypting request. Please reprocess the request encrypting with valid certificate of the payer. | Reference payer: Error occurred while decrypting payload for receiver code <receiver_code> with correlation id <sender_correlation_id>.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1002": {
+      "code": "PAYR-1002",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Error while encrypting request. Please update encryption certificate in NHCX. | Reference payer: Error occurred while encrypting payload for receiver code <receiver_code> with correlation id <sender_correlation_id>.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1003": {
+      "code": "PAYR-1003",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Error while connecting to NHCX. System will try to resend the message to NHCX after some time. | Reference payer: Invalid workflow requested. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1004": {
+      "code": "PAYR-1004",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Provider is not registered with the payer for requested policy. | Reference payer: Received FHIR bundle is malformed. Please correct the bundle and try again. <Error details>",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1005": {
+      "code": "PAYR-1005",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Beneficiary is not a covered member for requested policy. Please enroll beneficiary for the policy and try again. | Reference payer: Maximum time limit exceeded in receiving the request. Please try again.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1006": {
+      "code": "PAYR-1006",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Policy does not exist. Please try with a valid policy. | Reference payer: Invalid name in request. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1007": {
+      "code": "PAYR-1007",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Requested policy is expired. Please try with a valid policy. | Reference payer: Invalid gender in request. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1008": {
+      "code": "PAYR-1008",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Eligible coverage amount of the beneficiary for the requested policy is insufficient to process the request. | Reference payer: Invalid FHIR bundle received. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1009": {
+      "code": "PAYR-1009",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Requested items are not valid or not covered. Please try again with valid or covered items. | Reference payer: No identifier found for patient component. Hence request will not be processed further. https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1010": {
+      "code": "PAYR-1010",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Preauthorization is required to process the request but was not obtained. | Reference payer: No type found for patient component identifier. Hence request will not be processed further. https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1011": {
+      "code": "PAYR-1011",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Enhancement request can not be processed as the prior approved package/procedure does not support enhancement. | Reference payer: No identifier found for claim component. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1012": {
+      "code": "PAYR-1012",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Claim amount requested is more than the preauthorization approved amount. | Reference payer: No type found for claim component identifier. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1013": {
+      "code": "PAYR-1013",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: No prior approval for the requested procedures/packages obtained. | Reference payer: No identifier found for organization component for provider. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1014": {
+      "code": "PAYR-1014",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Date of birth of the beneficiary can not be after date of service. | Reference payer: No type found for organization component identifier for provider. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1015": {
+      "code": "PAYR-1015",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Date of service cannot be after date of death. | Reference payer: No identifier found for organization component for payer. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1016": {
+      "code": "PAYR-1016",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Duplicate claim submitted based on service codes and dates. | Reference payer: No type found for organization component identifier for payer. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1017": {
+      "code": "PAYR-1017",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Amount calculations are not correct. Please verify calculated amount. | Reference payer: No task code received. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1018": {
+      "code": "PAYR-1018",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Time limit for submission expired. | Reference payer: No task reason code received. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1019": {
+      "code": "PAYR-1019",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Requested additional information was not received or was not received within time limit | Reference payer: Invalid sequence received in supporting info element. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1020": {
+      "code": "PAYR-1020",
+      "group": "Standard payer / Reference payer",
+      "description": "Standard payer: Unable to process payment as no valid bank details found for the provider. | Reference payer: Invalid category received in supporting info element for sequence %s. Hence request will not be processed further.",
+      "note": "This code means one thing from a payer implementing the published standard and another from the PMJAY reference payer; decide which payer sent it.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1021": {
+      "code": "PAYR-1021",
+      "group": "Reference payer",
+      "description": "Invalid code received in supporting info element for sequence %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1023": {
+      "code": "PAYR-1023",
+      "group": "Reference payer",
+      "description": "Invalid procedure category received for procedure component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1024": {
+      "code": "PAYR-1024",
+      "group": "Reference payer",
+      "description": "Invalid procedure status received for procedure component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1025": {
+      "code": "PAYR-1025",
+      "group": "Reference payer",
+      "description": "Invalid procedure sequence received for procedure component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1026": {
+      "code": "PAYR-1026",
+      "group": "Reference payer",
+      "description": "No procedure component found for reference in claim component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1027": {
+      "code": "PAYR-1027",
+      "group": "Reference payer",
+      "description": "Invalid item id found for item in claim component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1028": {
+      "code": "PAYR-1028",
+      "group": "Reference payer",
+      "description": "Invalid item sequence received for item in claim component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1029": {
+      "code": "PAYR-1029",
+      "group": "Reference payer",
+      "description": "Invalid bundle id received for FHIR bundle. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1030": {
+      "code": "PAYR-1030",
+      "group": "Reference payer",
+      "description": "Invalid questionnaire id received in FHIR bundle for questionnaire component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1031": {
+      "code": "PAYR-1031",
+      "group": "Reference payer",
+      "description": "Invalid url received for bundle entry in FHIR bundle. Hence request will not be processed further. Please reach out to technical team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1032": {
+      "code": "PAYR-1032",
+      "group": "Reference payer",
+      "description": "Invalid purpose received for coverage eligibility request. Hence request will not be processed further. Please try again with valid purpose details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1033": {
+      "code": "PAYR-1033",
+      "group": "Reference payer",
+      "description": "No items received for coverage eligibility purpose. Since items are mandatory for the requested purpose, hence request will not be processed further. Please try again with valid item details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1034": {
+      "code": "PAYR-1034",
+      "group": "Reference payer",
+      "description": "Invalid procedure code received. Please try again with valid procedure details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1035": {
+      "code": "PAYR-1035",
+      "group": "Reference payer",
+      "description": "Invalid policy code received. Please try again with valid policy details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1036": {
+      "code": "PAYR-1036",
+      "group": "Reference payer",
+      "description": "Invalid attachment received in supporting info with sequence number %s. Please try again with valid attachment details as attachment value is expected. If issue is not resolved, please reach out to technical team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1037": {
+      "code": "PAYR-1037",
+      "group": "Reference payer",
+      "description": "No identifier found for communication component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1038": {
+      "code": "PAYR-1038",
+      "group": "Reference payer",
+      "description": "No type found for communication component identifier. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1039": {
+      "code": "PAYR-1039",
+      "group": "Reference payer",
+      "description": "No payload found for communication component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1040": {
+      "code": "PAYR-1040",
+      "group": "Reference payer",
+      "description": "No component found for given reference. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1041": {
+      "code": "PAYR-1041",
+      "group": "Reference payer",
+      "description": "No identifier found for procedure component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1042": {
+      "code": "PAYR-1042",
+      "group": "Reference payer",
+      "description": "No type found for procedure component identifier. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1043": {
+      "code": "PAYR-1043",
+      "group": "Reference payer",
+      "description": "Date received in the request does not adhere to the NRCES date datatype format. Hence request will not be processed further. Please refere to the date format in NRCES portal.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1044": {
+      "code": "PAYR-1044",
+      "group": "Reference payer",
+      "description": "Date and time received in the request does not adhere to the NRCES date datatype format. Hence request will not be processed further. Please refere to the date time format in NRCES portal.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1045": {
+      "code": "PAYR-1045",
+      "group": "Reference payer",
+      "description": "Invalid quantity received for item. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1046": {
+      "code": "PAYR-1046",
+      "group": "Reference payer",
+      "description": "No value or timing details received for supporting info for sequence %s. Hence request will not be processed further. Please reach out to technical team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1047": {
+      "code": "PAYR-1047",
+      "group": "Reference payer",
+      "description": "Invalid reference received in supporting info with sequence number %s. Please try again with valid resource as reference value.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1048": {
+      "code": "PAYR-1048",
+      "group": "Reference payer",
+      "description": "No reference resource received for supporting info with sequence number %s. Please try again with valid resource for reference value.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1049": {
+      "code": "PAYR-1049",
+      "group": "Reference payer",
+      "description": "Invalid FHIR bundle received. Hence request will not be processed further. please reach out to technical team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1050": {
+      "code": "PAYR-1050",
+      "group": "Reference payer",
+      "description": "No type found for practitioner component identifier. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1051": {
+      "code": "PAYR-1051",
+      "group": "Reference payer",
+      "description": "No section found for composition component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1052": {
+      "code": "PAYR-1052",
+      "group": "Reference payer",
+      "description": "No references found in composition section. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1053": {
+      "code": "PAYR-1053",
+      "group": "Reference payer",
+      "description": "Invalid reference found in child sections of composition section. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1054": {
+      "code": "PAYR-1054",
+      "group": "Reference payer",
+      "description": "No section content found for composition component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1055": {
+      "code": "PAYR-1055",
+      "group": "Reference payer",
+      "description": "Invalid subject type found for composition component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the composition.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1056": {
+      "code": "PAYR-1056",
+      "group": "Reference payer",
+      "description": "Invalid contact organization found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1057": {
+      "code": "PAYR-1057",
+      "group": "Reference payer",
+      "description": "Invalid general practioner type found for subject in composition component. This should be of type Organization/Practitioner/PractitionerRole. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1058": {
+      "code": "PAYR-1058",
+      "group": "Reference payer",
+      "description": "Invalid managing organization type found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1059": {
+      "code": "PAYR-1059",
+      "group": "Reference payer",
+      "description": "Invalid encounter type found for composition/observation component. This should be of type Encounter. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-DiagnosticReportRecord.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1060": {
+      "code": "PAYR-1060",
+      "group": "Reference payer",
+      "description": "No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1061": {
+      "code": "PAYR-1061",
+      "group": "Reference payer",
+      "description": "Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1062": {
+      "code": "PAYR-1062",
+      "group": "Reference payer",
+      "description": "No episode of care found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1063": {
+      "code": "PAYR-1063",
+      "group": "Reference payer",
+      "description": "Invalid episode of care type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1064": {
+      "code": "PAYR-1064",
+      "group": "Reference payer",
+      "description": "No based on found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1065": {
+      "code": "PAYR-1065",
+      "group": "Reference payer",
+      "description": "Invalid based on type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1066": {
+      "code": "PAYR-1066",
+      "group": "Reference payer",
+      "description": "No appointment found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1067": {
+      "code": "PAYR-1067",
+      "group": "Reference payer",
+      "description": "Invalid appointment type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1068": {
+      "code": "PAYR-1068",
+      "group": "Reference payer",
+      "description": "No reason reference found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1069": {
+      "code": "PAYR-1069",
+      "group": "Reference payer",
+      "description": "Invalid reason reference type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1070": {
+      "code": "PAYR-1070",
+      "group": "Reference payer",
+      "description": "No author found for composition component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1071": {
+      "code": "PAYR-1071",
+      "group": "Reference payer",
+      "description": "Invalid author type found for composition component. This should be of type Practitioner / PractitionerRole / Organization / Patient / Device / RelatedPerson. Hence request will not be processed further. Please try again with valid author type for the composition.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1072": {
+      "code": "PAYR-1072",
+      "group": "Reference payer",
+      "description": "No procedure reference received for procedure element in claim resource. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1073": {
+      "code": "PAYR-1073",
+      "group": "Reference payer",
+      "description": "No based on found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1074": {
+      "code": "PAYR-1074",
+      "group": "Reference payer",
+      "description": "Invalid based on type found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1075": {
+      "code": "PAYR-1075",
+      "group": "Reference payer",
+      "description": "No part of found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1076": {
+      "code": "PAYR-1076",
+      "group": "Reference payer",
+      "description": "Invalid part of type found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1077": {
+      "code": "PAYR-1077",
+      "group": "Reference payer",
+      "description": "No subject found for observation component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1078": {
+      "code": "PAYR-1078",
+      "group": "Reference payer",
+      "description": "Invalid subject type found for observation component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the observation.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1079": {
+      "code": "PAYR-1079",
+      "group": "Reference payer",
+      "description": "No care team details received. Hence request will not be processed further. Please add the care team details and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1080": {
+      "code": "PAYR-1080",
+      "group": "Reference payer",
+      "description": "Invalid HPR details received for practioner resource with url %s. Hence request will not be processed further. Please try again with valid HPR id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1081": {
+      "code": "PAYR-1081",
+      "group": "Reference payer",
+      "description": "Invalid service date received for item with sequence %s in claim resource. Hence request will not be processed further. Please try again with valid item service date.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1082": {
+      "code": "PAYR-1082",
+      "group": "Reference payer",
+      "description": "Invalid title received for composition for supporting info with sequence %s in claim resource. Hence request will not be processed further. Please try again with valid composition title.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1083": {
+      "code": "PAYR-1083",
+      "group": "Reference payer",
+      "description": "No HPR details found for the practitioner for resource %s. Hence request will not be processed further. Please send the details in the identifier for Practitioner resource with category code as HPIN.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1084": {
+      "code": "PAYR-1084",
+      "group": "Reference payer",
+      "description": "No questionnaire response resource found for url %s. Hence request will not be processed further. Please add the resources for all the references given in the FHIR bundle and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1085": {
+      "code": "PAYR-1085",
+      "group": "Reference payer",
+      "description": "Invalid questionnaire response resource type found in the FHIR bundle for url %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1086": {
+      "code": "PAYR-1086",
+      "group": "Reference payer",
+      "description": "No procedure resource found for url %s. Hence request will not be processed further. Please add the resources for all the references given in the FHIR bundle and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1087": {
+      "code": "PAYR-1087",
+      "group": "Reference payer",
+      "description": "Invalid procedure resource type found in the FHIR bundle for url %s. Hence request will not be processed further. Procedure resource type is expected.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1088": {
+      "code": "PAYR-1088",
+      "group": "Reference payer",
+      "description": "Invalid composition details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1089": {
+      "code": "PAYR-1089",
+      "group": "Reference payer",
+      "description": "No billing items found. Hence request will not be processed further. Please try again with valid billing items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1090": {
+      "code": "PAYR-1090",
+      "group": "Reference payer",
+      "description": "No identifier found for coverage component. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1091": {
+      "code": "PAYR-1091",
+      "group": "Reference payer",
+      "description": "No type found for coverage component identifier. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1092": {
+      "code": "PAYR-1092",
+      "group": "Reference payer",
+      "description": "Something went wrong while processing request, kindly intiate new request",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1093": {
+      "code": "PAYR-1093",
+      "group": "Reference payer",
+      "description": "No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1094": {
+      "code": "PAYR-1094",
+      "group": "Reference payer",
+      "description": "Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1095": {
+      "code": "PAYR-1095",
+      "group": "Reference payer",
+      "description": "Invalid discharge information received for claim request. Hence request will not be processed further. Please send the discharge information in supporting info in claim resource, with category as DIS (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-category.html), and codes in LAMA/DAMA/DTH/DTM (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-code.html).",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1096": {
+      "code": "PAYR-1096",
+      "group": "Reference payer",
+      "description": "Invalid death date received for claim request. Hence request will not be processed further. Please send the death date information in supporting info in claim resource, with category as ONS (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-category.html), and code as DTM (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-code.html).",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1097": {
+      "code": "PAYR-1097",
+      "group": "Reference payer",
+      "description": "No payload found in the request. Please ensure that the request that is being sent, contains encrypted payload within the mandatory payload properties.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1098": {
+      "code": "PAYR-1098",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - OTH and code - EDT for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - OTH and code - EDT combination is used to get the registration date. So the registration date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - OTH and code - EDT.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1099": {
+      "code": "PAYR-1099",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - ONS and code - DSDE for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - DSDE combination is used to get the discharge date. So the discharge date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - DSDE.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1101": {
+      "code": "PAYR-1101",
+      "group": "Reference payer",
+      "description": "Invalid purpose received as (%s) for beneficiary id (%s) from hospital id (%s). Hence no result will be returned. Please try again with a valid purpose.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1102": {
+      "code": "PAYR-1102",
+      "group": "Reference payer",
+      "description": "Invalid search parameter requested. Please try again with a valid id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1103": {
+      "code": "PAYR-1103",
+      "group": "Reference payer",
+      "description": "Invalid careplan id received. Please try again with valid careplan id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1104": {
+      "code": "PAYR-1104",
+      "group": "Reference payer",
+      "description": "Multiple records found for the beneficiary. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1105": {
+      "code": "PAYR-1105",
+      "group": "Reference payer",
+      "description": "Hospital configuration not found. Please contact support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1106": {
+      "code": "PAYR-1106",
+      "group": "Reference payer",
+      "description": "No details found for the requested procedures in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1107": {
+      "code": "PAYR-1107",
+      "group": "Reference payer",
+      "description": "No billable item received. Please try again with valid item data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1108": {
+      "code": "PAYR-1108",
+      "group": "Reference payer",
+      "description": "No details found for the requested stratification in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1109": {
+      "code": "PAYR-1109",
+      "group": "Reference payer",
+      "description": "No details found for the requested investigations in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1110": {
+      "code": "PAYR-1110",
+      "group": "Reference payer",
+      "description": "No details found for the requested implants in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1111": {
+      "code": "PAYR-1111",
+      "group": "Reference payer",
+      "description": "Rule failure.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1112": {
+      "code": "PAYR-1112",
+      "group": "Reference payer",
+      "description": "Invalid payer id received. Please try again ith valid payer details",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1113": {
+      "code": "PAYR-1113",
+      "group": "Reference payer",
+      "description": "Invalid item code received as %s. Please try again with valid data",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1114": {
+      "code": "PAYR-1114",
+      "group": "Reference payer",
+      "description": "Invalid speciality code received as %s for item %s. Please try again with valid data. Speciality code is available as the code of the category for specific cost of plan in isurance plan",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1115": {
+      "code": "PAYR-1115",
+      "group": "Reference payer",
+      "description": "Invalid procedure quantity received as %s for item %s. Please try again with valid data. Item quantity should be greater than 1",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1116": {
+      "code": "PAYR-1116",
+      "group": "Reference payer",
+      "description": "Hospital is not authorized to raise any case under policy %s. Hence request will not be processed further. Please connect with the support team to get the required authorization",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1117": {
+      "code": "PAYR-1117",
+      "group": "Reference payer",
+      "description": "No policy details found for %s. Hence request will not be processed further",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1118": {
+      "code": "PAYR-1118",
+      "group": "Reference payer",
+      "description": "No details found for requested items. Hence request will not be processed further",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1119": {
+      "code": "PAYR-1119",
+      "group": "Reference payer",
+      "description": "No payer details received for payer id %s from HCX. Please try again with valid payer details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1120": {
+      "code": "PAYR-1120",
+      "group": "Reference payer",
+      "description": "Duplicate reference id found as %s. Please try again with valid reference details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1121": {
+      "code": "PAYR-1121",
+      "group": "Reference payer",
+      "description": "No policy details found for %s for beneficiary %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1122": {
+      "code": "PAYR-1122",
+      "group": "Reference payer",
+      "description": "No policy details found for beneficiary %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1123": {
+      "code": "PAYR-1123",
+      "group": "Reference payer",
+      "description": "Beneficiary is not a covered member for requested payer. Please enroll beneficiary for applicable policy of requested payer and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1201": {
+      "code": "PAYR-1201",
+      "group": "Reference payer",
+      "description": "Invalid claimed amount received for case number %s. Please try again with a valid claim amount. Claimed amount should be greater than INR 0 and less than equals to balance wallet amount of the beneficiary.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1202": {
+      "code": "PAYR-1202",
+      "group": "Reference payer",
+      "description": "Invalid speciality code received as %s for item %s for case number %s. Please try again with valid data. Speciality code is available as the code of the category for specific cost of plan in isurance plan.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1203": {
+      "code": "PAYR-1203",
+      "group": "Reference payer",
+      "description": "Invalid speciality description received as %s for procedure %s for case number %s. Please try again with valid data. Speciality description is available as the display of the category for specific cost of plan in isurance plan.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1204": {
+      "code": "PAYR-1204",
+      "group": "Reference payer",
+      "description": "Invalid procedure code received as %s for case number %s. Please try again with valid data. Procedure code is available as the code of the type for benefit component, of specific cost, of plan in isurance plan.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1205": {
+      "code": "PAYR-1205",
+      "group": "Reference payer",
+      "description": "Invalid procedure description received as %s for procedure %s for case number %s. Please try again with valid data. Procedure description is available as the display of the type for benefit component, of specific cost, of plan in isurance plan.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1206": {
+      "code": "PAYR-1206",
+      "group": "Reference payer",
+      "description": "Invalid procedure type received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1207": {
+      "code": "PAYR-1207",
+      "group": "Reference payer",
+      "description": "Invalid procedure factor received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1208": {
+      "code": "PAYR-1208",
+      "group": "Reference payer",
+      "description": "Invalid procedure quantity received as %s for item %s for case number %s. Please try again with valid data. Item quantity should be greater than 1.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1209": {
+      "code": "PAYR-1209",
+      "group": "Reference payer",
+      "description": "Invalid net amount received as INR %s for item %s for case number %s. Please try again with valid data. Item net amount should be greater than INR 0.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1210": {
+      "code": "PAYR-1210",
+      "group": "Reference payer",
+      "description": "Invalid procedure status received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1211": {
+      "code": "PAYR-1211",
+      "group": "Reference payer",
+      "description": "Requested beneficary details and careplan details does not match any criteria for processing the case at this hospital. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1212": {
+      "code": "PAYR-1212",
+      "group": "Reference payer",
+      "description": "No previous preauthorization approved record found for the enhancement request for case number %s. Hence request will not be processed further. Please initiate a new preauthorization.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1213": {
+      "code": "PAYR-1213",
+      "group": "Reference payer",
+      "description": "Existing case in progress found for case number %s. Hence enhancement request will not be accepted. Please try after the adjudication is completed for the current case.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1214": {
+      "code": "PAYR-1214",
+      "group": "Reference payer",
+      "description": "No previous preauthorization approved record found for the resubmission request for case number %s. Hence request will not be processed further. Please initiate a new preauthorization.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1215": {
+      "code": "PAYR-1215",
+      "group": "Reference payer",
+      "description": "Existing case in progress found for case number %s. Hence resubmission request will not be accepted. Please try after the adjudication is completed for the current case.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1216": {
+      "code": "PAYR-1216",
+      "group": "Reference payer",
+      "description": "Existing case in progress found for case number %s. Hence new preauthorization request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1217": {
+      "code": "PAYR-1217",
+      "group": "Reference payer",
+      "description": "Previous preauthorization approved record found for the new preauthorization request for case number %s. Hence request will not be processed further. Please initiate enhancement/resubmission.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1218": {
+      "code": "PAYR-1218",
+      "group": "Reference payer",
+      "description": "No queried preauthorization record found for the query update request for case number %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1219": {
+      "code": "PAYR-1219",
+      "group": "Reference payer",
+      "description": "Case number %s is not queried. Hence query updation request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1220": {
+      "code": "PAYR-1220",
+      "group": "Reference payer",
+      "description": "Invalid investigation description received as %s for investigation code %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1221": {
+      "code": "PAYR-1221",
+      "group": "Reference payer",
+      "description": "Invalid investigation code received as %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1222": {
+      "code": "PAYR-1222",
+      "group": "Reference payer",
+      "description": "Invalid investigation status received as %s for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1223": {
+      "code": "PAYR-1223",
+      "group": "Reference payer",
+      "description": "Invalid investigation attachment received for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1224": {
+      "code": "PAYR-1224",
+      "group": "Reference payer",
+      "description": "Invalid implant description received as %s for implant code %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1225": {
+      "code": "PAYR-1225",
+      "group": "Reference payer",
+      "description": "Invalid implant code received as %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1226": {
+      "code": "PAYR-1226",
+      "group": "Reference payer",
+      "description": "Invalid implant status received as %s for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1227": {
+      "code": "PAYR-1227",
+      "group": "Reference payer",
+      "description": "Invalid implant attachment received for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1228": {
+      "code": "PAYR-1228",
+      "group": "Reference payer",
+      "description": "Invalid implant quantity received as %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1229": {
+      "code": "PAYR-1229",
+      "group": "Reference payer",
+      "description": "Invalid implant net amount received as INR %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1230": {
+      "code": "PAYR-1230",
+      "group": "Reference payer",
+      "description": "Invalid implant unit price received as INR %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1231": {
+      "code": "PAYR-1231",
+      "group": "Reference payer",
+      "description": "Claim has already been raised for case number %s. Hence preauthorization request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1232": {
+      "code": "PAYR-1232",
+      "group": "Reference payer",
+      "description": "No investigation found for case number %s. Investigation details are mandatory for private hospitals.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1233": {
+      "code": "PAYR-1233",
+      "group": "Reference payer",
+      "description": "Patient liability is not aplicable for the hospital and beneficiary do not have enough wallet balance with deficit amount INR %s for the requested preauthorization for case number %s.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1234": {
+      "code": "PAYR-1234",
+      "group": "Reference payer",
+      "description": "No preauthorization record found for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1235": {
+      "code": "PAYR-1235",
+      "group": "Reference payer",
+      "description": "Insufficient wallet balance. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1236": {
+      "code": "PAYR-1236",
+      "group": "Reference payer",
+      "description": "Invalid claim type (in-patient/out-patient) received. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1237": {
+      "code": "PAYR-1237",
+      "group": "Reference payer",
+      "description": "Beneficiary is having an active preauthorization request at %s. Hence the request will not be processed. Kindly inform %s to cancel the active preauthorization request or raise a claim to proceed with current preauthorization.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1238": {
+      "code": "PAYR-1238",
+      "group": "Reference payer",
+      "description": "Beneficiary is having an active preauthorization request at this hospital with reference number %s. Hence the request will not be processed. Kindly cancel the active preauthorization request or raise a claim to proceed with current preauthorization.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1239": {
+      "code": "PAYR-1239",
+      "group": "Reference payer",
+      "description": "Hospital configuration not found. Please contact support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1240": {
+      "code": "PAYR-1240",
+      "group": "Reference payer",
+      "description": "No details found for the requested procedures in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1241": {
+      "code": "PAYR-1241",
+      "group": "Reference payer",
+      "description": "Invalid registration date received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1242": {
+      "code": "PAYR-1242",
+      "group": "Reference payer",
+      "description": "Invalid registration date format received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1243": {
+      "code": "PAYR-1243",
+      "group": "Reference payer",
+      "description": "Invalid admission date received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1244": {
+      "code": "PAYR-1244",
+      "group": "Reference payer",
+      "description": "Invalid admission date format received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1245": {
+      "code": "PAYR-1245",
+      "group": "Reference payer",
+      "description": "Rule failure.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1246": {
+      "code": "PAYR-1246",
+      "group": "Reference payer",
+      "description": "Invalid payer id received as %s. Please try again with valid payer id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1247": {
+      "code": "PAYR-1247",
+      "group": "Reference payer",
+      "description": "Payer details for payer id %s is not received from HCX for the request. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1248": {
+      "code": "PAYR-1248",
+      "group": "Reference payer",
+      "description": "Invalid item code received as %s for item sequence %s case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1249": {
+      "code": "PAYR-1249",
+      "group": "Reference payer",
+      "description": "Invalid item sequence received as %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1250": {
+      "code": "PAYR-1250",
+      "group": "Reference payer",
+      "description": "Requested policy %s is not listed. Please try again with valid policy code.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1251": {
+      "code": "PAYR-1251",
+      "group": "Reference payer",
+      "description": "No billable treatment plan received for case number %s. Please try again with valid treatment plan data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1252": {
+      "code": "PAYR-1252",
+      "group": "Reference payer",
+      "description": "Case number %s is not in active preauthorization state with the current status of the case with the payer system is %s. Hence the preauthorization can not be cancelled. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1253": {
+      "code": "PAYR-1253",
+      "group": "Reference payer",
+      "description": "Case number %s is already cancelled. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1254": {
+      "code": "PAYR-1254",
+      "group": "Reference payer",
+      "description": "Response for STG Questionnaire id %s is mandatory for procedure code %s. Hence the preauthorization request will not be processed as the questionnaire response is not received for procedure code.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1255": {
+      "code": "PAYR-1255",
+      "group": "Reference payer",
+      "description": "Case number %s is already cancelled. Hence no preauthorization request will be accepted for this case number. New preauthorization request needs to be raised with new case/reference number to proceed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1256": {
+      "code": "PAYR-1256",
+      "group": "Reference payer",
+      "description": "Response for Authentication Consent Questionnaire is missing for case number %s. This must be sent if the biometric authentication for patient is not available. For new preauthorization request, either biometric authentication for patient or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire. Please adhere to the response of the coverage eligibility for auth-requirements purpose to check the mandatory documents to be attached with the request",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1257": {
+      "code": "PAYR-1257",
+      "group": "Reference payer",
+      "description": "Payment is initiated for case number %s. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1258": {
+      "code": "PAYR-1258",
+      "group": "Reference payer",
+      "description": "Payment is accomplished/cleared for case number %s. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1259": {
+      "code": "PAYR-1259",
+      "group": "Reference payer",
+      "description": "DOB is missing for new born for the case number (%s) with correlation id as (%s) at (%s)",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1260": {
+      "code": "PAYR-1260",
+      "group": "Reference payer",
+      "description": "DOB cannot be a future date for the case number (%s) with correlation id as (%s) at (%s)",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1261": {
+      "code": "PAYR-1261",
+      "group": "Reference payer",
+      "description": "Invalid new born details for the case number (%s) with correlation id as (%s) at (%s)",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1262": {
+      "code": "PAYR-1262",
+      "group": "Reference payer",
+      "description": "Gender is mandatory for the new born beneficiary",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1263": {
+      "code": "PAYR-1263",
+      "group": "Reference payer",
+      "description": "Documents are mandatory for the new born beneficiary",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1264": {
+      "code": "PAYR-1264",
+      "group": "Reference payer",
+      "description": "Documents are mandatory for the new born beneficiary",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1265": {
+      "code": "PAYR-1265",
+      "group": "Reference payer",
+      "description": "Documents are mandatory for the new born beneficiary",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1266": {
+      "code": "PAYR-1266",
+      "group": "Reference payer",
+      "description": "Documents are mandatory for the new born beneficiary",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1267": {
+      "code": "PAYR-1267",
+      "group": "Reference payer",
+      "description": "Beneficiary is having an active preauthorization request for new born case at this hospital with reference number %s. Hence the request will not be processed. Kindly cancel the active preauthorization request or raise a claim to proceed with current preauthorization",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1268": {
+      "code": "PAYR-1268",
+      "group": "Reference payer",
+      "description": "Beneficiary is having an active preauthorization request for new born case at %s. Hence the request will not be processed. Kindly inform %s to cancel the active preauthorization request or raise a claim to proceed with current preauthorization",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1269": {
+      "code": "PAYR-1269",
+      "group": "Reference payer",
+      "description": "Date of birth received for new born beneficiary exceeds 6 years before the current date. New born cases can be raised only for the beneficiary whose date of birth is within 6 years of current date",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1270": {
+      "code": "PAYR-1270",
+      "group": "Reference payer",
+      "description": "Item LM100 is not applicable for preauthorization request. This item is expected/mandated only during claim submission if the patient is discharged after/during surgery under LAMA/DAMA category for PMJAY cases.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1271": {
+      "code": "PAYR-1271",
+      "group": "Reference payer",
+      "description": "No value received for link id %s for Authentication Consent Questionnaire for preauthorization request. This must be sent if the biometric authentication for patient is not available. For new preauthorization request, either biometric authentication for patient or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire. Please adhere to the response of the coverage eligibility for auth-requirements purpose to check the mandatory documents to be attached with the request.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1272": {
+      "code": "PAYR-1272",
+      "group": "Reference payer",
+      "description": "Invalid biometric user token received. Please try again with valid valid biometric details of the beneficiary. For any issues with biometric, please try with Authentication Consent Questionnaire, details for which has been received in response for coverage eligibliity auth-requirements.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1273": {
+      "code": "PAYR-1273",
+      "group": "Reference payer",
+      "description": "No questionnaire found for the received selection. Please validate the questionnaire url from insurance plan/coverage auth-requirements response.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1301": {
+      "code": "PAYR-1301",
+      "group": "Reference payer",
+      "description": "Claim has already been raised for case number %s. Hence new claim request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1302": {
+      "code": "PAYR-1302",
+      "group": "Reference payer",
+      "description": "No preauthorization approved record found for case number %s. Hence new claim request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1303": {
+      "code": "PAYR-1303",
+      "group": "Reference payer",
+      "description": "No active claim record found for case number %s. Hence query updation request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1304": {
+      "code": "PAYR-1304",
+      "group": "Reference payer",
+      "description": "No claim queried record found for case number %s. Hence query updation request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1305": {
+      "code": "PAYR-1305",
+      "group": "Reference payer",
+      "description": "Invalid usecase requested for case number %s. Please try again with valid usecase.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1306": {
+      "code": "PAYR-1306",
+      "group": "Reference payer",
+      "description": "No item found in preauthorization request for procedure %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1307": {
+      "code": "PAYR-1307",
+      "group": "Reference payer",
+      "description": "Invalid quantity requested for procedure %s with item sequence %s for case number %s. Please try again with valid quantity.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1308": {
+      "code": "PAYR-1308",
+      "group": "Reference payer",
+      "description": "No item found in active claim request for procedure %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1309": {
+      "code": "PAYR-1309",
+      "group": "Reference payer",
+      "description": "No item found in preauthorization request for implant %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1310": {
+      "code": "PAYR-1310",
+      "group": "Reference payer",
+      "description": "Invalid quantity requested for implant %s with item sequence %s for case number %s. Please try again with valid quantity.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1311": {
+      "code": "PAYR-1311",
+      "group": "Reference payer",
+      "description": "No item found in active claim request for implant %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1312": {
+      "code": "PAYR-1312",
+      "group": "Reference payer",
+      "description": "No item found in preauthorization request for investigation %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1313": {
+      "code": "PAYR-1313",
+      "group": "Reference payer",
+      "description": "Invalid quantity requested for investigation %s with item sequence %s for case number %s. Please try again with valid quantity.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1314": {
+      "code": "PAYR-1314",
+      "group": "Reference payer",
+      "description": "No item found in active claim request for investigation %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1315": {
+      "code": "PAYR-1315",
+      "group": "Reference payer",
+      "description": "Rejected item found for preauthorization for procedure %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1316": {
+      "code": "PAYR-1316",
+      "group": "Reference payer",
+      "description": "Rejected item found for preauthorization for investigation %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1317": {
+      "code": "PAYR-1317",
+      "group": "Reference payer",
+      "description": "Rejected item found for preauthorization for implant %s with item sequence %s for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1318": {
+      "code": "PAYR-1318",
+      "group": "Reference payer",
+      "description": "No requested treatment plan found for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1319": {
+      "code": "PAYR-1319",
+      "group": "Reference payer",
+      "description": "No requested investigation plan found for case number %s. Please try again with valid items.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1320": {
+      "code": "PAYR-1320",
+      "group": "Reference payer",
+      "description": "No details found for the requested investigations in the system. Hence request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1321": {
+      "code": "PAYR-1321",
+      "group": "Reference payer",
+      "description": "Error occurred while processing the request due to invalid workflow id as (%s)",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1322": {
+      "code": "PAYR-1322",
+      "group": "Reference payer",
+      "description": "No active case found for the given case number.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1323": {
+      "code": "PAYR-1323",
+      "group": "Reference payer",
+      "description": "Insufficient wallet balance. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1324": {
+      "code": "PAYR-1324",
+      "group": "Reference payer",
+      "description": "Invalid discharge stage received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1325": {
+      "code": "PAYR-1325",
+      "group": "Reference payer",
+      "description": "Invalid admission date received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1326": {
+      "code": "PAYR-1326",
+      "group": "Reference payer",
+      "description": "Invalid discharge date received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1327": {
+      "code": "PAYR-1327",
+      "group": "Reference payer",
+      "description": "Invalid admission date format received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1328": {
+      "code": "PAYR-1328",
+      "group": "Reference payer",
+      "description": "Invalid discharge date format received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1329": {
+      "code": "PAYR-1329",
+      "group": "Reference payer",
+      "description": "Invalid registration date received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1330": {
+      "code": "PAYR-1330",
+      "group": "Reference payer",
+      "description": "Invalid registration date format received for case number %s. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1331": {
+      "code": "PAYR-1331",
+      "group": "Reference payer",
+      "description": "Receiver not registered in NHCX. Please try again with valid receiver details.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1332": {
+      "code": "PAYR-1332",
+      "group": "Reference payer",
+      "description": "Invalid CRC request.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1333": {
+      "code": "PAYR-1333",
+      "group": "Reference payer",
+      "description": "Invalid claim type (in-patient/out-patient) received. Hence the request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1334": {
+      "code": "PAYR-1334",
+      "group": "Reference payer",
+      "description": "Hospital configuration not found. Please contact support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1335": {
+      "code": "PAYR-1335",
+      "group": "Reference payer",
+      "description": "Invalid implant quantity received as %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1336": {
+      "code": "PAYR-1336",
+      "group": "Reference payer",
+      "description": "Invalid implant unit price received as INR %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1337": {
+      "code": "PAYR-1337",
+      "group": "Reference payer",
+      "description": "Invalid implant net amount received as INR %s for implant %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1338": {
+      "code": "PAYR-1338",
+      "group": "Reference payer",
+      "description": "Invalid implant attachment received for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1339": {
+      "code": "PAYR-1339",
+      "group": "Reference payer",
+      "description": "Invalid implant status received as %s for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1340": {
+      "code": "PAYR-1340",
+      "group": "Reference payer",
+      "description": "Invalid investigation status received as %s for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1341": {
+      "code": "PAYR-1341",
+      "group": "Reference payer",
+      "description": "Invalid investigation attachment received for investigation %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1342": {
+      "code": "PAYR-1342",
+      "group": "Reference payer",
+      "description": "Existing case in progress found for case number %s. Hence new reimbursement request will not be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1343": {
+      "code": "PAYR-1343",
+      "group": "Reference payer",
+      "description": "Previous reimbursement approved record found for the new reimbursement request for case number %s. Hence request will not be processed further.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1344": {
+      "code": "PAYR-1344",
+      "group": "Reference payer",
+      "description": "No details found for the requested procedures in the system.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1345": {
+      "code": "PAYR-1345",
+      "group": "Reference payer",
+      "description": "Invalid procedure status received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1346": {
+      "code": "PAYR-1346",
+      "group": "Reference payer",
+      "description": "Invalid procedure description received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1347": {
+      "code": "PAYR-1347",
+      "group": "Reference payer",
+      "description": "Invalid procedure type received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1348": {
+      "code": "PAYR-1348",
+      "group": "Reference payer",
+      "description": "Invalid procedure factor received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1349": {
+      "code": "PAYR-1349",
+      "group": "Reference payer",
+      "description": "Invalid procedure quantity received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1350": {
+      "code": "PAYR-1350",
+      "group": "Reference payer",
+      "description": "Invalid procedure net amount received as INR %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1351": {
+      "code": "PAYR-1351",
+      "group": "Reference payer",
+      "description": "Invalid speciality code received as %s for procedure %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1352": {
+      "code": "PAYR-1352",
+      "group": "Reference payer",
+      "description": "Requested beneficary details and careplan details does not match any criteria for processing the case at this hospital. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1353": {
+      "code": "PAYR-1353",
+      "group": "Reference payer",
+      "description": "Invalid careplan id received. Please try again with valid careplan id.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1354": {
+      "code": "PAYR-1354",
+      "group": "Reference payer",
+      "description": "Rule failure.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1355": {
+      "code": "PAYR-1355",
+      "group": "Reference payer",
+      "description": "No details found for the requested implants in the system. Hence request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1356": {
+      "code": "PAYR-1356",
+      "group": "Reference payer",
+      "description": "Patient liability is not aplicable for the hospital and beneficiary do not have enough wallet balance with deficit amount INR %s for the requested preauthorization for case number %s.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1357": {
+      "code": "PAYR-1357",
+      "group": "Reference payer",
+      "description": "Admission date cannot be after the discharge date. Hence request will not be processed. Please correct the data and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1358": {
+      "code": "PAYR-1358",
+      "group": "Reference payer",
+      "description": "Registration of the patient is allowed maximum upto %s days after admission. Hence request will not be processed. Please correct the data and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1359": {
+      "code": "PAYR-1359",
+      "group": "Reference payer",
+      "description": "No billable treatment plan received for case number %s. Please try again with valid treatment plan data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1360": {
+      "code": "PAYR-1360",
+      "group": "Reference payer",
+      "description": "Invalid item code received as %s for item sequence %s case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1361": {
+      "code": "PAYR-1361",
+      "group": "Reference payer",
+      "description": "Invalid item sequence received as %s for case number %s. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1362": {
+      "code": "PAYR-1362",
+      "group": "Reference payer",
+      "description": "No procedure with code LM100 received with 'Requested' status for case number %s. Please try again with valid data. For PMJAY claims, if case comes under LAMA/DAMA scenario with beneficiary being discharged before surgery or during surgery, procedure with code LM100 is mandatory. Only this procedure code will be accepted for LAMA/DAMA case, and all other previous preauthorization approved items will get disqualified for the claim submission",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1363": {
+      "code": "PAYR-1363",
+      "group": "Reference payer",
+      "description": "Response for Authentication Consent Questionnaire is missing for case number %s. This must be sent if the biometric authentication for patient is not available during discharge. For new claim request, either biometric authentication for patient during discharge, or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1364": {
+      "code": "PAYR-1364",
+      "group": "Reference payer",
+      "description": "No value received for link id %s for Authentication Consent Questionnaire for claim request. This must be sent if the biometric authentication for patient is not available during discharge. For new claim request, either biometric authentication for patient during discharge, or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1365": {
+      "code": "PAYR-1365",
+      "group": "Reference payer",
+      "description": "Response for STG Questionnaire id %s is mandatory for procedure code %s. Hence the preauthorization request will not be processed as the questionnaire response is not received for procedure code.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1366": {
+      "code": "PAYR-1366",
+      "group": "Reference payer",
+      "description": "Invalid biometric user token received. Please try again with valid biometric details of the beneficiary. For any issues with biometric, please try with Authentication Consent Questionnaire for discharge, details for which has been received in insurance plan.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1367": {
+      "code": "PAYR-1367",
+      "group": "Reference payer",
+      "description": "No biometric records found for the beneficiary for %s. Please ensure correctness of biometric authentication date for the day for cyclic procedure %s.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1368": {
+      "code": "PAYR-1368",
+      "group": "Reference payer",
+      "description": "%s units of cycle information received for procedure code %s with item sequence %s. Cycle information should be sent for all the requested/processed cycles.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1369": {
+      "code": "PAYR-1369",
+      "group": "Reference payer",
+      "description": "Biometric authentication cannot be performed more than once on the same date. Multiple biometric authentication information has been provided for same date for cyclic procedure %s. Hence case will not be processed. Please check and update biometric authentication execution dates and try again.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1370": {
+      "code": "PAYR-1370",
+      "group": "Reference payer",
+      "description": "Received invalid start date as %s for supporting details with item sequence %s. Please try again with valid start date.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1401": {
+      "code": "PAYR-1401",
+      "group": "Reference payer",
+      "description": "<policy_code> policy not allowed for the hospital. Please reach out to technical support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1402": {
+      "code": "PAYR-1402",
+      "group": "Reference payer",
+      "description": "Requested policy <policy_code> found not be associated with any payer for insurance plan request. Hence request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1403": {
+      "code": "PAYR-1403",
+      "group": "Reference payer",
+      "description": "Requested renewal <renewal_code> found not be associated with requested policy <policy_code> for insurance plan request. Hence request will not be processed.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1404": {
+      "code": "PAYR-1404",
+      "group": "Reference payer",
+      "description": "No treatment provided for policy <policy_code> under any speciality. Please reach out to technical support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1405": {
+      "code": "PAYR-1405",
+      "group": "Reference payer",
+      "description": "No enrolled hospital found for HFR id <hfr_id> or sender id <sender_code>. Please reach out to technical support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1406": {
+      "code": "PAYR-1406",
+      "group": "Reference payer",
+      "description": "Existing request with correlation id %s is in progress with the payer. Hence this request will not be accepted until the execution for previous request is complete. Please wait for 15 - 60 minutes to allow the execution of previous requests. For further assistance, please reach out to technical support team.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1501": {
+      "code": "PAYR-1501",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - ONS and code - PSP for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - PSP combination is used to get the surgery date. So the surgery date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - PSP.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1502": {
+      "code": "PAYR-1502",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - ONS and code - ADDD for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - ADDD combination is used to get the admission date. So the admission date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - ADDD.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1503": {
+      "code": "PAYR-1503",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - ONS and code - DTM for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - DTM combination is used to get the death date. So the death date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - DTM.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1504": {
+      "code": "PAYR-1504",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - NMI and code - CQD for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - NMI and code - CQD combination is used to get the overall case remarks for query response. So the case remarks for query response should be sent as a string value, adhering to the NRCES standards, with the category - NMI and code - CQD.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1505": {
+      "code": "PAYR-1505",
+      "group": "Reference payer",
+      "description": "Category received as %s and code received as %s for item with sequence %s in supporting info in claim resource, where the reference value redirects to Questionnaire Response resource in the FHIR bundle. To include a policy/case level Questionnaire Response, in supporting info list there should be an entry with category - INF and code - ODN , and the value as reference. This reference value should refer to a resource of Questionnaire Response in the FHIR bundle. To include response for any STG questionnaire, in supporting info list there should be an entry with category - STG, and the value as reference",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1506": {
+      "code": "PAYR-1506",
+      "group": "Reference payer",
+      "description": "Invalid gender received for new born patient. Please try agian with valid gender data as it is mandatory for PMJAY in new born case. Please refer to the valid gender values at https://hl7.org/fhir/R4/valueset-administrative-gender.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1507": {
+      "code": "PAYR-1507",
+      "group": "Reference payer",
+      "description": "Invalid date of birth received for new born patient. Please try agian with valid date of birth as it is mandatory for PMJAY in new born case.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1508": {
+      "code": "PAYR-1508",
+      "group": "Reference payer",
+      "description": "Invalid resource received for new born patient for url %s. Please try agian with valid Patient resource for the link reference as linked Patient resource is mandatory for PMJAY in new born case",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1509": {
+      "code": "PAYR-1509",
+      "group": "Reference payer",
+      "description": "Invalid attachment received for new born patient. Please try agian with valid attachment as attachment is mandatory for PMJAY in new born case",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1510": {
+      "code": "PAYR-1510",
+      "group": "Reference payer",
+      "description": "Invalid parameter code received. Please check and try again with a valid parameter code",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1511": {
+      "code": "PAYR-1511",
+      "group": "Reference payer",
+      "description": "Invalid parameter value received. Please check and try again with a valid parameter value",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1512": {
+      "code": "PAYR-1512",
+      "group": "Reference payer",
+      "description": "Invalid resource received for patient for url %s. Please try agian with valid Patient resource for the reference",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1513": {
+      "code": "PAYR-1513",
+      "group": "Reference payer",
+      "description": "Invalid diagnosis received in DiagnosisComponent. In DiagnosisComponent, diagnosis should be sent as CodeableConcept. Please try agian with valid data",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1514": {
+      "code": "PAYR-1514",
+      "group": "Reference payer",
+      "description": "Value type received as %s for category - DIS for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - DIS is used to get the discharge related information. So the discharge information should be sent as string value, with value representing discharge stage (After Surgery / Before Surgery / During Surgery), with the category - DIS and code - DTH/LAMA/DAMA/DTM",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1515": {
+      "code": "PAYR-1515",
+      "group": "Reference payer",
+      "description": "Invalid name received for organization resource with url %s. Name is mandatory for organization resource. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1516": {
+      "code": "PAYR-1516",
+      "group": "Reference payer",
+      "description": "No event found for api-caller-id %s and correlation id %s for sender code %s. Hence error response willnot be accepted.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1517": {
+      "code": "PAYR-1517",
+      "group": "Reference payer",
+      "description": "Invalid error structure received for NHCX error. Protocol response structure is expected, but received JWEPayloadResponse.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1518": {
+      "code": "PAYR-1518",
+      "group": "Reference payer",
+      "description": "No input parameters received for task resource. Input parameters are expected for task resource, but not received. Please try again with valid data.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1519": {
+      "code": "PAYR-1519",
+      "group": "Reference payer",
+      "description": "No type found for task input parameters. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "PAYR-1520": {
+      "code": "PAYR-1520",
+      "group": "Reference payer",
+      "description": "Invalid resource received for communication for url %s. Please try agian with valid Communication resource for the reference.",
+      "cite": "06-reference/01-error-codes.md"
+    },
+    "ERR-PYR-CLM-007": {
+      "code": "ERR-PYR-CLM-007",
+      "group": "Observed live",
+      "description": "No prior preauthorization or claim record found for case number",
+      "cite": "06-reference/01-error-codes.md"
+    }
+  },
+  "endpoints": {
+    "": {
+      "method": "POST",
+      "service": "Session",
+      "purpose": "Mints the ABDM gateway session token that every NHCX call carries, from the client ID and secret issued for Milestone 1.",
+      "cite": "07-api-collection/01-session.md"
+    },
+    "/v1/coverageeligibility/check": {
+      "path": "/v1/coverageeligibility/check",
+      "method": "POST",
+      "service": "Coverage eligibility",
+      "purpose": "Provider asks the payer, via NHCX, whether a beneficiary's policy is in force, what it covers and which documents a preauth will need.",
+      "cite": "07-api-collection/02-eligibility.md"
+    },
+    "/v1/coverageeligibility/on_check": {
+      "path": "/v1/coverageeligibility/on_check",
+      "method": "POST",
+      "service": "Coverage eligibility",
+      "purpose": "Payer returns the CoverageEligibilityResponse (policy in force, benefits, auth requirements) or an error to the provider through NHCX.",
+      "cite": "07-api-collection/02-eligibility.md"
+    },
+    "/internal/v1/coverageeligibility/check": {
+      "path": "/internal/v1/coverageeligibility/check",
+      "method": "POST",
+      "service": "Coverage eligibility",
+      "purpose": "Internal twin of /v1/coverageeligibility/check with the same JWEPayload body and response set; only the operationId differs.",
+      "cite": "07-api-collection/02-eligibility.md"
+    },
+    "/internal/v1/coverageeligibility/on_check": {
+      "path": "/internal/v1/coverageeligibility/on_check",
+      "method": "POST",
+      "service": "Coverage eligibility",
+      "purpose": "Internal twin of /v1/coverageeligibility/on_check taking the same bare object body; only the operationId differs.",
+      "cite": "07-api-collection/02-eligibility.md"
+    },
+    "/v1/preauth/submit": {
+      "path": "/v1/preauth/submit",
+      "method": "POST",
+      "service": "Pre-authorisation",
+      "purpose": "Provider submits, resubmits, enhances or answers a query on a pre-authorisation Claim bundle (Claim.use preauthorization); NHCX routes it to the payer.",
+      "cite": "07-api-collection/03-preauth.md"
+    },
+    "/internal/v1/preauth/submit": {
+      "path": "/internal/v1/preauth/submit",
+      "method": "POST",
+      "service": "Pre-authorisation",
+      "purpose": "Internal twin of /v1/preauth/submit (operationId preauthSubmitPostInternal) with the same JWEPayload body and response set. Exposed for the NHCX adapter deployment rather than for direct integration.",
+      "cite": "07-api-collection/03-preauth.md"
+    },
+    "/v1/preauth/on_submit": {
+      "path": "/v1/preauth/on_submit",
+      "method": "POST",
+      "service": "Pre-authorisation",
+      "purpose": "Payer returns the ClaimResponseBundle for a pre-authorisation (approved, partially approved, queried or rejected) to the provider via NHCX.",
+      "cite": "07-api-collection/03-preauth.md"
+    },
+    "/internal/v1/preauth/on_submit": {
+      "path": "/internal/v1/preauth/on_submit",
+      "method": "POST",
+      "service": "Pre-authorisation",
+      "purpose": "Internal twin of /v1/preauth/on_submit (operationId preauthOnSubmitPostInternal) with the same JWEPayload body and response set. Exposed for the NHCX adapter deployment rather than for direct integration.",
+      "cite": "07-api-collection/03-preauth.md"
+    },
+    "/v1/predetermination/submit": {
+      "path": "/v1/predetermination/submit",
+      "method": "POST",
+      "service": "Predetermination",
+      "purpose": "Provider asks the payer what it would approve for a proposed treatment before committing to a pre-authorisation. The bundle has the pre-authorisation's shape with Claim.use predetermination. This is use case B9.",
+      "cite": "07-api-collection/04-predetermination.md"
+    },
+    "/v1/predetermination/on_submit": {
+      "path": "/v1/predetermination/on_submit",
+      "method": "POST",
+      "service": "Predetermination",
+      "purpose": "Payer returns its estimate for a predetermination request to the provider: a ClaimResponse with use predetermination and the benefit it would approve. This is use case C11.",
+      "cite": "07-api-collection/04-predetermination.md"
+    },
+    "/v1/claim/submit": {
+      "path": "/v1/claim/submit",
+      "method": "POST",
+      "service": "Claim",
+      "purpose": "Provider submits the final itemised Claim bundle (Claim.use claim), or a claim query response or resubmission; NHCX routes it to the payer.",
+      "cite": "07-api-collection/05-claim.md"
+    },
+    "/v1/claim/on_submit": {
+      "path": "/v1/claim/on_submit",
+      "method": "POST",
+      "service": "Claim",
+      "purpose": "Payer returns interim (response.partial) and final (response.complete) ClaimResponseBundles for a claim to the provider via NHCX.",
+      "cite": "07-api-collection/05-claim.md"
+    },
+    "/internal/v1/claim/submit": {
+      "path": "/internal/v1/claim/submit",
+      "method": "POST",
+      "service": "Claim",
+      "purpose": "Internal twin of /v1/claim/submit (operationId claimSubmitPostInternal) with the same JWEPayload body and response set.",
+      "cite": "07-api-collection/05-claim.md"
+    },
+    "/internal/v1/claim/on_submit": {
+      "path": "/internal/v1/claim/on_submit",
+      "method": "POST",
+      "service": "Claim",
+      "purpose": "Internal twin of /v1/claim/on_submit (operationId claimOnSubmitPostInternal) taking the same bare object body.",
+      "cite": "07-api-collection/05-claim.md"
+    },
+    "/v1/paymentnotice/request": {
+      "path": "/v1/paymentnotice/request",
+      "method": "POST",
+      "service": "Payment notice",
+      "purpose": "Payer pushes a Task bundle with PaymentNotice and PaymentReconciliation (amount, TDS, UTR) to the provider via NHCX after approving a claim.",
+      "cite": "07-api-collection/06-payment-notice.md"
+    },
+    "/internal/v1/paymentnotice/request": {
+      "path": "/internal/v1/paymentnotice/request",
+      "method": "POST",
+      "service": "Payment notice",
+      "purpose": "Internal twin of /v1/paymentnotice/request (operationId paymentNoticeRequestPostInternal) with the same JWEPayload body and response set. Exposed for the NHCX adapter deployment rather than for direct integration.",
+      "cite": "07-api-collection/06-payment-notice.md"
+    },
+    "/v1/paymentnotice/on_request": {
+      "path": "/v1/paymentnotice/on_request",
+      "method": "POST",
+      "service": "Payment notice",
+      "purpose": "Provider acknowledges a payment notice with a Task bundle (status completed, output paymentack), closing the payment lifecycle via NHCX.",
+      "cite": "07-api-collection/06-payment-notice.md"
+    },
+    "/internal/v1/paymentnotice/on_request": {
+      "path": "/internal/v1/paymentnotice/on_request",
+      "method": "POST",
+      "service": "Payment notice",
+      "purpose": "Internal twin of /v1/paymentnotice/on_request (operationId paymentNoticeOnRequestPostInternal) with the same JWEPayload body and response set. Exposed for the NHCX adapter deployment rather than for direct integration.",
+      "cite": "07-api-collection/06-payment-notice.md"
+    },
+    "/v1/communication/request": {
+      "path": "/v1/communication/request",
+      "method": "POST",
+      "service": "Communication",
+      "purpose": "Payer pushes a Task plus Communication bundle to a provider mid-claim: TAT alerts, wallet or policy changes, grievances or extra-information requests.",
+      "cite": "07-api-collection/07-communication.md"
+    },
+    "/v1/communication/on_request": {
+      "path": "/v1/communication/on_request",
+      "method": "POST",
+      "service": "Communication",
+      "purpose": "Provider returns the acknowledgement Task bundle for a payer communication, echoing the reason code and correlation id so the payer can close the loop.",
+      "cite": "07-api-collection/07-communication.md"
+    },
+    "/internal/v1/communication/request": {
+      "path": "/internal/v1/communication/request",
+      "method": "POST",
+      "service": "Communication",
+      "purpose": "Internal twin of /v1/communication/request: same JWEPayload body, description and 202 envelope, operationId communicationRequestPostInternal.",
+      "cite": "07-api-collection/07-communication.md"
+    },
+    "/internal/v1/communication/on_request": {
+      "path": "/internal/v1/communication/on_request",
+      "method": "POST",
+      "service": "Communication",
+      "purpose": "Internal twin of /v1/communication/on_request: the provider acknowledgement Task bundle, operationId communicationOnRequestPostInternal.",
+      "cite": "07-api-collection/07-communication.md"
+    },
+    "/v1/status": {
+      "path": "/v1/status",
+      "method": "POST",
+      "service": "Status and search",
+      "purpose": "Sender asks NHCX where its own in-flight request stands; the gateway answers request.queued or request.dispatched, and only dispatched yields a callback.",
+      "cite": "07-api-collection/08-status.md"
+    },
+    "/v1/search/submit": {
+      "path": "/v1/search/submit",
+      "method": "POST",
+      "service": "Status and search",
+      "purpose": "Authorised entity such as NHA or IRDAI sends a Task to retrieve claim information for a case; the payer returns the documents on the search callback.",
+      "cite": "07-api-collection/08-status.md"
+    },
+    "/v1/search/on_submit": {
+      "path": "/v1/search/on_submit",
+      "method": "POST",
+      "service": "Status and search",
+      "purpose": "Callback returning a search result for task type code=poll; for a claim-document search the payload is the ClaimResponse for the reference number.",
+      "cite": "07-api-collection/08-status.md"
+    },
+    "/v1/insuranceplan/request": {
+      "path": "/v1/insuranceplan/request",
+      "method": "POST",
+      "service": "Insurance plan",
+      "purpose": "Provider sends a Task with code poll naming a policy number and/or its HFR id to fetch the payer's machine-readable InsurancePlan for that pairing.",
+      "cite": "07-api-collection/09-insurance-plan.md"
+    },
+    "/v1/insuranceplan/on_request": {
+      "path": "/v1/insuranceplan/on_request",
+      "method": "POST",
+      "service": "Insurance plan",
+      "purpose": "Payer returns the InsurancePlan collection Bundle (InsurancePlan, Organization, optional Questionnaire) under the request correlation id.",
+      "cite": "07-api-collection/09-insurance-plan.md"
+    },
+    "/internal/v1/insuranceplan/request": {
+      "path": "/internal/v1/insuranceplan/request",
+      "method": "POST",
+      "service": "Insurance plan",
+      "purpose": "Internal twin of /v1/insuranceplan/request on the insuranceplanhcxservice: same TaskBundle payload, same 202 envelope, distinct operationId.",
+      "cite": "07-api-collection/09-insurance-plan.md"
+    },
+    "/internal/v1/insuranceplan/on_request": {
+      "path": "/internal/v1/insuranceplan/on_request",
+      "method": "POST",
+      "service": "Insurance plan",
+      "purpose": "Internal twin of /v1/insuranceplan/on_request: the payer InsuranceplanBundle callback with identical semantics, distinct operationId.",
+      "cite": "07-api-collection/09-insurance-plan.md"
+    },
+    "/get/session": {
+      "path": "/get/session",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Exchanges the participant's client_id and client_secret (OAuth 2.0 client credentials) for a Bearer access_token valid for 1200 seconds.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/update": {
+      "path": "/participant/update",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Updates a participant's registry record; participant_code and roles are mandatory, every other field (certificate, endpoint, contacts, status) is optional.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/update": {
+      "path": "/v2/participant/update",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Stages a change to a participant encryption certificate and/or endpoint URL; returns a transactionid for passcode confirmation via /update/validate.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/search": {
+      "path": "/participant/search",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Reads a participant's full registry record by participant_code, including roles, status, encryption_cert and endpoint_url.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/details": {
+      "path": "/participant/details",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "V2 variant of participant search: takes participant_code and returns the matching full registry records.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/fetch/participants/list": {
+      "path": "/fetch/participants/list",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Payer discovery: lists participants filtered by role, registration date window and optional entity type; the first step of the cashless workflow.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/fetch/certs": {
+      "path": "/fetch/certs",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Returns a participant's public encryption certificate (PEM X.509 or SPKI key) by participantid; cache it for 24 hours and use it to build the JWE.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/fetch/certs/path": {
+      "path": "/fetch/certs/path",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Companion to /fetch/certs: takes the same participantid body and returns a string described as the participant's certificate path.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/update/cert": {
+      "path": "/v2/update/cert",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Replaces a participant's public encryption certificate by participantId without passcode validation; the same schema is echoed back on success.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/get/linked/registry/mst": {
+      "path": "/get/linked/registry/mst",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Internal-use participant-service operation that fetches the linked registry master; listed in the OpenAPI but not intended for integrators.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/link/abha/policy": {
+      "path": "/participant/link/abha/policy",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Payer-side write that links a beneficiary's ABHA number and member id to one or more products, so provider policy lookups can find them.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/link/abha/policy": {
+      "path": "/v2/participant/link/abha/policy",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "V2 variant of the ABHA policy link; same ParticipantLinkAbhaRequest body and ParticipantLinkAbhaResponse as the unversioned call.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/link/abha/policy/init": {
+      "path": "/v2/participant/link/abha/policy/init",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "First half of the two-step v2 link: submits the ABHA policy link request, to be confirmed with a passcode via the validate endpoint.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/link/abha/policy/validate": {
+      "path": "/v2/participant/link/abha/policy/validate",
+      "method": "GET",
+      "service": "Participant registry",
+      "purpose": "Second half of the two-step v2 link: confirms an initiated ABHA policy link with the passcode and transactionId query parameters.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/delink/abha/policy": {
+      "path": "/participant/delink/abha/policy",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Removes specific products from a member's policy link for a payer, keyed on payerid, memberid and the products listed.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/delink/abha/policy": {
+      "path": "/v2/participant/delink/abha/policy",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "V2 variant of the ABHA policy de-link; same ParticipantDeLinkAbhaRequest body and response as the unversioned call.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/get/policies": {
+      "path": "/participant/get/policies",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Looks up the policies linked to a beneficiary by ABHA number, member id or mobile number, returning the payer and product details needed for claims.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/v2/participant/get/policies": {
+      "path": "/v2/participant/get/policies",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "V2 variant of the beneficiary policy lookup; same FetchParticipantPoliciesRequest body and ParticipantListResponse as the unversioned call.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/update/abhanumber": {
+      "path": "/update/abhanumber",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Replaces a placeholder (dummy) ABHA number with the beneficiary's real ABHA number in the ABHA_AUTH_TRANSACTION table.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/product/link": {
+      "path": "/product/link",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Registers a product (product id and name) against a payer's participant code, so that it can be referenced in ABHA policy links.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/product/delink": {
+      "path": "/product/delink",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Removes a product (product id and name) from a payer's participant code in the registry.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/product/getowner": {
+      "path": "/product/getowner",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Resolves a product id to the participant code of the payer that owns it.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/getproductidname": {
+      "path": "/participant/getproductidname",
+      "method": "POST",
+      "service": "Participant registry",
+      "purpose": "Retrieving API described as generating the product id and product name; declared with a bare string request body and a participant-code response.",
+      "cite": "07-api-collection/10-registry.md"
+    },
+    "/participant/create": {
+      "path": "/participant/create",
+      "method": "POST",
+      "service": "Onboarding",
+      "purpose": "Creates a participant record in the NHCX registry from a full v1 profile and returns the generated participant_code.",
+      "cite": "07-api-collection/11-onboarding.md"
+    },
+    "/v2/participant/create": {
+      "path": "/v2/participant/create",
+      "method": "POST",
+      "service": "Onboarding",
+      "purpose": "Registry-linked creation: registry type and ID, role codes, endpoint URL and contacts; returns participantid and a transactionid for /validate.",
+      "cite": "07-api-collection/11-onboarding.md"
+    },
+    "/v2/participant/hementity/create": {
+      "path": "/v2/participant/hementity/create",
+      "method": "POST",
+      "service": "Onboarding",
+      "purpose": "Creates a hospital (HEM-entity) participant from the full empanelment payload (bank, tax, beds, specialities, doctors); returns status and hospitalid.",
+      "cite": "07-api-collection/11-onboarding.md"
+    },
+    "/validate": {
+      "path": "/validate",
+      "method": "GET",
+      "service": "Onboarding",
+      "purpose": "Confirms a participant creation by presenting the SMS passcode and the transactionId returned by /v2/participant/create.",
+      "cite": "07-api-collection/11-onboarding.md"
+    },
+    "/update/validate": {
+      "path": "/update/validate",
+      "method": "GET",
+      "service": "Onboarding",
+      "purpose": "Confirms a participant update by presenting the SMS passcode and the transactionId returned by /v2/participant/update.",
+      "cite": "07-api-collection/11-onboarding.md"
+    },
+    "/process/request": {
+      "path": "/process/request",
+      "method": "POST",
+      "service": "PMJAY adjudicator",
+      "purpose": "Makes the sandbox dummy payer, participant 1000003538@hcx, approve, reject or query a pre-authorisation or claim you have submitted, by correlation ID.",
+      "cite": "07-api-collection/12-adjudicator.md"
+    },
+    "/paymentnotice/init": {
+      "path": "/paymentnotice/init",
+      "method": "POST",
+      "service": "PMJAY adjudicator",
+      "purpose": "Makes the sandbox dummy payer send a payment notice to the provider named, on /v1/paymentnotice/request.",
+      "cite": "07-api-collection/12-adjudicator.md"
+    },
+    "/v1/task/submit": {
+      "path": "/v1/task/submit",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Provider sends a FHIR Task asking the payer to reprocess a rejected or short-paid claim or to cancel a preauth; Task.code and reasonCode set the intent.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/task/on_submit": {
+      "path": "/v1/task/on_submit",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Payer returns a Task bundle with Task.status completed whose Task.output references a ClaimResponse carrying the reprocess or cancellation outcome.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/internal/v1/task/submit": {
+      "path": "/internal/v1/task/submit",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Internal twin of /v1/task/submit on the taskhcxservice, operationId hcxTaskPostInternal, with the same JWEPayload Task body and 202 envelope.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/internal/v1/task/on_submit": {
+      "path": "/internal/v1/task/on_submit",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Internal twin of /v1/task/on_submit (hcxOnTaskPostInternal): the payer Task bundle wrapping the ClaimResponse outcome of a reprocess or cancel.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/notification/subscribe": {
+      "path": "/v1/notification/subscribe",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "A Beneficiary Service Provider (PHR app) subscribes an ABHA id to notification topics; NHCX persists it synchronously, Last-Linked-Wins per ABHA id.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/notification/on_subscribe": {
+      "path": "/v1/notification/on_subscribe",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "BSP-side subscription acknowledgement; the same name denotes the callback where NHCX pushes claim-event notifications for a subscribed ABHA id.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/delete": {
+      "path": "/v1/delete",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Internal troubleshooting operation on the claim service that deletes records by correlationid and action; not part of the business transaction flows.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v3/api-docs": {
+      "path": "/v3/api-docs",
+      "method": "GET",
+      "service": "Other",
+      "purpose": "Serves the status service's OpenAPI 3 document, optionally filtered by a group query parameter; a discovery endpoint, not a protocol API.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v2/api-docs": {
+      "path": "/v2/api-docs",
+      "method": "GET",
+      "service": "Other",
+      "purpose": "Serves the status service's Swagger 2 document, optionally filtered by a group query parameter; a discovery endpoint, not a protocol API.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/swagger-resources": {
+      "path": "/swagger-resources",
+      "method": "GET",
+      "service": "Other",
+      "purpose": "Lists the Swagger resources (API document locations) exposed by the status service; used by Swagger UI, not by integrations.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/swagger-resources/configuration/ui": {
+      "path": "/swagger-resources/configuration/ui",
+      "method": "GET",
+      "service": "Other",
+      "purpose": "Returns the Swagger UI display configuration for the status service; consumed by Swagger UI, not by integrations.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/swagger-resources/configuration/security": {
+      "path": "/swagger-resources/configuration/security",
+      "method": "GET",
+      "service": "Other",
+      "purpose": "Returns the Swagger UI security configuration for the status service; consumed by Swagger UI, not by integrations.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/on_status": {
+      "path": "/v1/on_status",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "The answer to a status request, delivered to the sender that asked. The x-hcx-status in the protected header says where the message you asked about got to. The payload is an empty string.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/v1/error": {
+      "path": "/v1/error",
+      "method": "POST",
+      "service": "Other",
+      "purpose": "Where the exchange tells a sender that a request could not be delivered after five attempts. Received by every participant under its registered address. There is no outbound form.",
+      "cite": "07-api-collection/13-other.md"
+    },
+    "/abha/biometric/auth/init": {
+      "path": "/abha/biometric/auth/init",
+      "method": "POST",
+      "service": "ABHA biometric authentication",
+      "purpose": "Starts a fingerprint or iris authentication of a PMJAY beneficiary against the ABHA registry and returns the txnId the verify call needs.",
+      "cite": "07-api-collection/14-biometric.md"
+    },
+    "/abha/biometric/auth/verify": {
+      "path": "/abha/biometric/auth/verify",
+      "method": "POST",
+      "service": "ABHA biometric authentication",
+      "purpose": "Completes the authentication started by Biometric auth init with the captured PID block, and returns the beneficiary's user token, valid thirty minutes.",
+      "cite": "07-api-collection/14-biometric.md"
+    },
+    "/abha/biometric/auth/refresh/token": {
+      "path": "/abha/biometric/auth/refresh/token",
+      "method": "GET",
+      "service": "ABHA biometric authentication",
+      "purpose": "Exchanges the refresh token from Biometric auth verify for a new thirty-minute user token without a fresh capture.",
+      "cite": "07-api-collection/14-biometric.md"
+    },
+    "/abha/biometric/faceauth/init": {
+      "path": "/abha/biometric/faceauth/init",
+      "method": "POST",
+      "service": "ABHA biometric authentication",
+      "purpose": "Starts a face authentication on the ABDM proxy host and returns the txnId the rest of the face flow quotes.",
+      "cite": "07-api-collection/14-biometric.md"
+    },
+    "/abha/biometric/capture/pid": {
+      "path": "/abha/biometric/capture/pid",
+      "method": "POST",
+      "service": "ABHA biometric authentication",
+      "purpose": "Polls for the face capture the patient completes in the ABHA app after scanning the QR code for the txnId from Face auth init.",
+      "cite": "07-api-collection/14-biometric.md"
+    },
+    "/abha/biometric/v2/auth/verify": {
+      "path": "/abha/biometric/v2/auth/verify",
+      "method": "POST",
+      "service": "ABHA biometric authentication",
+      "purpose": "Completes a face authentication with the encrypted Aadhaar number, the Aadhaar-linked mobile and the txnId, and returns the beneficiary's user token.",
+      "cite": "07-api-collection/14-biometric.md"
+    }
+  },
+  "glossary": {
+    "ABDM": {
+      "term": "ABDM",
+      "definition": "Ayushman Bharat Digital Mission. The national digital health programme under which NHCX is built.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "SNOMED CT": {
+      "term": "SNOMED CT",
+      "definition": "The clinical, diagnosis and laboratory terminologies FHIR bundles carry, alongside the NRCeS value sets for claim-specific codes.",
+      "group": "Organisations and programmes",
+      "also": "ICD, LOINC",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "ICD": {
+      "term": "ICD",
+      "definition": "The clinical, diagnosis and laboratory terminologies FHIR bundles carry, alongside the NRCeS value sets for claim-specific codes.",
+      "group": "Organisations and programmes",
+      "also": "SNOMED CT, LOINC",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "LOINC": {
+      "term": "LOINC",
+      "definition": "The clinical, diagnosis and laboratory terminologies FHIR bundles carry, alongside the NRCeS value sets for claim-specific codes.",
+      "group": "Organisations and programmes",
+      "also": "SNOMED CT, ICD",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "NHA": {
+      "term": "NHA",
+      "definition": "National Health Authority. Publishes the NHCX specifications, runs the exchange, and administers PMJAY.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "NRCeS": {
+      "term": "NRCeS",
+      "definition": "National Resource Centre for EHR Standards, at C-DAC Pune. Publishes the FHIR profiles and value sets NHCX bundles must follow.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "IRDAI": {
+      "term": "IRDAI",
+      "definition": "Insurance Regulatory and Development Authority of India. Consulted on the specifications; the registry insurers and TPAs are identified by.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "PMJAY": {
+      "term": "PMJAY",
+      "definition": "Pradhan Mantri Jan Arogya Yojana, the Ayushman Bharat health assurance scheme. On NHCX it is a payer with scheme-specific rules.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "SHA": {
+      "term": "SHA",
+      "definition": "State Health Agency. Administers PMJAY in a state; under the trust model, the payer for that state.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "TPA": {
+      "term": "TPA",
+      "definition": "Third-party administrator. Processes claims on an insurer's behalf; on the network it behaves as a payer and is the processor for the policies it handles.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "ISNP": {
+      "term": "ISNP",
+      "definition": "Insurance self-network platform; an insurance marketplace, a participant role with aggregated or consented data access.",
+      "group": "Organisations and programmes",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "BSP": {
+      "term": "BSP",
+      "definition": "Beneficiary service provider, end-user application. A patient's personal health record app registered as a participant to receive notifications.",
+      "group": "Organisations and programmes",
+      "also": "EUA",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "EUA": {
+      "term": "EUA",
+      "definition": "Beneficiary service provider, end-user application. A patient's personal health record app registered as a participant to receive notifications.",
+      "group": "Organisations and programmes",
+      "also": "BSP",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "TMS": {
+      "term": "TMS",
+      "definition": "Transaction Management System. NHA's provider and payer applications for PMJAY claims; the system an HMIS integration replaces on the provider side.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "BIS": {
+      "term": "BIS",
+      "definition": "Beneficiary Identification System. PMJAY's beneficiary register.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "HEM": {
+      "term": "HEM",
+      "definition": "Hospital Empanelment Module. PMJAY's hospital register; the HEM ID is mapped to the NHCX participant ID at go-live.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "PPD": {
+      "term": "PPD",
+      "definition": "Preauthorisation Processing Doctor. The payer-side role that adjudicates preauthorisations.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "CPD": {
+      "term": "CPD",
+      "definition": "Claim Processing Doctor. The payer-side role that adjudicates claims.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "CRC": {
+      "term": "CRC",
+      "definition": "Claim Review Committee. Decides appeals; its decision is final.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "HBP": {
+      "term": "HBP",
+      "definition": "Health Benefit Package. PMJAY's package master, from which a hospital's insurance plan is drawn.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "STG": {
+      "term": "STG",
+      "definition": "Standard Treatment Guideline. A clinical protocol attached to a package, delivered as a questionnaire the provider must answer.",
+      "group": "PMJAY systems and roles",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "ABHA": {
+      "term": "ABHA",
+      "definition": "Ayushman Bharat Health Account. The beneficiary's health ID; sent without hyphens.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "HFR": {
+      "term": "HFR",
+      "definition": "Health Facility Registry. A hospital's registry; its HFR ID is the hospital's registry ID on the exchange.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "NIN": {
+      "term": "NIN",
+      "definition": "Other registries a participant may be identified by.",
+      "group": "Identity and registration",
+      "also": "ROHINI",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "ROHINI": {
+      "term": "ROHINI",
+      "definition": "Other registries a participant may be identified by.",
+      "group": "Identity and registration",
+      "also": "NIN",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Registry ID": {
+      "term": "Registry ID",
+      "definition": "A participant's identity in the registry it belongs to: HFR ID for a hospital, IRDAI ID for an insurer or TPA, client ID for an app.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Participant ID": {
+      "term": "Participant ID",
+      "definition": "A participant's address on the exchange, in the form 1518@hcx. The part after the @ names the exchange instance.",
+      "group": "Identity and registration",
+      "also": "participant code",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "participant code": {
+      "term": "participant code",
+      "definition": "A participant's address on the exchange, in the form 1518@hcx. The part after the @ names the exchange instance.",
+      "group": "Identity and registration",
+      "also": "Participant ID",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Client ID and secret": {
+      "term": "Client ID and secret",
+      "definition": "The ABDM credentials used to obtain an access token; the same ones issued for Milestone 1.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Milestone 1": {
+      "term": "Milestone 1",
+      "definition": "The ABDM integration level, ABHA creation and verification, that must be complete before NHCX.",
+      "group": "Identity and registration",
+      "also": "M1",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "M1": {
+      "term": "M1",
+      "definition": "The ABDM integration level, ABHA creation and verification, that must be complete before NHCX.",
+      "group": "Identity and registration",
+      "also": "Milestone 1",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Bridge URL": {
+      "term": "Bridge URL",
+      "definition": "The base address of a participant's callback server, registered on its participant record.",
+      "group": "Identity and registration",
+      "also": "endpoint URL",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "endpoint URL": {
+      "term": "endpoint URL",
+      "definition": "The base address of a participant's callback server, registered on its participant record.",
+      "group": "Identity and registration",
+      "also": "Bridge URL",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Passcode": {
+      "term": "Passcode",
+      "definition": "The one-time code sent to a participant's registered mobile to confirm creation or configuration in production.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Processor": {
+      "term": "Processor",
+      "definition": "The participant that processes claims for a policy: the insurer itself or its TPA. The recipient of every claim-side message.",
+      "group": "Identity and registration",
+      "also": "processingid",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "processingid": {
+      "term": "processingid",
+      "definition": "The participant that processes claims for a policy: the insurer itself or its TPA. The recipient of every claim-side message.",
+      "group": "Identity and registration",
+      "also": "Processor",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Payer ID": {
+      "term": "Payer ID",
+      "definition": "The insurer's own participant code, named inside the bundle as the insurer.",
+      "group": "Identity and registration",
+      "also": "payerid",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "payerid": {
+      "term": "payerid",
+      "definition": "The insurer's own participant code, named inside the bundle as the insurer.",
+      "group": "Identity and registration",
+      "also": "Payer ID",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Member ID": {
+      "term": "Member ID",
+      "definition": "The beneficiary's identifier on the policy.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "NPI": {
+      "term": "NPI",
+      "definition": "Identifier types for a provider's HFR ID and a payer's registry ID inside a bundle.",
+      "group": "Identity and registration",
+      "also": "NIIP",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "NIIP": {
+      "term": "NIIP",
+      "definition": "Identifier types for a provider's HFR ID and a payer's registry ID inside a bundle.",
+      "group": "Identity and registration",
+      "also": "NPI",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "WASA": {
+      "term": "WASA",
+      "definition": "The security audit completed before ABDM production access.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "HTC demo": {
+      "term": "HTC demo",
+      "definition": "The demonstration before NRCeS, IRDAI, TCS and NHA that closes sandbox certification.",
+      "group": "Identity and registration",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "JWE": {
+      "term": "JWE",
+      "definition": "JSON Web Encryption. The sealed-envelope format every message uses.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "JWT": {
+      "term": "JWT",
+      "definition": "JSON Web Token. The format of the access token and of the signature the exchange puts on calls to a participant.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Envelope": {
+      "term": "Envelope",
+      "definition": "The readable part of a message: the x-hcx- fields and the encryption settings.",
+      "group": "Messages",
+      "also": "protected header",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "protected header": {
+      "term": "protected header",
+      "definition": "The readable part of a message: the x-hcx- fields and the encryption settings.",
+      "group": "Messages",
+      "also": "Envelope",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Letter": {
+      "term": "Letter",
+      "definition": "The FHIR bundle inside the envelope, encrypted for the receiver.",
+      "group": "Messages",
+      "also": "payload",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "payload": {
+      "term": "payload",
+      "definition": "The FHIR bundle inside the envelope, encrypted for the receiver.",
+      "group": "Messages",
+      "also": "Letter",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Domain headers": {
+      "term": "Domain headers",
+      "definition": "A few facts written on the envelope for the exchange's records, such as an amount.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Correlation ID": {
+      "term": "Correlation ID",
+      "definition": "The number that ties a request and its answers into one conversation.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "API call ID": {
+      "term": "API call ID",
+      "definition": "Fresh identifiers for one call and one request.",
+      "group": "Messages",
+      "also": "request ID",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "request ID": {
+      "term": "request ID",
+      "definition": "Fresh identifiers for one call and one request.",
+      "group": "Messages",
+      "also": "API call ID",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Workflow code": {
+      "term": "Workflow code",
+      "definition": "The number in the envelope that says which step of the claim a message is.",
+      "group": "Messages",
+      "also": "workflow ID",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "workflow ID": {
+      "term": "workflow ID",
+      "definition": "The number in the envelope that says which step of the claim a message is.",
+      "group": "Messages",
+      "also": "Workflow code",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Status word": {
+      "term": "Status word",
+      "definition": "The x-hcx-status value: request.initiated, response.partial, response.complete, response.error, and the exchange's own request.queued, request.dispatched, request.stopped.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Receipt": {
+      "term": "Receipt",
+      "definition": "The 202 Accepted body returned on taking a message in. Not a decision.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Protocol response": {
+      "term": "Protocol response",
+      "definition": "A refusal returned on the callback with response.error and error details, when a message could not be opened or failed validation.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Callback": {
+      "term": "Callback",
+      "definition": "The endpoint a participant hosts to receive answers and payer-initiated messages.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Dummy payer": {
+      "term": "Dummy payer",
+      "definition": "The sandbox payer, participant 1000003538@hcx, that answers the provider exchanges listed in the NHCX Use Cases chapter.",
+      "group": "Messages",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Preauthorisation": {
+      "term": "Preauthorisation",
+      "definition": "Approval to treat, sought before treatment. A Claim with use = preauthorization.",
+      "group": "Claims",
+      "also": "preauth",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "preauth": {
+      "term": "preauth",
+      "definition": "Approval to treat, sought before treatment. A Claim with use = preauthorization.",
+      "group": "Claims",
+      "also": "Preauthorisation",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Enhancement": {
+      "term": "Enhancement",
+      "definition": "Additional procedures or days sought against an approved preauthorisation.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Resubmission": {
+      "term": "Resubmission",
+      "definition": "A revised preauthorisation that replaces an earlier one.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Query": {
+      "term": "Query",
+      "definition": "The payer asking for more before it decides. The case stays open.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Claim": {
+      "term": "Claim",
+      "definition": "The request for payment after discharge. A Claim with use = claim.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Predetermination": {
+      "term": "Predetermination",
+      "definition": "Asking what a payer would approve, without committing.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Adjudication": {
+      "term": "Adjudication",
+      "definition": "The payer's decision on a preauthorisation or claim.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Reprocess": {
+      "term": "Reprocess",
+      "definition": "An appeal against a rejection, raised as a Task.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Shortfall": {
+      "term": "Shortfall",
+      "definition": "A request for the difference when a claim was paid short, raised as a Task after payment settles, under reason partialpayment.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Erroneous claim": {
+      "term": "Erroneous claim",
+      "definition": "In the value set, a separate reason, erroneousclaim, for a reprocess caused by a mistaken submission by the provider. The FAQ uses the phrase for the shortfall case; the two senses coexist in the corpus.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Task": {
+      "term": "Task",
+      "definition": "The general-purpose request resource: plan fetch, cancel, reprocess, search, payment notice, acknowledgement, communication.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Communication": {
+      "term": "Communication",
+      "definition": "A payer-initiated message outside the claim's own request-and-answer: a TAT alert, a grievance, a wallet or policy change, a request for information.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "TAT": {
+      "term": "TAT",
+      "definition": "Turnaround time. The window within which a payer is expected to act; under some policies, silence within it means approval.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Wallet": {
+      "term": "Wallet",
+      "definition": "The beneficiary's remaining cover under PMJAY, shared across the family.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Package": {
+      "term": "Package",
+      "definition": "A treatment with a fixed rate under a scheme; the unit a PMJAY claim is built from.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Stratification": {
+      "term": "Stratification",
+      "definition": "A higher bed category, such as ICU or HDU, allowed as an add-on over a package rate.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Implant": {
+      "term": "Implant",
+      "definition": "A device allowed as an add-on over a package rate.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Unspecified procedure": {
+      "term": "Unspecified procedure",
+      "definition": "A treatment not in the package list, allowed under conditions with a free-text name and amount.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "Cyclic procedure": {
+      "term": "Cyclic procedure",
+      "definition": "A treatment approved once and delivered over several visits, such as dialysis.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "LAMA": {
+      "term": "LAMA",
+      "definition": "Leave against medical advice, without informing the hospital; discharge against medical advice, with a signed undertaking. Two of the four discharge types, with DTH (home) and DTM (death).",
+      "group": "Claims",
+      "also": "DAMA",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "DAMA": {
+      "term": "DAMA",
+      "definition": "Leave against medical advice, without informing the hospital; discharge against medical advice, with a signed undertaking. Two of the four discharge types, with DTH (home) and DTM (death).",
+      "group": "Claims",
+      "also": "LAMA",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "LM100": {
+      "term": "LM100",
+      "definition": "The single line item for a LAMA or DAMA stay before surgery, in place of the approved packages.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "UTR": {
+      "term": "UTR",
+      "definition": "Unique transaction reference. The bank's reference for a payment, carried on the payment reconciliation.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "TDS": {
+      "term": "TDS",
+      "definition": "Tax deducted at source, itemised on the payment reconciliation.",
+      "group": "Claims",
+      "cite": "01-overview/11-glossary.md"
+    },
+    "x-hcx-sender_code": {
+      "term": "x-hcx-sender_code",
+      "definition": "Your participant code",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Mandatory"
+    },
+    "x-hcx-recipient_code": {
+      "term": "x-hcx-recipient_code",
+      "definition": "The recipient's. For a provider, the processor code from the policy lookup",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Mandatory"
+    },
+    "x-hcx-api_call_id": {
+      "term": "x-hcx-api_call_id",
+      "definition": "Fresh on every message, including responses",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "UUID",
+      "required": "Mandatory"
+    },
+    "x-hcx-request_id": {
+      "term": "x-hcx-request_id",
+      "definition": "One per originating request. The Open Protocol page marks it Mandatory; the Technical Specifications page marks it Optional",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "UUID",
+      "required": "Optional"
+    },
+    "x-hcx-correlation_id": {
+      "term": "x-hcx-correlation_id",
+      "definition": "The thread. See the rule below",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "UUID",
+      "required": "Mandatory"
+    },
+    "x-hcx-workflow_id": {
+      "term": "x-hcx-workflow_id",
+      "definition": "Which step, or which case. See the two readings below",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Optional"
+    },
+    "x-hcx-timestamp": {
+      "term": "x-hcx-timestamp",
+      "definition": "See the format note below",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "datetime",
+      "required": "Mandatory"
+    },
+    "x-hcx-status": {
+      "term": "x-hcx-status",
+      "definition": "Where this message stands. Values below",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Mandatory"
+    },
+    "x-hcx-ben-abha-id": {
+      "term": "x-hcx-ben-abha-id",
+      "definition": "The beneficiary's ABHA number. Mandatory on every exchange, including those with no beneficiary in the payload",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Mandatory"
+    },
+    "x-hcx-use_case": {
+      "term": "x-hcx-use_case",
+      "definition": "Values differ by exchange, see below",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "String",
+      "required": "Optional"
+    },
+    "x-hcx-error_details": {
+      "term": "x-hcx-error_details",
+      "definition": "code, message, trace. Mandatory on a protocol response",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "JSON object",
+      "required": "Optional"
+    },
+    "x-hcx-debug_details": {
+      "term": "x-hcx-debug_details",
+      "definition": "The same shape, for debugging",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "JSON object",
+      "required": "Optional"
+    },
+    "x-hcx-debug_flag": {
+      "term": "x-hcx-debug_flag",
+      "definition": "Error, Info or Debug. A server may ignore it",
+      "group": "The fields",
+      "cite": "06-reference/03-envelope-fields.md",
+      "type": "Enum",
+      "required": "Optional"
+    },
+    "x-hcx-amount_submitted": {
+      "term": "x-hcx-amount_submitted",
+      "definition": "The amount submitted by the provider",
+      "group": "Domain headers",
+      "cite": "06-reference/03-envelope-fields.md"
+    },
+    "x-hcx-benefit-category_type": {
+      "term": "x-hcx-benefit-category_type",
+      "definition": "The benefit category, meaning the specialty",
+      "group": "Domain headers",
+      "cite": "06-reference/03-envelope-fields.md"
+    },
+    "x-hcx-benefit_code": {
+      "term": "x-hcx-benefit_code",
+      "definition": "An array of the benefits or services submitted",
+      "group": "Domain headers",
+      "cite": "06-reference/03-envelope-fields.md"
+    },
+    "x-hcx-action": {
+      "term": "x-hcx-action",
+      "definition": "The event type, such as preauth_response",
+      "group": "Domain headers",
+      "cite": "06-reference/03-envelope-fields.md"
+    }
+  }
+}

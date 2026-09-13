@@ -1,0 +1,60 @@
+# ==============================================================================
+# Use Case B4: Respond to a communication - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/communication/on_request
+# Callback API: /v1/communication/request
+# Carries JWE: true
+# Focal Resource: Communication / Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication
+# ==============================================================================
+
+code: "B4"
+title: "Respond to a communication"
+side: "provider"
+api: "/v1/communication/on_request"
+callback: "/v1/communication/request"
+workflow: "24 (Preauth query answer), 27 (Claim query answer)"
+carries_jwe: true
+focal_resource: "Communication / Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication"
+profiles:
+  Communication: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication"
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Answer payer query by attaching requested clinical notes, diagnostic investigations, or clarifications."
+fields:
+  - key: "communicationId"
+    label: "Communication Identifier"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Communication"
+    fhir_path: "Communication.identifier[0].value"
+    example_value: "COMM-RESP-001"
+  - key: "queryRequestId"
+    label: "Original Query Reference"
+    group: "Case"
+    data_type: "reference"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Communication"
+    fhir_path: "Communication.basedOn[0].reference"
+    example_value: "Task/task-comm-req-1"
+  - key: "replyText"
+    label: "Clarification Text"
+    group: "Payload"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Communication"
+    fhir_path: "Communication.payload[0].contentString"
+    example_value: "Platelet count attached as requested."
+  - key: "attachmentData"
+    label: "Attached Document Base64"
+    group: "Payload"
+    data_type: "base64Binary"
+    cardinality: "0..*"
+    required: false
+    fhir_resource: "Communication"
+    fhir_path: "Communication.payload[0].contentAttachment.data"
+    example_value: "JVBERi0xLjQK..."

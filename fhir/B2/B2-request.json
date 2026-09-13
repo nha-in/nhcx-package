@@ -1,0 +1,57 @@
+{
+  "id": "insurance-request-generic",
+  "resourceType": "Bundle",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/insurance/request",
+      "resource": {
+        "resourceType": "Task",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "requested",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/financialtaskcode",
+              "code": "poll"
+            }
+          ]
+        },
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "policyNumber"
+                }
+              ]
+            },
+            "valueString": "POL7UMU001"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "providerId"
+                }
+              ]
+            },
+            "valueString": "IN1910000151"
+          }
+        ]
+      }
+    }
+  ]
+}

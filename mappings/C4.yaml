@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case C4: Respond to insurance plan request - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/insuranceplan/on_request
+# Callback API: /v1/insuranceplan/request
+# Carries JWE: true
+# Focal Resource: InsurancePlan
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlan
+# ==============================================================================
+
+code: "C4"
+title: "Respond to insurance plan request"
+side: "payer"
+api: "/v1/insuranceplan/on_request"
+callback: "/v1/insuranceplan/request"
+workflow: "none (or 5 under PMJAY)"
+carries_jwe: true
+focal_resource: "InsurancePlan"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlan"
+profiles:
+  InsurancePlan: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlan"
+description: "Deliver digital policy package master containing empanelled specialties, fixed tariffs, and STG questionnaires."
+fields:
+  - key: "planName"
+    label: "Insurance Plan Name"
+    group: "Plan"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "InsurancePlan"
+    fhir_path: "InsurancePlan.name"
+    example_value: "PMJAY Ayushman Bharat"
+  - key: "packageCode"
+    label: "Benefit Package Code"
+    group: "Plan Cost"
+    data_type: "string"
+    cardinality: "1..*"
+    required: true
+    fhir_resource: "InsurancePlan"
+    fhir_path: "InsurancePlan.plan[].specificCost[].benefit[].type.coding[0].code"
+    example_value: "MG004A"
+  - key: "packageRate"
+    label: "Agreed Tariff Rate"
+    group: "Plan Cost"
+    data_type: "decimal"
+    cardinality: "1..*"
+    required: true
+    fhir_resource: "InsurancePlan"
+    fhir_path: "InsurancePlan.plan[].specificCost[].benefit[].cost[0].value.value"
+    example_value: "15500.00"

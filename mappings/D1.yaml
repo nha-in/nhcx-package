@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case D1: Fetch the insurance plan - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/insuranceplan/request
+# Callback API: /v1/insuranceplan/on_request
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "D1"
+title: "Fetch the insurance plan"
+side: "provider"
+api: "/v1/insuranceplan/request"
+callback: "/v1/insuranceplan/on_request"
+workflow: "none"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Poll PMJAY SHA package master with specialty tiers, implants, and STG clinical questionnaire definitions."
+fields:
+  - key: "taskCode"
+    label: "Task Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    example_value: "poll"
+  - key: "schemeId"
+    label: "Scheme Policy Identifier"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.input[type=PolicyNumber].valueString"
+    example_value: "PMJAY/HP/S/G"

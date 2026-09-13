@@ -1,0 +1,94 @@
+meta {
+  name: Fetch participants list
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{registryBase}}/fetch/participants/list
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "role": "PAYER",
+    "fromdate": "01/04/2021",
+    "todate": "20/03/2026",
+    "entitytype": "Gov"
+  }
+}
+
+docs {
+  # Fetch participants list
+
+  `POST /fetch/participants/list`
+
+  ## Summary
+
+  Payer discovery: lists participants filtered by role, registration date window and optional entity type; the first step of the cashless workflow.
+
+  ## Business purpose
+
+  A patient is not cashless merely by having insurance. The hospital must first discover which payer to deal with, and that payer's participantcode becomes the payerId used for NHCX routing and the x-hcx-recipient_code header. This endpoint is the discovery workhorse: it returns every participant of a given role registered within a date window, which is how a hospital builds its payer picker and how a payer sees the providers on the exchange. It is item 1 of the provider sandbox-exit checklist.
+
+  ## When to use
+
+  Call it at the very start of the handbook's fixed operational order: payer search, payer selection, policy discovery, policy cache normalisation, effective payer resolution, InsurancePlan and benefit retrieval, optional eligibility verification, then preauth submission. Refresh the list periodically rather than per patient. Sandbox URL https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/fetch/participants/list. Synchronous JSON; no workflow or x-hcx-status codes.
+
+  ## Preconditions
+
+  - Bearer token in bearer_auth with the Bearer prefix; Accept and Content-Type: application/json.
+  - FetchParticipantRequest: role (PAYER, PROVIDER or TPA), fromdate and todate in dd/MM/yyyy format only, all required; entitytype optional (for example Gov).
+  - A date window wide enough to cover the registration dates of the participants you expect; the handbook example spans 01/04/2021 to 20/03/2026.
+
+  ## Postconditions
+
+  HTTP 200 with ParticipantListResponse: a participantdetails array of ParticipantDetails with participantcode, participantname, address and state. The handbook notes the response shape is not stable and the documented search logic normalises participantdetails, participants or a raw array. No state changes and no callback. 400, 404 and 500 carry the ErrorResponse envelope. In the sandbox, the dummy payer 1000003538@hcx is the counterparty you will find and use.
+
+  ## Common mistakes
+
+  - Supplying dates in ISO or any format other than dd/MM/yyyy.
+  - Using a date window that is too narrow, which silently drops payers that registered outside it.
+  - Expecting a name filter; there is none, so text search and GOVT versus PRIVATE classification (from entitytype) must be done client-side.
+  - Being misled by the OpenAPI description, which is copy-pasted from the update API; the request schema defines the real behaviour.
+  - Parsing only participantdetails and breaking when the instance returns participants or a raw array.
+  - Missing Accept header or Bearer prefix.
+
+  ## Best practices
+
+  - Fetch once with a wide window, cache the list, and filter by name and scheme type locally, as the handbook's internal payers endpoint does.
+  - Accept all three response shapes defensively.
+  - Follow selection with /participant/search or /participant/details to confirm status and roles, and /fetch/certs to obtain the certificate before encrypting.
+  - Remove any hard-coded reference to 1000003538@hcx at go-live; production counterparties are resolved from this call.
+  - Refresh the cached list on a schedule so newly registered payers appear.
+
+  ## Related scenario
+
+  A hospital's admission desk opens the cashless screen for a patient holding a government scheme card. The integration has already called /fetch/participants/list with role PAYER, a window from 01/04/2021 to today and entitytype Gov, and cached the result. The desk types the scheme name, the client filters the cached list, and the operator selects the state health agency's participantcode. The engine then calls /participant/get/policies to link the patient's policy, /fetch/certs for the payer certificate, and submits /v1/insuranceplan/request followed by /v1/preauth/submit.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "participantdetails": [
+      {
+        "participantcode": "1000003538@hcx",
+        "participantname": "NHCX Dummy Payer",
+        "address": "New Delhi",
+        "state": "Delhi"
+      },
+      {
+        "participantcode": "1518@hcx",
+        "participantname": "Demo Insurance Company",
+        "address": "Bengaluru",
+        "state": "Karnataka"
+      }
+    ]
+  }
+  ```
+}

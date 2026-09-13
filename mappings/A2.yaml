@@ -1,0 +1,69 @@
+# ==============================================================================
+# Use Case A2: Get policy - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: /participant/get/policies
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: Policy Registry (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A2"
+title: "Get policy"
+side: "shared"
+api: "/participant/get/policies"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "Policy Registry (JSON)"
+profiles:
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+  Coverage: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+  Organization: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+description: "Get the active policy roster for a beneficiary by mobile or ABHA number, identifying insurer and claim processor."
+fields:
+  - key: "mobile"
+    label: "Beneficiary Mobile"
+    group: "Request"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Patient"
+    fhir_path: "Patient.telecom[system=phone].value"
+    example_value: "9876543210"
+  - key: "abhaNumber"
+    label: "ABHA Number"
+    group: "Request"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=ABHA].value"
+    example_value: "91234567890123"
+  - key: "policyNumber"
+    label: "Discovered Policy Number"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Coverage"
+    fhir_path: "Coverage.identifier[0].value"
+    example_value: "POL-HOSP-2026-0045"
+  - key: "insurerId"
+    label: "Insurer Participant Code"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Organization"
+    fhir_path: "Organization[type=pay].identifier[system=https://nhcx.gov.in].value"
+    example_value: "1000003538@hcx"
+  - key: "processorId"
+    label: "Claim Processor Participant Code"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Organization"
+    fhir_path: "Organization[type=tpa].identifier[system=https://nhcx.gov.in].value"
+    example_value: "1000004520@hcx"

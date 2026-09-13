@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case C10: Respond to a Task - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/task/on_submit
+# Callback API: /v1/task/submit
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "C10"
+title: "Respond to a Task"
+side: "payer"
+api: "/v1/task/on_submit"
+callback: "/v1/task/submit"
+workflow: "PC02 (Cancellation done), 37 (Arbitration ack), 252 (Reprocess approved)"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Callback answering cancellation, claim arbitration, reprocess appeals, or status requests."
+fields:
+  - key: "taskStatus"
+    label: "Task Status"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.status"
+    example_value: "completed"
+  - key: "outputDecision"
+    label: "Decision Reference"
+    group: "Task Output"
+    data_type: "reference"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Task"
+    fhir_path: "Task.output[0].valueReference.reference"
+    example_value: "ClaimResponse/cr-reprocess-approved"

@@ -1,0 +1,59 @@
+# ==============================================================================
+# Use Case C9: Send payment notice - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/paymentnotice/request
+# Callback API: /v1/paymentnotice/on_request
+# Carries JWE: true
+# Focal Resource: PaymentReconciliation
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation
+# ==============================================================================
+
+code: "C9"
+title: "Send payment notice"
+side: "payer"
+api: "/v1/paymentnotice/request"
+callback: "/v1/paymentnotice/on_request"
+workflow: "30 (Initiated), 31 (Processed), 33 (Settled)"
+carries_jwe: true
+focal_resource: "PaymentReconciliation"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+profiles:
+  PaymentReconciliation: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+description: "Transmit bank remittance advice, TDS deductions, penalty adjustments, and bank UTR numbers."
+fields:
+  - key: "utrNumber"
+    label: "Bank UTR Number"
+    group: "Payment"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "PaymentReconciliation"
+    fhir_path: "PaymentReconciliation.paymentIdentifier.value"
+    example_value: "CMS2602260081728"
+  - key: "paymentDate"
+    label: "Remittance Date"
+    group: "Payment"
+    data_type: "date"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "PaymentReconciliation"
+    fhir_path: "PaymentReconciliation.paymentDate"
+    example_value: "2026-03-05"
+  - key: "settledAmount"
+    label: "Net Bank Remittance Amount"
+    group: "Payment"
+    data_type: "decimal"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "PaymentReconciliation"
+    fhir_path: "PaymentReconciliation.paymentAmount.value"
+    example_value: "14850.00"
+  - key: "tdsDeduction"
+    label: "Tax Deducted at Source (TDS)"
+    group: "Payment Detail"
+    data_type: "decimal"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "PaymentReconciliation"
+    fhir_path: "PaymentReconciliation.detail[type=tds].amount.value"
+    example_value: "650.00"

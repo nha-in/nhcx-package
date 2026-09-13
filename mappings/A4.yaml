@@ -1,0 +1,58 @@
+# ==============================================================================
+# Use Case A4: Get auth token - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: /get/session
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: OAuth 2.0 Token (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A4"
+title: "Get auth token"
+side: "shared"
+api: "/get/session"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "OAuth 2.0 Token (JSON)"
+description: "Generate ABDM bearer authentication token using Milestone 1 client ID and secret."
+fields:
+  - key: "clientId"
+    label: "Client ID"
+    group: "Request"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth)"
+    fhir_path: "Request.clientId"
+    example_value: "SBX_001205"
+  - key: "clientSecret"
+    label: "Client Secret"
+    group: "Request"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth)"
+    fhir_path: "Request.clientSecret"
+    example_value: "secret_xyz"
+  - key: "accessToken"
+    label: "Bearer Access Token"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth Header)"
+    fhir_path: "Header.Authorization"
+    also_at:
+      - "Header.bearer_auth"
+    example_value: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+  - key: "expiresIn"
+    label: "Token Validity Seconds"
+    group: "Response"
+    data_type: "integer"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Auth)"
+    fhir_path: "Response.expiresIn"
+    example_value: "3600"

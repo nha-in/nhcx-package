@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case D8: Cancel pre-authorisation - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/task/submit
+# Callback API: /v1/task/on_submit
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "D8"
+title: "Cancel pre-authorisation"
+side: "provider"
+api: "/v1/task/submit"
+callback: "/v1/task/on_submit"
+workflow: "PC01 (Cancellation requested)"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Cancel active pre-authorisation before discharge or when patient leaves without treatment."
+fields:
+  - key: "taskCode"
+    label: "Action Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    example_value: "cancel"
+  - key: "caseNumber"
+    label: "Pre-auth Case Number"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.input[0].valueString"
+    example_value: "VB26AA2600001"

@@ -1,0 +1,1128 @@
+# NHCX error codes: the gateway codes, the standard payer codes and the reference payer codes.
+# build-docs renders the tables in docs/06-Reference/01-Error Codes.md from this file.
+# kind is the published sheet's classification, Transport or Business, on the codes the sheet classifies.
+# collisions lists the codes from PAYR-1001 to PAYR-1020 that the standard sheet (Payer Error Codes) and the
+# reference payer's Bridge Error sheet read differently: eighteen of the twenty. PAYR-1001 and PAYR-1002 are
+# a decryption and an encryption failure on both sheets.
+# note, on a code, records what the SHA HP sandbox payer sent that the sheet does not say. The observed space
+# holds the one code the sandbox run met that is on none of the seven sheets.
+spaces:
+  - id: gateway
+    name: Gateway
+    prefix: NHCX-
+    sent_by: The exchange
+    arrives: Synchronously on your own call, or on /v1/error
+  - id: standard-payer
+    name: Standard payer
+    prefix: PAYR-1001 to PAYR-1020
+    sent_by: A payer implementing the published standard
+    arrives: Inside the sealed response
+  - id: reference-payer
+    name: Reference payer
+    prefix: PAYR-1001 to PAYR-1520
+    sent_by: The PMJAY reference implementation
+    arrives: Inside the sealed response
+  - id: observed
+    name: Observed live
+    prefix: ERR-PYR-
+    sent_by: The PMJAY reference implementation, on none of its published sheets
+    arrives: Inside the sealed response
+collisions:
+  - code: PAYR-1003
+    standard_payer: Error while connecting to NHCX; the system will resend later
+    reference_payer: Invalid workflow requested (marked deprecated on the Bridge Error sheet)
+  - code: PAYR-1004
+    standard_payer: Provider is not registered with the payer for the requested policy
+    reference_payer: Received FHIR bundle is malformed
+  - code: PAYR-1005
+    standard_payer: Beneficiary is not a covered member for the requested policy
+    reference_payer: Maximum time limit exceeded in receiving the request
+  - code: PAYR-1006
+    standard_payer: Policy does not exist
+    reference_payer: Invalid name in request (marked deprecated on the Bridge Error sheet)
+  - code: PAYR-1007
+    standard_payer: Requested policy is expired
+    reference_payer: Invalid gender in request (marked deprecated on the Bridge Error sheet)
+  - code: PAYR-1008
+    standard_payer: Eligible coverage amount is insufficient
+    reference_payer: Invalid FHIR bundle received
+  - code: PAYR-1009
+    standard_payer: Requested items are not valid or not covered
+    reference_payer: No identifier found for patient component
+  - code: PAYR-1010
+    standard_payer: Preauthorisation is required but was not obtained
+    reference_payer: No type found for patient component identifier
+  - code: PAYR-1011
+    standard_payer: The prior approved package does not support enhancement
+    reference_payer: No identifier found for claim component
+  - code: PAYR-1012
+    standard_payer: Claim amount is more than the preauthorisation approved amount
+    reference_payer: No type found for claim component identifier
+  - code: PAYR-1013
+    standard_payer: No prior approval for the requested procedures or packages
+    reference_payer: No identifier found for organization component for provider
+  - code: PAYR-1014
+    standard_payer: Date of birth is after the date of service
+    reference_payer: No type found for organization component identifier for provider
+  - code: PAYR-1015
+    standard_payer: Date of service is after the date of death
+    reference_payer: No identifier found for organization component for payer
+  - code: PAYR-1016
+    standard_payer: Duplicate claim submitted based on service codes and dates
+    reference_payer: No type found for organization component identifier for payer
+  - code: PAYR-1017
+    standard_payer: Amount calculations are not correct
+    reference_payer: No task code received
+  - code: PAYR-1018
+    standard_payer: Time limit for submission expired
+    reference_payer: No task reason code received
+  - code: PAYR-1019
+    standard_payer: Requested additional information was not received in time
+    reference_payer: Invalid sequence received in supporting info element
+  - code: PAYR-1020
+    standard_payer: No valid bank details found for the provider
+    reference_payer: Invalid category received in supporting info element
+bands:
+  - band: NHCX-1xxx
+    rejected_by: The exchange, on the envelope
+    means: The message never reached the payer
+  - band: PAYR-10xx
+    rejected_by: Transport and bundle structure
+    means: An element, id, sequence or type is missing. Not a value problem
+  - band: PAYR-11xx
+    rejected_by: Coverage eligibility
+    means: The policy, the beneficiary or the hospital configuration
+  - band: PAYR-12xx
+    rejected_by: Preauthorisation
+    means: Codes, amounts, dates, sequencing and scheme rules
+  - band: PAYR-13xx
+    rejected_by: Claim
+    means: The same, against the approved preauthorisation
+  - band: PAYR-14xx
+    rejected_by: Insurance plan, and the scheme's outer rules
+    means: Empanelment, policy association, plan configuration
+codes:
+  - code: NHCX-401
+    space: gateway
+    kind: Business
+    message: User Unauthorized
+  - code: NHCX-1001
+    space: gateway
+    kind: Transport
+    message: Receiver system is not reachable.
+  - code: NHCX-1002
+    space: gateway
+    kind: Business
+    message: Sender not registered in NHCX. Please register in NHCX portal and try again.
+  - code: NHCX-1003
+    space: gateway
+    kind: Business
+    message: Receiver not registered in NHCX. Please try again with valid receiver details.
+  - code: NHCX-1004
+    space: gateway
+    kind: Business
+    message: No receiver registered in NHCX for the requested scheme. Please try again with valid receiver details for the scheme.
+  - code: NHCX-1005
+    space: gateway
+    kind: Business
+    message: Invalid request header. Please try again with valid headers.
+  - code: NHCX-1006
+    space: gateway
+    kind: Business
+    message: Duplicate request. Request with same correlation id already exist in the system.
+  - code: NHCX-1007
+    space: gateway
+    kind: Business
+    message: Something went wrong while processing the request. Please check the request structure and values and try again.
+  - code: NHCX-1008
+    space: gateway
+    kind: Business
+    message: Something went wrong while processing the request. Please try again after sometime.
+  - code: NHCX-1009
+    space: gateway
+    kind: Business
+    message: Something went wrong while processing the request. Please check log for more details.
+  - code: NHCX-1010
+    space: gateway
+    kind: Business
+    message: No Data with given Correlation id for call back request, please check status for more details
+  - code: NHCX-1011
+    space: gateway
+    kind: Business
+    message: Invalid Status, please check x-hcx-status value from the protected header
+  - code: NHCX-1012
+    space: gateway
+    kind: Business
+    message: No records found with the requested api caller id. Please try again with a valid api caller id.
+  - code: NHCX-1013
+    space: gateway
+    kind: Business
+    message: Invalid or blank request found.
+  - code: NHCX-1014
+    space: gateway
+    kind: Business
+    message: Unable to send protocol response to sender.
+  - code: NHCX-1015
+    space: gateway
+    kind: Business
+    message: Invalid response received from receiver.
+  - code: NHCX-1016
+    space: gateway
+    kind: Business
+    message: Invalid Api Action, please check the request action for this correlationId before trying again
+  - code: NHCX-1017
+    space: gateway
+    kind: Business
+    message: Invalid response received from receiver
+  - code: NHCX-1018
+    space: gateway
+    kind: Business
+    message: Invalid ABHA number received. ABHA number should be sent in the format XX-XXXX-XXXX-XXXX
+  - code: PAYR-1001
+    space: standard-payer
+    message: Error while decrypting request. Please reprocess the request encrypting with valid certificate of the payer.
+  - code: PAYR-1002
+    space: standard-payer
+    message: Error while encrypting request. Please update encryption certificate in NHCX.
+  - code: PAYR-1003
+    space: standard-payer
+    message: Error while connecting to NHCX. System will try to resend the message to NHCX after some time.
+  - code: PAYR-1004
+    space: standard-payer
+    message: Provider is not registered with the payer for requested policy.
+  - code: PAYR-1005
+    space: standard-payer
+    message: Beneficiary is not a covered member for requested policy. Please enroll beneficiary for the policy and try again.
+  - code: PAYR-1006
+    space: standard-payer
+    message: Policy does not exist. Please try with a valid policy.
+  - code: PAYR-1007
+    space: standard-payer
+    message: Requested policy is expired. Please try with a valid policy.
+  - code: PAYR-1008
+    space: standard-payer
+    message: Eligible coverage amount of the beneficiary for the requested policy is insufficient to process the request.
+  - code: PAYR-1009
+    space: standard-payer
+    kind: Business
+    message: Requested items are not valid or not covered. Please try again with valid or covered items.
+  - code: PAYR-1010
+    space: standard-payer
+    kind: Business
+    message: Preauthorization is required to process the request but was not obtained.
+  - code: PAYR-1011
+    space: standard-payer
+    kind: Business
+    message: Enhancement request can not be processed as the prior approved package/procedure does not support enhancement.
+  - code: PAYR-1012
+    space: standard-payer
+    kind: Business
+    message: Claim amount requested is more than the preauthorization approved amount.
+  - code: PAYR-1013
+    space: standard-payer
+    kind: Business
+    message: No prior approval for the requested procedures/packages obtained.
+  - code: PAYR-1014
+    space: standard-payer
+    kind: Business
+    message: Date of birth of the beneficiary can not be after date of service.
+  - code: PAYR-1015
+    space: standard-payer
+    kind: Business
+    message: Date of service cannot be after date of death.
+  - code: PAYR-1016
+    space: standard-payer
+    kind: Business
+    message: Duplicate claim submitted based on service codes and dates.
+  - code: PAYR-1017
+    space: standard-payer
+    kind: Business
+    message: Amount calculations are not correct. Please verify calculated amount.
+  - code: PAYR-1018
+    space: standard-payer
+    kind: Business
+    message: Time limit for submission expired.
+  - code: PAYR-1019
+    space: standard-payer
+    kind: Business
+    message: Requested additional information was not received or was not received within time limit
+  - code: PAYR-1020
+    space: standard-payer
+    kind: Business
+    message: Unable to process payment as no valid bank details found for the provider.
+  - code: PAYR-1001
+    space: reference-payer
+    message: Error occurred while decrypting payload for receiver code <receiver_code> with correlation id <sender_correlation_id>.
+  - code: PAYR-1002
+    space: reference-payer
+    message: Error occurred while encrypting payload for receiver code <receiver_code> with correlation id <sender_correlation_id>.
+  - code: PAYR-1003
+    space: reference-payer
+    message: Invalid workflow requested. Hence request will not be processed further.
+  - code: PAYR-1004
+    space: reference-payer
+    message: Received FHIR bundle is malformed. Please correct the bundle and try again. <Error details>
+  - code: PAYR-1005
+    space: reference-payer
+    message: Maximum time limit exceeded in receiving the request. Please try again.
+  - code: PAYR-1006
+    space: reference-payer
+    message: Invalid name in request. Hence request will not be processed further.
+  - code: PAYR-1007
+    space: reference-payer
+    message: Invalid gender in request. Hence request will not be processed further.
+  - code: PAYR-1008
+    space: reference-payer
+    message: Invalid FHIR bundle received. Hence request will not be processed further.
+  - code: PAYR-1009
+    space: reference-payer
+    message: No identifier found for patient component. Hence request will not be processed further. https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html
+  - code: PAYR-1010
+    space: reference-payer
+    message: No type found for patient component identifier. Hence request will not be processed further. https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html
+  - code: PAYR-1011
+    space: reference-payer
+    message: No identifier found for claim component. Hence request will not be processed further.
+  - code: PAYR-1012
+    space: reference-payer
+    message: No type found for claim component identifier. Hence request will not be processed further.
+  - code: PAYR-1013
+    space: reference-payer
+    message: No identifier found for organization component for provider. Hence request will not be processed further.
+  - code: PAYR-1014
+    space: reference-payer
+    message: No type found for organization component identifier for provider. Hence request will not be processed further.
+  - code: PAYR-1015
+    space: reference-payer
+    message: No identifier found for organization component for payer. Hence request will not be processed further.
+  - code: PAYR-1016
+    space: reference-payer
+    message: No type found for organization component identifier for payer. Hence request will not be processed further.
+  - code: PAYR-1017
+    space: reference-payer
+    message: No task code received. Hence request will not be processed further.
+  - code: PAYR-1018
+    space: reference-payer
+    message: No task reason code received. Hence request will not be processed further.
+  - code: PAYR-1019
+    space: reference-payer
+    message: Invalid sequence received in supporting info element. Hence request will not be processed further.
+  - code: PAYR-1020
+    space: reference-payer
+    message: Invalid category received in supporting info element for sequence %s. Hence request will not be processed further.
+  - code: PAYR-1021
+    space: reference-payer
+    message: Invalid code received in supporting info element for sequence %s. Hence request will not be processed further.
+  - code: PAYR-1023
+    space: reference-payer
+    message: Invalid procedure category received for procedure component. Hence request will not be processed further.
+  - code: PAYR-1024
+    space: reference-payer
+    message: Invalid procedure status received for procedure component. Hence request will not be processed further.
+  - code: PAYR-1025
+    space: reference-payer
+    message: Invalid procedure sequence received for procedure component. Hence request will not be processed further.
+  - code: PAYR-1026
+    space: reference-payer
+    message: No procedure component found for reference in claim component. Hence request will not be processed further.
+  - code: PAYR-1027
+    space: reference-payer
+    message: Invalid item id found for item in claim component. Hence request will not be processed further.
+  - code: PAYR-1028
+    space: reference-payer
+    message: Invalid item sequence received for item in claim component. Hence request will not be processed further.
+  - code: PAYR-1029
+    space: reference-payer
+    message: Invalid bundle id received for FHIR bundle. Hence request will not be processed further.
+  - code: PAYR-1030
+    space: reference-payer
+    message: Invalid questionnaire id received in FHIR bundle for questionnaire component. Hence request will not be processed further.
+  - code: PAYR-1031
+    space: reference-payer
+    message: Invalid url received for bundle entry in FHIR bundle. Hence request will not be processed further. Please reach out to technical team.
+  - code: PAYR-1032
+    space: reference-payer
+    message: Invalid purpose received for coverage eligibility request. Hence request will not be processed further. Please try again with valid purpose details.
+  - code: PAYR-1033
+    space: reference-payer
+    message: No items received for coverage eligibility purpose. Since items are mandatory for the requested purpose, hence request will not be processed further. Please try again with valid item details.
+  - code: PAYR-1034
+    space: reference-payer
+    message: Invalid procedure code received. Please try again with valid procedure details.
+  - code: PAYR-1035
+    space: reference-payer
+    message: Invalid policy code received. Please try again with valid policy details.
+  - code: PAYR-1036
+    space: reference-payer
+    message: Invalid attachment received in supporting info with sequence number %s. Please try again with valid attachment details as attachment value is expected. If issue is not resolved, please reach out to technical team.
+  - code: PAYR-1037
+    space: reference-payer
+    message: No identifier found for communication component. Hence request will not be processed further.
+  - code: PAYR-1038
+    space: reference-payer
+    message: No type found for communication component identifier. Hence request will not be processed further.
+  - code: PAYR-1039
+    space: reference-payer
+    message: No payload found for communication component. Hence request will not be processed further.
+  - code: PAYR-1040
+    space: reference-payer
+    message: No component found for given reference. Hence request will not be processed further.
+  - code: PAYR-1041
+    space: reference-payer
+    message: No identifier found for procedure component. Hence request will not be processed further.
+  - code: PAYR-1042
+    space: reference-payer
+    message: No type found for procedure component identifier. Hence request will not be processed further.
+  - code: PAYR-1043
+    space: reference-payer
+    message: Date received in the request does not adhere to the NRCES date datatype format. Hence request will not be processed further. Please refere to the date format in NRCES portal.
+  - code: PAYR-1044
+    space: reference-payer
+    message: Date and time received in the request does not adhere to the NRCES date datatype format. Hence request will not be processed further. Please refere to the date time format in NRCES portal.
+  - code: PAYR-1045
+    space: reference-payer
+    message: Invalid quantity received for item. Hence request will not be processed further.
+  - code: PAYR-1046
+    space: reference-payer
+    message: No value or timing details received for supporting info for sequence %s. Hence request will not be processed further. Please reach out to technical team.
+  - code: PAYR-1047
+    space: reference-payer
+    message: Invalid reference received in supporting info with sequence number %s. Please try again with valid resource as reference value.
+  - code: PAYR-1048
+    space: reference-payer
+    message: No reference resource received for supporting info with sequence number %s. Please try again with valid resource for reference value.
+  - code: PAYR-1049
+    space: reference-payer
+    message: Invalid FHIR bundle received. Hence request will not be processed further. please reach out to technical team.
+  - code: PAYR-1050
+    space: reference-payer
+    message: No type found for practitioner component identifier. Hence request will not be processed further.
+  - code: PAYR-1051
+    space: reference-payer
+    message: No section found for composition component. Hence request will not be processed further.
+  - code: PAYR-1052
+    space: reference-payer
+    message: No references found in composition section. Hence request will not be processed further.
+  - code: PAYR-1053
+    space: reference-payer
+    message: Invalid reference found in child sections of composition section. Hence request will not be processed further.
+  - code: PAYR-1054
+    space: reference-payer
+    message: No section content found for composition component. Hence request will not be processed further.
+  - code: PAYR-1055
+    space: reference-payer
+    message: Invalid subject type found for composition component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the composition.
+  - code: PAYR-1056
+    space: reference-payer
+    message: Invalid contact organization found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please try again with valid data.
+  - code: PAYR-1057
+    space: reference-payer
+    message: Invalid general practioner type found for subject in composition component. This should be of type Organization/Practitioner/PractitionerRole. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html
+  - code: PAYR-1058
+    space: reference-payer
+    message: Invalid managing organization type found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html
+  - code: PAYR-1059
+    space: reference-payer
+    message: Invalid encounter type found for composition/observation component. This should be of type Encounter. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-DiagnosticReportRecord.html
+  - code: PAYR-1060
+    space: reference-payer
+    message: No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1061
+    space: reference-payer
+    message: Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1062
+    space: reference-payer
+    message: No episode of care found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1063
+    space: reference-payer
+    message: Invalid episode of care type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1064
+    space: reference-payer
+    message: No based on found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1065
+    space: reference-payer
+    message: Invalid based on type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1066
+    space: reference-payer
+    message: No appointment found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1067
+    space: reference-payer
+    message: Invalid appointment type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1068
+    space: reference-payer
+    message: No reason reference found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1069
+    space: reference-payer
+    message: Invalid reason reference type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1070
+    space: reference-payer
+    message: No author found for composition component. Hence request will not be processed further.
+  - code: PAYR-1071
+    space: reference-payer
+    message: Invalid author type found for composition component. This should be of type Practitioner / PractitionerRole / Organization / Patient / Device / RelatedPerson. Hence request will not be processed further. Please try again with valid author type for the composition.
+  - code: PAYR-1072
+    space: reference-payer
+    message: No procedure reference received for procedure element in claim resource. Hence request will not be processed further.
+  - code: PAYR-1073
+    space: reference-payer
+    message: No based on found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html
+  - code: PAYR-1074
+    space: reference-payer
+    message: Invalid based on type found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html
+  - code: PAYR-1075
+    space: reference-payer
+    message: No part of found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html
+  - code: PAYR-1076
+    space: reference-payer
+    message: Invalid part of type found for observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Observation.html
+  - code: PAYR-1077
+    space: reference-payer
+    message: No subject found for observation component. Hence request will not be processed further.
+  - code: PAYR-1078
+    space: reference-payer
+    message: Invalid subject type found for observation component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the observation.
+  - code: PAYR-1079
+    space: reference-payer
+    message: No care team details received. Hence request will not be processed further. Please add the care team details and try again.
+  - code: PAYR-1080
+    space: reference-payer
+    message: Invalid HPR details received for practioner resource with url %s. Hence request will not be processed further. Please try again with valid HPR id.
+  - code: PAYR-1081
+    space: reference-payer
+    message: Invalid service date received for item with sequence %s in claim resource. Hence request will not be processed further. Please try again with valid item service date.
+  - code: PAYR-1082
+    space: reference-payer
+    message: Invalid title received for composition for supporting info with sequence %s in claim resource. Hence request will not be processed further. Please try again with valid composition title.
+  - code: PAYR-1083
+    space: reference-payer
+    message: No HPR details found for the practitioner for resource %s. Hence request will not be processed further. Please send the details in the identifier for Practitioner resource with category code as HPIN.
+  - code: PAYR-1084
+    space: reference-payer
+    message: No questionnaire response resource found for url %s. Hence request will not be processed further. Please add the resources for all the references given in the FHIR bundle and try again.
+  - code: PAYR-1085
+    space: reference-payer
+    message: Invalid questionnaire response resource type found in the FHIR bundle for url %s. Hence request will not be processed further.
+  - code: PAYR-1086
+    space: reference-payer
+    message: No procedure resource found for url %s. Hence request will not be processed further. Please add the resources for all the references given in the FHIR bundle and try again.
+  - code: PAYR-1087
+    space: reference-payer
+    message: Invalid procedure resource type found in the FHIR bundle for url %s. Hence request will not be processed further. Procedure resource type is expected.
+  - code: PAYR-1088
+    space: reference-payer
+    message: Invalid composition details.
+  - code: PAYR-1089
+    space: reference-payer
+    message: No billing items found. Hence request will not be processed further. Please try again with valid billing items.
+  - code: PAYR-1090
+    space: reference-payer
+    message: No identifier found for coverage component. Hence request will not be processed further.
+  - code: PAYR-1091
+    space: reference-payer
+    message: No type found for coverage component identifier. Hence request will not be processed further.
+  - code: PAYR-1092
+    space: reference-payer
+    message: Something went wrong while processing request, kindly intiate new request
+  - code: PAYR-1093
+    space: reference-payer
+    message: No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1094
+    space: reference-payer
+    message: Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+  - code: PAYR-1095
+    space: reference-payer
+    message: Invalid discharge information received for claim request. Hence request will not be processed further. Please send the discharge information in supporting info in claim resource, with category as DIS (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-category.html), and codes in LAMA/DAMA/DTH/DTM (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-code.html).
+  - code: PAYR-1096
+    space: reference-payer
+    message: Invalid death date received for claim request. Hence request will not be processed further. Please send the death date information in supporting info in claim resource, with category as ONS (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-category.html), and code as DTM (refer - https://www.nrces.in/ndhm/fhir/r4/ValueSet-ndhm-supportinginfo-code.html).
+  - code: PAYR-1097
+    space: reference-payer
+    message: No payload found in the request. Please ensure that the request that is being sent, contains encrypted payload within the mandatory payload properties.
+  - code: PAYR-1098
+    space: reference-payer
+    message: Value type received as %s for category - OTH and code - EDT for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - OTH and code - EDT combination is used to get the registration date. So the registration date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - OTH and code - EDT.
+  - code: PAYR-1099
+    space: reference-payer
+    message: Value type received as %s for category - ONS and code - DSDE for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - DSDE combination is used to get the discharge date. So the discharge date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - DSDE.
+  - code: PAYR-1101
+    space: reference-payer
+    message: Invalid purpose received as (%s) for beneficiary id (%s) from hospital id (%s). Hence no result will be returned. Please try again with a valid purpose.
+  - code: PAYR-1102
+    space: reference-payer
+    message: Invalid search parameter requested. Please try again with a valid id.
+  - code: PAYR-1103
+    space: reference-payer
+    message: Invalid careplan id received. Please try again with valid careplan id.
+  - code: PAYR-1104
+    space: reference-payer
+    message: Multiple records found for the beneficiary. Hence request will not be processed further.
+  - code: PAYR-1105
+    space: reference-payer
+    message: Hospital configuration not found. Please contact support team.
+  - code: PAYR-1106
+    space: reference-payer
+    message: No details found for the requested procedures in the system.
+  - code: PAYR-1107
+    space: reference-payer
+    message: No billable item received. Please try again with valid item data.
+  - code: PAYR-1108
+    space: reference-payer
+    message: No details found for the requested stratification in the system.
+  - code: PAYR-1109
+    space: reference-payer
+    message: No details found for the requested investigations in the system.
+  - code: PAYR-1110
+    space: reference-payer
+    message: No details found for the requested implants in the system.
+  - code: PAYR-1111
+    space: reference-payer
+    message: Rule failure.
+  - code: PAYR-1112
+    space: reference-payer
+    message: Invalid payer id received. Please try again ith valid payer details
+  - code: PAYR-1113
+    space: reference-payer
+    message: Invalid item code received as %s. Please try again with valid data
+  - code: PAYR-1114
+    space: reference-payer
+    message: Invalid speciality code received as %s for item %s. Please try again with valid data. Speciality code is available as the code of the category for specific cost of plan in isurance plan
+  - code: PAYR-1115
+    space: reference-payer
+    message: Invalid procedure quantity received as %s for item %s. Please try again with valid data. Item quantity should be greater than 1
+  - code: PAYR-1116
+    space: reference-payer
+    message: Hospital is not authorized to raise any case under policy %s. Hence request will not be processed further. Please connect with the support team to get the required authorization
+  - code: PAYR-1117
+    space: reference-payer
+    message: No policy details found for %s. Hence request will not be processed further
+  - code: PAYR-1118
+    space: reference-payer
+    message: No details found for requested items. Hence request will not be processed further
+  - code: PAYR-1119
+    space: reference-payer
+    message: No payer details received for payer id %s from HCX. Please try again with valid payer details.
+  - code: PAYR-1120
+    space: reference-payer
+    message: Duplicate reference id found as %s. Please try again with valid reference details.
+  - code: PAYR-1121
+    space: reference-payer
+    message: No policy details found for %s for beneficiary %s. Hence request will not be processed further.
+  - code: PAYR-1122
+    space: reference-payer
+    message: No policy details found for beneficiary %s. Hence request will not be processed further.
+  - code: PAYR-1123
+    space: reference-payer
+    message: Beneficiary is not a covered member for requested payer. Please enroll beneficiary for applicable policy of requested payer and try again.
+  - code: PAYR-1201
+    space: reference-payer
+    message: Invalid claimed amount received for case number %s. Please try again with a valid claim amount. Claimed amount should be greater than INR 0 and less than equals to balance wallet amount of the beneficiary.
+  - code: PAYR-1202
+    space: reference-payer
+    message: Invalid speciality code received as %s for item %s for case number %s. Please try again with valid data. Speciality code is available as the code of the category for specific cost of plan in isurance plan.
+  - code: PAYR-1203
+    space: reference-payer
+    message: Invalid speciality description received as %s for procedure %s for case number %s. Please try again with valid data. Speciality description is available as the display of the category for specific cost of plan in isurance plan.
+  - code: PAYR-1204
+    space: reference-payer
+    message: Invalid procedure code received as %s for case number %s. Please try again with valid data. Procedure code is available as the code of the type for benefit component, of specific cost, of plan in isurance plan.
+  - code: PAYR-1205
+    space: reference-payer
+    message: Invalid procedure description received as %s for procedure %s for case number %s. Please try again with valid data. Procedure description is available as the display of the type for benefit component, of specific cost, of plan in isurance plan.
+  - code: PAYR-1206
+    space: reference-payer
+    message: Invalid procedure type received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1207
+    space: reference-payer
+    message: Invalid procedure factor received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1208
+    space: reference-payer
+    message: Invalid procedure quantity received as %s for item %s for case number %s. Please try again with valid data. Item quantity should be greater than 1.
+  - code: PAYR-1209
+    space: reference-payer
+    message: Invalid net amount received as INR %s for item %s for case number %s. Please try again with valid data. Item net amount should be greater than INR 0.
+  - code: PAYR-1210
+    space: reference-payer
+    message: Invalid procedure status received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1211
+    space: reference-payer
+    message: Requested beneficary details and careplan details does not match any criteria for processing the case at this hospital. Please try again with valid data.
+  - code: PAYR-1212
+    space: reference-payer
+    message: No previous preauthorization approved record found for the enhancement request for case number %s. Hence request will not be processed further. Please initiate a new preauthorization.
+  - code: PAYR-1213
+    space: reference-payer
+    message: Existing case in progress found for case number %s. Hence enhancement request will not be accepted. Please try after the adjudication is completed for the current case.
+  - code: PAYR-1214
+    space: reference-payer
+    message: No previous preauthorization approved record found for the resubmission request for case number %s. Hence request will not be processed further. Please initiate a new preauthorization.
+  - code: PAYR-1215
+    space: reference-payer
+    message: Existing case in progress found for case number %s. Hence resubmission request will not be accepted. Please try after the adjudication is completed for the current case.
+  - code: PAYR-1216
+    space: reference-payer
+    message: Existing case in progress found for case number %s. Hence new preauthorization request will not be accepted.
+  - code: PAYR-1217
+    space: reference-payer
+    message: Previous preauthorization approved record found for the new preauthorization request for case number %s. Hence request will not be processed further. Please initiate enhancement/resubmission.
+  - code: PAYR-1218
+    space: reference-payer
+    message: No queried preauthorization record found for the query update request for case number %s. Hence request will not be processed further.
+  - code: PAYR-1219
+    space: reference-payer
+    message: Case number %s is not queried. Hence query updation request will not be processed further.
+  - code: PAYR-1220
+    space: reference-payer
+    message: Invalid investigation description received as %s for investigation code %s for case number %s. Please try again with valid data.
+  - code: PAYR-1221
+    space: reference-payer
+    message: Invalid investigation code received as %s for case number %s. Please try again with valid data.
+  - code: PAYR-1222
+    space: reference-payer
+    message: Invalid investigation status received as %s for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1223
+    space: reference-payer
+    message: Invalid investigation attachment received for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1224
+    space: reference-payer
+    message: Invalid implant description received as %s for implant code %s for case number %s. Please try again with valid data.
+  - code: PAYR-1225
+    space: reference-payer
+    message: Invalid implant code received as %s for case number %s. Please try again with valid data.
+  - code: PAYR-1226
+    space: reference-payer
+    message: Invalid implant status received as %s for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1227
+    space: reference-payer
+    message: Invalid implant attachment received for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1228
+    space: reference-payer
+    message: Invalid implant quantity received as %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1229
+    space: reference-payer
+    message: Invalid implant net amount received as INR %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1230
+    space: reference-payer
+    message: Invalid implant unit price received as INR %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1231
+    space: reference-payer
+    message: Claim has already been raised for case number %s. Hence preauthorization request will not be accepted.
+  - code: PAYR-1232
+    space: reference-payer
+    message: No investigation found for case number %s. Investigation details are mandatory for private hospitals.
+  - code: PAYR-1233
+    space: reference-payer
+    message: Patient liability is not aplicable for the hospital and beneficiary do not have enough wallet balance with deficit amount INR %s for the requested preauthorization for case number %s.
+  - code: PAYR-1234
+    space: reference-payer
+    message: No preauthorization record found for case number %s. Hence the request will not be processed.
+  - code: PAYR-1235
+    space: reference-payer
+    message: Insufficient wallet balance. Hence the request will not be processed.
+  - code: PAYR-1236
+    space: reference-payer
+    message: Invalid claim type (in-patient/out-patient) received. Hence the request will not be processed.
+  - code: PAYR-1237
+    space: reference-payer
+    message: Beneficiary is having an active preauthorization request at %s. Hence the request will not be processed. Kindly inform %s to cancel the active preauthorization request or raise a claim to proceed with current preauthorization.
+  - code: PAYR-1238
+    space: reference-payer
+    message: Beneficiary is having an active preauthorization request at this hospital with reference number %s. Hence the request will not be processed. Kindly cancel the active preauthorization request or raise a claim to proceed with current preauthorization.
+  - code: PAYR-1239
+    space: reference-payer
+    message: Hospital configuration not found. Please contact support team.
+  - code: PAYR-1240
+    space: reference-payer
+    message: No details found for the requested procedures in the system.
+  - code: PAYR-1241
+    space: reference-payer
+    message: Invalid registration date received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1242
+    space: reference-payer
+    message: Invalid registration date format received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1243
+    space: reference-payer
+    message: Invalid admission date received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1244
+    space: reference-payer
+    message: Invalid admission date format received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1245
+    space: reference-payer
+    message: Rule failure.
+    note: The SHA HP sandbox sent this code as "Only one conservative procedure can be booked for a case", on an enhancement that added a second Conservative package.
+  - code: PAYR-1246
+    space: reference-payer
+    message: Invalid payer id received as %s. Please try again with valid payer id.
+  - code: PAYR-1247
+    space: reference-payer
+    message: Payer details for payer id %s is not received from HCX for the request. Hence the request will not be processed.
+  - code: PAYR-1248
+    space: reference-payer
+    message: Invalid item code received as %s for item sequence %s case number %s. Please try again with valid data.
+  - code: PAYR-1249
+    space: reference-payer
+    message: Invalid item sequence received as %s for case number %s. Please try again with valid data.
+  - code: PAYR-1250
+    space: reference-payer
+    message: Requested policy %s is not listed. Please try again with valid policy code.
+  - code: PAYR-1251
+    space: reference-payer
+    message: No billable treatment plan received for case number %s. Please try again with valid treatment plan data.
+  - code: PAYR-1252
+    space: reference-payer
+    message: Case number %s is not in active preauthorization state with the current status of the case with the payer system is %s. Hence the preauthorization can not be cancelled. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled.
+  - code: PAYR-1253
+    space: reference-payer
+    message: Case number %s is already cancelled. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled.
+  - code: PAYR-1254
+    space: reference-payer
+    message: Response for STG Questionnaire id %s is mandatory for procedure code %s. Hence the preauthorization request will not be processed as the questionnaire response is not received for procedure code.
+  - code: PAYR-1255
+    space: reference-payer
+    message: Case number %s is already cancelled. Hence no preauthorization request will be accepted for this case number. New preauthorization request needs to be raised with new case/reference number to proceed further.
+  - code: PAYR-1256
+    space: reference-payer
+    message: Response for Authentication Consent Questionnaire is missing for case number %s. This must be sent if the biometric authentication for patient is not available. For new preauthorization request, either biometric authentication for patient or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire. Please adhere to the response of the coverage eligibility for auth-requirements purpose to check the mandatory documents to be attached with the request
+  - code: PAYR-1257
+    space: reference-payer
+    message: Payment is initiated for case number %s. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled
+  - code: PAYR-1258
+    space: reference-payer
+    message: Payment is accomplished/cleared for case number %s. Hence the preauthorization can not be cancelled again. Only the cases with current status as preauthorization submitted or preauthorization approved can be cancelled
+  - code: PAYR-1259
+    space: reference-payer
+    message: DOB is missing for new born for the case number (%s) with correlation id as (%s) at (%s)
+  - code: PAYR-1260
+    space: reference-payer
+    message: DOB cannot be a future date for the case number (%s) with correlation id as (%s) at (%s)
+  - code: PAYR-1261
+    space: reference-payer
+    message: Invalid new born details for the case number (%s) with correlation id as (%s) at (%s)
+  - code: PAYR-1262
+    space: reference-payer
+    message: Gender is mandatory for the new born beneficiary
+  - code: PAYR-1263
+    space: reference-payer
+    message: Documents are mandatory for the new born beneficiary
+  - code: PAYR-1264
+    space: reference-payer
+    message: Documents are mandatory for the new born beneficiary
+  - code: PAYR-1265
+    space: reference-payer
+    message: Documents are mandatory for the new born beneficiary
+  - code: PAYR-1266
+    space: reference-payer
+    message: Documents are mandatory for the new born beneficiary
+  - code: PAYR-1267
+    space: reference-payer
+    message: Beneficiary is having an active preauthorization request for new born case at this hospital with reference number %s. Hence the request will not be processed. Kindly cancel the active preauthorization request or raise a claim to proceed with current preauthorization
+  - code: PAYR-1268
+    space: reference-payer
+    message: Beneficiary is having an active preauthorization request for new born case at %s. Hence the request will not be processed. Kindly inform %s to cancel the active preauthorization request or raise a claim to proceed with current preauthorization
+  - code: PAYR-1269
+    space: reference-payer
+    message: Date of birth received for new born beneficiary exceeds 6 years before the current date. New born cases can be raised only for the beneficiary whose date of birth is within 6 years of current date
+  - code: PAYR-1270
+    space: reference-payer
+    message: Item LM100 is not applicable for preauthorization request. This item is expected/mandated only during claim submission if the patient is discharged after/during surgery under LAMA/DAMA category for PMJAY cases.
+  - code: PAYR-1271
+    space: reference-payer
+    message: No value received for link id %s for Authentication Consent Questionnaire for preauthorization request. This must be sent if the biometric authentication for patient is not available. For new preauthorization request, either biometric authentication for patient or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire. Please adhere to the response of the coverage eligibility for auth-requirements purpose to check the mandatory documents to be attached with the request.
+  - code: PAYR-1272
+    space: reference-payer
+    message: Invalid biometric user token received. Please try again with valid valid biometric details of the beneficiary. For any issues with biometric, please try with Authentication Consent Questionnaire, details for which has been received in response for coverage eligibliity auth-requirements.
+  - code: PAYR-1273
+    space: reference-payer
+    message: No questionnaire found for the received selection. Please validate the questionnaire url from insurance plan/coverage auth-requirements response.
+  - code: PAYR-1301
+    space: reference-payer
+    message: Claim has already been raised for case number %s. Hence new claim request will not be accepted.
+  - code: PAYR-1302
+    space: reference-payer
+    message: No preauthorization approved record found for case number %s. Hence new claim request will not be accepted.
+  - code: PAYR-1303
+    space: reference-payer
+    message: No active claim record found for case number %s. Hence query updation request will not be accepted.
+  - code: PAYR-1304
+    space: reference-payer
+    message: No claim queried record found for case number %s. Hence query updation request will not be accepted.
+  - code: PAYR-1305
+    space: reference-payer
+    message: Invalid usecase requested for case number %s. Please try again with valid usecase.
+  - code: PAYR-1306
+    space: reference-payer
+    message: No item found in preauthorization request for procedure %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1307
+    space: reference-payer
+    message: Invalid quantity requested for procedure %s with item sequence %s for case number %s. Please try again with valid quantity.
+  - code: PAYR-1308
+    space: reference-payer
+    message: No item found in active claim request for procedure %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1309
+    space: reference-payer
+    message: No item found in preauthorization request for implant %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1310
+    space: reference-payer
+    message: Invalid quantity requested for implant %s with item sequence %s for case number %s. Please try again with valid quantity.
+  - code: PAYR-1311
+    space: reference-payer
+    message: No item found in active claim request for implant %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1312
+    space: reference-payer
+    message: No item found in preauthorization request for investigation %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1313
+    space: reference-payer
+    message: Invalid quantity requested for investigation %s with item sequence %s for case number %s. Please try again with valid quantity.
+  - code: PAYR-1314
+    space: reference-payer
+    message: No item found in active claim request for investigation %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1315
+    space: reference-payer
+    message: Rejected item found for preauthorization for procedure %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1316
+    space: reference-payer
+    message: Rejected item found for preauthorization for investigation %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1317
+    space: reference-payer
+    message: Rejected item found for preauthorization for implant %s with item sequence %s for case number %s. Please try again with valid items.
+  - code: PAYR-1318
+    space: reference-payer
+    message: No requested treatment plan found for case number %s. Please try again with valid items.
+  - code: PAYR-1319
+    space: reference-payer
+    message: No requested investigation plan found for case number %s. Please try again with valid items.
+  - code: PAYR-1320
+    space: reference-payer
+    message: No details found for the requested investigations in the system. Hence request will not be processed.
+  - code: PAYR-1321
+    space: reference-payer
+    message: Error occurred while processing the request due to invalid workflow id as (%s)
+  - code: PAYR-1322
+    space: reference-payer
+    message: No active case found for the given case number.
+    note: The SHA HP sandbox sent this code as "Active instance found for case number", for a second request on a case while the first was still queued. The sheet's message reads the opposite way.
+  - code: PAYR-1323
+    space: reference-payer
+    message: Insufficient wallet balance. Hence the request will not be processed.
+  - code: PAYR-1324
+    space: reference-payer
+    message: Invalid discharge stage received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1325
+    space: reference-payer
+    message: Invalid admission date received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1326
+    space: reference-payer
+    message: Invalid discharge date received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1327
+    space: reference-payer
+    message: Invalid admission date format received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1328
+    space: reference-payer
+    message: Invalid discharge date format received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1329
+    space: reference-payer
+    message: Invalid registration date received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1330
+    space: reference-payer
+    message: Invalid registration date format received for case number %s. Hence the request will not be processed.
+  - code: PAYR-1331
+    space: reference-payer
+    message: Receiver not registered in NHCX. Please try again with valid receiver details.
+  - code: PAYR-1332
+    space: reference-payer
+    message: Invalid CRC request.
+  - code: PAYR-1333
+    space: reference-payer
+    message: Invalid claim type (in-patient/out-patient) received. Hence the request will not be processed.
+  - code: PAYR-1334
+    space: reference-payer
+    message: Hospital configuration not found. Please contact support team.
+  - code: PAYR-1335
+    space: reference-payer
+    message: Invalid implant quantity received as %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1336
+    space: reference-payer
+    message: Invalid implant unit price received as INR %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1337
+    space: reference-payer
+    message: Invalid implant net amount received as INR %s for implant %s for case number %s. Please try again with valid data.
+  - code: PAYR-1338
+    space: reference-payer
+    message: Invalid implant attachment received for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1339
+    space: reference-payer
+    message: Invalid implant status received as %s for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1340
+    space: reference-payer
+    message: Invalid investigation status received as %s for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1341
+    space: reference-payer
+    message: Invalid investigation attachment received for investigation %s for case number %s. Please try again with valid data.
+  - code: PAYR-1342
+    space: reference-payer
+    message: Existing case in progress found for case number %s. Hence new reimbursement request will not be accepted.
+  - code: PAYR-1343
+    space: reference-payer
+    message: Previous reimbursement approved record found for the new reimbursement request for case number %s. Hence request will not be processed further.
+  - code: PAYR-1344
+    space: reference-payer
+    message: No details found for the requested procedures in the system.
+  - code: PAYR-1345
+    space: reference-payer
+    message: Invalid procedure status received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1346
+    space: reference-payer
+    message: Invalid procedure description received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1347
+    space: reference-payer
+    message: Invalid procedure type received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1348
+    space: reference-payer
+    message: Invalid procedure factor received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1349
+    space: reference-payer
+    message: Invalid procedure quantity received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1350
+    space: reference-payer
+    message: Invalid procedure net amount received as INR %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1351
+    space: reference-payer
+    message: Invalid speciality code received as %s for procedure %s for case number %s. Please try again with valid data.
+  - code: PAYR-1352
+    space: reference-payer
+    message: Requested beneficary details and careplan details does not match any criteria for processing the case at this hospital. Please try again with valid data.
+  - code: PAYR-1353
+    space: reference-payer
+    message: Invalid careplan id received. Please try again with valid careplan id.
+  - code: PAYR-1354
+    space: reference-payer
+    message: Rule failure.
+  - code: PAYR-1355
+    space: reference-payer
+    message: No details found for the requested implants in the system. Hence request will not be processed.
+  - code: PAYR-1356
+    space: reference-payer
+    message: Patient liability is not aplicable for the hospital and beneficiary do not have enough wallet balance with deficit amount INR %s for the requested preauthorization for case number %s.
+  - code: PAYR-1357
+    space: reference-payer
+    message: Admission date cannot be after the discharge date. Hence request will not be processed. Please correct the data and try again.
+  - code: PAYR-1358
+    space: reference-payer
+    message: Registration of the patient is allowed maximum upto %s days after admission. Hence request will not be processed. Please correct the data and try again.
+  - code: PAYR-1359
+    space: reference-payer
+    message: No billable treatment plan received for case number %s. Please try again with valid treatment plan data.
+  - code: PAYR-1360
+    space: reference-payer
+    message: Invalid item code received as %s for item sequence %s case number %s. Please try again with valid data.
+  - code: PAYR-1361
+    space: reference-payer
+    message: Invalid item sequence received as %s for case number %s. Please try again with valid data.
+  - code: PAYR-1362
+    space: reference-payer
+    message: No procedure with code LM100 received with 'Requested' status for case number %s. Please try again with valid data. For PMJAY claims, if case comes under LAMA/DAMA scenario with beneficiary being discharged before surgery or during surgery, procedure with code LM100 is mandatory. Only this procedure code will be accepted for LAMA/DAMA case, and all other previous preauthorization approved items will get disqualified for the claim submission
+  - code: PAYR-1363
+    space: reference-payer
+    message: Response for Authentication Consent Questionnaire is missing for case number %s. This must be sent if the biometric authentication for patient is not available during discharge. For new claim request, either biometric authentication for patient during discharge, or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire.
+  - code: PAYR-1364
+    space: reference-payer
+    message: No value received for link id %s for Authentication Consent Questionnaire for claim request. This must be sent if the biometric authentication for patient is not available during discharge. For new claim request, either biometric authentication for patient during discharge, or response for Authentication Consent questionnaire must be sent. Please check/update the insurance plan for the policy for the details of the questionnaire.
+  - code: PAYR-1365
+    space: reference-payer
+    message: Response for STG Questionnaire id %s is mandatory for procedure code %s. Hence the preauthorization request will not be processed as the questionnaire response is not received for procedure code.
+  - code: PAYR-1366
+    space: reference-payer
+    message: Invalid biometric user token received. Please try again with valid biometric details of the beneficiary. For any issues with biometric, please try with Authentication Consent Questionnaire for discharge, details for which has been received in insurance plan.
+  - code: PAYR-1367
+    space: reference-payer
+    message: No biometric records found for the beneficiary for %s. Please ensure correctness of biometric authentication date for the day for cyclic procedure %s.
+  - code: PAYR-1368
+    space: reference-payer
+    message: "%s units of cycle information received for procedure code %s with item sequence %s. Cycle information should be sent for all the requested/processed cycles."
+  - code: PAYR-1369
+    space: reference-payer
+    message: Biometric authentication cannot be performed more than once on the same date. Multiple biometric authentication information has been provided for same date for cyclic procedure %s. Hence case will not be processed. Please check and update biometric authentication execution dates and try again.
+  - code: PAYR-1370
+    space: reference-payer
+    message: Received invalid start date as %s for supporting details with item sequence %s. Please try again with valid start date.
+  - code: PAYR-1401
+    space: reference-payer
+    message: <policy_code> policy not allowed for the hospital. Please reach out to technical support team.
+  - code: PAYR-1402
+    space: reference-payer
+    message: Requested policy <policy_code> found not be associated with any payer for insurance plan request. Hence request will not be processed.
+  - code: PAYR-1403
+    space: reference-payer
+    message: Requested renewal <renewal_code> found not be associated with requested policy <policy_code> for insurance plan request. Hence request will not be processed.
+  - code: PAYR-1404
+    space: reference-payer
+    message: No treatment provided for policy <policy_code> under any speciality. Please reach out to technical support team.
+  - code: PAYR-1405
+    space: reference-payer
+    message: No enrolled hospital found for HFR id <hfr_id> or sender id <sender_code>. Please reach out to technical support team.
+  - code: PAYR-1406
+    space: reference-payer
+    message: Existing request with correlation id %s is in progress with the payer. Hence this request will not be accepted until the execution for previous request is complete. Please wait for 15 - 60 minutes to allow the execution of previous requests. For further assistance, please reach out to technical support team.
+  - code: PAYR-1501
+    space: reference-payer
+    message: Value type received as %s for category - ONS and code - PSP for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - PSP combination is used to get the surgery date. So the surgery date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - PSP.
+  - code: PAYR-1502
+    space: reference-payer
+    message: Value type received as %s for category - ONS and code - ADDD for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - ADDD combination is used to get the admission date. So the admission date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - ADDD.
+  - code: PAYR-1503
+    space: reference-payer
+    message: Value type received as %s for category - ONS and code - DTM for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - DTM combination is used to get the death date. So the death date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - DTM.
+  - code: PAYR-1504
+    space: reference-payer
+    message: Value type received as %s for category - NMI and code - CQD for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - NMI and code - CQD combination is used to get the overall case remarks for query response. So the case remarks for query response should be sent as a string value, adhering to the NRCES standards, with the category - NMI and code - CQD.
+  - code: PAYR-1505
+    space: reference-payer
+    message: Category received as %s and code received as %s for item with sequence %s in supporting info in claim resource, where the reference value redirects to Questionnaire Response resource in the FHIR bundle. To include a policy/case level Questionnaire Response, in supporting info list there should be an entry with category - INF and code - ODN , and the value as reference. This reference value should refer to a resource of Questionnaire Response in the FHIR bundle. To include response for any STG questionnaire, in supporting info list there should be an entry with category - STG, and the value as reference
+  - code: PAYR-1506
+    space: reference-payer
+    message: Invalid gender received for new born patient. Please try agian with valid gender data as it is mandatory for PMJAY in new born case. Please refer to the valid gender values at https://hl7.org/fhir/R4/valueset-administrative-gender.html
+  - code: PAYR-1507
+    space: reference-payer
+    message: Invalid date of birth received for new born patient. Please try agian with valid date of birth as it is mandatory for PMJAY in new born case.
+  - code: PAYR-1508
+    space: reference-payer
+    message: Invalid resource received for new born patient for url %s. Please try agian with valid Patient resource for the link reference as linked Patient resource is mandatory for PMJAY in new born case
+  - code: PAYR-1509
+    space: reference-payer
+    message: Invalid attachment received for new born patient. Please try agian with valid attachment as attachment is mandatory for PMJAY in new born case
+  - code: PAYR-1510
+    space: reference-payer
+    message: Invalid parameter code received. Please check and try again with a valid parameter code
+  - code: PAYR-1511
+    space: reference-payer
+    message: Invalid parameter value received. Please check and try again with a valid parameter value
+  - code: PAYR-1512
+    space: reference-payer
+    message: Invalid resource received for patient for url %s. Please try agian with valid Patient resource for the reference
+  - code: PAYR-1513
+    space: reference-payer
+    message: Invalid diagnosis received in DiagnosisComponent. In DiagnosisComponent, diagnosis should be sent as CodeableConcept. Please try agian with valid data
+  - code: PAYR-1514
+    space: reference-payer
+    message: Value type received as %s for category - DIS for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - DIS is used to get the discharge related information. So the discharge information should be sent as string value, with value representing discharge stage (After Surgery / Before Surgery / During Surgery), with the category - DIS and code - DTH/LAMA/DAMA/DTM
+  - code: PAYR-1515
+    space: reference-payer
+    message: Invalid name received for organization resource with url %s. Name is mandatory for organization resource. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html
+  - code: PAYR-1516
+    space: reference-payer
+    message: No event found for api-caller-id %s and correlation id %s for sender code %s. Hence error response willnot be accepted.
+  - code: PAYR-1517
+    space: reference-payer
+    message: Invalid error structure received for NHCX error. Protocol response structure is expected, but received JWEPayloadResponse.
+  - code: PAYR-1518
+    space: reference-payer
+    message: No input parameters received for task resource. Input parameters are expected for task resource, but not received. Please try again with valid data.
+  - code: PAYR-1519
+    space: reference-payer
+    message: No type found for task input parameters. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html
+  - code: PAYR-1520
+    space: reference-payer
+    message: Invalid resource received for communication for url %s. Please try agian with valid Communication resource for the reference.
+  - code: ERR-PYR-CLM-007
+    space: observed
+    message: No prior preauthorization or claim record found for case number
+    note: On none of the seven sheets. The SHA HP sandbox sent it for a claim raised under a number of its own rather than the preauthorisation's.

@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case D12: Claim a shortfall - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/task/submit
+# Callback API: /v1/task/on_submit
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "D12"
+title: "Claim a shortfall"
+side: "provider"
+api: "/v1/task/submit"
+callback: "/v1/task/on_submit"
+workflow: "36 (Shortfall arbitration)"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Claim payment balance when claim was partially approved or unjustified deductions were made."
+fields:
+  - key: "taskCode"
+    label: "Task Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    example_value: "reprocess"
+  - key: "taskReason"
+    label: "Reason Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.reasonCode.coding[0].code"
+    example_value: "partialpayment"
+  - key: "claimNumber"
+    label: "Partially Paid Claim ID"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.input[0].valueString"
+    example_value: "CL26AA2600001"

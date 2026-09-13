@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case C3: Respond to coverage eligibility - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/coverageeligibility/on_check
+# Callback API: /v1/coverageeligibility/check
+# Carries JWE: true
+# Focal Resource: CoverageEligibilityResponse
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse
+# ==============================================================================
+
+code: "C3"
+title: "Respond to coverage eligibility"
+side: "payer"
+api: "/v1/coverageeligibility/on_check"
+callback: "/v1/coverageeligibility/check"
+workflow: "none (or 5 under PMJAY)"
+carries_jwe: true
+focal_resource: "CoverageEligibilityResponse"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse"
+profiles:
+  CoverageEligibilityResponse: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse"
+description: "Callback returning policy active status, remaining wallet balance, and preauth documentary prerequisites."
+fields:
+  - key: "outcome"
+    label: "Verdict Outcome"
+    group: "Verdict"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "CoverageEligibilityResponse"
+    fhir_path: "CoverageEligibilityResponse.outcome"
+    example_value: "complete"
+  - key: "inforce"
+    label: "Policy In Force"
+    group: "Coverage"
+    data_type: "boolean"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "CoverageEligibilityResponse"
+    fhir_path: "CoverageEligibilityResponse.insurance[0].inforce"
+    example_value: true
+  - key: "allowedMoney"
+    label: "Remaining Balance Amount"
+    group: "Benefit"
+    data_type: "decimal"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "CoverageEligibilityResponse"
+    fhir_path: "CoverageEligibilityResponse.insurance[0].item[].benefit[type=benefit].allowedMoney.value"
+    example_value: "485000.00"

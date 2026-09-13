@@ -1,0 +1,128 @@
+# ==============================================================================
+# Use Case B9: Submit predetermination - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/predetermination/submit
+# Callback API: /v1/predetermination/on_submit
+# Carries JWE: true
+# Focal Resource: Claim
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim
+# ==============================================================================
+
+code: "B9"
+title: "Submit predetermination"
+side: "provider"
+api: "/v1/predetermination/submit"
+callback: "/v1/predetermination/on_submit"
+workflow: "none"
+carries_jwe: true
+focal_resource: "Claim"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+profiles:
+  Claim: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+  Coverage: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+description: "Request advance estimate of approved coverage amounts without reserving policy benefits."
+fields:
+  - key: "claimNumber"
+    label: "Predetermination Reference"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.identifier[0].value"
+    example_value: "PD0000000001"
+  - key: "use"
+    label: "Claim Use"
+    group: "Case"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.use"
+    example_value: "predetermination"
+  - key: "patientName"
+    label: "Patient Full Name"
+    group: "Beneficiary"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.name[0].text"
+    example_value: "Ramesh Chandra Sharma"
+  - key: "memberId"
+    label: "Scheme / Insurer Member ID"
+    group: "Beneficiary"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=PMJAY].value"
+    also_at:
+      - "Coverage.subscriberId"
+    example_value: "PMJAY-HP-2024-998811"
+  - key: "abhaNumber"
+    label: "ABHA Number"
+    group: "Beneficiary"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=ABHA].value"
+    example_value: "91234567890123"
+  - key: "gender"
+    label: "Gender"
+    group: "Beneficiary"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.gender"
+    code_system: "http://hl7.org/fhir/administrative-gender"
+    example_value: "male"
+  - key: "birthDate"
+    label: "Date of Birth"
+    group: "Beneficiary"
+    data_type: "date"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.birthDate"
+    example_value: "1982-06-15"
+  - key: "patientPhone"
+    label: "Mobile Phone"
+    group: "Beneficiary"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Patient"
+    fhir_path: "Patient.telecom[system=phone].value"
+    example_value: "9876543210"
+  - key: "policyNumber"
+    label: "Policy Number"
+    group: "Coverage"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Coverage"
+    fhir_path: "Coverage.identifier[0].value"
+    example_value: "PMJAY/HP/S/G"
+  - key: "primaryDiagnosisCode"
+    label: "Primary Diagnosis (ICD-10)"
+    group: "Clinical"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim.diagnosis"
+    fhir_path: "Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code"
+    code_system: "http://hl7.org/fhir/sid/icd-10"
+    example_value: "A97.0"
+  - key: "procedureCode"
+    label: "Package / Procedure Code"
+    group: "Clinical"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim.procedure"
+    fhir_path: "Claim.procedure[0].procedureCodeableConcept.coding[0].code"
+    example_value: "MG004A"

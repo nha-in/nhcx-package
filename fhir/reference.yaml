@@ -1,0 +1,1590 @@
+# The FHIR Reference, as data.
+#
+# npm run build:docs renders every chapter in docs/05-FHIR Reference from this
+# file and the bundles beside it. Bundle paths are relative to package/fhir.
+#
+# Each exchange chapter shows the generic bundle first. The generic bundle is
+# what any payer on the exchange takes: private insurers and TPAs regulated by
+# IRDAI as well as government schemes. The chapter then shows what PMJAY
+# changes, computed by comparing the PMJAY bundle with the generic one, and
+# what PMJAY specifies and requires, from the pmjay block below.
+#
+# Edit a rule here, or a bundle in package/fhir, and rebuild. Do not edit the
+# chapters.
+
+# Identifier systems a participant chooses for itself. The chapters show them as
+# <participant-defined> rather than as one participant's hosts.
+participant_defined_systems:
+  - "https://kyro.care"
+  - "http://kyro.care"
+
+# NRCeS profiles for resources payers send without a meta.profile. Every other
+# resource takes the NRCeS profile the bundles declare for it.
+nrces_profiles: [ ClaimResponse, PaymentNotice, PaymentReconciliation ]
+
+conventions:
+  file: 01-Bundles and Conventions.md
+  title: Bundles and conventions
+  summary: >-
+    Everything that crosses the exchange is one FHIR R4 Bundle of type
+    `collection`, built to the NRCeS profiles for NHCX. The bundles in this
+    reference are generic: any payer on the exchange takes them, private
+    insurers and TPAs regulated by IRDAI as well as government schemes. Each
+    chapter shows the generic bundle for one exchange in one direction, then
+    what PMJAY changes and what PMJAY requires on top. The package's sample
+    collection is read the same way: a provider's bundles are either examples
+    written to this specification or captures from the sandbox run against the
+    PMJAY payer, and a payer's are either the generic payer's or PMJAY's own.
+    This chapter holds the rules every bundle obeys before any exchange is
+    considered.
+  rules:
+    - title: Bundle type
+      text: >-
+        `collection`, not `document` and not `transaction`. Entries are
+        resources placed directly, with no request or response elements. The
+        open-protocol page describes claim objects as `document` bundles with a
+        root `Composition`; the exchange accepts `collection`, and a
+        `Composition` appears only at the head of an embedded clinical record.
+    - title: Profiles
+      text: >-
+        Declare the NRCeS profile in `meta.profile` on every resource you send,
+        for example `https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim`.
+        Declare only profiles NRCeS publishes: there is no NRCeS
+        `QuestionnaireResponse` profile, so a `QuestionnaireResponse` takes the
+        base FHIR definition. Do not require a profile on what you receive:
+        payer-generated resources often carry none.
+    - title: References
+      text: >-
+        Resources in one bundle reference each other by `urn:uuid:`, with the
+        same UUID as the entry's `fullUrl`. Absolute URLs are also accepted.
+        Parse both.
+    - title: Timestamps
+      text: >-
+        ISO 8601 with the Indian offset, `+05:30`. UTC fails validation. Read
+        `Bundle.timestamp` for the send time; `meta.lastUpdated` can be stale.
+    - title: Identifier types come from two systems
+      text: >-
+        `PMJAY`, `ABHA`, `CLN`, `UTR`, `HPID` and `HPIN` from NRCeS at
+        `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code`.
+        `NPI` for a hospital's HFR ID, `NIIP` for a payer's registry ID, `NH`
+        for a plan, `MB` for a member number, and `JHN`, `MD` and `MR` from HL7
+        at `http://terminology.hl7.org/CodeSystem/v2-0203`. Take the system from
+        the exchange you are building, not from the code.
+    - title: The HFR ID inside the bundle
+      text: >-
+        Must equal the registry ID on the sender's participant record, whichever
+        element carries it.
+    - title: Sequences link things
+      text: >-
+        A `Claim.item` points at its diagnosis, procedure, care team and
+        supporting information by sequence number, not by reference. Resolve
+        through the `sequence` field, never by array position.
+    - title: Documents arrive two ways
+      text: >-
+        A supporting-info entry carries the file inline in `valueAttachment`, or
+        points with `valueReference` at a resource in the same bundle: a
+        `DocumentReference`, or the `Composition` heading an embedded ABDM
+        record. One document per entry, 2 MB each, 20 MB per claim or
+        preauthorisation bundle. Plan responses run past 20 MB; size clients and
+        proxies for 25 MB.
+    - title: Category decides structured or not
+      text: >-
+        Supporting-info categories `DIA`, `HDS`, `CD` and `INF` take a reference
+        to a structured record. `POI`, `POA`, `DOB`, `DEF`, `FIR`, `ATT` and
+        `MB` take an attachment.
+    - title: Encode attachments once
+      text: >-
+        Base64 the file once. On receipt, check the decoded bytes for a file
+        signature before trusting them, because double-encoded attachments are
+        in circulation and render as a blank page.
+    - title: One Claim, three uses
+      text: >-
+        `Claim.use` is `preauthorization`, `claim` or `predetermination`, and
+        nothing else changes. `pre-auth` and `pre-det` are not codes.
+    - title: Codes and displays match the plan
+      text: >-
+        Character for character, including the plan's own misspellings. A payer
+        rejects a package whose display differs from the plan's.
+    - title: Match on the code, not the system
+      text: >-
+        The same package code appears under different systems in different
+        exchanges. Match incoming codes on the code, and emit the system the
+        exchange you are building expects.
+  pmjay:
+    specifics:
+      - >-
+        Payer-generated bundles carry the case number as `Bundle.identifier`,
+        under the payer's own host. The host arrives spelled both
+        `payer.pmjay.nha.gov.in` and `payer.pmajy.nha.gov.in`; echo the spelling
+        that arrived.
+      - >-
+        Payer-generated bundles tag every resource `SUBSETTED` from
+        `http://terminology.hl7.org/CodeSystem/v3-ObservationValue`, "Resource
+        encoded in summary mode". It marks a projection of the payer's record,
+        not an error.
+      - >-
+        Identifier systems on the payer's side are NHA hosts such as
+        `https://hcx.pmjay.gov.in/v1/preauthorization` and
+        `https://payer.nha.gov.in`.
+      - >-
+        A preauthorisation with its embedded clinical records runs to around 30
+        entries, a claim to over 40, a query answer to nearly a hundred.
+    requires:
+      - >-
+        Element ids on every Claim bundle: the `Claim` its claim number, each
+        `item` `Item/n`, each `procedure` `Procedure/n`, each `supportingInfo`
+        `SupportingInformation/n`; `1` for `Patient`, `Coverage` and the
+        provider `Organization`, `2` for the payer `Organization`. Refused with
+        `PAYR-1027` otherwise.
+      - >-
+        The `Practitioner` carries the HPR id typed `HPIN` under
+        `https://hpr.abdm.gov.in`, beside `HPID` and the registration number
+        typed `MD`. Refused with `PAYR-1083` otherwise.
+      - >-
+        Items coded from the package master: `item.category` is the master's
+        specialty code, and the ward tier rides as `item.modifier` with the
+        master's stratification code.
+      - >-
+        Every `supportingInfo` carries a `sequence`, numbered from 1 with no
+        gaps. Refused with `PAYR-1019` otherwise.
+      - >-
+        Attachments as `application/pdf`, `application/jpg`, `application/jpeg`,
+        `application/png` or `application/fhir+json`. Anything else is refused
+        with `PAYR-1008`.
+
+chapters:
+  - file: 02-Coverage Eligibility Request.md
+    title: Coverage eligibility request
+    summary: >-
+      The provider asks the payer whether a policy is live, what it covers, and
+      what a package will need. One `CoverageEligibilityRequest` carries all of
+      that, and `purpose` decides which question is asked. It is the first
+      exchange in a case, sent at registration or before treatment planning.
+    endpoint: /v1/coverageeligibility/check
+    callback: /v1/coverageeligibility/on_check
+    use_cases: [ B1, D3 ]
+    sections:
+      - generic: B1/B1-check.json
+        pmjay: D3/D3-check.json
+    variants:
+      title: The four purposes
+      intro: >-
+        One builder, with `purpose` switched. The purposes differ in what they
+        send and what the payer must return.
+      fields:
+        - { path: CoverageEligibilityRequest.purpose, label: purpose }
+        - {
+            path: "CoverageEligibilityRequest.item[].productOrService.coding[]",
+            label: item
+          }
+      items:
+        - {
+            label: Discovery,
+            file: B1/discovery.json,
+            note: "Which policies does this person hold? Searches by ABHA or demographic
+              identifiers."
+          }
+        - {
+            label: Validation,
+            file: B1/validation.json,
+            note: "Is the policy in force, and what is left in the wallet?"
+          }
+        - {
+            label: Benefits,
+            file: B1/benefits.json,
+            note: "Is this package covered for this beneficiary?"
+          }
+        - {
+            label: Auth-requirements,
+            file: B1/auth-requirements.json,
+            note: "What must a preauthorisation carry for this package?"
+          }
+    rules:
+      - title: One purpose per request
+        text: >-
+          `purpose[]` carries one of `discovery`, `validation`, `benefits`,
+          `auth-requirements`.
+      - title: Items make a question answerable
+        text: >-
+          `item[]` is what makes `benefits` and `auth-requirements` answerable.
+          `validation` does not need it. `discovery` omits `item[]` and
+          `Coverage`.
+      - title: Date of service
+        text: >-
+          `servicedDate` is the date of service, not the date of asking.
+      - title: The Coverage you send is a stub
+        text: >-
+          It names the policy you mean, not its terms. Take the term and the
+          class from the payer's `Coverage` in the response.
+      - title: Parties by reference
+        text: >-
+          `provider` and `insurer` reference `Organization` entries typed `prov`
+          and `pay`, identified by `NPI` and `NIIP`. `facility` references a
+          `Location` the provider manages, and `enterer` a `PractitionerRole`.
+    pmjay:
+      specifics:
+        - >-
+          `item.category` is the package master's specialty code, such as `MG`,
+          and `item.productOrService` the master's package code and display.
+        - >-
+          The `Coverage` carries the scheme policy code typed `NH`, of the form
+          `PMJAY/<state>/S/G`, from the policy lookup.
+        - >-
+          Validation after registration returns the wallet; benefits and
+          auth-requirements before a preauthorisation return what the package
+          needs attached, including the consent questionnaire when there is no
+          biometric token.
+      requires:
+        - >-
+          The ward tier rides as `item.modifier` when the package allows one.
+        - >-
+          Register the patient only after coverage is validated, and validate
+          again every time treatment is added.
+
+  - file: 03-Coverage Eligibility Response.md
+    title: Coverage eligibility response
+    summary: >-
+      The payer's answer on `on_check`. It says whether the coverage is in
+      force, what is left in the wallet, and which items need authorisation and
+      which documents.
+    endpoint: /v1/coverageeligibility/on_check
+    use_cases: [ C3 ]
+    sections:
+      - generic: C3/C3-response-generic.json
+        pmjay: C3/C3-response-pmjay.json
+        pmjay_elements: [ CoverageEligibilityResponse ]
+    rules:
+      - title: Read the answer in three places
+        text: >-
+          `outcome`, `insurance[].inforce` and `insurance[].item[]`.
+          `disposition` is prose for a human.
+      - title: Match to the request by reference
+        text: >-
+          Use `CoverageEligibilityResponse.request.reference`, never a resource
+          id, to join the answer to what you sent.
+      - title: Index entries by fullUrl
+        text: >-
+          A response can carry more than one `Patient` or `Organization`. Index
+          by `fullUrl`, not by resource type.
+      - title: Money
+        text: >-
+          `allowedMoney` is the balance remaining and `usedMoney` the amount
+          used, not the sum insured. There is one benefit per wallet; read them
+          all.
+      - title: Build for the fuller form
+        text: >-
+          `benefit[]` with `Procedure`, `Investigation` and `Stratification`
+          types for benefits, and `authorizationSupporting[]` with the mandatory
+          document codes for auth-requirements. Tolerate a leaner answer.
+      - title: Documents by stage
+        text: >-
+          `authorizationSupporting[]` lists the documents the next request must
+          carry. Its `text` names the stage: pre for the preauthorisation, post
+          for the claim.
+      - title: The identifier is not a correlation key
+        text: >-
+          `CoverageEligibilityResponse.identifier` identifies the beneficiary at
+          the hospital. Correlate on the protocol headers.
+    pmjay:
+      specifics:
+        - >-
+          The bundle echoes the whole request first and then gives the answer,
+          with the payer's own `Patient`, `Coverage` and both `Organization`
+          entries.
+        - >-
+          A PMJAY answer can carry only `item.excluded` and
+          `item.authorizationRequired`, without `benefitPeriod`, `benefit[]` or
+          `authorizationSupporting[]`. The documents then come from the plan.
+        - >-
+          The payer's `Patient` can differ from yours in name, gender and birth
+          date. Do not overwrite your record from it.
+
+  - file: 04-Insurance Plan Request.md
+    title: Insurance plan request
+    summary: >-
+      One `Task` asking a payer for the plan behind a policy. There is no
+      patient and no clinical content, because the plan belongs to the policy
+      and the hospital, not to an admission. Sent once per policy and cached.
+    endpoint: /v1/insuranceplan/request
+    callback: /v1/insuranceplan/on_request
+    use_cases: [ B2, D1 ]
+    sections:
+      - generic: B2/B2-request.json
+        pmjay: D1/D1-request.json
+    rules:
+      - title: The Task code system
+        text: >-
+          `poll` under
+          `http://terminology.hl7.org/CodeSystem/financialtaskcode`, not the
+          older `https://nhcx.abdm.gov.in/api`.
+      - title: Intent
+        text: >-
+          `order`. Some element tables say `original-order`; the bundle sends
+          `order`.
+      - title: Inputs
+        text: >-
+          `valueString`, typed `policyNumber` and `providerId` under
+          `ndhm-task-input-type-code`. At least one; both narrow the answer to
+          the packages this hospital is empanelled for.
+      - title: No case yet
+        text: >-
+          No case exists, so the bundle carries no case number. The callback is
+          the only link between request and answer.
+      - title: Task codes differ by system across the exchange
+        text: >-
+          `poll`, `cancel`, `reprocess`, `release` and `status` in
+          `financialtaskcode`; `deliver` in `ndhm-task-codes`; `approve` in
+          `http://hl7.org/fhir/CodeSystem/task-code`. Switch on system and code
+          together.
+      - title: When to send it
+        text: >-
+          Once per policy, not per patient. Refresh on a `policychange`
+          communication and on your own schedule.
+    pmjay:
+      specifics:
+        - >-
+          `policyNumber` is the beneficiary's own policy code from the policy
+          lookup, of the form `PMJAY/<state>/S/G`.
+        - >-
+          `providerId` is the hospital's HFR ID, the same value as on its
+          participant record.
+      requires:
+        - >-
+          A policy the hospital is not empanelled under is refused with
+          `PAYR-1401`.
+        - >-
+          Refresh weekly per the FRD, or every fifteen days per the scenario
+          sheet, and at once on renewal, amendment or a `policychange`
+          communication.
+
+  - file: 05-Insurance Plan Response Overview.md
+    title: Insurance plan response
+    summary: >-
+      The payer's answer to the poll, and the largest message on NHCX. It is the
+      policy as data: what the hospital may bill, at what rate, under what
+      rules, with which documents and on which forms. Everything on a
+      treatment-planning screen comes from here.
+    endpoint: /v1/insuranceplan/on_request
+    use_cases: [ C4 ]
+    sections:
+      - generic: C4/C4-response-generic.json
+        pmjay: C4/C4-response-pmjay.json
+        exclude:
+          - InsurancePlan.coverage
+          - InsurancePlan.plan[].specificCost
+          - InsurancePlan.extension
+          - Questionnaire.item
+    questionnaires: true
+    rules:
+      - title: Two shapes
+        text: >-
+          Coverage-based, sent by private insurers and TPAs: benefits with money
+          limits, rules as prose. Package-based, sent by government schemes:
+          named packages at fixed rates, rules as flags. The next two chapters
+          take each shape.
+      - title: Two type codes
+        text: >-
+          `InsurancePlan.type` says what kind of insurance this is. `plan.type`
+          says how it is sold, individual or group.
+      - title: Identifier
+        text: >-
+          A private insurer's plan is identified under `https://irdai.gov.in`. A
+          scheme plan is identified under NHA hosts, with the policy code and
+          the revision.
+      - title: The wallet
+        text: >-
+          `plan.generalCost` is the sum insured, or the family wallet under a
+          scheme.
+      - title: Cache per policy
+        text: >-
+          Stamp the cache with the plan's revision identifier, and record on
+          every preauthorisation and claim which revision it was built against.
+      - title: The first line of validation
+        text: >-
+          Codes and displays, amounts, quantities and mandatory documents are
+          checked against the cached plan on the server before anything is sent.
+      - title: The forms
+        text: >-
+          The `Questionnaire` resources are the payer's forms. Render them from
+          the plan, never hard-code them, because they change with the plan.
+    pmjay:
+      specifics:
+        - >-
+          Package-based throughout: `InsurancePlan.type` `07` Universal Health
+          Policy, `plan.type` `03` Group.
+        - >-
+          `identifier` carries the policy code typed `NH` and the scheme
+          revision typed `XV`; the revision is what the cache is stamped with.
+        - >-
+          A full scheme plan carries thousands of `Questionnaire` entries, many
+          of them repeated. Deduplicate on `fullUrl`.
+      requires:
+        - >-
+          Keep the revision on every submission. An outdated tariff causes a
+          rate mismatch and a rejection on suspicion of tampering.
+
+  - file: 06-Insurance Plan Response, Package-Based.md
+    title: Insurance plan response, package-based
+    kind: shape
+    summary: >-
+      The shape government schemes send, and PMJAY sends throughout. A package
+      is a named procedure at a fixed, all-inclusive rate. The plan carries
+      every package the hospital may bill and the rules that govern each one.
+      Everything in this chapter is what PMJAY specifies.
+    bundle: C4/C4-response-pmjay.json
+    only:
+      - InsurancePlan.coverage
+      - InsurancePlan.plan
+    flags:
+      ProcedureType: "Surgical, Medical or Conservative. Decides the clinical pathway,
+        the document set, and the one-conservative-package-per-case rule"
+      GovtReserved: "`Y` means only a government hospital may bill it. Hide it in a
+        private facility"
+      ApprovalNotRequired: "`Y` means treatment need not wait for a decision. The case
+        auto-approves if it is the first preauthorisation and every package has
+        it"
+      EnhancementAllowed: "`Y` means the package may be added on an enhancement"
+      ScheduledTATApproval: "`Y` means the payer's silence within the turnaround window is approval"
+      QuantityAllowed: "Maximum quantity per approval"
+      IsDayCare: "Day-care procedure, no overnight stay"
+      ImplantApplicable: "Whether an implant line may be added"
+      MultipleImplantsAllowed: "Whether more than one implant may be added"
+      MaximumImplantsAllowed: "Cap on the number of implants"
+      StratificationAllowed: "Whether a ward tier may ride as `item.modifier`"
+      MultipleStratificationAllowed: "Whether more than one ward tier may be added"
+      MaximumStratificationAllowed: "Cap on the number of ward tiers"
+      CyclicProcedure: "Repeatable under one approval, one supporting-info entry per cycle"
+      MaximumCyclesAllowed: "Cap on the number of cycles"
+      ParentProcedure: "On an implant, the package it may accompany"
+      Standalone: "Refuse any other package alongside it"
+      Unspecified: "Free-text name and free-entry amount, validated against the wallet"
+      LamaDamaProcedure: "Offer only on a LAMA or DAMA discharge"
+      los: "Maximum length of stay; bounds the days claimed, the `LM100` count
+        included"
+      DischargeStagesLamaDamaProcedure: The discharge stages at which a LAMA or DAMA
+        package may be billed, before or during surgery
+    rules:
+      - title: Two parallel structures
+        text: >-
+          `coverage[]` carries the rules: flags, document requirements,
+          questionnaire links and `limit[]` rates. `plan[].specificCost[]`
+          carries the money: `cost[]` lines by type. Both hold the same package
+          codes. Index both by package code and join; neither is complete alone.
+      - title: Categories
+        text: >-
+          `coverage[].type` and `specificCost[].category` bind to
+          `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-benefitcategory`. Codes
+          beginning `S` are surgical, `M` medical.
+      - title: Flags are strings
+        text: >-
+          Every flag except `ParentProcedure` is a `valueString`. `"N"` is
+          truthy in most languages; compare against the literal `"Y"`.
+      - title: Cost lines
+        text: >-
+          `Procedure` is the base package rate. `Stratification` is the rate for
+          a ward tier, named in `cost.qualifiers[]`. `Implant` is added over the
+          package rate.
+      - title: A zero base rate
+        text: >-
+          A base limit of 0 means the payable amount is set entirely by the ward
+          tier chosen. It is not missing data. Never submit a zero-value item.
+      - title: Document requirements come in two shapes
+        text: >-
+          Nested, one sub-extension per document, and flat, with `category`,
+          `code` and `documentationUrl` directly under the extension. Recurse,
+          or one shape is silently dropped.
+      - title: Where the question is
+        text: >-
+          Policy-level questionnaires put the question in `item.text`, STG
+          questionnaires in `item.prefix`. Read `text` and fall back to
+          `prefix`.
+      - title: Implant codes repeat
+        text: >-
+          Once per parent procedure they may accompany. Key on the package code
+          with its parent, or on the element `id`.
+      - title: Extension urls change form
+        text: >-
+          The absolute
+          `https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim-Condition`
+          and the relative `claim-condition` both occur. Match on the last
+          segment.
+    pmjay:
+      note: >-
+        This is the PMJAY shape; the rules above are PMJAY's.
+    exclude:
+      - InsurancePlan.coverage[].extension
+      - InsurancePlan.coverage[].benefit[].extension
+      - InsurancePlan.plan[].specificCost[].benefit[].extension
+
+  - file: 07-Insurance Plan Response, Coverage-Based.md
+    title: Insurance plan response, coverage-based
+    kind: shape
+    summary: >-
+      The shape a private insurer or its TPA sends, and the generic shape on the
+      exchange. An indemnity policy lists benefits with money limits, and the
+      hospital bills against those limits rather than against a package price.
+    bundle: C4/C4-response-generic.json
+    only:
+      - InsurancePlan.coverage
+      - InsurancePlan.plan
+    rules:
+      - title: One structure per benefit
+        text: >-
+          Everything about a benefit, its conditions and required documents,
+          hangs off `coverage[].benefit[]`, with its money cap in `limit[]`.
+          `plan[].specificCost[]` carries the cost per benefit category.
+      - title: Conditions are prose
+        text: >-
+          The `Claim-Condition` extension on a benefit carries a sentence, such
+          as a window after discharge, with the number in `limit[]` as a value,
+          a comparator and a unit.
+      - title: Benefit types are the insurer's vocabulary
+        text: >-
+          No closed value set is published for indemnity benefit types. Ask the
+          insurer for its list before building a picker.
+      - title: Requirements by stage
+        text: >-
+          Supporting-info requirements name the stage they apply to,
+          preauthorisation, discharge or claim, in the extension url.
+      - title: Exclusions
+        text: >-
+          Waiting periods, pre-existing-condition rules and excluded procedures
+          are `Claim-Exclusion` extensions on the plan, each with a category and
+          a statement.
+      - title: What the screen caps
+        text: >-
+          The amount, against the benefit's limit. Submission is blocked by an
+          amount over the limit or a missing mandatory document.
+    pmjay:
+      note: >-
+        PMJAY does not send this shape. Its plan is package-based; see the
+        previous chapter.
+    exclude:
+      - InsurancePlan.coverage[].extension
+      - InsurancePlan.coverage[].benefit[].extension
+      - InsurancePlan.plan[].specificCost[].benefit[].extension
+    flags:
+      ProcedureType: The kind of care the benefit covers, such as surgical, day care
+        or critical care
+      IsDayCare: Day-care treatment, no overnight stay
+      ImplantApplicable: Whether an implant may be billed under the benefit
+
+  - file: 08-Preauthorisation Request.md
+    title: Preauthorisation request
+    summary: >-
+      The first bundle with clinical content. The provider asks the payer to
+      approve a treatment before it is given. The spine is a `Claim` with `use`
+      set to `preauthorization`.
+    endpoint: /v1/preauth/submit
+    callback: /v1/preauth/on_submit
+    workflow: "12 new, 121 resubmission"
+    use_cases: [ B3, D4, D5 ]
+    sections:
+      - generic: B3/B3-request.json
+        pmjay: D4/D4-request.json
+    rules:
+      - title: The case number
+        text: >-
+          `Claim.identifier`, typed `CLN`, carries the provider's case number.
+          Every later message on the case, the payer's included, names it.
+      - title: One focal insurance
+        text: >-
+          Exactly one `Claim.insurance[]` entry carries `focal: true`.
+      - title: Items
+        text: >-
+          Each item links to the care team, diagnosis and procedure by sequence.
+          `net` is `unitPrice` times `quantity`; do not compute with `factor`.
+          `Claim.total` equals the sum of the item nets.
+      - title: Documents
+        text: >-
+          The mandatory document codes are the ones the auth-requirements answer
+          returned. Send each code and display exactly as given.
+      - title: The STG answers
+        text: >-
+          Each package's STG questionnaire is answered as a
+          `QuestionnaireResponse` in the bundle, with the `linkId`s the plan
+          gives.
+      - title: Claim.type
+        text: >-
+          SNOMED `737481003`, Inpatient care management. Payers echo it, some
+          under the `ndhm-claim-type` ValueSet URL.
+      - title: References to records
+        text: >-
+          A `valueReference` may point at the `Composition` heading an embedded
+          record rather than at a `DocumentReference`. Follow the reference,
+          then walk the record.
+    pmjay:
+      specifics:
+        - >-
+          `item.programCode` carries `AB-PMJAY` under `ndhm-program-code`.
+        - >-
+          `item.modifier` carries the ward tier from the master's stratification
+          codes, and `item.category` the master's specialty code.
+        - >-
+          The Authentication Consent answer is a second `QuestionnaireResponse`
+          beside the STG answers, with its attachments as `valueAttachment` and
+          its dates as `valueDateTime`.
+        - >-
+          Document codes are the `MAND` codes the auth-requirements answer
+          returned.
+      requires:
+        - >-
+          The biometric user token on the request, or the plan's Authentication
+          Consent questionnaire answered as a `QuestionnaireResponse`. Refused
+          with `PAYR-1256` otherwise.
+        - >-
+          The STG questionnaire answered for every package that needs one.
+          Refused with `PAYR-1254` otherwise.
+        - >-
+          Not more than one day before admission, with the registration and
+          admission dates as supporting information.
+        - >-
+          One live preauthorisation per beneficiary per hospital. Refused with
+          `PAYR-1238` while another is open.
+        - >-
+          `LM100` is not allowed on a preauthorisation. Refused with `PAYR-1270`.
+        - >-
+          Auto-approval only when this is the first preauthorisation on the case
+          and every package carries `ApprovalNotRequired` `Y`.
+
+  - file: 09-Preauthorisation Response.md
+    title: Preauthorisation response
+    summary: >-
+      The payer's answer, on the provider's `/v1/preauth/on_submit` callback. A
+      collection bundle whose spine is a `ClaimResponse` carrying the request's
+      case number. The same shape carries an acknowledgement, an approval, a
+      query and a rejection.
+    endpoint: /v1/preauth/on_submit
+    use_cases: [ C5 ]
+    sections:
+      - generic: C5/C5-approved-wf21.json
+    variants:
+      title: The answers
+      intro: >-
+        The same bundle, told apart by the workflow code, `outcome` and the
+        claim-level adjudication reason.
+      fields:
+        - { path: ClaimResponse.outcome, label: outcome }
+        - { path: "ClaimResponse.adjudication[].reason.coding[]", label: reason }
+      items:
+        - { label: Acknowledged, workflow: "20", file: C5/C5-received-wf20.json }
+        - { label: Approved, workflow: "21", file: C5/C5-approved-wf21.json }
+        - {
+            label: Enhancement approved,
+            workflow: "22",
+            file: C5/C5-enhancement-approved-wf22.json
+          }
+        - { label: Rejected, workflow: "23", file: C5/C5-rejected-wf23.json }
+        - { label: Queried, workflow: "24", file: C5/C5-queried-wf24.json }
+    rules:
+      - title: Read outcome with the reason
+        text: >-
+          `outcome` `complete` covers approval and rejection alike. Read it with
+          `adjudication[].reason` at claim level.
+      - title: Answer early, decide later
+        text: >-
+          Acknowledge at once on 20 as `response.partial`, then decide on 21 or
+          23 as `response.complete`, or the exchange retires the correlation
+          before the adjudicator gets to it.
+      - title: The case number
+        text: >-
+          `preAuthRef` carries the payer's own case number. Store it on arrival;
+          later requests on the case name it.
+      - title: Items by sequence
+        text: >-
+          Read item adjudication by `itemSequence`, never by array position. A
+          reduced amount does not force `outcome` to `partial`; reconcile the
+          amounts yourself.
+      - title: Totals
+        text: >-
+          `total[]` carries `benefit`, `submitted` and `eligible`. The
+          `eligible` total names the member and the plan in its `id`; key on the
+          category and the `id` together.
+      - title: disposition is prose
+        text: >-
+          For a human. Route on `outcome` and the adjudication codes.
+      - title: Match on the case number
+        text: >-
+          Join the response to the request on `identifier` and `preAuthRef`,
+          never on the provider identifier or name, which can change shape
+          between request and response.
+      - title: Adjudication systems
+        text: >-
+          Some senders bind adjudication categories to a documentation URL.
+          Match on the code.
+    pmjay:
+      specifics:
+        - >-
+          A rejection is `outcome` `error` with reason `rejected` and benefit 0.
+          Generic payers send `complete` with `cancelled` or `rejected`. Handle
+          both.
+        - >-
+          A query is `outcome` `partial` with reason `queried`, the question as
+          free text in the item adjudication; see the query chapter.
+        - >-
+          `preAuthRef` carries the scheme's case id. It is what the payer
+          service uses to address the case.
+      requires:
+        - >-
+          Store the case reference the moment it arrives. Enhancements, claims
+          and the payer service address the case by it.
+
+  - file: 10-Preauthorisation Enhancement.md
+    title: Preauthorisation enhancement
+    summary: >-
+      Extends an approved preauthorisation: a longer stay or an added package.
+      The same endpoint and the same case number, under workflow 13, with the
+      header `x-hcx-use_case: Enhancement` and a new correlation id.
+    endpoint: /v1/preauth/submit
+    callback: /v1/preauth/on_submit
+    workflow: "13, and 131 to answer an enhancement query"
+    use_cases: [ D6 ]
+    sections:
+      - generic: B3/B3-enhancement.json
+        pmjay: D6/D6-enhancement.json
+    rules:
+      - title: The protocol says enhancement, not the payload
+        text: >-
+          `Claim.use` stays `preauthorization` and the case number is unchanged.
+          The workflow code and `x-hcx-use_case` declare the enhancement.
+      - title: Cumulative
+        text: >-
+          Carry the approved items and the ones now sought. `Claim.total` is the
+          sum of all of them.
+      - title: No link in the payload
+        text: >-
+          `Claim.related` is absent. The case number and your stored correlation
+          ids are the thread.
+      - title: One at a time
+        text: >-
+          Refused when there is no approval, when a request on the case is still
+          open, or after the claim has been raised.
+      - title: Order
+        text: >-
+          Response items can come back out of order; read by `itemSequence`.
+          Order a case's messages by receipt, not by `Bundle.timestamp`.
+    pmjay:
+      specifics:
+        - >-
+          On the response, the `benefit` total is the increment and the wallet's
+          `eligible` total is cumulative.
+        - >-
+          The acknowledgement carries no `preAuthRef`. Carry the parent case id
+          onto the enhancement yourself.
+        - >-
+          A query on an enhancement arrives on 241 and is answered by a fresh
+          submit on 131.
+      requires:
+        - >-
+          Only packages flagged `EnhancementAllowed` `Y` may be added.
+        - >-
+          One `Conservative` package per case. Refused with `PAYR-1245`.
+        - >-
+          One request at a time on a case. Refused with `PAYR-1322`.
+
+  - file: 11-Preauthorisation Query and Answer.md
+    title: Preauthorisation query and answer
+    summary: >-
+      When the payer wants more before it decides. A private insurer raises the
+      query as a communication and takes the answer as one. PMJAY raises it as a
+      `ClaimResponse` on the case's own thread and takes the answer as the whole
+      preauthorisation, resubmitted.
+    use_cases: [ D7 ]
+    sections:
+      - title: The query
+        endpoint: /v1/communication/request
+        workflow: "24"
+        generic: C6/C6-preauth-query-wf24.json
+        pmjay: C5/C5-queried-wf24.json
+        elements: [ Task, CommunicationRequest ]
+        pmjay_elements: [ ClaimResponse ]
+      - title: The answer
+        endpoint: /v1/communication/on_request
+        workflow: "24, echoed"
+        generic: B4/B4-preauth-query-answer.json
+        pmjay: D7/D7-query-answer.json
+        elements: [ Task, Communication ]
+        pmjay_elements: [ Claim, QuestionnaireResponse ]
+    rules:
+      - title: The generic query
+        text: >-
+          A `Task` coded `poll`, reason `additionalinfo`, with an `include`
+          input referencing a `CommunicationRequest` whose `basedOn` names the
+          preauthorisation. Sent on `/v1/communication/request` under 24.
+      - title: The generic answer
+        text: >-
+          A `Task` coded `deliver` in `ndhm-task-codes`, `completed`, with an
+          `include` input referencing a `Communication` whose `basedOn` names
+          the request and whose `payload` carries the message and the documents.
+          Posted on `/v1/communication/on_request`, echoing the correlation id
+          and workflow id.
+    pmjay:
+      specifics:
+        - >-
+          The query arrives on `/v1/preauth/on_submit` under 24: a
+          `ClaimResponse` with `outcome` `partial` and reason `queried`.
+        - >-
+          The question is free text in `item.adjudication` where the category is
+          `reason`, in `reason.coding.display`. On a live case it grows into a
+          log, split by `|` into turns and by `~` into user, timestamp, type,
+          comment and desk. Tolerate a single segment, treat the literal `null`
+          as empty, and never put `|` or `~` in anything you send back.
+        - >-
+          The log is cumulative. The answer you sent reappears in it on the next
+          response, which is the only sign it was read.
+        - >-
+          The answer is the whole preauthorisation bundle again on
+          `/v1/preauth/submit` under 19, on the same case number, with the reply
+          text in `item.productOrService.text`.
+      requires:
+        - >-
+          Answer on 19, never on a new 12, which opens a second case.
+        - >-
+          Put the query remarks under `supportingInfo` category `NMI`, code
+          `CQD`, as a `valueString`.
+        - >-
+          Supporting-info dates in `+05:30`.
+
+  - file: 12-Claim Request.md
+    title: Claim request
+    summary: >-
+      The request for payment once treatment is done. The same `Claim` as the
+      preauthorisation with `use` set to `claim`, carrying the finalised dates,
+      bill and documents.
+    endpoint: /v1/claim/submit
+    callback: /v1/claim/on_submit
+    workflow: "15"
+    use_cases: [ B5, D9 ]
+    sections:
+      - generic: B5/B5-request.json
+        pmjay: D9/D9-request.json
+    rules:
+      - title: What a claim adds
+        text: >-
+          The final bill under `MB` and the discharge summary under `HDS`, with
+          the implant invoice, the operation notes and the signed claim form
+          where the plan asks for them.
+      - title: The stay
+        text: >-
+          `billablePeriod` carries the admission and the discharge.
+      - title: Sequences may have gaps
+        text: >-
+          Map supporting information by `sequence` and resolve
+          `item.informationSequence` through the map.
+      - title: The amount
+        text: >-
+          May not exceed what the preauthorisation approved.
+      - title: Cyclic treatment
+        text: >-
+          One supporting-info entry per cycle, with `timingPeriod`, listed in
+          the item's `informationSequence`, its record referenced from
+          `valueReference`.
+      - title: Newborn
+        text: >-
+          The parent stays the primary `Patient`; the child is a second
+          `Patient` linked with `link.type` `refer`, with gender and birth date,
+          and a proof of birth under category `DOB`, code `BCF` or `DCB`.
+    pmjay:
+      specifics:
+        - >-
+          Dates ride as supporting information: the stay under category `ONS`,
+          code `ADDD`, the encounter under `OTH`, code `EDT`, and the surgery
+          under code `PSP`, each as a `valueString` in `+05:30`.
+        - >-
+          Discharge types `DTH`, `DTM`, `LAMA` and `DAMA` under category `DIS`,
+          with the stage, before, during or after surgery, as the `valueString`.
+        - >-
+          LAMA or DAMA before or during surgery voids the approved packages: one
+          item `LM100`, quantity the days admitted, capped by the package's
+          `los`. After surgery the package stays billable.
+        - >-
+          A death records its date under category `ONS`, code `DTM`.
+        - >-
+          The discharge consent and the other policy questionnaires ride as
+          `QuestionnaireResponse` resources, each referenced from a
+          `supportingInfo` entry.
+      requires:
+        - >-
+          Send the claim under the preauthorisation's own number. Refused with
+          `ERR-PYR-CLM-007` otherwise.
+        - >-
+          The discharge status under `DIS` and the admission and discharge
+          dates. The claim is refused without them.
+        - >-
+          Bill the package alone, at the whole amount. Room rent, consultations
+          and investigations are not items.
+        - >-
+          A fresh biometric token at discharge, or the plan's Discharge Consent
+          questionnaire answered. Refused with `PAYR-1363` otherwise.
+        - >-
+          `LM100` as the single procedure on LAMA or DAMA before or during
+          surgery (`PAYR-1362`), and the death date under `ONS` / `DTM`
+          (`PAYR-1096`).
+        - >-
+          Each cycle's `timingPeriod` matches the biometric capture for that
+          cycle.
+
+  - file: 13-Claim Response.md
+    title: Claim response
+    summary: >-
+      The payer's adjudication of a submitted claim, on `/v1/claim/on_submit`.
+      The same bundle carries an acknowledgement, an approval, a query and a
+      rejection.
+    endpoint: /v1/claim/on_submit
+    use_cases: [ C7 ]
+    sections:
+      - generic: C7/C7-approved-wf26.json
+    variants:
+      title: The answers
+      intro: >-
+        The same bundle, told apart by the workflow code, `outcome` and the
+        claim-level adjudication reason.
+      fields:
+        - { path: ClaimResponse.outcome, label: outcome }
+        - { path: "ClaimResponse.adjudication[].reason.coding[]", label: reason }
+      items:
+        - { label: Acknowledged, workflow: "25", file: C7/C7-received-wf25.json }
+        - { label: Approved, workflow: "26", file: C7/C7-approved-wf26.json }
+        - { label: Queried, workflow: "27", file: C7/C7-queried-wf27.json }
+        - { label: Rejected, workflow: "291", file: C7/C7-rejected-wf291.json }
+    rules:
+      - title: partial is two things
+        text: >-
+          An acknowledgement and a query are both `partial`. Read the
+          claim-level reason, then `disposition`, then the totals.
+      - title: Deductions
+        text: >-
+          Item-level `deductible` adjudications carry the amount and the reason.
+          Sum them before reporting an approved figure.
+      - title: Joining
+        text: >-
+          Join the response to the claim by `identifier.value`.
+      - title: Settlement is separate
+        text: >-
+          An approval closes adjudication, not the money. The claim closes on
+          the payment notice.
+      - title: Submitted amounts
+        text: >-
+          Do not reconcile your submitted amount against the payer's `submitted`
+          total; it comes from the payer's own record.
+    pmjay:
+      specifics:
+        - >-
+          `total[]` adds a `tax` line beside `benefit` and `submitted`.
+        - >-
+          The adjudication reason carries the desk's audit trail, with mixed
+          date formats. Display it; never parse a timestamp from it.
+        - >-
+          A benefit of 0 on a query means undetermined, not refused.
+
+  - file: 14-Claim Query and Answer.md
+    title: Claim query and answer
+    summary: >-
+      The payer asking for something before it adjudicates a claim. A private
+      insurer asks through a communication; PMJAY asks in the claim response and
+      takes the whole claim back as the answer.
+    use_cases: [ D10 ]
+    sections:
+      - title: The query
+        endpoint: /v1/communication/request
+        workflow: "27"
+        generic: C6/C6-claim-query-wf27.json
+        pmjay: C7/C7-queried-wf27.json
+        elements: [ Task, CommunicationRequest ]
+        pmjay_elements: [ ClaimResponse ]
+      - title: The answer
+        endpoint: /v1/communication/on_request
+        workflow: "27, echoed"
+        generic: B4/B4-claim-query-answer.json
+        pmjay: D10/D10-query-answer.json
+        elements: [ Task, Communication ]
+        pmjay_elements: [ Claim, QuestionnaireResponse ]
+    rules:
+      - title: The generic query
+        text: >-
+          A `Task` coded `poll`, reason `additionalinfo`, with an `include`
+          input referencing a `CommunicationRequest` whose `basedOn` names the
+          claim. Sent on `/v1/communication/request` under 27.
+      - title: The generic answer
+        text: >-
+          A `Task` coded `deliver` in `ndhm-task-codes`, `completed`, with an
+          `include` input referencing a `Communication` whose `basedOn` names
+          the request and whose `payload` carries the message and the documents.
+          Posted on `/v1/communication/on_request`, echoing the correlation id
+          and workflow id.
+      - title: Keep attachments on their codes
+        text: >-
+          When rebuilding a bundle to answer a query, key each attachment to its
+          document code as you assemble it, and check the pairing before you
+          send.
+    pmjay:
+      specifics:
+        - >-
+          The query is a `ClaimResponse` with `outcome` `partial` and reason
+          `queried` on 27, the question as free text in the item adjudication.
+        - >-
+          The answer is a fresh submit of the whole claim, on the same claim
+          number, under 161.
+      requires:
+        - >-
+          Answer on 161. A claim query answered on 151, 19 or 16 is refused with
+          `PAYR-1321`.
+        - >-
+          The full bundle, rebuilt from your stored submission, never a delta.
+
+  - file: 15-Cancel, Reprocess and Shortfall.md
+    title: Cancel, reprocess and shortfall
+    summary: >-
+      The post-decision exchanges. All are `Task` bundles on `/v1/task/submit`,
+      answered on `/v1/task/on_submit`, and `Task.code` with its reason is the
+      only thing that tells them apart.
+    use_cases: [ B8, D8, D11, D12, C10 ]
+    sections:
+      - title: Cancel
+        endpoint: /v1/task/submit
+        workflow: "PC01"
+        generic: B8/B8-cancel.json
+        pmjay: D8/D8-cancel.json
+      - title: Reprocess
+        endpoint: /v1/task/submit
+        workflow: "36"
+        generic: B8/B8-reprocess.json
+        pmjay: D11/D11-reprocess.json
+      - title: Release
+        endpoint: /v1/task/submit
+        generic: B5/claim-release.json
+      - title: Cancellation done
+        endpoint: /v1/task/on_submit
+        workflow: "PC02"
+        generic: C10/C10-cancelled-wfPC02.json
+        elements: [ Task, ClaimResponse ]
+      - title: Reprocess acknowledged
+        endpoint: /v1/task/on_submit
+        workflow: "37"
+        generic: C10/C10-arbitration-wf37.json
+        elements: [ Task, ClaimResponse ]
+    rules:
+      - title: Cancel
+        text: >-
+          `Task.code` `cancel`, a reason from `ndhm-reason-code`
+          (`treatmentplanchanged`, `patientrequest`, `financialconstraints`,
+          `alternativetreatment`, `duplicateclaim`, `administrativeerror`,
+          `other`), and the inputs `claimNumber` and `intimationNumber`.
+      - title: Reprocess
+        text: >-
+          `Task.code` `reprocess`, reason `claimrejected` for a rejected claim
+          or `partialpayment` for one paid short, `basedOn` naming the claim by
+          its `CLN` identifier, `for` the member, and the inputs `claimNumber`
+          and `intimationNumber`, spelled so.
+      - title: Release
+        text: >-
+          `Task.code` `release`, reason `partialpayment`, with the claim number
+          and the amount sought as a `valueMoney` input.
+      - title: Nullify
+        text: >-
+          The Reprocess sheet of the requests-and-responses workbook gives
+          `Task.code` on `/v1/task/submit` as `reprocess`, `cancel`, `release`
+          or `nullify`, as the use case needs, each with a `ClaimNumber` input
+          carrying the claim number and `Task.status` `requested`; the answer is
+          a `Task` whose output is the `ClaimResponse`. The provider sandbox
+          exit checklist names the same four codes. The value sets describe
+          `nullify` as closing a claim the provider submitted. No sample bundle,
+          reason code or workflow code is published for it.
+      - title: Suspend
+        text: >-
+          `suspend` appears only as a code. The value sets list it, glossed
+          "suspend the preauthorization or claim that was submitted by
+          provider", beside the task output `claimsuspended`. No exchange
+          carries it: no request shape, answer or workflow code is published.
+      - title: The answer
+        text: >-
+          A `Task` whose `output` of type `include` references a `ClaimResponse`
+          in the same bundle. Read the result from that `ClaimResponse`'s
+          adjudication reason, not from `outcome` and not from `Task.code`. A
+          cancellation is `completed` with reason `cancelled`; a reprocess is
+          `accepted` with the `ClaimResponse` `queued`, and the new verdict
+          follows on the claim's own thread.
+      - title: Switch on system and code together
+        text: >-
+          The Task code systems differ between request and response.
+      - title: A cancelled case still reports money
+        text: >-
+          Zero the figure yourself once the reason reads `cancelled`.
+    pmjay:
+      specifics:
+        - >-
+          A shortfall is the reprocess `Task` with reason `partialpayment` and
+          an amount capped at the difference.
+        - >-
+          The reprocess carries the supporting document as a `document` input
+          with a `valueAttachment`, and names the member by the `PMJAY`
+          identifier.
+        - >-
+          The reprocess is acknowledged on 37; the new verdict then arrives on
+          the claim's own thread.
+      requires:
+        - >-
+          Cancel is allowed until the claim is raised, and refused once payment
+          has been initiated (`PAYR-1257`).
+        - >-
+          Reprocess once, the moment the rejection arrives, with a supporting
+          document. The Claim Review Committee is final.
+        - >-
+          Shortfall only after payment notice 33 has arrived and been
+          acknowledged on 17, once, and never after a reprocess.
+        - >-
+          A `Task` coded `status` is not taken (`PAYR-1018`, `PAYR-1008`). Read
+          where a case stands from the payer service instead.
+
+  - file: 16-Payment Notice and Acknowledgement.md
+    title: Payment notice and acknowledgement
+    summary: >-
+      The payer's notice that money has moved against an approved claim, and the
+      provider's acknowledgement. The only exchange that carries actual money
+      rather than an adjudicated figure.
+    use_cases: [ C9, B7, D13 ]
+    sections:
+      - title: The notice
+        endpoint: /v1/paymentnotice/request
+        workflow: "30 initiated, 31 processed, 33 settled"
+        generic: C9/C9-notice-wf30.json
+        pmjay: C9/payment-notice.json
+        elements: [ Task, PaymentNotice, PaymentReconciliation ]
+      - title: The acknowledgement
+        endpoint: /v1/paymentnotice/on_request
+        workflow: "30 echoed; 17 under PMJAY"
+        generic: B7/B7-acknowledgement.json
+        pmjay: D13/D13-acknowledgement.json
+        elements: [ Task ]
+    rules:
+      - title: The notice
+        text: >-
+          A `Task` coded `deliver` in `ndhm-task-codes` whose input references
+          the `PaymentNotice`. `PaymentNotice.amount` is the net that reaches
+          the account. `PaymentReconciliation` carries the payment date, the
+          `UTR` and one `detail[]` line per money type.
+      - title: The arithmetic
+        text: >-
+          Net plus the deductions equals the adjudicated benefit, not the
+          submitted amount. Run the check on every notice and flag a case that
+          fails it.
+      - title: The acknowledgement
+        text: >-
+          A `Task` coded `status` in `financialtaskcode`, `completed`, with an
+          output `paymentack` and the claim number as a second output. It
+          confirms receipt, not agreement.
+      - title: Three notices
+        text: >-
+          30, 31 and 33, each with its own correlation id. The bank reference
+          arrives on 33. Keep the path for the acknowledgement configurable per
+          payer.
+    pmjay:
+      specifics:
+        - >-
+          Deduction lines use the scheme's own codes, such as `RF`, beside the
+          `Payment` line.
+        - >-
+          The notice names the claim under
+          `https://hcx.pmjay.gov.in/v1/preauthorization`.
+        - >-
+          Before 33 the `UTR` field can carry a scheme reference rather than a
+          bank reference. Store it; reconcile against the bank only on 33.
+      requires:
+        - >-
+          Acknowledge each notice on 17.
+        - >-
+          Keep the UTR from 33; the shortfall window opens only once 33 is
+          acknowledged.
+
+  - file: 17-Communication.md
+    title: Communication
+    summary: >-
+      The payer's asynchronous channel to the provider: a turnaround alert, a
+      grievance, a policy or wallet change, or a request for documents. The
+      provider acknowledges within thirty seconds, whether or not the issue is
+      resolved.
+    use_cases: [ C6, B4 ]
+    sections:
+      - title: The request
+        endpoint: /v1/communication/request
+        generic: C6/C6-preauth-query-wf24.json
+        elements: [ Task, CommunicationRequest ]
+      - title: A notification
+        endpoint: /v1/communication/request
+        workflow: "N02"
+        generic: C6/C6-notification-wfN02.json
+        elements: [ Task, CommunicationRequest ]
+      - title: The acknowledgement
+        endpoint: /v1/communication/on_request
+        generic: B4/communication-response.json
+        elements: [ Task, Communication ]
+    rules:
+      - title: The push pattern
+        text: >-
+          `Task.code` `poll` with an input of type `include` referencing the
+          resource being delivered, a `CommunicationRequest` from the payer.
+          `intent` is `order` on a request and `proposal` on a notification.
+          Resolve the reference and read its type.
+      - title: Switch on the reason
+        text: >-
+          `Task.reasonCode` from `ndhm-reason-code`: `tatquery`, `grievance`,
+          `walletupdate`, `policychange`, `additionalinfo`, `claimArbitration`.
+          Accept the misspelling `claimArbitartion` on receipt.
+      - title: Notifications
+        text: >-
+          A notification carries its reason under the communication-category
+          system, such as `information`, and a `CommunicationRequest` with
+          category `notification` and the message in `payload`.
+      - title: Category, priority, topic
+        text: >-
+          `category` `alert`, `reminder`, `notification`, `instruction` or
+          `questionnaire`; `priority` `routine`, `urgent`, `asap` or `stat`;
+          `topic` `progress-update` for anything about a live case.
+      - title: completed is the event
+        text: >-
+          `Task.status` and `Communication.status` read `completed` when the
+          message is delivered. Do not close a case on them.
+      - title: The acknowledgement
+        text: >-
+          A `Task` coded `deliver`, `completed`, whose `include` input
+          references a `Communication` with `basedOn` naming the request. Same
+          correlation id. Take each organisation's role from
+          `Organization.type`, not from the identifier type.
+    pmjay:
+      specifics:
+        - >-
+          PMJAY does not use this channel for queries. A PMJAY
+          `CommunicationRequest` is a notification: a turnaround alert, a
+          grievance, a wallet or policy change, or an arbitration intimation.
+      requires:
+        - >-
+          Acknowledge within thirty seconds with the same Task bundle and
+          `Task.status` `completed`, and leave the case's status alone.
+
+  - file: 18-Predetermination, Status and Search.md
+    title: Predetermination, status and search
+    summary: >-
+      Three exchanges that are specified and seldom used. Confirm support with
+      the payer before building any of them.
+    use_cases: [ B9, C11, A5, B6, C8 ]
+    sections:
+      - title: Predetermination request
+        endpoint: /v1/predetermination/submit
+        generic: B9/predetermination-request.json
+        elements: [ Claim ]
+      - title: Predetermination response
+        endpoint: /v1/predetermination/on_submit
+        generic: C11/predetermination-response.json
+        elements: [ ClaimResponse ]
+      - title: Status
+        endpoint: /v1/status
+        callback: /v1/on_status
+        summary: >-
+          A sender asks what became of a request it made. There is no FHIR
+          payload either way. The Status sheet of the requests-and-responses
+          workbook says the request payload "should be empty string": no
+          bundle, no `Task`, no resource. Everything the call needs travels in
+          the protected header. `x-hcx-correlation_id` is the
+          `x-hcx-api_call_id` of the request whose status is sought,
+          `x-hcx-status` is `request.initiated`, `x-hcx-workflow_id` and
+          `x-hcx-use_case` (`New`, `Enhancement` or `Resubmit`) are optional,
+          and `x-hcx-ben-abha-id` is mandatory. The status comes back on
+          `/v1/on_status`, again in the protected header: `x-hcx-status`
+          `request.dispatched`, the correlation id of the request, and
+          `x-hcx-error_details` (`code`, `message`, `trace`) where it failed.
+          The sheet gives the callback no payload section. The sandbox exit
+          checklists word the request payload as the "encrypted payload of
+          request for which the status is seeking for" and describe no bundle
+          for it.
+      - title: Search
+        endpoint: /v1/search/submit
+        generic: B6/claim-search.json
+        elements: [ Task ]
+      - title: Search response
+        endpoint: /v1/search/on_submit
+        generic: C8/search-response.json
+        elements: [ Task, ClaimResponse ]
+    rules:
+      - title: Predetermination
+        text: >-
+          What would the payer approve for this treatment? The preauthorisation
+          bundles with `Claim.use` `predetermination`. Nothing is reserved.
+      - title: Status
+        text: >-
+          No bundle and no `Task`. Send an empty payload with the correlation
+          id set to the call id of the request you are asking about, and read
+          the answer from the callback's protected header.
+      - title: Search
+        text: >-
+          `Task.code` `search` in `ndhm-task-codes`, with inputs from the task
+          input-type value set, such as `ClaimNumber`, `PolicyNumber`,
+          `FromDate` and `ToDate`. The answer is a `Task`, `completed`, whose
+          outputs reference the matching `ClaimResponse` resources in the same
+          bundle, possibly across several callbacks on one correlation id.
+      - title: Agree the codes
+        text: >-
+          The task code for search is given more than one way in the
+          specifications. Agree it with the payer in writing first.
+    pmjay:
+      requires:
+        - >-
+          A status enquiry as a `Task` is refused. Read where a case stands from
+          the payer service's role lookup.
+
+codes:
+  file: 19-Codes and Value Sets.md
+  title: Codes and value sets
+  summary: >-
+    Every code the bundles carry, grouped by the system it is bound to, then the
+    value sets the specifications define beyond them. The workflow codes are in
+    the Overview's Workflow Codes chapter and are not repeated here.
+  value_sets:
+    - title: Supporting-info categories
+      system: https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category
+      codes:
+        - [ ONS, "Period, start or end dates", "date-time string" ]
+        - [ OTH, Other, "date-time string" ]
+        - [ INV, Investigation, reference ]
+        - [ ATT, Attachment, attachment ]
+        - [ HDS, Hospital discharge summary, reference ]
+        - [ DGN, Diagnosis, reference ]
+        - [ LAB, Lab test, reference ]
+        - [ AOB, Onset of current symptoms, value ]
+        - [ MB, Medical bill, attachment ]
+        - [ DIA, Diagnostic report, reference ]
+        - [ CD, Clinical document, reference ]
+        - [ INF, Information, reference ]
+        - [ DIS, Discharge status, string ]
+        - [ NMI, Query remarks, string ]
+        - [ POI, Proof of identity, attachment ]
+        - [ POA, Proof of address, attachment ]
+        - [ DOB, Proof of birth, attachment ]
+        - [ DEF, Declaration, attachment ]
+        - [ FIR, First information report, attachment ]
+        - [ EMP, Proof of employment, attachment ]
+        - [ STG, Standard treatment guideline questionnaire, reference ]
+        - [ ADMD, Admission date, "date-time string" ]
+        - [ SURD, Surgery date, "date-time string" ]
+        - [ DSCHD, Discharge date, "date-time string" ]
+    - title: Supporting-info codes
+      system: https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code
+      codes:
+        - [ EDT, EncounterDateTime, "" ]
+        - [ ADDD, Admission date - Discharge date, "" ]
+        - [ PSP, PatientSurgeryPerformed, "" ]
+        - [ DSDE, Discharge Date, "" ]
+        - [ DTH, DischargeToHome, "" ]
+        - [ DTM, DischargetoMortuary, "Also the death date under `ONS`" ]
+        - [ LAMA, Discharge with LAMA, "" ]
+        - [ DAMA, Discharge with DAMA, "" ]
+        - [ DIS, Discharge Summary, "" ]
+        - [ AT, Questionnaire answers, "Under `INF`" ]
+        - [ ODN, Policy-level questionnaire, "Under `INF`" ]
+        - [ CQD, Case remarks for a query answer, "Under `NMI`" ]
+        - [ BCF, Birth certificate, "" ]
+        - [ DCB, Discharge card for birth of a child, "" ]
+        - [
+            "MAND…",
+            Mandatory documents,
+            "Defined by the plan; the auth-requirements answer returns the
+              ones a package needs"
+          ]
+    - title: Identifier types
+      codes:
+        - [ PMJAY, Scheme member id, NRCeS ]
+        - [ ABHA, "ABHA number, no hyphens", NRCeS ]
+        - [ CLN, Claim number, NRCeS ]
+        - [ UTR, Bank transaction reference, NRCeS ]
+        - [ HPID, Healthcare professional id, NRCeS ]
+        - [ HPIN, Health practitioner id, NRCeS ]
+        - [ NPI, "Provider's HFR ID", HL7 v2-0203 ]
+        - [ NIIP, "Payer's registry ID", HL7 v2-0203 ]
+        - [ NH, Plan identifier, HL7 v2-0203 ]
+        - [ JHN, Jurisdictional health number, HL7 v2-0203 ]
+        - [ MD, Medical registration number, HL7 v2-0203 ]
+        - [ MR, Medical record number, HL7 v2-0203 ]
+    - title: Adjudication
+      codes:
+        - [ submitted, Amount asked, category ]
+        - [ eligible, Amount allowed, category ]
+        - [ benefit, Amount payable, category ]
+        - [ copay, Co-payment, category ]
+        - [ eligpercent, Percentage allowed, category ]
+        - [ eligquant, Quantity allowed, category ]
+        - [ reason, Free-text reason, category ]
+        - [ status, Decision, category ]
+        - [ deductible, Deduction with its reason, category ]
+        - [ tax, Tax, total ]
+        - [ incentive, Hospital incentive, total ]
+        - [ approved, Approved, claim-level reason ]
+        - [ queried, Queried, claim-level reason ]
+        - [ cancelled, "Cancelled or rejected", claim-level reason ]
+        - [ rejected, Rejected, claim-level reason ]
+    - title: Task codes
+      codes:
+        - [ poll, Poll, financialtaskcode ]
+        - [ cancel, Cancel, financialtaskcode ]
+        - [ reprocess, Reprocess, financialtaskcode ]
+        - [ release, Release, financialtaskcode ]
+        - [ status, Status, financialtaskcode ]
+        - [ nullify, Close a claim the provider submitted, financialtaskcode ]
+        - [ suspend, "Suspend a preauthorisation or claim the provider submitted; no exchange carries it", financialtaskcode ]
+        - [ search, Search, NHCX value set ]
+        - [ deliver, Deliver, ndhm-task-codes ]
+        - [ approve, Approve, task-code ]
+    - title: Task reasons
+      codes:
+        - [ treatmentplanchanged, Treatment plan changed, cancel ]
+        - [ patientrequest, Patient request, cancel ]
+        - [ financialconstraints, Financial constraints, cancel ]
+        - [ alternativetreatment, Alternative treatment, cancel ]
+        - [ duplicateclaim, Duplicate claim, cancel ]
+        - [ administrativeerror, Administrative error, cancel ]
+        - [ other, Other, cancel ]
+        - [ claimrejected, Claim rejected, reprocess ]
+        - [ partialpayment, Partial payment, "reprocess, release" ]
+        - [ erroneousclaim, Erroneous claim, reprocess ]
+        - [ referred, Referred, reprocess ]
+        - [ erroneousregistration, Erroneous registration, reprocess ]
+        - [ wrongdiagnosis, Wrong diagnosis, reprocess ]
+        - [ tatquery, Turnaround alert, communication ]
+        - [ grievance, Grievance, communication ]
+        - [ walletupdate, Wallet update, communication ]
+        - [ policychange, Policy change, communication ]
+        - [ additionalinfo, Additional information, communication ]
+        - [ claimArbitration, Claim arbitration, communication ]
+    - title: Task input types and output values
+      system: https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code
+      codes:
+        - [ PayerId, Payer, input ]
+        - [ ProviderId, Provider, input ]
+        - [ PolicyNumber, Policy, input ]
+        - [ ProductNumber, Product, input ]
+        - [ ClaimNumber, Case number, input ]
+        - [ IntimationNumber, Intimation number, input ]
+        - [ FromDate, Search window start, input ]
+        - [ ToDate, Search window end, input ]
+        - [ FinanceYear, Financial year, input ]
+        - [ ServiceCode, Benefit or service, input ]
+        - [ paymentack, Payment acknowledged, output ]
+        - [ claimcancelled, Claim cancelled, output ]
+        - [ claimreinitiated, Claim reinitiated, output ]
+        - [ claimsuspended, Claim suspended, output ]
+        - [ taskak, Task acknowledged, output ]
+        - [ taskdelivered, Task delivered, output ]
+    - title: Money types on a reconciliation
+      codes:
+        - [ approvedamount, Approved amount, "" ]
+        - [ claimedamount, Claimed amount, "" ]
+        - [ tds, Tax deducted at source, "" ]
+        - [ servicetax, Service tax, "" ]
+        - [ advance, Advance, "" ]
+        - [ recovered, Recovered, "" ]
+        - [ penality, "Penalty, spelled so", "" ]
+        - [ Payment, The net line, "" ]
+    - title: Deduction reasons
+      codes:
+        - [ Non-CoveredService, Service not covered, "" ]
+        - [ ExceededCoverageLimit, Coverage limit exceeded, "" ]
+        - [ DuplicateClaim, Duplicate claim, "" ]
+        - [ Coordination-of-Benefits, Coordination of benefits, "" ]
+        - [ IncompleteDocumentation, Incomplete documentation, "" ]
+        - [ PolicyDeductible, Policy deductible, "" ]
+        - [ Co-Payment, Co-payment, "" ]
+        - [ FraudulentClaim, Fraudulent claim, "" ]
+        - [ MedicalNecessity, Medical necessity, "" ]
+        - [ BenefitLimitReached, Benefit limit reached, "" ]
+        - [ MissedFilingDeadline, Missed filing deadline, "" ]
+        - [ PaymentAlreadyMade, Payment already made, "" ]
+    - title: Claim error codes
+      note: >-
+        Adjudication reasons a payer gives on a claim, from the value-set sheet
+        of the requests-and-responses workbook. Meanings are as that sheet gives
+        them, spelling included. `ClaimError-1` is a deduction and sits among
+        the deduction reasons there. `ClaimError-16` to `ClaimError-27` repeat
+        earlier texts, as noted.
+      codes:
+        - [ ClaimError-1, "There is an error in the claim submission, leading to a deduction until the correct information is provided.", "" ]
+        - [ ClaimError-2, "Claim has been rejected due to less than 24 hours of hospitalization", "" ]
+        - [ ClaimError-3, "Claim has been rejected as the Package is Reserved to Public Hospital", "" ]
+        - [ ClaimError-4, "Claim has been closed due to Incomplete submission of documents by hospital after multiple queries", "" ]
+        - [ ClaimError-5, "Claim has been rejected as there was misrepresentation of bed category booked", "" ]
+        - [ ClaimError-6, "Claim has been rejected due to Outside Scope of cover (Exclusions as per scheme)", "" ]
+        - [ ClaimError-7, "Claim has been rejected as the claim was found be False/Fraudulent", "" ]
+        - [ ClaimError-8, "Claim has been rejected due to Mismatch of package and disease/diagnosis/treatment", "" ]
+        - [ ClaimError-9, "Claim has been rejected due to Hospital not empanelled for this speciality", "" ]
+        - [ ClaimError-10, "Claim has been closed due to non submission of the documents", "" ]
+        - [ ClaimError-11, "Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package", "" ]
+        - [ ClaimError-12, "Claim has been closed as the photo of the operative site is not available", "" ]
+        - [ ClaimError-13, "Claim has been rejected due to apparent manipulation in medical record", "" ]
+        - [ ClaimError-14, "Claim has been rejected as the hospital expenses have been paid by patient", "" ]
+        - [ ClaimError-15, "Claim has been closed due Missing Pre-Auth patient photo/post operative photo/After discharge photo", "" ]
+        - [ ClaimError-16, "Claim has been rejected due to less tha 24 hours of hospitalization", "Same as `ClaimError-2`" ]
+        - [ ClaimError-17, "Claim has been closed as Referral Letter Mandatory for Package Selected has not been provided", "" ]
+        - [ ClaimError-18, "Claim has been rejected as the need for hospitalization was not justified based on the availabe documents", "" ]
+        - [ ClaimError-19, "Claim has been rejected as the Package is Reserved to Public Hospital", "Same as `ClaimError-3`" ]
+        - [ ClaimError-20, "Claim has been closed due to Incomplete submission of documents by hospital after multiple queries", "Same as `ClaimError-4`" ]
+        - [ ClaimError-21, "Claim has been rejected as there was misrepresentation of bed category booked", "Same as `ClaimError-5`" ]
+        - [ ClaimError-22, "Claim has been rejected due to Outside Scope of cover (Exclusions as per scheme)", "Same as `ClaimError-6`" ]
+        - [ ClaimError-23, "Claim has been rejected as the claim was found be False/Fraudulent", "Same as `ClaimError-7`" ]
+        - [ ClaimError-24, "Claim has been rejected due to Mismatch of package and disease/diagnosis/treatment", "Same as `ClaimError-8`" ]
+        - [ ClaimError-25, "Claim has been rejected due to Hospital not empanelled for this speciality", "Same as `ClaimError-9`" ]
+        - [ ClaimError-26, "Claim has been closed due to non submission of the documents", "Same as `ClaimError-10`" ]
+        - [ ClaimError-27, "Claim rejected as the treatment provided does not support the blocked package, request you to book a fresh relevant package", "Same as `ClaimError-11`" ]
+        - [ ClaimError-28, Others, "" ]
+    - title: Preauthorisation error codes
+      note: >-
+        Adjudication reasons a payer gives on a preauthorisation, from the same
+        sheet, meanings as it gives them. No `PreauthError-14` is defined: the
+        list runs to 13, then 15.
+      codes:
+        - [ PreauthError-1, "Pre-Auth has been rejected as the diagnosis is outside Scope of cover (Exclusions as per scheme)", "" ]
+        - [ PreauthError-2, "Pre-auth has been rejected due to delay in raising enhancement requests", "" ]
+        - [ PreauthError-3, "Pre-Auth has been rejected as it was found to be False/Fraudulent", "" ]
+        - [ PreauthError-4, "Pre-Auth has been closed due to delay in preauth Intimation (as per state guidelines)", "" ]
+        - [ PreauthError-5, "Pre-Auth has been rejected as the Hospital is not empanelled for this speciality", "" ]
+        - [ PreauthError-6, "Pre- Auth has been rejected due to mismatch in dialysis records", "" ]
+        - [ PreauthError-7, "Enhancement request rejected as the medical necessity of enhancement request not met", "" ]
+        - [ PreauthError-8, "Pre-Auth rejected as the Medical necessity of ICU bed category not met", "" ]
+        - [ PreauthError-9, "Pre-Auth has been rejected as the package selected is reserved for public hospital", "" ]
+        - [ PreauthError-10, "Pre-Auth has been closed due to non submision of mandatory document as per STG", "" ]
+        - [ PreauthError-11, "Pre-Auth has been rejected as the Surgery was Done Before Pre auth Approval", "" ]
+        - [ PreauthError-12, "Pre-auth enhancement rejected due to missing patient photo to depict bed category", "" ]
+        - [ PreauthError-13, "Pre-Auth has been rejected as the diagnosis is outside Scope of cover (Exclusions as per scheme)", "Same as `PreauthError-1`" ]
+        - [ PreauthError-15, Others, "" ]
+  system_defects:
+    - [
+        Package codes,
+        "The same code appears under a payer host, under SNOMED and under two
+          ValueSet URLs, depending on the exchange. None is a SNOMED concept"
+      ]
+    - [
+        Supporting-info category,
+        "Document entries bind `category` to the supporting-info code system
+          rather than the category system; the plan does the reverse"
+      ]
+    - [ Claim.type, "Binds to a ValueSet URL where a CodeSystem URL belongs" ]
+    - [
+        Adjudication categories,
+        "Some senders bind them to an HTML documentation page,
+          `https://hl7.org/fhir/R4/valueset-adjudication.html`"
+      ]
+    - [
+        Plan cost types,
+        "Bind to the plan-type system under a `www.` host, with values that
+          are not plan types"
+      ]
+    - [
+        Missing systems,
+        "`deductible`, the claim-level status and some package codings carry
+          no `system` at all"
+      ]
+# Text from one participant's test traffic. Removed, or replaced where a
+# replacement is given, wherever a bundle value is shown in a chapter.
+redact:
+  - \s*(?:on|before|at) (?:the |an )?(?:nanoemr )?(?:e2e|end-to-end) run
+  - pattern: 'E2E Nano \w+'
+    replace: '<patient name>'
+# Profiles the bundles declare that NRCeS does not publish. The chapters name
+# them and link the base FHIR definition instead.
+nrces_unpublished: [ QuestionnaireResponse ]

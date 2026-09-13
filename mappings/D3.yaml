@@ -1,0 +1,42 @@
+# ==============================================================================
+# Use Case D3: Check coverage eligibility - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/coverageeligibility/check
+# Callback API: /v1/coverageeligibility/on_check
+# Carries JWE: true
+# Focal Resource: CoverageEligibilityRequest
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequest
+# ==============================================================================
+
+code: "D3"
+title: "Check coverage eligibility"
+side: "provider"
+api: "/v1/coverageeligibility/check"
+callback: "/v1/coverageeligibility/on_check"
+workflow: "none (or 5 under PMJAY)"
+carries_jwe: true
+focal_resource: "CoverageEligibilityRequest"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequest"
+profiles:
+  CoverageEligibilityRequest: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityRequest"
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+description: "Check PMJAY beneficiary family wallet balance and verify golden record BIS status."
+fields:
+  - key: "memberId"
+    label: "PMJAY Family ID"
+    group: "Beneficiary"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=PMJAY].value"
+    example_value: "PMJAY-HP-2024-998811"
+  - key: "purpose"
+    label: "Purpose"
+    group: "Case"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "CoverageEligibilityRequest"
+    fhir_path: "CoverageEligibilityRequest.purpose[0]"
+    example_value: "validation"

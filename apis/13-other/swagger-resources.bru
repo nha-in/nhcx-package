@@ -1,0 +1,76 @@
+meta {
+  name: Swagger resources list
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{nhcxBase}}/swagger-resources
+  body: none
+  auth: inherit
+}
+
+docs {
+  # Swagger resources list
+
+  `GET /swagger-resources`
+
+  ## Summary
+
+  Lists the Swagger resources (API document locations) exposed by the status service; used by Swagger UI, not by integrations.
+
+  ## Business purpose
+
+  Swagger UI discovers which API documents a service offers by reading this list. On the status service it points the UI at the /v2/api-docs and /v3/api-docs documents so that an engineer can browse the /v1/status operation interactively. It carries no claim-settlement data and involves no business logic; the endpoint index describes it simply as the list of Swagger resources.
+
+  ## When to use
+
+  Use it only when hosting or debugging a Swagger UI session against the status service, or when a tool needs to discover the available document URLs before fetching them. The endpoint index lists it as endpoint 21. It is not part of any transaction workflow and is not referenced by the sandbox exit checklists.
+
+  ## Preconditions
+
+  - A GET request to the status service host; the OpenAPI documents in this corpus were captured from https://hcxsbx.abdm.gov.in/<service>/api-docs, and the status service declares the server prefix /statushcxservice.
+  - No JWE envelope, no x-hcx-* protocol headers and no correlation id; the docs do not state that a Bearer token is required for these discovery endpoints.
+  - No request body.
+
+  ## Postconditions
+
+  The service returns HTTP 200 with a JSON list of resource descriptors that locate the service's API documents. Nothing changes on NHCX and no callback follows. The documentation does not detail the descriptor fields beyond the purpose line, so treat the shape shown here as illustrative and read the live response.
+
+  ## Common mistakes
+
+  - Pointing at the gateway base https://apisbx.abdm.gov.in/pmjay/sbxhcx and expecting the per-service spec host; the docs advise swapping between the two URL shapes when a path 404s.
+  - Treating the served document as the integration contract for gateway traffic; the handbook's gateway base and header conventions take precedence where the two disagree.
+  - Sending a POST or a JSON body to a GET discovery endpoint.
+  - Wrapping the call in JWE or adding x-hcx-* headers, which only apply to protocol APIs such as /v1/status.
+
+  ## Best practices
+
+  - Use these endpoints for exploration and client generation in the sandbox, and cache the document rather than fetching it on every run.
+  - Diff the served document against the corpus (Status service: OpenAPI 3.0.1, version 1.0.0) when behaviour changes unexpectedly.
+  - Never let production traffic depend on the availability of the documentation endpoints.
+  - Keep the /v1/status protocol rules in mind when reading the spec: x-hcx-correlation_id must carry the original request's correlation id.
+
+  ## Related scenario
+
+  An integration engineer opens Swagger UI against the status service in the sandbox to reproduce a colleague's failing status call. The UI first requests /swagger-resources to learn where the API documents live, then loads /v3/api-docs. The engineer inspects the /v1/status operation, notices the colleague had minted a fresh correlation id instead of reusing the original preauth correlation id, and fixes the client before retrying the status request.
+
+  ## Specification
+
+  Chapter 06.06 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "_note": "The service returns a JSON array of resource descriptors; wrapped here for display.",
+    "resources": [
+      {
+        "name": "default",
+        "url": "/v3/api-docs",
+        "swaggerVersion": "3.0"
+      }
+    ]
+  }
+  ```
+}

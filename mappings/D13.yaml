@@ -1,0 +1,42 @@
+# ==============================================================================
+# Use Case D13: Acknowledge the payment notice - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/paymentnotice/on_request
+# Callback API: /v1/paymentnotice/request
+# Carries JWE: true
+# Focal Resource: PaymentReconciliation / Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation
+# ==============================================================================
+
+code: "D13"
+title: "Acknowledge the payment notice"
+side: "provider"
+api: "/v1/paymentnotice/on_request"
+callback: "/v1/paymentnotice/request"
+workflow: "17 (Payment notice acknowledged)"
+carries_jwe: true
+focal_resource: "PaymentReconciliation / Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+profiles:
+  PaymentReconciliation: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Acknowledge PMJAY SHA bank settlement remittance advice."
+fields:
+  - key: "settlementNumber"
+    label: "Settlement Advice Number"
+    group: "Payment"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "PaymentReconciliation"
+    fhir_path: "PaymentReconciliation.identifier[0].value"
+    example_value: "SETTLE-PMJAY-001"
+  - key: "workflowId"
+    label: "Workflow Code"
+    group: "Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-workflow_id"
+    example_value: "17"

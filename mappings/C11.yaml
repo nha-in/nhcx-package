@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case C11: Respond to predetermination - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/predetermination/on_submit
+# Callback API: /v1/predetermination/submit
+# Carries JWE: true
+# Focal Resource: ClaimResponse
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse
+# ==============================================================================
+
+code: "C11"
+title: "Respond to predetermination"
+side: "payer"
+api: "/v1/predetermination/on_submit"
+callback: "/v1/predetermination/submit"
+workflow: "none"
+carries_jwe: true
+focal_resource: "ClaimResponse"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+profiles:
+  ClaimResponse: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+description: "Callback returning hypothetical adjudication estimate for planned treatment."
+fields:
+  - key: "use"
+    label: "Claim Use"
+    group: "Verdict"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.use"
+    example_value: "predetermination"
+  - key: "estimatedApproval"
+    label: "Estimated Approved Benefit"
+    group: "Verdict"
+    data_type: "decimal"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.total[category=benefit].amount.value"
+    example_value: "15500.00"

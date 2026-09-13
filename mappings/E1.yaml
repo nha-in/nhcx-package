@@ -1,0 +1,49 @@
+# ==============================================================================
+# Use Case E1: Subscribe to notifications - Data Element Definition & FHIR Mapping
+# Side / Role: PATIENT
+# Primary API: /v1/notification/subscribe
+# Callback API: /v1/notification/on_subscribe
+# Carries JWE: false
+# Focal Resource: Subscription (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "E1"
+title: "Subscribe to notifications"
+side: "patient"
+api: "/v1/notification/subscribe"
+callback: "/v1/notification/on_subscribe"
+workflow: "N01, N02, N03, N04"
+carries_jwe: false
+focal_resource: "Subscription (JSON)"
+profiles:
+  Patient: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+description: "Personal health record app subscribes to receive push notifications on claim events for an ABHA ID."
+fields:
+  - key: "abhaNumber"
+    label: "Beneficiary ABHA"
+    group: "Subscription"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Patient"
+    fhir_path: "Patient.identifier[type=ABHA].value"
+    example_value: "91234567890123"
+  - key: "topic"
+    label: "Subscription Topic"
+    group: "Subscription"
+    data_type: "string"
+    cardinality: "1..*"
+    required: true
+    fhir_resource: "Subscription"
+    fhir_path: "Subscription.criteria"
+    example_value: "workflow_events"
+  - key: "endpointUrl"
+    label: "Push Notification URL"
+    group: "Subscription"
+    data_type: "url"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Subscription"
+    fhir_path: "Subscription.channel.endpoint"
+    example_value: "https://phrapp.example.org/webhook/claims"

@@ -1,0 +1,26 @@
+{
+  "name": "nhcx-package",
+  "version": "1.0.0",
+  "description": "Consolidated NHCX API collections, sample FHIR bundles, use cases, mappings, and OpenAPI generator scripts",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:openapi && npm run build:docs && npm run build:corpus",
+    "build:openapi": "node build-openapi.mjs",
+    "build:docs": "node build-docs.mjs",
+    "build:corpus": "node build-corpus.mjs",
+    "build:manifest": "node build-manifest.mjs",
+    "build:ekadocs": "node build-ekadocs.mjs",
+    "validate": "node validate-bundles.mjs",
+    "validate:bundles": "node validate-bundles.mjs",
+    "validate:b1": "node validate-bundles.mjs --usecase B1",
+    "validate:strict": "node validate-bundles.mjs --strict"
+  },
+  "bin": {
+    "nhcx-validate": "./bin/validate",
+    "nhcx-build-docs": "./bin/build-docs"
+  },
+  "dependencies": {
+    "@anthropic-ai/bedrock-sdk": "^0.33.5",
+    "yaml": "^2.9.1"
+  }
+}

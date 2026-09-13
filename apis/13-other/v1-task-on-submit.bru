@@ -1,0 +1,104 @@
+meta {
+  name: Task callback (reprocess or cancel outcome)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{nhcxBase}}/v1/task/on_submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1518@hcx
+  x-hcx-recipient_code: 1000004446@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 252
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: response.complete
+  x-hcx-ben-abha-id: 91711234567890
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOiIxNTE4QGhjeCJ9.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Task callback (reprocess or cancel outcome)
+
+  `POST /v1/task/on_submit`
+
+  ## Summary
+
+  Payer returns a Task bundle with Task.status completed whose Task.output references a ClaimResponse carrying the reprocess or cancellation outcome.
+
+  ## Business purpose
+
+  This callback closes the appeal or cancellation the provider opened on /v1/task/submit. It carries the payer's final decision on a reprocess (approved, partially approved, queried or rejected) or confirms a pre-authorisation cancellation, in the same ClaimResponse shape used for ordinary adjudication so hospitals can reuse their parsers. Because the reprocess response is final within the workflow, it delivers closure, a clean audit trail and reduced ambiguity for both sides, which is the point of moving disputes inside NHCX.
+
+  ## When to use
+
+  The payer calls it after acknowledging a Task (workflow 251 REPROCESS_REQUEST_RECEIVED), validating it and re-adjudicating. The outer wrapper is a collection Bundle with a Task whose status is completed and whose Task.output.type references a ClaimResponse for the entity the sender named; workflow 252 approved (outcome complete), 253 rejected (outcome complete with adjudication reason cancelled, display Rejected), 254 queried (outcome partial, often zero totals; provider answers with workflow 19). Cancellation accomplished is PC02. Carry the same x-hcx-correlation_id and a responder status (response.complete, or request.initiated for a query per the workflow sheet).
+
+  ## Preconditions
+
+  - The inbound Task was decrypted, its correlation id and workflow captured, and the 202 acceptance body returned within 30 seconds.
+  - Payer registered with a valid Bearer token and the provider's certificate for encryption.
+  - A Task bundle: Task.status completed, Task.output[0].valueReference pointing to a ClaimResponse entry that is structurally identical to a normal adjudication response (total, item adjudication, processNote, adjudication reason).
+  - Protected header echoing the request's correlation id with a fresh api_call_id, IST timestamp, the outcome workflow id and a responder status.
+
+  ## Postconditions
+
+  The gateway returns HTTP 202 with the StatusSuccessResponse envelope (400, 404, 500 in the same shape) and forwards the bundle to the provider, which must acknowledge within 30 seconds. The provider resolves Task.output[0].valueReference.reference within the bundle and passes the ClaimResponse through its standard adjudication parser. The reprocess decision is final within the workflow context; no further standard reprocessing cycles are expected unless scheme rules allow. After approval, payment proceeds through workflows 30 PAYMENT_INITIATED, 31 PAYMENT_PROCESSED and 33 PAYMENT_SETTLED. A cancelled preauth requires a new preauth with a new case number if treatment resumes (PAYR-1255).
+
+  ## Common mistakes
+
+  - Provider side: looking for the ClaimResponse as a direct Bundle.entry instead of following Task.output[].valueReference.
+  - Reading outcome complete as approval; a rejected reprocess is outcome complete with adjudication reason cancelled.
+  - Treating a queried response with outcome partial and zero totals as a zero-value approval.
+  - Payer side: minting a new correlation id on the callback (NHCX-1010) or sending a standalone ClaimResponse bundle instead of a Task wrapper.
+  - Missing the 30-second 202 on the inbound Task, triggering five redeliveries and deletion of the request.
+  - Splitting the PMJAY pipe-delimited adjudication reason (USER~datetime~type~comment~trust) as if it were structured.
+
+  ## Best practices
+
+  - Payer: acknowledge first, re-adjudicate asynchronously, then post the Task bundle with the outcome workflow id and ClaimResponse nested in Task.output.
+  - Provider: share the ClaimResponse parser between /v1/claim/on_submit and this callback; only the extraction path differs.
+  - Branch on adjudication reason as well as outcome; check processNote for reductions or query text.
+  - Terminate the appeal branch of the case state machine on 252 or 253; on 254 respond with workflow 19.
+  - Be idempotent on correlation id; expect redeliveries.
+  - Fresh api_call_id, IST timestamp, responder status on the callback header.
+
+  ## Related scenario
+
+  A scheme payer's TPA receives a reprocess Task on a rejected claim with the missing implant invoice attached. Its endpoint returns 202 and the case reopens for re-adjudication with the original claim, the new document and the justification. The reviewer approves at the package rate, and the TPA posts /v1/task/on_submit: a Task bundle, status completed, Task.output referencing a ClaimResponse with outcome complete, workflow 252, under the claim's correlation id. The hospital acknowledges within 30 seconds, extracts the ClaimResponse from Task.output, marks the appeal closed and awaits the payment notice on /v1/paymentnotice/request.
+
+  ## Specification
+
+  Chapter 05.15 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "26/08/2026 16:30:00:611",
+    "api_call_id": "a3b4c5d6-e7f8-9012-6789-123456789012",
+    "correlation_id": "66778899-aabb-ccdd-eeff-001122334455",
+    "result": {
+      "sender_code": "1518@hcx",
+      "recipient_code": "1000004446@hcx",
+      "entity_type": "task",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

@@ -1,0 +1,97 @@
+meta {
+  name: Participant search
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{registryBase}}/participant/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "participant_code": "1518@hcx"
+  }
+}
+
+docs {
+  # Participant search
+
+  `POST /participant/search`
+
+  ## Summary
+
+  Reads a participant's full registry record by participant_code, including roles, status, encryption_cert and endpoint_url.
+
+  ## Business purpose
+
+  Before addressing a transaction to a counterparty, an integrator needs to know that the participant exists, is active, holds the expected role and publishes an encryption certificate and callback endpoint. The registry is the phone book of NHCX, and this call is the direct lookup by code. Providers use it to inspect a payer they have selected; payers use it to confirm the sender of an inbound request; everyone uses it to verify their own record after an update.
+
+  ## When to use
+
+  Call it once a participant_code is known, typically after /fetch/participants/list has produced candidates, or before building the first JWE for a new recipient. It is also the natural post-update check after /participant/update, /v2/participant/update or /v2/update/cert. It is a synchronous JSON registry call with no workflow or x-hcx-status codes. /participant/details takes the same body and returns the same response; the OpenAPI identifies it only as the v2 variant.
+
+  ## Preconditions
+
+  - A Bearer token from /get/session in bearer_auth with the Bearer prefix; Accept and Content-Type: application/json.
+  - The target's participant_code in xxxxx@hcx (or @sbx) form, exactly the value later placed in x-hcx-recipient_code.
+  - Sandbox base https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/participant/search; production under https://apis.abdm.gov.in/pmjay/hcx.
+
+  ## Postconditions
+
+  HTTP 200 with ParticipantSearchResponse: timestamp (Unix timestamp when the request is sent) and participants, an array of full participant records with participant_code, linked_registry_codes, participant_name, scheme_code, roles, address, primaryEmail, additionalEmail, phone, primaryMobile, additionalMobile, status, signing_cert_path, encryption_cert, endpoint_url and payment_details. No state changes and no callback. An unknown code returns 404 with the ErrorResponse envelope; 400 and 500 are the other documented outcomes.
+
+  ## Common mistakes
+
+  - Passing participantid or participantcode instead of the snake_case participant_code this body requires.
+  - Assuming a record in the registry means the participant can transact; status must be Active, and NHCX-1003 (receiver not registered) still results if the code is wrong or inactive.
+  - Reading encryption_cert as the certificate content when it is documented as a URI or file path to the certificate; use /fetch/certs to obtain the key material.
+  - Forgetting the Accept header, which causes rejection before business logic.
+  - Sending an expired token and misreading the flat 401.
+
+  ## Best practices
+
+  - Cache the record for the session and re-read it when a transport error (NHCX-1001) or decrypt failure (PAYR-1001/PAYR-1002) suggests stale routing or key data.
+  - Check roles and status before selecting the counterparty for x-hcx-recipient_code.
+  - Call it against your own code after every registry update to confirm the change is live.
+  - Never log payment_details from the response.
+  - Treat the participants array as possibly empty and handle 404 gracefully.
+
+  ## Related scenario
+
+  A hospital's TPA desk has selected a payer code from /fetch/participants/list for a PMJAY patient. Before submitting anything the integration calls /participant/search with that participant_code and receives the payer's record: roles include payer, status is Active, scheme_code matches, and endpoint_url and encryption_cert are populated. The engine stores the code as the payerId that will become x-hcx-recipient_code, calls /fetch/certs to obtain the actual certificate, and then encrypts and sends /v1/coverageeligibility/check.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": 1716204567358,
+    "participants": [
+      {
+        "participant_code": "1518@hcx",
+        "participant_name": "Demo Insurance Company",
+        "linked_registry_codes": [
+          "125@payer"
+        ],
+        "scheme_code": "default",
+        "roles": [
+          "payer"
+        ],
+        "status": [
+          "Active"
+        ],
+        "primaryEmail": "claims@demoinsurer.example.in",
+        "primaryMobile": "9800000001",
+        "encryption_cert": "https://registry.example.in/certs/1518.pem",
+        "endpoint_url": "https://nhcx.demoinsurer.example.in"
+      }
+    ]
+  }
+  ```
+}

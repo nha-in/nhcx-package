@@ -1,0 +1,200 @@
+{
+  "id": "claim-reprocess-request-generic",
+  "resourceType": "Bundle",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/claim/reprocess",
+      "resource": {
+        "resourceType": "Task",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "requested",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/financialtaskcode",
+              "code": "reprocess"
+            }
+          ]
+        },
+        "authoredOn": "2026-09-11T00:15:29+05:30",
+        "requester": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "owner": {
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "description": "The bill is the approved package rate; please reconsider.",
+        "reasonCode": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+              "code": "claimrejected",
+              "display": "Reprocess request due to claim rejected by payer"
+            }
+          ]
+        },
+        "basedOn": [
+          {
+            "identifier": {
+              "type": {
+                "coding": [
+                  {
+                    "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                    "code": "CLN",
+                    "display": "Claim number"
+                  }
+                ]
+              },
+              "system": "https://nhcx.abdm.gov.in",
+              "value": "NM-26-0SF00002U"
+            },
+            "display": "Claim NM-26-0SF00002U"
+          }
+        ],
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "claimNumber",
+                  "display": "ClaimNumber"
+                }
+              ]
+            },
+            "valueString": "NM-26-0SF00002U"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "intimationNumber",
+                  "display": "Intimation Number"
+                }
+              ]
+            },
+            "valueString": "NM-26-0SF00002U"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "document",
+                  "display": "Document"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Medical Superintendent Declaration Form (During Admission)"
+            }
+          }
+        ],
+        "for": {
+          "identifier": {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "PMJAY",
+                  "display": "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID"
+                }
+              ]
+            },
+            "value": "PMJAY0000X"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "KyroCare Multispeciality Hospital"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "resource": {
+        "resourceType": "Organization",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "1518"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "pay",
+                "display": "Payer"
+              }
+            ]
+          }
+        ],
+        "name": "PMJAY / Ayushman Bharat"
+      }
+    }
+  ]
+}

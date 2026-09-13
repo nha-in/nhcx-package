@@ -1,0 +1,91 @@
+meta {
+  name: De-link ABHA policies (V2)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{registryBase}}/V2/participant/delink/abha/policy
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "requestid": "c4d2e1f0-8b7a-4c6d-9e5f-1a2b3c4d5e66",
+    "payerid": "100234@sbx",
+    "memberid": "MEM-2026-000123",
+    "policies": [
+      {
+        "productid": "PRD-INDIV-07",
+        "productname": "Individual Health Silver"
+      }
+    ],
+    "processingid": "100235@sbx"
+  }
+}
+
+docs {
+  # De-link ABHA policies (V2)
+
+  `POST /V2/participant/delink/abha/policy`
+
+  ## Summary
+
+  V2 variant of the ABHA policy de-link; same ParticipantDeLinkAbhaRequest body and response as the unversioned call.
+
+  ## Business purpose
+
+  This endpoint performs the same member-layer removal as /participant/delink/abha/policy: it takes products out of a member's link for a given payer so that providers stop discovering lapsed or migrated coverage. The OpenAPI document exposes it as participantDeLinkAbhaPolicyV2 with an identical request and response schema; the documentation does not describe any behavioural difference beyond the path and operationId. It is the natural partner of /V2/participant/link/abha/policy for integrations that have standardised on the V2 paths.
+
+  ## When to use
+
+  Use it in the same situations as the v1 de-link: policy termination, member removal, product migration, or as the first step when an insurer changes TPA (de-link, then link again with the new processingid). It is part of member-layer maintenance and is not tied to any claim workflow code. Pair it consistently with the V2 link and V2 get-policies calls.
+
+  ## Preconditions
+
+  - A valid Bearer token from the client-credentials call (POST /get/session, form-urlencoded client_id, client_secret, grant_type=client_credentials); tokens last 1200 seconds, so refresh before expiry.
+  - HTTP headers Accept: application/json, Content-Type: application/json and bearer_auth: Bearer <token> (the participant service uses bearer_auth, not Authorization).
+  - Base path for the participant service: https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice (sandbox) or https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice (production).
+  - This is a synchronous plain-JSON registry call: no JWE envelope, no x-hcx-* protocol headers and no correlation id are involved.
+  - The caller must be the payerid or processingid participant from the original link, using a token minted with the client_id used at participant creation.
+  - Body: requestid (UUID), payerid, memberid and policies are required; processingid is optional; there is no abhanumber field.
+  - Note the capital V in /V2/.
+
+  ## Postconditions
+
+  On success the service returns HTTP 200 with ParticipantDeLinkAbhaResponse and the products are no longer visible through the get-policies endpoints for that payer and member. There is no callback. An unauthorised caller is refused with an error message, and a product that is not linked yields "There is no policies with requested details". Other errors use the 400/404/500 ErrorResponse envelope. Provider-side policy caches are documented as permanent, so they will keep the old answer until forced to refresh.
+
+  ## Common mistakes
+
+  - Calling from a participant that is neither the payerid nor the processingid used at link time; NHCX checks the client id in the token, not the body, and refuses the call (common mistake 10).
+  - Listing a product that is not actually linked for that payerid and memberid, which returns the error message "There is no policies with requested details".
+  - Including abhanumber or mobilenumber in the body; the de-link request is keyed on payerid, memberid and the products listed, and has no ABHA field.
+  - Expecting provider-side caches to update: the handbook documents the policy cache as permanent with no TTL, so a de-linked policy keeps appearing until the provider passes forceRefresh: true.
+  - Using a token generated with a different client_id from the one used when the payer or TPA participant was created.
+  - Lower-casing the path; /v2/participant/delink/abha/policy is not a documented route.
+
+  ## Best practices
+
+  - De-link only the specific products that need removing; the policies array is the unit of work.
+  - When moving an insurer to a new TPA, follow the documented order: de-link the existing policies, then link them again with the new TPA's participant code as processingid.
+  - Generate a fresh UUID for requestid on every call and log it with the response.
+  - Confirm the result with /participant/get/policies afterwards, and remember that providers may need a forced refresh of their own policy cache.
+  - Refresh the Bearer token proactively and retry once on 401 before escalating.
+
+  ## Related scenario
+
+  A TPA is informed by one of its insurers that a corporate group policy has been cancelled mid-term. The TPA's system lists the affected members from its own records, calls /V2/participant/get/policies to confirm what NHCX currently holds, and then calls /V2/participant/delink/abha/policy per member with the insurer's participant code as payerid, its own code as processingid and the cancelled product. Each success is logged against the member. When a former member later presents at a hospital, the provider's policy lookup (after a forced cache refresh) no longer shows the product, and the desk proceeds as a self-pay case rather than submitting a coverage-eligibility check.
+
+  ## Specification
+
+  Chapter 02.05 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "result": "success"
+  }
+  ```
+}

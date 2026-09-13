@@ -1,0 +1,95 @@
+meta {
+  name: Coverage eligibility callback (internal) (adapter)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{nhcxBase}}/internal/v1/coverageeligibility/on_check
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1518@hcx
+  x-hcx-recipient_code: 1000004446@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 11
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: response.complete
+  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-debug_flag: INFO
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Coverage eligibility callback (internal)
+
+  `POST /internal/v1/coverageeligibility/on_check`
+
+  ## Summary
+
+  Internal twin of /v1/coverageeligibility/on_check taking the same bare object body; only the operationId differs.
+
+  ## Business purpose
+
+  Mirror of the public eligibility callback: the payer or TPA returns the CoverageEligibilityResponseBundle, or a protocol error, to the provider through NHCX. It serves the same settlement purpose, letting the hospital know before treatment whether the policy is in force and which documents the preauth will need. No separate business role is documented for the internal route.
+
+  ## When to use
+
+  Documented as the internal variant of the eligibility callback (operationId coverageeligibilityOnCheckPostInternal), tagged V1.0 APIs-Provider side. Called after processing a check request, with the request's correlation ID and x-hcx-status response.complete, response.partial or response.error. The OpenAPI specs expose this operation twice, at /v1/... and at /internal/v1/..., with identical descriptions, request bodies and response sets; only the operationId differs (an Internal suffix). The specs do not document what makes the internal variant different beyond that suffix, so treat it as a mirror of the public path and integrate against the public /v1 path unless NHCX onboarding tells you otherwise.
+
+  ## Preconditions
+
+  Identical to the public callback: an in-flight check request with this correlation ID, the provider's certificate for encryption, a new api_call_id, swapped sender and recipient codes, a valid responder status, and business errors embedded inside the encrypted resource rather than the header.
+
+  ## Postconditions
+
+  Same as /v1/coverageeligibility/on_check: HTTP 202 Accepted with the StatusSuccessResponse acknowledgement, asynchronous delivery to the provider's callback URL with the 30-second acknowledgement rule, five retries then deletion on failure, and closure of the eligibility conversation on success.
+
+  ## Common mistakes
+
+  - Treating the internal callback as a different contract; the spec gives it the same object body and response set as the public path.
+  - Every public on_check pitfall applies: returning 200 instead of the 202 acceptance body, minting a new correlation ID, sending a JWEPayloadResponse instead of a ProtocolResponse on error (PAYR-1517), and leaking business errors into x-hcx-error_details.
+
+  ## Best practices
+
+  - Route both callback variants to the same handler keyed on x-hcx-correlation_id so behaviour cannot diverge.
+  - Acknowledge with 202 inside 30 seconds and process asynchronously; be idempotent under redelivery.
+  - Use the public /v1 path unless NHCX onboarding specifies the internal one.
+
+  ## Related scenario
+
+  A TPA bridge that processes eligibility checks on behalf of an insurer sees both on_check operations in the service spec. It implements a single response builder that populates inforce, excluded and authorizationRequired, echoes the correlation ID and posts to /v1/coverageeligibility/on_check by default, with the internal path configurable if NHCX requires it. The hospital's callback acknowledges with 202 and the desk moves on to the preauth.
+
+  ## Specification
+
+  Chapter 05.03 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "correlation_id": "11223344-5566-7788-99aa-bbccddeeff00",
+    "result": {
+      "sender_code": "1518@hcx",
+      "recipient_code": "1000004446@hcx",
+      "entity_type": "coverageeligibility",
+      "protocol_status": "request.dispatched"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

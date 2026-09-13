@@ -1,0 +1,95 @@
+meta {
+  name: Coverage eligibility check (internal) (adapter)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{nhcxBase}}/internal/v1/coverageeligibility/check
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 11
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Coverage eligibility check (internal)
+
+  `POST /internal/v1/coverageeligibility/check`
+
+  ## Summary
+
+  Internal twin of /v1/coverageeligibility/check with the same JWEPayload body and response set; only the operationId differs.
+
+  ## Business purpose
+
+  The coverage eligibility service publishes its check operation twice, once at /v1 and once at /internal/v1. Both let a provider validate a beneficiary's coverage with a payer before preauthorisation. The internal path exists in the OpenAPI document as an operationally distinct route for the same business function; the published material does not describe a separate business purpose for it.
+
+  ## When to use
+
+  Documented as the internal variant of the eligibility check (operationId coverageeligibilityCheckPostInternal), served by coverageeligibilityhcxservice and tagged V1.0 APIs-Payer side like its public twin. The same purposes (discovery, validation, auth-requirements, benefits) and the same x-hcx-status request.initiated apply. The OpenAPI specs expose this operation twice, at /v1/... and at /internal/v1/..., with identical descriptions, request bodies and response sets; only the operationId differs (an Internal suffix). The specs do not document what makes the internal variant different beyond that suffix, so treat it as a mirror of the public path and integrate against the public /v1 path unless NHCX onboarding tells you otherwise.
+
+  ## Preconditions
+
+  Identical to the public path: an onboarded provider with a valid Bearer token, the payer certificate fetched and cached, a CoverageEligibilityRequest bundle encrypted with RSA-OAEP-256 and A256GCM, a fresh correlation UUID, the processingID as recipient code, and the full x-hcx-* protected header set. Nothing additional is documented for the internal route.
+
+  ## Postconditions
+
+  Same as /v1/coverageeligibility/check: HTTP 202 Accepted with a StatusSuccessResponse acknowledgement, then asynchronous forwarding to the payer and an answer on the on_check callback (the internal twin /internal/v1/coverageeligibility/on_check exists with the same body). 400, 404 and 500 carry the same schema.
+
+  ## Common mistakes
+
+  - Assuming the internal path has different semantics or a different body; the specs give it the same JWEPayload body and the same responses.
+  - Integrating against the internal path without confirmation from NHCX onboarding, then hitting a 404 on the gateway host; when a path 404s, the endpoint index recommends trying the alternate host and prefix shape.
+  - All the mistakes listed for the public check (202 treated as an answer, wrong recipient code, reused correlation ID, wrong status string) apply unchanged.
+
+  ## Best practices
+
+  - Default to /v1/coverageeligibility/check; use the internal path only where NHCX instructs you to.
+  - Keep one client implementation for both paths, parameterised only on the URL, so header hygiene and correlation handling stay identical.
+  - Log which variant was used with each correlation ID for troubleshooting.
+
+  ## Related scenario
+
+  A hospital integration team exploring the coverageeligibilityhcxservice Swagger sees two check operations. They build one client against /v1/coverageeligibility/check and confirm with NHCX support whether the internal twin is meant for their deployment. In production traffic the eligibility request still starts from get/policies, goes out as a JWE to the check path, receives a 202, and the payer's answer arrives on the on_check callback before the preauth is raised.
+
+  ## Specification
+
+  Chapter 05.02 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "correlation_id": "11223344-5566-7788-99aa-bbccddeeff00",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "coverageeligibility",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

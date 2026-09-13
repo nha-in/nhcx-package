@@ -1,0 +1,107 @@
+meta {
+  name: Claim submit
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{nhcxBase}}/v1/claim/submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 15
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-use_case: New
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Claim submit
+
+  `POST /v1/claim/submit`
+
+  ## Summary
+
+  Provider submits the final itemised Claim bundle (Claim.use claim), or a claim query response or resubmission; NHCX routes it to the payer.
+
+  ## Business purpose
+
+  The claim is where money actually moves. After treatment the provider assembles finalised bills, the complete document set and the preAuthRef, and asks the payer to adjudicate and settle. A well-prepared claim closes within days; a poorly prepared one cycles through queries and resubmissions for weeks. The endpoint gives hospitals a single structured channel for settlement requests and gives payers a complete evidentiary package against which to calculate the approved amount, apply deductions and trigger payment.
+
+  ## When to use
+
+  Called after discharge, once an approved preauth exists (PAYR-1302 otherwise). x-hcx-workflow_id distinguishes the step: 15 CLAIM_REQUEST_INITIATED for the final claim (in PMJAY the discharge and claim steps are merged into this one submission); 151 CLAIM_QUERY_RESPONSE_SUBMITTED to answer a payer query received under 27; the optional x-hcx-use_case header takes New or Resubmit. The NHA sheet also lists R15 and R151 for the reimbursement mirror and 36 CLAIM_ARBITRATION_REQUEST_SUBMITTED for reprocess or erroneous-claim requests, which the FAQ routes through /v1/task/submit rather than this endpoint. Send x-hcx-status request.initiated. PMJAY LAMA or DAMA discharges before or during surgery must carry only procedure LM100 (PAYR-1362).
+
+  ## Preconditions
+
+  - An approved preauth exists for the case and no claim has already been raised for it (PAYR-1301, PAYR-1302).
+  - Claim.use is claim; the bundle reuses the preauth's identifier or references preAuthRef, with estimated amounts replaced by final bill amounts.
+  - Patient carries PMJAY Member ID and ABHA number; diagnosis, procedure, care team, supportingInfo and an active Coverage are present; discharge summary, operative notes, diagnostics and itemised billing are attached.
+  - Discharge information is in supportingInfo (category DIS, code DTH, DTM, LAMA or DAMA, value Before Surgery or After Surgery); for PMJAY either discharge biometric authentication or the Authentication Consent questionnaire response is included (PAYR-1363, PAYR-1364).
+  - Admission, registration and discharge dates are valid and ordered (PAYR-1357, PAYR-1358, PAYR-1325 to PAYR-1330).
+  - Valid Bearer token, payer certificate, JWE encryption, fresh correlation ID for a new cycle, processingID as recipient code.
+
+  ## Postconditions
+
+  NHCX returns HTTP 202 Accepted with a StatusSuccessResponse acknowledgement (entity_type claim) and forwards the request asynchronously. The payer may respond several times on /v1/claim/on_submit: 25 received, 28 in process and 29 forwarded as response.partial, 27 queried, then 26 approved or a rejection as response.complete. A response.complete closes the claim identifier permanently; no further submissions or responses are permitted against it. An approved final claim triggers the payment sequence 30, 31 and 33 on /v1/paymentnotice/request. Protocol failures arrive as a ProtocolResponse with x-hcx-error_details.
+
+  ## Common mistakes
+
+  - Submitting a claim without an approved preauth (PAYR-1302), or a second claim for the same case (PAYR-1301, PAYR-1016 duplicate by service codes and dates).
+  - Claiming more than the preauth approved amount (PAYR-1012) or items that were not in the preauth or were rejected there (PAYR-1306, PAYR-1315).
+  - Answering a claim query (27) with a fresh 15 instead of 151, or sending an invalid workflow ID (PAYR-1321).
+  - Wrong or missing discharge stage (PAYR-1324) and, for PMJAY LAMA or DAMA cases, omitting LM100 or including other approved items alongside it (PAYR-1362).
+  - Missing the mandatory documents named by the InsurancePlan or eligibility response, which produces a query rather than a rejection and delays settlement.
+  - Reusing a correlation ID from the preauth cycle for a new claim cycle (NHCX-1006), or retrying a failed cycle with the same ID.
+
+  ## Best practices
+
+  - Start from the approved preauth payload: keep diagnosis and procedure entries, change Claim.use to claim, replace estimates with final amounts and add the full document set.
+  - Reference preAuthRef and reuse the case number; key every submission on the correlation ID and persist workflow ID and use_case with it.
+  - Check response.outcome on every callback; partial means the claim is still live, so keep monitoring the same correlation ID.
+  - Validate supportingInfo value types and discharge codes before encrypting; the PAYR-1098, 1099 and 1501 to 1505 family rejects malformed supporting info.
+  - For LAMA discharges send stratification with duration; for cyclic procedures send cycle information for every cycle with one biometric record per date (PAYR-1368, PAYR-1369).
+  - Implement v1/error and use /v1/status with the claim's correlation ID when no callback arrives.
+
+  ## Related scenario
+
+  A patient is discharged home after the corneal grafting approved under preAuthRef PREAUTH-HP-2026-78901. The billing desk takes the preauth bundle, sets Claim.use to claim, records discharge code DTH After Surgery, attaches the discharge summary, operative notes and final itemised bill of 13700 INR, and posts it to /v1/claim/submit under workflow 15 with use_case New and a new correlation ID. NHCX returns 202. The payer sends 25 and 28 as response.partial, then queries under 27 for a missing investigation report; the hospital answers under 151. Approval arrives under 26 as response.complete, and a payment notice follows on /v1/paymentnotice/request.
+
+  ## Specification
+
+  Chapter 05.12 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+    "correlation_id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "claim",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

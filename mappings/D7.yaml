@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case D7: Answer a pre-authorisation query - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/preauth/submit
+# Callback API: /v1/preauth/on_submit
+# Carries JWE: true
+# Focal Resource: Claim
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim
+# ==============================================================================
+
+code: "D7"
+title: "Answer a pre-authorisation query"
+side: "provider"
+api: "/v1/preauth/submit"
+callback: "/v1/preauth/on_submit"
+workflow: "19 (Query answered under PMJAY)"
+carries_jwe: true
+focal_resource: "Claim"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+profiles:
+  Claim: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+description: "Answer PMJAY medical desk query directly on preauth endpoint carrying CQD clinical note responses."
+fields:
+  - key: "claimNumber"
+    label: "Case Number"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.identifier[0].value"
+    example_value: "VB26AA2600001"
+  - key: "workflowId"
+    label: "Workflow Code"
+    group: "Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-workflow_id"
+    example_value: "19"
+  - key: "nmiDocument"
+    label: "Need More Info (NMI) Document"
+    group: "Documents"
+    data_type: "base64Binary"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim.supportingInfo[category=NMI]"
+    fhir_path: "Claim.supportingInfo[category=NMI].valueAttachment.data"
+    example_value: "JVBERi0xLjQK..."

@@ -1,0 +1,59 @@
+# ==============================================================================
+# Use Case C7: Respond to claim - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/claim/on_submit
+# Callback API: /v1/claim/submit
+# Carries JWE: true
+# Focal Resource: ClaimResponse
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse
+# ==============================================================================
+
+code: "C7"
+title: "Respond to claim"
+side: "payer"
+api: "/v1/claim/on_submit"
+callback: "/v1/claim/submit"
+workflow: "25 (Received), 26 (Approved), 27 (Queried), 28 (In process), 291 (Rejected)"
+carries_jwe: true
+focal_resource: "ClaimResponse"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+profiles:
+  ClaimResponse: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
+description: "Deliver final claim settlement adjudication decision with approved amount and deduction breakdown."
+fields:
+  - key: "outcome"
+    label: "Claim Outcome"
+    group: "Adjudication"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.outcome"
+    example_value: "complete"
+  - key: "approvedBenefit"
+    label: "Approved Claim Amount"
+    group: "Financials"
+    data_type: "decimal"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.total[category=benefit].amount.value"
+    example_value: "15500.00"
+  - key: "copayAmount"
+    label: "Beneficiary Co-payment"
+    group: "Financials"
+    data_type: "decimal"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.total[category=copay].amount.value"
+    example_value: "0.00"
+  - key: "deductionReason"
+    label: "Deduction Justification"
+    group: "Adjudication"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "ClaimResponse"
+    fhir_path: "ClaimResponse.item[].adjudication[category=deduction].reason.coding[0].display"
+    example_value: "Non-medical consumables deducted"

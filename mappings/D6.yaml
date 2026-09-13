@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case D6: Raise an enhancement - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/preauth/submit
+# Callback API: /v1/preauth/on_submit
+# Carries JWE: true
+# Focal Resource: Claim
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim
+# ==============================================================================
+
+code: "D6"
+title: "Raise an enhancement"
+side: "provider"
+api: "/v1/preauth/submit"
+callback: "/v1/preauth/on_submit"
+workflow: "13 (Enhancement requested), 131 (Enhancement query answered)"
+carries_jwe: true
+focal_resource: "Claim"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+profiles:
+  Claim: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+description: "Request additional funds or package additions during prolonged intensive care or surgery."
+fields:
+  - key: "claimNumber"
+    label: "Case Number"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.identifier[0].value"
+    example_value: "VB26AA2600001"
+  - key: "preAuthRef"
+    label: "Initial Approval Reference"
+    group: "Case"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Claim"
+    fhir_path: "Claim.insurance[0].preAuthRef[0]"
+    example_value: "APPR-2026-HP-00891"
+  - key: "workflowId"
+    label: "Workflow Code"
+    group: "Header"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-workflow_id"
+    example_value: "13"

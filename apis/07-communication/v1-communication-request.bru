@@ -1,0 +1,105 @@
+meta {
+  name: Communication request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{nhcxBase}}/v1/communication/request
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1518@hcx
+  x-hcx-recipient_code: 1000004446@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 15
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOiIxNTE4QGhjeCJ9.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Communication request
+
+  `POST /v1/communication/request`
+
+  ## Summary
+
+  Payer pushes a Task plus Communication bundle to a provider mid-claim: TAT alerts, wallet or policy changes, grievances or extra-information requests.
+
+  ## Business purpose
+
+  Every other NHCX exchange is provider-initiated and expects a matching response. Communication inverts that: it is the payer's asynchronous, event-driven channel into the hospital system, used when something must be said about an in-flight case without the provider having asked. It carries TAT breach alerts, grievance notices, wallet or benefit updates, policy or package-rate changes, requests for additional evidence and claim-arbitration intimations. Hospitals benefit because these signals arrive in a structured, routable bundle rather than by phone or email, and payers benefit because adjudication can proceed without waiting for an out-of-band exchange.
+
+  ## When to use
+
+  Call it whenever the payer needs to communicate outside the direct request-response lifecycle of a preauth or claim. It does not replace the in-band query path (ClaimResponse outcome=partial with a DOC_MISSING processNote); both can be in flight for the same case. The scenario is identified by Task.reasonCode: tatquery, grievance, walletupdate, policychange, additionalinfo and the arbitration code (spelt claimArbitration in one handbook table and claimArbitartion in another). Send x-hcx-status request.initiated; the x-hcx-workflow_id must be the workflow of the associated claim or preauth and is validated at the gateway.
+
+  ## Preconditions
+
+  - Payer and provider both registered on NHCX; a valid Bearer token from the client-credentials session call (1200 s expiry).
+  - The provider's public certificate fetched via /fetch/certs (cache up to 24 h) and used to JWE-encrypt with RSA-OAEP-256 and A256GCM.
+  - A collection Bundle containing a Task (status completed, intent proposal, code poll, input type include) that references a Communication or CommunicationRequest carrying category, priority and topic; the identifiers key off the claim or preauth reference.
+  - Protected header with x-hcx-sender_code, x-hcx-recipient_code, x-hcx-api_call_id, x-hcx-correlation_id, x-hcx-workflow_id, x-hcx-timestamp (IST +05:30) and x-hcx-status request.initiated. A fresh UUID correlation id opens the conversation.
+  - HTTP headers Accept, Content-Type and bearer_auth.
+
+  ## Postconditions
+
+  The gateway validates the JWE headers, workflow id and NIIP and returns HTTP 202 with a StatusSuccessResponse (timestamp, api_call_id, correlation_id, result with sender_code, recipient_code, entity_type and protocol_status, and an error object). Nothing is decided synchronously; the gateway forwards the bundle to the provider's registered callback. The provider must acknowledge with 202 within 30 seconds, then close the loop by posting an acknowledgement Task bundle to /v1/communication/on_request under the same x-hcx-correlation_id. Errors are 400 (validation failed), 404 and 500, all in the same envelope. Communication.status completed describes the event, not the resolution of the underlying issue.
+
+  ## Common mistakes
+
+  - Treating the 202 as delivery or as the provider's answer; the acknowledgement comes later on on_request.
+  - Sending a workflow id that does not match the associated claim or preauth, which fails gateway validation (PAYR-1003 Invalid workflow requested).
+  - Wrong x-hcx-status spelling (request.initiate instead of request.initiated) producing NHCX-1011.
+  - Reusing a correlation id from an earlier cycle (NHCX-1006 Duplicate request) or from a failed cycle, which NHCX has made inactive.
+  - Copying the sandbox sample's swapped Organization identifier types (NIIP versus NPI), a known data-quality defect.
+  - Using Communication as a substitute for the in-band ClaimResponse query mechanism.
+
+  ## Best practices
+
+  - Mint a new UUID for x-hcx-api_call_id on every call and for x-hcx-correlation_id on every new communication cycle, including retries after failure.
+  - Put the routing intent in Task.reasonCode and the message classification in Communication.category, topic and priority; pair additionalinfo with category instruction or questionnaire.
+  - Use IST timestamps; UTC causes validation failures.
+  - Persist the correlation id before posting so the on_request acknowledgement can be matched.
+  - Expect up to five redeliveries if the provider mis-acknowledges; keep your own handling idempotent.
+  - Implement v1/error so a message that never reaches the provider is reported back to you.
+
+  ## Related scenario
+
+  A state health agency's TPA notices that a cashless claim from a district hospital has sat in adjudication past the scheme's turnaround threshold. It builds a Task bundle with reasonCode tatquery, category reminder, topic progress-update and priority asap, encrypts it for the hospital and posts /v1/communication/request with the workflow id of the claim submitted earlier on /v1/claim/submit. The gateway returns 202 and forwards the bundle. The hospital's claims desk is alerted, and its system posts the acknowledgement Task on /v1/communication/on_request with the same correlation id. Adjudication then continues and the outcome arrives on /v1/claim/on_submit as usual.
+
+  ## Specification
+
+  Chapter 05.17 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "25/08/2026 11:46:35:120",
+    "api_call_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "correlation_id": "11223344-5566-7788-99aa-bbccddeeff00",
+    "result": {
+      "sender_code": "1518@hcx",
+      "recipient_code": "1000004446@hcx",
+      "entity_type": "task",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

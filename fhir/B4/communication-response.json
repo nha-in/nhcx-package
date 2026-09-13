@@ -1,0 +1,860 @@
+{
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:0c2f7b1e-5d4a-4c7e-9b3a-2f6d8e1a4c50",
+      "resource": {
+        "authoredOn": "2026-03-08T11:01:00+05:30",
+        "code": {
+          "coding": [
+            {
+              "code": "deliver",
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes"
+            }
+          ]
+        },
+        "id": "0c2f7b1e-5d4a-4c7e-9b3a-2f6d8e1a4c50",
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "include",
+                  "system": "http://terminology.hl7.org/CodeSystem/financialtaskinputtype"
+                }
+              ]
+            },
+            "valueReference": {
+              "display": "Communication",
+              "reference": "urn:uuid:7d9e2a64-3b1f-4f0c-8a5e-6c4b2d9f1e37"
+            }
+          }
+        ],
+        "intent": "order",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "owner": {
+          "display": "Organization",
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "reasonCode": {
+          "coding": [
+            {
+              "code": "additionalinfo",
+              "display": "Additional information request",
+              "system": "https://nhcx.abdm.gov.in/communication-reason"
+            }
+          ]
+        },
+        "requester": {
+          "display": "Organization",
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "resourceType": "Task",
+        "status": "completed"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:7d9e2a64-3b1f-4f0c-8a5e-6c4b2d9f1e37",
+      "resource": {
+        "about": [
+          {
+            "display": "Claim VB26AA2600001",
+            "reference": "https://nhcx.abdm.gov.in/preauth/request"
+          }
+        ],
+        "basedOn": [
+          {
+            "display": "CommunicationRequest",
+            "reference": "urn:uuid:08f1bb6f-c3f5-4578-b5e8-c042764e2477"
+          }
+        ],
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "notification",
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category"
+              }
+            ]
+          }
+        ],
+        "id": "7d9e2a64-3b1f-4f0c-8a5e-6c4b2d9f1e37",
+        "identifier": [
+          {
+            "value": "4524657454"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication"
+          ]
+        },
+        "payload": [
+          {
+            "contentString": "The angiography report is attached."
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
+              "title": "Angiography report"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "DIA"
+              }
+            ]
+          }
+        ],
+        "priority": "routine",
+        "recipient": [
+          {
+            "display": "Organization",
+            "reference": "https://nhcx.abdm.gov.in/payer"
+          }
+        ],
+        "resourceType": "Communication",
+        "sender": {
+          "display": "Organization",
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:08f1bb6f-c3f5-4578-b5e8-c042764e2477",
+      "resource": {
+        "authoredOn": "2025-03-07T08:25:05+10:00",
+        "basedOn": [
+          {
+            "display": "Claim-preauth",
+            "reference": "urn:uuid:5638dd69-795d-4c30-a916-71467877be0c"
+          }
+        ],
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "alert",
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category"
+              }
+            ]
+          }
+        ],
+        "id": "08f1bb6f-c3f5-4578-b5e8-c042764e2477",
+        "identifier": [
+          {
+            "value": "4524657454"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
+          ]
+        },
+        "payload": [
+          {
+            "contentString": "Please provide the Angeography report to support your Claim# 98765432."
+          }
+        ],
+        "priority": "routine",
+        "recipient": [
+          {
+            "display": "Organization",
+            "reference": "urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e"
+          }
+        ],
+        "requester": {
+          "display": "Organization",
+          "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70"
+        },
+        "resourceType": "CommunicationRequest",
+        "sender": {
+          "display": "Organization",
+          "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70"
+        },
+        "status": "active",
+        "text": {
+          "div": "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003e\u003ca name=\"CommunicationRequest_08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003cp class=\"res-header-id\"\u003e\u003cb\u003eGenerated Narrative: CommunicationRequest 08f1bb6f-c3f5-4578-b5e8-c042764e2477\u003c/b\u003e\u003c/p\u003e\u003ca name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003ca name=\"hc08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003ca name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477-hi-IN\"\u003e \u003c/a\u003e\u003cp\u003e\u003cb\u003eidentifier\u003c/b\u003e: 4524657454\u003c/p\u003e\u003cp\u003e\u003cb\u003ebasedOn\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5638dd69-795d-4c30-a916-71467877be0c\"\u003eClaim-preauth\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003estatus\u003c/b\u003e: Active\u003c/p\u003e\u003cp\u003e\u003cb\u003ecategory\u003c/b\u003e: \u003cspan title=\"Codes:{http://terminology.hl7.org/CodeSystem/communication-category alert}\"\u003eAlert\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003epriority\u003c/b\u003e: Routine\u003c/p\u003e\u003ch3\u003ePayloads\u003c/h3\u003e\u003ctable class=\"grid\"\u003e\u003ctr\u003e\u003ctd style=\"display: none\"\u003e-\u003c/td\u003e\u003ctd\u003e\u003cb\u003eContent[x]\u003c/b\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style=\"display: none\"\u003e*\u003c/td\u003e\u003ctd\u003ePlease provide the Angeography report to support your Claim# 98765432.\u003c/td\u003e\u003c/tr\u003e\u003c/table\u003e\u003cp\u003e\u003cb\u003eauthoredOn\u003c/b\u003e: 2025-03-07 08:25:05+1000\u003c/p\u003e\u003cp\u003e\u003cb\u003erequester\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003erecipient\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-9cba8230-b666-438b-811c-f70c5df8990e\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003esender\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003c/div\u003e",
+          "status": "generated"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/preauth/request",
+      "resource": {
+        "billablePeriod": {
+          "end": "2026-02-27T11:00:00+05:30",
+          "start": "2026-02-22T10:00:00+05:30"
+        },
+        "careTeam": [
+          {
+            "provider": {
+              "reference": "https://nhcx.abdm.gov.in/practitioner"
+            },
+            "qualification": {
+              "coding": [
+                {
+                  "code": "394802001",
+                  "display": "General medicine",
+                  "system": "http://snomed.info/sct"
+                }
+              ]
+            },
+            "role": {
+              "coding": [
+                {
+                  "code": "primary",
+                  "display": "Primary provider",
+                  "system": "http://terminology.hl7.org/CodeSystem/claimcareteamrole"
+                }
+              ]
+            },
+            "sequence": 1
+          }
+        ],
+        "created": "2026-02-22T15:49:36+05:30",
+        "diagnosis": [
+          {
+            "diagnosisCodeableConcept": {
+              "coding": [
+                {
+                  "code": "A97",
+                  "display": "Dengue",
+                  "system": "http://hl7.org/fhir/sid/icd-10"
+                }
+              ]
+            },
+            "onAdmission": {
+              "coding": [
+                {
+                  "code": "yes",
+                  "display": "Yes",
+                  "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosis-on-admission"
+                }
+              ]
+            },
+            "sequence": 1,
+            "type": [
+              {
+                "coding": [
+                  {
+                    "code": "admitting",
+                    "display": "Admitting Diagnosis",
+                    "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "id": "VB26AA2600001",
+        "identifier": [
+          {
+            "system": "https://nhcx.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "CLN",
+                  "display": "Claim number",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
+                }
+              ]
+            },
+            "value": "VB26AA2600001"
+          }
+        ],
+        "insurance": [
+          {
+            "coverage": {
+              "reference": "https://nhcx.abdm.gov.in/coverage"
+            },
+            "focal": true,
+            "sequence": 1
+          }
+        ],
+        "insurer": {
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "item": [
+          {
+            "careTeamSequence": [
+              1
+            ],
+            "category": {
+              "coding": [
+                {
+                  "code": "MG",
+                  "display": "General Medicine",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-category"
+                }
+              ]
+            },
+            "diagnosisSequence": [
+              1
+            ],
+            "factor": 0.5,
+            "id": "Item/1",
+            "informationSequence": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6
+            ],
+            "modifier": [
+              {
+                "coding": [
+                  {
+                    "code": "STRAT006b",
+                    "display": "HDU"
+                  }
+                ]
+              }
+            ],
+            "net": {
+              "currency": "INR",
+              "value": 3300
+            },
+            "procedureSequence": [
+              1
+            ],
+            "productOrService": {
+              "coding": [
+                {
+                  "code": "MG0111A",
+                  "display": "Pleural Effusion",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code"
+                }
+              ]
+            },
+            "programCode": [
+              {
+                "coding": [
+                  {
+                    "code": "AB-PMJAY",
+                    "display": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+                    "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-program-code"
+                  }
+                ]
+              }
+            ],
+            "quantity": {
+              "value": 1
+            },
+            "sequence": 1,
+            "servicedPeriod": {
+              "end": "2026-02-27",
+              "start": "2026-02-22"
+            },
+            "unitPrice": {
+              "currency": "INR",
+              "value": 3300
+            }
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+          ]
+        },
+        "patient": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "priority": {
+          "coding": [
+            {
+              "code": "normal",
+              "display": "Normal",
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority"
+            }
+          ]
+        },
+        "procedure": [
+          {
+            "date": "2026-02-24T09:30:00+05:30",
+            "id": "Procedure/1",
+            "procedureReference": {
+              "display": "Pleural Effusion",
+              "reference": "https://nhcx.abdm.gov.in/procedure/1"
+            },
+            "sequence": 1,
+            "type": [
+              {
+                "coding": [
+                  {
+                    "code": "conservative",
+                    "display": "Conservative",
+                    "system": "https://nhcx.abdm.gov.in/procedure-type"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "provider": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "resourceType": "Claim",
+        "status": "active",
+        "supportingInfo": [
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "INV",
+                  "display": "Document Type - Investigation",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "MAND0408",
+                  "display": "Clinical notes detailing history and Admission notes showing vitals and examination findings",
+                  "system": "https://nhcx.abdm.gov.in/document-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/1",
+            "sequence": 1,
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
+              "title": "Clinical notes detailing history and Admission notes showing vitals and examination findings"
+            }
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "INV",
+                  "display": "Document Type - Investigation",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "MAND0455",
+                  "display": "CXR PA view or CECT chest abdomen and pelvis",
+                  "system": "https://nhcx.abdm.gov.in/document-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/2",
+            "sequence": 2,
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
+              "title": "CXR PA view or CECT chest abdomen and pelvis"
+            }
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "INV",
+                  "display": "Document Type - Investigation",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "MAND0409",
+                  "display": "Any investigations done",
+                  "system": "https://nhcx.abdm.gov.in/document-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/3",
+            "sequence": 3,
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
+              "title": "Any investigations done"
+            }
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "INV",
+                  "display": "Document Type - Investigation",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "MAND0570",
+                  "display": "Planned line of management",
+                  "system": "https://nhcx.abdm.gov.in/document-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/4",
+            "sequence": 4,
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
+              "title": "Planned line of management"
+            }
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "ONS",
+                  "display": "Period, start or end dates of aspects of the Condition. (e.g. admission, discharge etc)",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "ADDD",
+                  "display": "Admission date -Discharge date",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/5",
+            "sequence": 5,
+            "valueString": "2026-02-22T10:00:00+05:30"
+          },
+          {
+            "category": {
+              "coding": [
+                {
+                  "code": "OTH",
+                  "display": "Other",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "code": "EDT",
+                  "display": "EncounterDateTime",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code"
+                }
+              ]
+            },
+            "id": "SupportingInformation/6",
+            "sequence": 6,
+            "valueString": "2026-02-22T10:00:00+05:30"
+          }
+        ],
+        "total": {
+          "currency": "INR",
+          "value": 3300
+        },
+        "type": {
+          "coding": [
+            {
+              "code": "737481003",
+              "display": "Inpatient care management (procedure)",
+              "system": "http://snomed.info/sct"
+            }
+          ]
+        },
+        "use": "preauthorization"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/patient",
+      "resource": {
+        "birthDate": "2004-09-18",
+        "gender": "male",
+        "id": "1",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "PMJAY",
+                  "display": "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
+                }
+              ]
+            },
+            "value": "MD5SLS4X5"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "ABHA",
+                  "display": "Ayushman Bharat Health Account (ABHA) ID",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
+                }
+              ]
+            },
+            "value": "91718280654077"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MB",
+                  "display": "Member Number",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "value": "MD5SLS4X5"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+          ]
+        },
+        "name": [
+          {
+            "text": "Patient Name"
+          }
+        ],
+        "resourceType": "Patient",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "9999999999"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "resource": {
+        "id": "1",
+        "identifier": [
+          {
+            "system": "https://nhcx.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "NPI",
+                  "display": "National provider identifier",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "value": "IN1910000151"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "name": "Facility Name",
+        "resourceType": "Organization",
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "prov",
+                "display": "Healthcare Provider",
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "resource": {
+        "id": "2",
+        "identifier": [
+          {
+            "system": "https://nhcx.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "value": "1518"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "name": "Insurance Company",
+        "resourceType": "Organization",
+        "type": [
+          {
+            "coding": [
+              {
+                "code": "pay",
+                "display": "Payer",
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/practitioner",
+      "resource": {
+        "id": "1",
+        "identifier": [
+          {
+            "system": "https://nhcx.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "HPID",
+                  "display": "Healthcare Professional ID (HPID)",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
+                }
+              ]
+            },
+            "value": "982374978-2343"
+          },
+          {
+            "system": "https://nhcx.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "MD",
+                  "display": "Medical License number",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "value": "MCI-12345"
+          },
+          {
+            "system": "https://hpr.abdm.gov.in",
+            "type": {
+              "coding": [
+                {
+                  "code": "HPIN",
+                  "display": "Health Practitioner ID issued by NDHM",
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
+                }
+              ]
+            },
+            "value": "982374978-2343"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+          ]
+        },
+        "name": [
+          {
+            "text": "Practitioner Name"
+          }
+        ],
+        "qualification": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "code": "MD",
+                  "display": "Doctor of Medicine",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0360"
+                }
+              ]
+            }
+          }
+        ],
+        "resourceType": "Practitioner"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/coverage",
+      "resource": {
+        "beneficiary": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "id": "1",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "NH",
+                  "display": "National Health Plan Identifier",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                }
+              ]
+            },
+            "value": "PMJAY/HP/S/G"
+          }
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+          ]
+        },
+        "payor": [
+          {
+            "reference": "https://nhcx.abdm.gov.in/payer"
+          }
+        ],
+        "relationship": {
+          "coding": [
+            {
+              "code": "self",
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship"
+            }
+          ]
+        },
+        "resourceType": "Coverage",
+        "status": "active",
+        "subscriber": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "subscriberId": "MD5SLS4X5",
+        "type": {
+          "coding": [
+            {
+              "code": "HIP",
+              "display": "health insurance plan policy",
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "id": "communication-response-generic",
+  "identifier": {
+    "system": "https://payer.pmjay.nha.gov.in",
+    "value": "VB26AA2600001-R1"
+  },
+  "meta": {
+    "lastUpdated": "2026-03-08T11:01:00+05:30",
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "resourceType": "Bundle",
+  "timestamp": "2026-03-08T11:01:00+05:30",
+  "type": "collection"
+}

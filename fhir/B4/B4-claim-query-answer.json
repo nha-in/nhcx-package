@@ -1,0 +1,1056 @@
+{
+  "resourceType": "Bundle",
+  "id": "a23fdd93-0357-4ccf-a8cc-9f6203b4ad8c",
+  "meta": {
+    "lastUpdated": "2026-09-10T23:52:45+05:30",
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ]
+  },
+  "identifier": {
+    "system": "https://kyro.care/fhir",
+    "value": "NM-26-0SE00002K-Q9"
+  },
+  "type": "collection",
+  "timestamp": "2026-09-10T23:52:45+05:30",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:eecc84fc-0347-4fa5-8b5c-98912b21597a",
+      "resource": {
+        "resourceType": "Task",
+        "id": "eecc84fc-0347-4fa5-8b5c-98912b21597a",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes",
+              "code": "deliver"
+            }
+          ]
+        },
+        "authoredOn": "2026-09-10T23:52:45+05:30",
+        "requester": {
+          "reference": "https://nhcx.abdm.gov.in/provider",
+          "display": "Organization"
+        },
+        "owner": {
+          "reference": "https://nhcx.abdm.gov.in/payer",
+          "display": "Organization"
+        },
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/financialtaskinputtype",
+                  "code": "include"
+                }
+              ]
+            },
+            "valueReference": {
+              "reference": "urn:uuid:6840ec3f-7126-4bfc-8a56-c2a2e9576d8d",
+              "display": "Communication"
+            }
+          }
+        ],
+        "reasonCode": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+              "code": "additionalinfo",
+              "display": "Additional Information Request"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6840ec3f-7126-4bfc-8a56-c2a2e9576d8d",
+      "resource": {
+        "resourceType": "Communication",
+        "id": "6840ec3f-7126-4bfc-8a56-c2a2e9576d8d",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication"
+          ]
+        },
+        "identifier": [
+          {
+            "value": "NM-26-0SE00002K"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+            "display": "CommunicationRequest"
+          }
+        ],
+        "inResponseTo": [
+          {
+            "reference": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+            "display": "CommunicationRequest"
+          }
+        ],
+        "about": [
+          {
+            "reference": "https://nhcx.abdm.gov.in/claim/request",
+            "display": "Claim urn:uuid:5c997608-ee6c-5496-9fdb-f8415e3eb8d5"
+          }
+        ],
+        "status": "completed",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category",
+                "code": "notification"
+              }
+            ]
+          }
+        ],
+        "priority": "routine",
+        "recipient": [
+          {
+            "reference": "https://nhcx.abdm.gov.in/payer",
+            "display": "Organization"
+          }
+        ],
+        "sender": {
+          "reference": "https://nhcx.abdm.gov.in/provider",
+          "display": "Organization"
+        },
+        "payload": [
+          {
+            "contentString": "Final bill and discharge summary attached."
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Proof of Identity (Aadhaar / Passport / Voter ID)",
+              "creation": "2026-09-10T23:52:21+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "POI"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Medical Certificate / Doctor Referral",
+              "creation": "2026-09-10T23:52:21+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "CER"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Radiology / X-Ray / CT / MRI Scan Reports",
+              "creation": "2026-09-10T23:52:21+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "RAD"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Detailed Pre-Auth Cost Estimate",
+              "creation": "2026-09-10T23:52:21+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "EST"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Hospital discharge summary",
+              "creation": "2026-09-10T23:52:34+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "HDS"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Medical & Pharmacy Bills Itemized",
+              "creation": "2026-09-10T23:52:34+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "MB"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Medical Implant Invoice & Barcode Sticker",
+              "creation": "2026-09-10T23:52:34+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "IMP"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Filled NHCX Claim Form (Signed)",
+              "creation": "2026-09-10T23:52:34+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "FCF"
+              }
+            ]
+          },
+          {
+            "contentAttachment": {
+              "contentType": "application/pdf",
+              "title": "Operation Theatre Notes & Surgical Summary",
+              "creation": "2026-09-10T23:52:34+05:30",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK"
+            },
+            "extension": [
+              {
+                "url": "https://kyro.care/fhir/StructureDefinition/document-type",
+                "valueString": "OTR"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+      "resource": {
+        "resourceType": "CommunicationRequest",
+        "id": "e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
+          ]
+        },
+        "identifier": [
+          {
+            "value": "NM-26-0SE00002K"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "urn:uuid:5c997608-ee6c-5496-9fdb-f8415e3eb8d5",
+            "display": "Claim-claim"
+          }
+        ],
+        "status": "active",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category",
+                "code": "alert"
+              }
+            ]
+          }
+        ],
+        "priority": "routine",
+        "payload": [
+          {
+            "contentString": "Share the final bill breakup and the discharge summary."
+          }
+        ],
+        "authoredOn": "2026-09-10T23:52:39+05:30",
+        "requester": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "recipient": [
+          {
+            "reference": "urn:uuid:84d112ec-041c-57f8-986c-6619ccd8245e",
+            "display": "Organization"
+          }
+        ],
+        "sender": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+                "code": "additionalinfo",
+                "display": "Additional Information Request"
+              }
+            ],
+            "text": "Share the final bill breakup and the discharge summary."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/claim/request",
+      "resource": {
+        "resourceType": "Claim",
+        "id": "NM-26-0SE00002K",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "CLN",
+                  "display": "Claim number"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "NM-26-0SE00002K"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "737481003",
+              "display": "Inpatient care management (procedure)"
+            }
+          ]
+        },
+        "use": "claim",
+        "patient": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "billablePeriod": {
+          "start": "2026-09-10T00:00:00+05:30",
+          "end": "2026-09-10T00:00:00+05:30"
+        },
+        "created": "2026-09-10T23:52:34+05:30",
+        "insurer": {
+          "reference": "https://nhcx.abdm.gov.in/payer"
+        },
+        "provider": {
+          "reference": "https://nhcx.abdm.gov.in/provider"
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+              "code": "normal",
+              "display": "Normal"
+            }
+          ]
+        },
+        "careTeam": [
+          {
+            "sequence": 1,
+            "provider": {
+              "reference": "https://nhcx.abdm.gov.in/practitioner"
+            },
+            "role": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/claimcareteamrole",
+                  "code": "primary",
+                  "display": "Primary provider"
+                }
+              ]
+            },
+            "qualification": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "394802001",
+                  "display": "General medicine"
+                }
+              ]
+            }
+          }
+        ],
+        "supportingInfo": [
+          {
+            "id": "SupportingInformation/1",
+            "sequence": 1,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "INV",
+                  "display": "Document Type - Investigation"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/document-code",
+                  "code": "MB",
+                  "display": "Medical & Pharmacy Bills Itemized"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Medical & Pharmacy Bills Itemized"
+            }
+          },
+          {
+            "id": "SupportingInformation/2",
+            "sequence": 2,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "INV",
+                  "display": "Document Type - Investigation"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/document-code",
+                  "code": "IMP",
+                  "display": "Medical Implant Invoice & Barcode Sticker"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Medical Implant Invoice & Barcode Sticker"
+            }
+          },
+          {
+            "id": "SupportingInformation/3",
+            "sequence": 3,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "INV",
+                  "display": "Document Type - Investigation"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/document-code",
+                  "code": "FCF",
+                  "display": "Filled NHCX Claim Form (Signed)"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Filled NHCX Claim Form (Signed)"
+            }
+          },
+          {
+            "id": "SupportingInformation/4",
+            "sequence": 4,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "INV",
+                  "display": "Document Type - Investigation"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/document-code",
+                  "code": "OTR",
+                  "display": "Operation Theatre Notes & Surgical Summary"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Operation Theatre Notes & Surgical Summary"
+            }
+          },
+          {
+            "id": "SupportingInformation/5",
+            "sequence": 5,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "HDS",
+                  "display": "Hospital discharge summary"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nhcx.abdm.gov.in/document-code",
+                  "code": "HDS",
+                  "display": "Hospital discharge summary"
+                }
+              ]
+            },
+            "valueAttachment": {
+              "contentType": "application/pdf",
+              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
+              "title": "Hospital discharge summary"
+            }
+          },
+          {
+            "id": "SupportingInformation/6",
+            "sequence": 6,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "ONS",
+                  "display": "Period, start or end dates of aspects of the Condition. (e.g. admission, discharge etc)"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+                  "code": "ADDD",
+                  "display": "Admission date -Discharge date"
+                }
+              ]
+            },
+            "valueString": "2026-09-10T00:00:00+05:30"
+          },
+          {
+            "id": "SupportingInformation/7",
+            "sequence": 7,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "OTH",
+                  "display": "Other"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+                  "code": "EDT",
+                  "display": "EncounterDateTime"
+                }
+              ]
+            },
+            "valueString": "2026-09-10T00:00:00+05:30"
+          },
+          {
+            "id": "SupportingInformation/8",
+            "sequence": 8,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "ONS",
+                  "display": "Period, start or end dates of aspects of the Condition. (e.g. admission, discharge etc)"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+                  "code": "PSP",
+                  "display": "PatientSurgeryPerformed(startdatetime-enddatetime)"
+                }
+              ]
+            },
+            "valueString": "2026-09-10T00:00:00+05:30"
+          },
+          {
+            "id": "SupportingInformation/9",
+            "sequence": 9,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "ONS",
+                  "display": "Period, start or end dates of aspects of the Condition. (e.g. admission, discharge etc)"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+                  "code": "DSDE",
+                  "display": "Discharge start-discharge end time"
+                }
+              ]
+            },
+            "valueString": "2026-09-10T00:00:00+05:30"
+          },
+          {
+            "id": "SupportingInformation/10",
+            "sequence": 10,
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
+                  "code": "DIS",
+                  "display": "Discharge status and discharge to location detail"
+                }
+              ]
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
+                  "code": "DTH",
+                  "display": "DischargeToHome (Discharge disposition status)"
+                }
+              ]
+            },
+            "valueString": "After Surgery"
+          }
+        ],
+        "diagnosis": [
+          {
+            "sequence": 1,
+            "diagnosisCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/sid/icd-10",
+                  "code": "E11.9",
+                  "display": "Type 2 diabetes mellitus without complications"
+                }
+              ]
+            },
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype",
+                    "code": "admitting",
+                    "display": "Admitting Diagnosis"
+                  }
+                ]
+              }
+            ],
+            "onAdmission": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosis-on-admission",
+                  "code": "yes",
+                  "display": "Yes"
+                }
+              ]
+            }
+          }
+        ],
+        "procedure": [
+          {
+            "id": "Procedure/1",
+            "sequence": 1,
+            "type": [
+              {
+                "coding": [
+                  {
+                    "system": "https://nhcx.abdm.gov.in/procedure-type",
+                    "code": "surgical",
+                    "display": "Surgical"
+                  }
+                ]
+              }
+            ],
+            "date": "2026-09-10T00:00:00+05:30",
+            "procedureReference": {
+              "reference": "https://nhcx.abdm.gov.in/procedure/1",
+              "display": "Total Knee Replacement (Unilateral)"
+            }
+          }
+        ],
+        "insurance": [
+          {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+              "reference": "https://nhcx.abdm.gov.in/coverage"
+            },
+            "preAuthRef": [
+              "CL/26/0SE000106"
+            ]
+          }
+        ],
+        "item": [
+          {
+            "id": "Item/1",
+            "sequence": 1,
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code",
+                  "code": "PROC-KNEE-01",
+                  "display": "Total Knee Replacement (Unilateral)"
+                }
+              ]
+            },
+            "servicedPeriod": {
+              "start": "2026-09-10",
+              "end": "2026-09-10"
+            },
+            "quantity": {
+              "value": 1
+            },
+            "unitPrice": {
+              "value": 150000,
+              "currency": "INR"
+            },
+            "net": {
+              "value": 150000,
+              "currency": "INR"
+            },
+            "category": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-category",
+                  "code": "Surgical",
+                  "display": "Surgical"
+                }
+              ]
+            },
+            "factor": 1,
+            "careTeamSequence": [
+              1
+            ],
+            "diagnosisSequence": [
+              1
+            ],
+            "procedureSequence": [
+              1
+            ],
+            "informationSequence": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10
+            ]
+          }
+        ],
+        "total": {
+          "value": 150000,
+          "currency": "INR"
+        }
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/patient",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "PMJAY",
+                  "display": "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID"
+                }
+              ]
+            },
+            "value": "MRAV1985001"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "ABHA",
+                  "display": "Ayushman Bharat Health Account (ABHA) ID"
+                }
+              ]
+            },
+            "value": "91-1234-1234-1234"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MB",
+                  "display": "Member Number"
+                }
+              ]
+            },
+            "value": "MRAV1985001"
+          }
+        ],
+        "name": [
+          {
+            "text": "E2E Nano UU0PY"
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "9876543210"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1985-06-15"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "KyroCare Multispeciality Hospital"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "1000004805"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "pay",
+                "display": "Payer"
+              }
+            ]
+          }
+        ],
+        "name": "Sandbox Payer"
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/practitioner",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "HPID",
+                  "display": "Healthcare Professional ID (HPID)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
+            "value": "71-8422-5818-7201"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "HPIN",
+                  "display": "Health Practitioner ID issued by NDHM"
+                }
+              ]
+            },
+            "system": "https://hpr.abdm.gov.in",
+            "value": "71-8422-5818-7201"
+          }
+        ],
+        "name": [
+          {
+            "text": "Dr. Ananya Rao"
+          }
+        ],
+        "qualification": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0360",
+                  "code": "MD",
+                  "display": "Doctor of Medicine"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "https://nhcx.abdm.gov.in/coverage",
+      "resource": {
+        "resourceType": "Coverage",
+        "id": "1",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NH",
+                  "display": "National Health Plan Identifier"
+                }
+              ]
+            },
+            "value": "POL7UMU001"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              "code": "HIP",
+              "display": "health insurance plan policy"
+            }
+          ]
+        },
+        "subscriber": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "subscriberId": "MRAV1985001",
+        "beneficiary": {
+          "reference": "https://nhcx.abdm.gov.in/patient"
+        },
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self"
+            }
+          ]
+        },
+        "payor": [
+          {
+            "reference": "https://nhcx.abdm.gov.in/payer"
+          }
+        ]
+      }
+    }
+  ]
+}

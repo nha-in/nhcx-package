@@ -1,0 +1,79 @@
+meta {
+  name: Fetch certificate
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{registryBase}}/fetch/certs
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "participantid": "1518@hcx"
+  }
+}
+
+docs {
+  # Fetch certificate
+
+  `POST /fetch/certs`
+
+  ## Summary
+
+  Returns a participant's public encryption certificate (PEM X.509 or SPKI key) by participantid; cache it for 24 hours and use it to build the JWE.
+
+  ## Business purpose
+
+  Every NHCX payload is encrypted end-to-end for exactly one recipient so that even the exchange cannot read the clinical and financial content it routes. That guarantee rests on each participant publishing a public certificate in the registry at onboarding. This call is how a sender obtains a counterparty's certificate before encrypting a request or a callback for it. It is item 3 of both sandbox-exit checklists and the endpoint the Integration Handbook names in its encryption steps.
+
+  ## When to use
+
+  Call it before encrypting the first message to a recipient and whenever the 24-hour cache entry for that participantid expires or is evicted after a decrypt or encrypt failure. Providers fetch the payer's certificate before /v1/coverageeligibility/check, /v1/preauth/submit and /v1/claim/submit; payers fetch the provider's certificate before encrypting on_* callbacks. Handbook call: POST /fetch/certs on host apisbx.abdm.gov.in/pmjay/sbxhcx with bearer_auth Bearer <token>. Synchronous; no workflow or x-hcx-status codes.
+
+  ## Preconditions
+
+  - Bearer token from /get/session in bearer_auth with the Bearer prefix; Content-Type: application/json (add Accept: application/json per the common-mistakes guidance).
+  - ParticipantCertRequest with the single required field participantid, the recipient's participant code in <code>@hcx form, identical to the value you will place in x-hcx-recipient_code.
+  - The recipient has completed onboarding with a certificate registered (mandatory at creation).
+
+  ## Postconditions
+
+  HTTP 200 with a string body containing a PEM-encoded X.509 certificate or an SPKI public key, as uploaded by that participant. Import X.509 first and fall back to SPKI (keys under roughly 400 bytes are typically SPKI), then use the key with RSA-OAEP-256 for alg and A256GCM for enc. Nothing changes in the registry and no callback follows. 400, 404 and 500 return the ErrorResponse envelope; an unregistered code is a 404 here and NHCX-1003 at the gateway.
+
+  ## Common mistakes
+
+  - Fetching the certificate before every request instead of caching for 24 hours, adding a round trip to the critical path of every claim.
+  - Assuming the response is always a full X.509 certificate and failing when a participant uploaded a bare SPKI key.
+  - Encrypting with the sender's own certificate instead of the recipient's; the recipient's private key then cannot open it, surfacing as PAYR-1001 decrypt errors.
+  - Passing participant_code or participantcode instead of participantid.
+  - Serving a stale cached certificate after the counterparty rotated its key; PAYR-1001 or PAYR-1002 is the signal to evict and re-fetch.
+  - Sending the token without the Bearer prefix or omitting Accept.
+
+  ## Best practices
+
+  - Cache per participantid with a 24-hour TTL, plus a negative path that evicts and re-fetches on encrypt or decrypt failures.
+  - Implement the import routine as X.509 first, SPKI fallback, treating the 400-byte size hint as diagnostic rather than a hard branch.
+  - Use the documented algorithm pair RSA-OAEP-256 and A256GCM.
+  - Re-fetch from the production registry at go-live; sandbox certificates do not carry over.
+  - Expect annual key rotation by counterparties; the 24-hour cache bounds exposure to a rotation you were not told about.
+
+  ## Related scenario
+
+  A hospital is about to send its first pre-authorisation to payer 1518@hcx. The engine checks its certificate cache, finds no entry, and calls /fetch/certs with participantid 1518@hcx and a Bearer token. The response is a PEM X.509 certificate, which is parsed and cached for 24 hours. The engine builds the JWE protected header with x-hcx-sender_code, x-hcx-recipient_code 1518@hcx and the other x-hcx headers, encrypts the FHIR bundle with RSA-OAEP-256 and A256GCM using the fetched key, and POSTs to /v1/preauth/submit. Later that week the payer rotates its certificate; a PAYR-1001 on the next submission triggers eviction and a fresh fetch.
+
+  ## Specification
+
+  Chapter 02.06 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "_contentType": "string",
+    "_body": "-----BEGIN CERTIFICATE-----\nMIIDdzCCAl+gAwIBAgIEbXq...\n-----END CERTIFICATE-----"
+  }
+  ```
+}

@@ -1,0 +1,471 @@
+{
+  "resourceType": "Bundle",
+  "id": "64127dd5-a33c-556e-aaca-52ff7e530c2e",
+  "meta": {
+    "profile": [
+      "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
+    ],
+    "security": [
+      {
+        "system": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality",
+        "code": "V",
+        "display": "very restricted"
+      }
+    ]
+  },
+  "identifier": {
+    "value": "64127dd5-a33c-556e-aaca-52ff7e530c2e"
+  },
+  "type": "collection",
+  "timestamp": "2026-09-10T23:52:39.094+05:30",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:c13fb1f9-30b2-5f98-9aec-583d974d0b12",
+      "resource": {
+        "resourceType": "Task",
+        "id": "c13fb1f9-30b2-5f98-9aec-583d974d0b12",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+          ]
+        },
+        "status": "requested",
+        "intent": "order",
+        "reasonCode": {
+          "coding": [
+            {
+              "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+              "code": "additionalinfo",
+              "display": "Additional Information Request"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/financialtaskcode",
+              "code": "poll"
+            }
+          ]
+        },
+        "description": "Share the final bill breakup and the discharge summary.",
+        "authoredOn": "2026-09-10T23:52:39+05:30",
+        "requester": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "owner": {
+          "reference": "urn:uuid:84d112ec-041c-57f8-986c-6619ccd8245e",
+          "display": "Organization"
+        },
+        "input": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/financialtaskinputtype",
+                  "code": "include"
+                }
+              ]
+            },
+            "valueReference": {
+              "reference": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+              "display": "CommunicationRequest"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+      "resource": {
+        "resourceType": "CommunicationRequest",
+        "id": "e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
+          ]
+        },
+        "identifier": [
+          {
+            "value": "NM-26-0SE00002K"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "urn:uuid:5c997608-ee6c-5496-9fdb-f8415e3eb8d5",
+            "display": "Claim-claim"
+          }
+        ],
+        "status": "active",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/communication-category",
+                "code": "alert"
+              }
+            ]
+          }
+        ],
+        "priority": "routine",
+        "payload": [
+          {
+            "contentString": "Share the final bill breakup and the discharge summary."
+          }
+        ],
+        "authoredOn": "2026-09-10T23:52:39+05:30",
+        "requester": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "recipient": [
+          {
+            "reference": "urn:uuid:84d112ec-041c-57f8-986c-6619ccd8245e",
+            "display": "Organization"
+          }
+        ],
+        "sender": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
+                "code": "additionalinfo",
+                "display": "Additional Information Request"
+              }
+            ],
+            "text": "Share the final bill breakup and the discharge summary."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5c997608-ee6c-5496-9fdb-f8415e3eb8d5",
+      "resource": {
+        "resourceType": "Claim",
+        "id": "5c997608-ee6c-5496-9fdb-f8415e3eb8d5",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
+          ]
+        },
+        "identifier": [
+          {
+            "value": "NM-26-0SE00002K"
+          },
+          {
+            "value": "CL/26/0SE000106"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "737481003",
+              "display": "Inpatient care management (procedure)"
+            }
+          ]
+        },
+        "use": "claim",
+        "patient": {
+          "reference": "urn:uuid:89aac2db-25ae-5b55-90a7-886c6be48ca7",
+          "display": "Patient"
+        },
+        "billablePeriod": {
+          "start": "2026-09-10T00:00:00+05:30",
+          "end": "2026-09-10T00:00:00+05:30"
+        },
+        "created": "2026-09-10T18:22:23Z",
+        "insurer": {
+          "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+          "display": "Organization"
+        },
+        "provider": {
+          "reference": "urn:uuid:84d112ec-041c-57f8-986c-6619ccd8245e",
+          "display": "Organization"
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+              "code": "normal"
+            }
+          ]
+        },
+        "careTeam": [
+          {
+            "sequence": 1,
+            "provider": {
+              "reference": "urn:uuid:345b01fe-05e7-5b65-8e62-6532fbb228cb",
+              "display": "Practitioner"
+            },
+            "role": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223366009",
+                  "display": "Healthcare professional (occupation)"
+                }
+              ]
+            },
+            "qualification": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "394658006",
+                  "display": "Clinical specialty (qualifier value)"
+                }
+              ],
+              "text": "Doctor of Medicine"
+            }
+          }
+        ],
+        "diagnosis": [
+          {
+            "sequence": 1,
+            "diagnosisCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/sid/icd-10",
+                  "code": "E11.9",
+                  "display": "Type 2 diabetes mellitus without complications"
+                }
+              ]
+            }
+          }
+        ],
+        "procedure": [
+          {
+            "sequence": 1,
+            "procedureCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://kyro.care/fhir/CodeSystem/procedure",
+                  "code": "PROC-KNEE-01",
+                  "display": "Total Knee Replacement (Unilateral)"
+                }
+              ]
+            }
+          }
+        ],
+        "insurance": [
+          {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+              "reference": "urn:uuid:966d4b2b-591b-50b6-bbbb-d504d3c6897f",
+              "display": "Coverage"
+            }
+          }
+        ],
+        "item": [
+          {
+            "sequence": 1,
+            "careTeamSequence": [
+              1
+            ],
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "https://kyro.care/fhir/CodeSystem/procedure",
+                  "code": "PROC-KNEE-01",
+                  "display": "Total Knee Replacement (Unilateral)"
+                }
+              ]
+            },
+            "unitPrice": {
+              "value": 150000,
+              "currency": "INR"
+            },
+            "net": {
+              "value": 150000,
+              "currency": "INR"
+            }
+          }
+        ],
+        "total": {
+          "value": 150000,
+          "currency": "INR"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:89aac2db-25ae-5b55-90a7-886c6be48ca7",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "89aac2db-25ae-5b55-90a7-886c6be48ca7",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MB",
+                  "display": "Member Number"
+                }
+              ]
+            },
+            "system": "https://kyro.care/fhir/Member",
+            "value": "MRAV1985001"
+          }
+        ],
+        "name": [
+          {
+            "text": "Ravi Kumar"
+          }
+        ],
+        "gender": "male"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "ins",
+                "display": "Insurance Company"
+              }
+            ]
+          }
+        ],
+        "name": "Sandbox Payer"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:84d112ec-041c-57f8-986c-6619ccd8245e",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "84d112ec-041c-57f8-986c-6619ccd8245e",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "PRN",
+                  "display": "Provider number"
+                }
+              ]
+            },
+            "system": "https://facility.ndhm.gov.in",
+            "value": "IN1910000151"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "prov",
+                "display": "Healthcare Provider"
+              }
+            ]
+          }
+        ],
+        "name": "KyroCare Multispeciality Hospital"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:345b01fe-05e7-5b65-8e62-6532fbb228cb",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "345b01fe-05e7-5b65-8e62-6532fbb228cb",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
+          ]
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MD",
+                  "display": "Medical License number"
+                }
+              ]
+            },
+            "system": "https://doctor.ndhm.gov.in",
+            "value": "71-8422-5818-7201"
+          }
+        ],
+        "name": [
+          {
+            "text": "Dr. Ananya Rao"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:966d4b2b-591b-50b6-bbbb-d504d3c6897f",
+      "resource": {
+        "resourceType": "Coverage",
+        "id": "966d4b2b-591b-50b6-bbbb-d504d3c6897f",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
+          ]
+        },
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              "code": "HIP",
+              "display": "health insurance plan policy"
+            }
+          ]
+        },
+        "subscriber": {
+          "reference": "urn:uuid:89aac2db-25ae-5b55-90a7-886c6be48ca7",
+          "display": "Patient"
+        },
+        "subscriberId": "MRAV1985001",
+        "beneficiary": {
+          "reference": "urn:uuid:89aac2db-25ae-5b55-90a7-886c6be48ca7",
+          "display": "Patient"
+        },
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self"
+            }
+          ]
+        },
+        "payor": [
+          {
+            "reference": "urn:uuid:39cd4b51-bddd-5cc1-a65a-6fa4a2a83cb5",
+            "display": "Organization"
+          }
+        ]
+      }
+    }
+  ]
+}

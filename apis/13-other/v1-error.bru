@@ -1,0 +1,106 @@
+meta {
+  name: Error report (callback)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{nhcxBase}}/v1/error
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: nhcx-gateway@hcx
+  x-hcx-recipient_code: 1000004446@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: response.error
+}
+
+body:json {
+  {
+    "type": "ProtocolResponse",
+    "x-hcx-sender_code": "nhcx-gateway@hcx",
+    "x-hcx-recipient_code": "1000004446@hcx",
+    "x-hcx-api_call_id": "{{$guid}}",
+    "x-hcx-correlation_id": "{{correlationId}}",
+    "x-hcx-workflow_id": "12",
+    "x-hcx-timestamp": "{{$isoTimestamp}}",
+    "x-hcx-status": "response.error",
+    "x-hcx-error_details": {
+      "code": "ERR_DELIVERY_FAILED",
+      "message": "Recipient endpoint unreachable after five attempts",
+      "trace": ""
+    },
+    "x-hcx-entity-type": "preauth"
+  }
+}
+
+docs {
+  # Error report (callback)
+
+  `POST /v1/error`
+
+  ## Summary
+
+  Where the exchange tells a sender that a request could not be delivered after five attempts. Received by every participant under its registered address. There is no outbound form.
+
+  ## Business purpose
+
+  When the exchange cannot deliver a request, it tries five times, retires the correlation ID and tells the original sender here. A system without this endpoint never learns that its request died, and a dead request looks exactly like a case still under review. Every participant must host it.
+
+  ## When to use
+
+  Hosted, never called. Implement it before anything else that is asynchronous. Providers and payers both host it.
+
+  ## Preconditions
+
+  - Your callback address is registered: a domain name over HTTPS with TLS 1.2 or newer, hosted in India, reachable from the exchange's outbound addresses and answering within 30 seconds.
+  - The handler accepts a body it does not recognise. What arrives is a plain JSON report of the request the exchange gave up on, with the rejection details, not a sealed `JWEPayload`. Its field names are not published, so the body in this request is an illustration rather than a schema.
+
+  ## Postconditions
+
+  Answer 202 with the receipt, like every other delivery, filling in whatever identifiers the report carries and leaving the rest empty. The original request is dead: its correlation ID has been retired, so a retry needs a fresh one.
+
+  ## Common mistakes
+
+  - Not hosting it, so failed deliveries are never seen.
+  - Parsing the report against a fixed schema and answering `4xx` when it does not match.
+  - Retrying the failed request on the retired correlation ID.
+
+  ## Best practices
+
+  - Store the report whole before doing anything with it.
+  - Mark the case it names as undelivered, so the desk does not wait for a decision that will not come.
+  - Check it first when a case goes quiet, before asking the exchange with `/v1/status`.
+
+  ## Related scenario
+
+  A hospital posts a pre-authorisation and gets its receipt, but the payer's endpoint is down. The exchange tries five times, retires the correlation ID and posts a report to the hospital's `/v1/error`. The handler stores the report whole, answers 202 with the receipt, and marks the pre-authorisation undelivered. The desk resubmits it with a fresh correlation ID once the payer is reachable.
+
+  ## Specification
+
+  Chapter 02.08 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "04/09/2026 11:46:41:305",
+    "api_call_id": "<from the incoming header>",
+    "correlation_id": "<from the incoming header>",
+    "result": {
+      "sender_code": "1000003538@hcx",
+      "recipient_code": "1000004446@hcx",
+      "entity_type": "preauth",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

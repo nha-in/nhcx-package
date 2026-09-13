@@ -1,0 +1,50 @@
+# ==============================================================================
+# Use Case B6: Search claims - Data Element Definition & FHIR Mapping
+# Side / Role: PROVIDER
+# Primary API: /v1/search/submit
+# Callback API: /v1/search/on_submit
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "B6"
+title: "Search claims"
+side: "provider"
+api: "/v1/search/submit"
+callback: "/v1/search/on_submit"
+workflow: "none"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Query payer for claim status and adjudication bundles matching case or policy search criteria."
+fields:
+  - key: "taskCode"
+    label: "Task Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    example_value: "search"
+  - key: "claimNumber"
+    label: "Search Claim Number"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Task"
+    fhir_path: "Task.input[type=ClaimNumber].valueString"
+    example_value: "CL0000000001"
+  - key: "policyNumber"
+    label: "Search Policy Number"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "0..1"
+    required: false
+    fhir_resource: "Task"
+    fhir_path: "Task.input[type=PolicyNumber].valueString"
+    example_value: "PMJAY/HP/S/G"

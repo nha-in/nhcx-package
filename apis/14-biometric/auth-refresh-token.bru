@@ -1,0 +1,68 @@
+meta {
+  name: Biometric auth refresh token
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{nhcxBase}}/abha/biometric/auth/refresh/token
+  body: none
+  auth: none
+}
+
+headers {
+  R-token: Bearer {{refreshToken}}
+  Authorization: Bearer {{token}}
+  payerid: {{payerCode}}
+  process: Preauth
+}
+
+docs {
+  # Biometric auth refresh token
+
+  `GET /abha/biometric/auth/refresh/token`
+
+  ## Summary
+
+  Exchanges the refresh token from `Biometric auth verify` for a new thirty-minute user token without a fresh capture.
+
+  ## Business purpose
+
+  A beneficiary's user token lasts thirty minutes, and a case lasts much longer. The refresh keeps a case authenticated through its transaction cycle without bringing the patient back to the device each time the token lapses.
+
+  ## When to use
+
+  When the user token has lapsed during a transaction cycle. Refresh automatically for the duration of the cycle. Each refresh returns a new refresh token whose fifteen days run from that moment, and the portal's advice is to refresh once within every ten days and store the new token, which keeps a chain alive indefinitely.
+
+  ## Preconditions
+
+  - A refresh token from `Biometric auth verify` or an earlier refresh, less than fifteen days old, sent on `R-token` as `Bearer <refresh token>`.
+  - The ABDM session token on `Authorization`, with `payerid` and `process`.
+
+  ## Postconditions
+
+  Returns a new user token and a new refresh token. The new refresh token replaces the old one.
+
+  ## Common mistakes
+
+  - Sending the refresh token on `Authorization` instead of `R-token`.
+  - Keeping the old refresh token after a refresh.
+  - Using a refresh where a capture is required. On a cyclic procedure the payer pays only for cycles with a live biometric, and a refresh token is accepted only at the final claim. Every visit needs a real capture with `process` `Discharge`.
+
+  ## Best practices
+
+  - Refresh within every ten days and store the new token.
+  - Refresh automatically while a case is open. If the token has lapsed and cannot be refreshed, start a fresh authentication.
+
+  ## Related scenario
+
+  A beneficiary's eligibility was checked with a fresh token at admission, but the pre-authorisation is ready only after the thirty minutes have passed. The integration sends the stored refresh token on `R-token` to this endpoint, receives a new user token and a new refresh token, sends the user token on the pre-authorisation, and stores the new refresh token against the case.
+
+  ## Specification
+
+  Chapter 03.03 of the NHCX integration specification.
+
+  ## Example response
+
+  The package documents what this answer carries, a new user token and a new refresh token, but not its body, so no example is given here.
+}

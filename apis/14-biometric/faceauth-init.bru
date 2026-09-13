@@ -1,0 +1,77 @@
+meta {
+  name: Face auth init
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{abdmProxyBase}}/abha/biometric/faceauth/init
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  REQUEST-ID: {{$guid}}
+  TIMESTAMP: {{$isoTimestamp}}
+}
+
+body:json {
+  {
+    "scope": ["abha-enrol", "face-auth"]
+  }
+}
+
+docs {
+  # Face auth init
+
+  `POST /abha/biometric/faceauth/init`
+
+  ## Summary
+
+  Starts a face authentication on the ABDM proxy host and returns the `txnId` the rest of the face flow quotes.
+
+  ## Business purpose
+
+  Face authentication is the method that works when fingerprint and iris do not. The capture happens on the patient's own phone, in the ABHA app, rather than on a hospital device. A case authenticated by fingerprint at admission can be authenticated by face at discharge, because the methods do not have to match across a case.
+
+  ## When to use
+
+  When fingerprint and iris are not possible for the patient. Face authentication runs on a different host from the other two modalities and takes three calls and a QR code: this call, a QR code the patient scans, polling `Face auth capture PID`, then `Face auth verify`.
+
+  ## Preconditions
+
+  - The ABDM session token on `Authorization`, with a fresh `REQUEST-ID` and the current `TIMESTAMP`.
+  - The request sent to the ABDM proxy host, under `/pmjay/sbxhcx/abdmproxy/abha/biometric/`.
+  - `scope` is `["abha-enrol", "face-auth"]`.
+  - The patient has the ABHA app on a phone.
+
+  ## Postconditions
+
+  Returns a `txnId`. Render `https://phrsbx.abdm.gov.in/face-auth?txnId=<txnId>` as a QR code. The patient scans it with the ABHA app and completes the face scan there.
+
+  ## Common mistakes
+
+  - Sending it to the fingerprint host, which fails in a way that looks like a routing problem rather than a configuration one.
+  - Waiting for a callback. There is none, and the capture is polled.
+  - Treating face as optional. All three methods are mandatory to implement.
+
+  ## Best practices
+
+  - Keep both biometric base paths in configuration.
+  - Record the `txnId` against the case as soon as it arrives.
+
+  ## Related scenario
+
+  A patient authenticated by fingerprint at admission cannot be captured on the device at discharge. The desk calls this endpoint, shows the QR code built from the `txnId`, and the patient scans it with the ABHA app. The desk polls `Face auth capture PID` until the capture is complete, then calls `Face auth verify`.
+
+  ## Specification
+
+  Chapter 03.03 of the NHCX integration specification.
+
+  ## Example response
+
+  The package documents that this answer carries a `txnId` but not its full body, so no example is given here.
+}

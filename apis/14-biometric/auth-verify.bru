@@ -1,0 +1,102 @@
+meta {
+  name: Biometric auth verify
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{nhcxBase}}/abha/biometric/auth/verify
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: */*
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  process: Preauth
+  payerid: {{payerCode}}
+}
+
+body:json {
+  {
+    "scope": ["abha-login", "aadhaar-bio-verify"],
+    "authData": {
+      "authMethods": ["bio"],
+      "bio": {
+        "txnId": "{{txnId}}",
+        "fingerPrintAuthPid": "{{pidBlock}}"
+      }
+    },
+    "authMode": "FINGERPRINT"
+  }
+}
+
+docs {
+  # Biometric auth verify
+
+  `POST /abha/biometric/auth/verify`
+
+  ## Summary
+
+  Completes the authentication started by `Biometric auth init` with the captured PID block, and returns the beneficiary's user token, valid thirty minutes.
+
+  ## Business purpose
+
+  The user token this call returns is the proof of presence PMJAY asks for. It rides on the eligibility check, the pre-authorisation and the claim. Without it a request must carry the plan's consent questionnaire instead, or it is refused: `PAYR-1256` at the pre-authorisation, `PAYR-1363` at the claim.
+
+  ## When to use
+
+  Immediately after the capture. `authMethods` is `bio` for fingerprint and `iris` for iris, and the matching object carries the `txnId` from init and the device's PID block, in `fingerPrintAuthPid` or `irisAuthPid` accordingly. The same two sources that list a face mode on `Biometric auth init` give it here as `authMethods` `face`, with the capture in `authData.face.faceAuthPid`.
+
+  ## Preconditions
+
+  - A `txnId` from `Biometric auth init` for the same modality.
+  - The PID block from the capture device.
+  - The same headers as init: `Authorization: Bearer <session token>`, `process` and `payerid`.
+
+  ## Postconditions
+
+  On success it returns `authResult` `success`, a user `token` with `expiresIn` 1800 seconds, a `refreshToken` with `refreshExpiresIn` 1296000 seconds, fifteen days, and the ABHA `accounts` matched.
+
+  ## Common mistakes
+
+  - Putting the PID block under the wrong key for the modality.
+  - Holding the token against the session rather than the case. If it lapses mid-case and cannot be refreshed, a fresh authentication is needed.
+  - Standing a refreshed token in for a capture at a cyclic visit. Every visit needs a real capture.
+
+  ## Best practices
+
+  - Store the user token and its expiry against the case.
+  - Store the refresh token, and refresh automatically for the duration of the transaction cycle.
+  - Keep nothing from the ABHA profile beyond what the encounter needs.
+
+  ## Related scenario
+
+  Right after the fingerprint capture, the desk posts the `txnId` from init and the device's PID block in `fingerPrintAuthPid`, with `authMethods` `["bio"]`. The answer carries a thirty-minute token and a fifteen-day refresh token. The token goes on the header of the eligibility check and the pre-authorisation, and both tokens are stored against the case.
+
+  ## Specification
+
+  Chapter 03.03 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "txnId": "d21b3db9-478a-xxxx-xxxx-8f75e7f86b9f",
+    "authResult": "success",
+    "message": "… verified successfully",
+    "token": "eyZhx….",
+    "refreshToken": "eyZhx….",
+    "expiresIn": 1800,
+    "refreshExpiresIn": 1296000,
+    "accounts": [
+      {
+        "ABHANumber": "91-XXXX-XXXX-1234",
+        "name": "…",
+        "status": "ACTIVE"
+      }
+    ]
+  }
+  ```
+}

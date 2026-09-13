@@ -1,0 +1,38 @@
+# ==============================================================================
+# Use Case A3: Get public key - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: /fetch/certs
+# Callback API: None
+# Carries JWE: false
+# Focal Resource: X.509 Certificate (JSON/PEM)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A3"
+title: "Get public key"
+side: "shared"
+api: "/fetch/certs"
+callback: null
+workflow: "none"
+carries_jwe: false
+focal_resource: "X.509 Certificate (JSON/PEM)"
+description: "Retrieve receiver public key certificate used to encrypt payloads with JWE RSA-OAEP/A256GCM."
+fields:
+  - key: "participantCode"
+    label: "Target Participant Code"
+    group: "Request"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Query Param)"
+    fhir_path: "Request.participant_code"
+    example_value: "1000003538@hcx"
+  - key: "certData"
+    label: "Public Key PEM Certificate"
+    group: "Response"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "N/A (Crypto)"
+    fhir_path: "Response.certs[0]"
+    example_value: "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAO..."

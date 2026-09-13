@@ -1,0 +1,96 @@
+meta {
+  name: Pre-authorisation submit (internal) (adapter)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{nhcxBase}}/internal/v1/preauth/submit
+  body: json
+  auth: inherit
+}
+
+headers {
+  x-hcx-sender_code: 1000004446@hcx
+  x-hcx-recipient_code: 1518@hcx
+  x-hcx-api_call_id: {{$guid}}
+  x-hcx-request_id: {{$guid}}
+  x-hcx-correlation_id: {{$guid}}
+  x-hcx-workflow_id: 12
+  x-hcx-timestamp: {{$isoTimestamp}}
+  x-hcx-status: request.initiated
+  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-use_case: New
+}
+
+body:json {
+  {
+    "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"
+  }
+}
+
+docs {
+  # Pre-authorisation submit (internal)
+
+  `POST /internal/v1/preauth/submit`
+
+  ## Summary
+
+  Internal twin of /v1/preauth/submit (operationId preauthSubmitPostInternal) with the same JWEPayload body and response set. Exposed for the NHCX adapter deployment rather than for direct integration.
+
+  ## Business purpose
+
+  The preauth service publishes its submit operation twice, at /v1 and at /internal/v1, with identical descriptions, request bodies and response sets. Only the operationId differs, by an Internal suffix. The /internal prefix is the route the NHCX adapter sits on: a participant running the adapter alongside its own system calls the internal path, and the adapter handles the encryption, headers and gateway hop. A participant integrating directly against NHCX calls the public path and does that work itself. No separate business purpose is documented for the internal route beyond that.
+
+  ## When to use
+
+  Use it only when you are running the NHCX adapter and it is configured to serve this path; otherwise call /v1/preauth/submit. Everything else is unchanged: the same JWEPayload body, the same x-hcx-* protected header, the same workflow discriminators and the same asynchronous callback. The specs do not document what makes the internal variant different beyond the operationId, so treat it as a mirror of the public path and confirm with NHCX onboarding before pointing production at it.
+
+  ## Preconditions
+
+  Identical to /v1/preauth/submit. Nothing additional is documented for the internal route, beyond an adapter deployment that actually serves the /internal prefix.
+
+  ## Postconditions
+
+  NHCX returns HTTP 202 Accepted with a StatusSuccessResponse acknowledgement (entity_type preauth, protocol_status request.queued or request.dispatched). This is not an adjudication; the gateway validates structure and open headers, then forwards asynchronously. The payer may first acknowledge under workflow 20, then answer on /v1/preauth/on_submit with a ClaimResponseBundle: 21 approved (preAuthRef issued), 23 rejected, 24 queried, 22 enhancement approved or 241 enhancement queried, 261, 262 or 263 for discharge. Protocol failures return a ProtocolResponse with x-hcx-error_details. Errors marked 400, 404 and 500 carry the same schema.
+
+  ## Common mistakes
+
+  - Assuming a different body or different semantics for the internal route; the spec gives it the same JWEPayload body and the same responses.
+  - Calling it without an adapter deployment behind it and then chasing a 404.
+  - Every pitfall of the public path applies unchanged.
+
+  ## Best practices
+
+  - Default to /v1/preauth/submit and keep the internal path as a configuration option only.
+  - Share one client implementation across both paths, so header hygiene, encryption and correlation handling cannot diverge between them.
+  - Record which variant carried each correlation ID, for support conversations.
+
+  ## Related scenario
+
+  A vendor reading the preauth OpenAPI document sees preauthSubmitPostInternal sitting beside its public twin and asks which one to build against. The answer is the public path, unless NHCX onboarding has given them an adapter deployment, in which case the adapter takes the bundle unencrypted on the internal path and does the JWE and the gateway hop for them. The end-to-end flow is identical either way.
+
+  ## Specification
+
+  Chapter 05.08 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "timestamp": "19/03/2026 11:46:35:120",
+    "api_call_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "correlation_id": "11223344-5566-7788-99aa-bbccddeeff00",
+    "result": {
+      "sender_code": "1000004446@hcx",
+      "recipient_code": "1518@hcx",
+      "entity_type": "preauth",
+      "protocol_status": "request.queued"
+    },
+    "error": {
+      "code": "",
+      "message": ""
+    }
+  }
+  ```
+}

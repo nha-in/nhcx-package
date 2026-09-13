@@ -1,0 +1,41 @@
+# ==============================================================================
+# Use Case C8: Respond to search - Data Element Definition & FHIR Mapping
+# Side / Role: PAYER
+# Primary API: /v1/search/on_submit
+# Callback API: /v1/search/submit
+# Carries JWE: true
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
+# ==============================================================================
+
+code: "C8"
+title: "Respond to search"
+side: "payer"
+api: "/v1/search/on_submit"
+callback: "/v1/search/submit"
+workflow: "none"
+carries_jwe: true
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+profiles:
+  Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
+description: "Return matching ClaimResponse resources fulfilling audit or historical search criteria."
+fields:
+  - key: "taskStatus"
+    label: "Search Task Status"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.status"
+    example_value: "completed"
+  - key: "claimResponseRef"
+    label: "Matching ClaimResponse"
+    group: "Task Output"
+    data_type: "reference"
+    cardinality: "0..*"
+    required: false
+    fhir_resource: "Task"
+    fhir_path: "Task.output[].valueReference.reference"
+    example_value: "ClaimResponse/cr-approved-1"

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "NHCX",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

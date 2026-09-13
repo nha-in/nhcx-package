@@ -1,0 +1,47 @@
+# ==============================================================================
+# Use Case A6: Receive errors - Data Element Definition & FHIR Mapping
+# Side / Role: SHARED
+# Primary API: (hosted only)
+# Callback API: /v1/error
+# Carries JWE: false
+# Focal Resource: Error Payload (JSON)
+# NRCeS Profile: none, not a FHIR resource
+# ==============================================================================
+
+code: "A6"
+title: "Receive errors"
+side: "shared"
+api: "(hosted only)"
+callback: "/v1/error"
+workflow: "none"
+carries_jwe: false
+focal_resource: "Error Payload (JSON)"
+description: "Webhook hosted by participants where exchange delivers terminal undeliverable error notifications after retry exhaustion."
+fields:
+  - key: "correlationId"
+    label: "Failed Transaction ID"
+    group: "Error"
+    data_type: "uuid"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Header"
+    fhir_path: "Header.x-hcx-correlation_id"
+    example_value: "4f9d2b80-13b4-4e2a-9e12-8f9024a56789"
+  - key: "errorCode"
+    label: "Error Code"
+    group: "Error"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Error"
+    fhir_path: "Error.code"
+    example_value: "ERR_RECIPIENT_UNREACHABLE"
+  - key: "errorMessage"
+    label: "Error Description"
+    group: "Error"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Error"
+    fhir_path: "Error.message"
+    example_value: "Recipient gateway timed out after 5 attempts"

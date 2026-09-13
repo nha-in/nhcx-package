@@ -1,0 +1,25 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Accept: application/json
+  Content-Type: application/json
+  bearer_auth: Bearer {{token}}
+}
+
+docs {
+  # NHCX
+
+  Every API this console knows about, generated from the repository by `npm run collection:build`.
+
+  Run **Session > Session token** first: it stores the token the rest of the collection sends.
+
+  The exchange calls (`/v1/...`) carry a JWE, not a FHIR bundle. The body here is the envelope with a
+  placeholder payload; build a real one in the console's Simulator, which encrypts the bundle for the
+  recipient's certificate and sets the `x-hcx-*` headers this collection shows.
+}

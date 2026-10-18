@@ -13,7 +13,7 @@ title: "Respond to claim"
 side: "payer"
 api: "/v1/claim/on_submit"
 callback: "/v1/claim/submit"
-workflow: "25 (Received), 26 (Approved), 27 (Queried), 28 (In process), 291 (Rejected)"
+workflow: "25 (Received), 26 (Approved), 27 (Queried), 28 (In process), 29 (Forwarded), 291 (Denied)"
 carries_jwe: true
 focal_resource: "ClaimResponse"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
@@ -38,7 +38,7 @@ fields:
     required: true
     fhir_resource: "ClaimResponse"
     fhir_path: "ClaimResponse.total[category=benefit].amount.value"
-    example_value: "15500.00"
+    example_value: "150000"
   - key: "copayAmount"
     label: "Beneficiary Co-payment"
     group: "Financials"
@@ -55,5 +55,5 @@ fields:
     cardinality: "0..1"
     required: false
     fhir_resource: "ClaimResponse"
-    fhir_path: "ClaimResponse.item[].adjudication[category=deduction].reason.coding[0].display"
-    example_value: "Non-medical consumables deducted"
+    fhir_path: "ClaimResponse.item[].adjudication[category=deductible].reason.coding[0].display"
+    example_value: "Non-Covered Service: The claimed service is not covered under the policy and therefore the amount is deducted."

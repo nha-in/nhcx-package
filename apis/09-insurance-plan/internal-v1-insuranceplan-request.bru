@@ -16,7 +16,7 @@ headers {
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
   x-hcx-correlation_id: {{$guid}}
-  x-hcx-workflow_id: 
+  x-hcx-workflow_id: 1
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
   x-hcx-ben-abha-id: 
@@ -43,7 +43,7 @@ docs {
 
   ## When to use
 
-  Same circumstances as the public request: before any preauth or claim for a payer and policy, at registration or admission, and before cost estimation. The payload is the Task poll bundle with at least one of policyNumber or providerId; the header carries request.initiated. The specifications do not say when the internal path applies instead of the public one, so integrators should default to /v1/insuranceplan/request unless onboarding guidance names the internal route.
+  Same circumstances as the public request: before any preauth or claim for a payer and policy, at registration or admission, and before cost estimation. The payload is the Task poll bundle with both policyNumber and providerId; the header carries request.initiated. The specifications do not say when the internal path applies instead of the public one, so integrators should default to /v1/insuranceplan/request unless onboarding guidance names the internal route.
 
   ## Preconditions
 
@@ -59,7 +59,7 @@ docs {
   ## Common mistakes
 
   - Assuming the internal route bypasses validation or returns the plan synchronously; it is documented as identical to the public request.
-  - Omitting both Task inputs; at least one of policyNumber or providerId is required.
+  - Omitting either Task input; policyNumber and providerId are both required.
   - Resubmitting while a previous request is in progress (PAYR-1406).
   - Hard-coding the internal prefix without confirming it is your onboarded route; a 404 may simply mean the wrong host or prefix shape.
 

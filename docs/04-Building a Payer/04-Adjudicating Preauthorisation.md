@@ -8,7 +8,7 @@ A queue, ordered by turnaround-time remaining, because a scheme with TAT-based a
 
 - The beneficiary, the policy, the wallet balance now and after this request.
 - Diagnosis, packages with rates and add-ons, care team, dates.
-- Every document, structured ones rendered as records rather than opened as files, and the STG questionnaire answers beside the package they belong to.
+- Every document, structured ones rendered as records rather than opened as files, and the questionnaire answers beside the package or the policy whose form they answer.
 - The plan's flags for each package: auto-approvable, enhanceable, reserved, standalone.
 - History on the case: earlier preauthorisations, enhancements, queries and answers.
 
@@ -20,7 +20,7 @@ Four actions: approve, approve at a reduced amount with a note, query, reject wi
 /v1/preauth/submit      answer on /v1/preauth/on_submit
 ```
 
-The workflow code says which kind of request it is: 12 new, 121 resubmission, 13 enhancement, 19 an answer to your query. Acknowledge receipt at once with code 20 and `response.partial`, so the provider knows it is in the queue.
+The workflow code says which kind of request it is: 12 new, 121 resubmission, 13 enhancement, 19 an answer to your query, 131 an answer to your query on an enhancement. A query answer arrives as `request.initiated`, like every send on a submit path. Acknowledge receipt at once with code 20 and `response.partial`, so the provider knows it is in the queue.
 
 ## Validate before queueing
 
@@ -29,9 +29,9 @@ The reference payer's preauthorisation errors are the checklist. Run them on arr
 - Amount above zero and within the wallet balance.
 - Specialty code and display, package code and display, exactly as the plan has them; quantity at least one; net above zero.
 - Registration and admission dates present and well-formed.
-- Sequencing. No case already in progress for this number. An enhancement or resubmission only where an approved record exists. A new preauthorisation refused where an approved one exists. No preauthorisation once a claim is raised, and nothing at all on a cancelled case.
+- Sequencing. No case already in progress for this number. An enhancement or resubmission only where an approved record exists. A new preauthorisation refused where an approved one exists. No preauthorisation, enhancement or change once a claim is raised; a cancel accepted while the claim is being decided or queried, and refused once it is decided. Nothing at all on a cancelled case. A preauthorisation may arrive before admission, with a planned admission date.
 - One active preauthorisation per beneficiary across all hospitals; tell the provider which hospital holds it.
-- Every STG questionnaire the plan demands answered; a biometric token or the consent questionnaire present.
+- Every questionnaire the plan points at for a quoted package or for the policy answered; a biometric token or the consent questionnaire present.
 - Under PMJAY, `LM100` never on a preauthorisation; investigations mandatory for private hospitals; newborn cases with date of birth, gender and documents, and within six years.
 
 ## Deciding automatically
@@ -74,9 +74,9 @@ Note what the published PMJAY responses do **not** carry: no `ClaimResponse.requ
 
 ## Writing a query
 
-Under PMJAY the query travels in `item.adjudication.reason.coding.display` as a pipe-delimited audit trail, `USER~datetime~type~comment~trust`, with multiple entries separated by `|`. The provider shows the comment. Keep it specific: name the document or the clarification, and the package it concerns. A vague query costs a full round trip and a day of TAT.
+Under PMJAY the query travels in `item.adjudication.reason.coding.display` as a pipe-delimited audit trail, `USER~datetime~type~comment~actor`, where `actor` is whoever wrote the entry: `PPD-Trust` on a preauthorisation, `CPD-Trust` on a claim, or the hospital's name, with multiple entries separated by `|`. The provider shows the comment. Keep it specific: name the document or the clarification, and the package it concerns. A vague query costs a full round trip and a day of TAT.
 
-Under PMJAY the provider answers on the same endpoint with code 19. On the general network a payer may instead raise a Communication with reason `additionalinfo`; the provider answers on the communication endpoint. Do not use both for the same question.
+A query on named items goes out as the queried `ClaimResponse` on the request's own thread, and the provider answers it on the same endpoint with code 19, whatever network it is on. A standalone query raised before any decision may instead go as a Communication with reason `additionalinfo`; the provider answers on the communication endpoint. Under PMJAY every query is the first kind. Do not use both for the same question.
 
 ## Approval letters
 

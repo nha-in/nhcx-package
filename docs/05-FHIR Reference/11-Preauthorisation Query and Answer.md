@@ -114,11 +114,11 @@ NRCeS profile: [Communication](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 | `payload[].contentAttachment` | contentType `application/pdf`, title `Proof of Identity (Aadhaar / Passport / Voter ID)`, creation `2026-09-10T23:51:40+05:30` |
 |  | contentType `application/pdf`, title `Medical Certificate / Doctor Referral`, creation `2026-09-10T23:51:40+05:30` |
 |  | contentType `application/pdf`, title `Radiology / X-Ray / CT / MRI Scan Reports`, creation `2026-09-10T23:51:40+05:30` |
-| | and 6 more |
+| | and 5 more |
 | `payload[].extension[]` | url `<participant-defined>`, valueString `POI` |
 |  | url `<participant-defined>`, valueString `CER` |
 |  | url `<participant-defined>`, valueString `RAD` |
-| | and 6 more |
+| | and 5 more |
 
 The `CommunicationRequest`, `Claim`, `Patient`, `Organization`, `Practitioner`, `Coverage` entries are shaped as in the chapters that introduce them.
 
@@ -131,6 +131,10 @@ A `Task` coded `poll`, reason `additionalinfo`, with an `include` input referenc
 ### 2. The generic answer
 
 A `Task` coded `deliver` in `ndhm-task-codes`, `completed`, with an `include` input referencing a `Communication` whose `basedOn` names the request and whose `payload` carries the message and the documents. Posted on `/v1/communication/on_request`, echoing the correlation id and workflow id.
+
+### 3. An answer on the submit path is a request
+
+A line-item query, a `ClaimResponse` naming the queried items, is answered by sending the preauthorisation again, whatever the payer's query mode. That answer, on `/v1/preauth/submit` under 19 or 131, goes as `x-hcx-status` `request.initiated`: the workflow sheet pairs those codes with `response.complete`, and NHCX refuses that on a submit path with `NHCX-1011`. An answer refused at the door leaves the question open.
 
 ## PMJAY
 
@@ -307,15 +311,15 @@ The `Patient`, `Organization`, `Coverage`, `Practitioner`, `Procedure` entries a
 ### What PMJAY specifies
 
 - The query arrives on `/v1/preauth/on_submit` under 24: a `ClaimResponse` with `outcome` `partial` and reason `queried`.
-- The question is free text in `item.adjudication` where the category is `reason`, in `reason.coding.display`. On a live case it grows into a log, split by `|` into turns and by `~` into user, timestamp, type, comment and desk. Tolerate a single segment, treat the literal `null` as empty, and never put `|` or `~` in anything you send back.
+- The question is free text in `disposition` and in `item.adjudication` where the category is `reason`, in `reason.coding.display`, on the queried item; the other items can already read `Approve`. On a live case it grows into a log, split by `|` into turns and by `~` into user, timestamp, type, comment and desk. Tolerate a single segment, treat the literal `null` as empty, and never put `|` or `~` in anything you send back.
 - The log is cumulative. The answer you sent reappears in it on the next response, which is the only sign it was read.
-- The answer is the whole preauthorisation bundle again on `/v1/preauth/submit` under 19, on the same case number, with the reply text in `item.productOrService.text`.
+- The answer is the whole preauthorisation bundle again on `/v1/preauth/submit` under 19, on the same case number. The package's capture carries the reply under `supportingInfo` category `NMI`, code `CQD`; the live PMJAY provider sends no reply text and resends only the new documents, numbered on from the first submission.
+- Send supporting-info dates in `+05:30`. The live PMJAY provider sends them at midnight `+00:00` and the payer takes them, so read both.
 
 ### What PMJAY requires
 
 - Answer on 19, never on a new 12, which opens a second case.
-- Put the query remarks under `supportingInfo` category `NMI`, code `CQD`, as a `valueString`.
-- Supporting-info dates in `+05:30`.
+- Query remarks, when sent, go under `supportingInfo` category `NMI`, code `CQD`, as a `valueString`. Refused with `PAYR-1504` otherwise.
 
 ## Use cases, APIs and data elements
 
@@ -344,21 +348,21 @@ The query arrived as a ClaimResponse on 24, on the case's own thread, with the q
 | `x-hcx-workflow_id` | `19` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
 
 | Code | Name | Authored by | `x-hcx-status` | Means |
 | :-- | :-- | :-- | :-- | :-- |
-| `19` | Preauth Query Response Submitted | provider | `response.complete` | Response to payer's query on preauth |
+| `19` | Preauth Query Response Submitted | provider | `response.complete`; the answer is sent as `request.initiated` | Response to payer's query on preauth. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011 |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `VB26AA2600001` |  |
+| `claimNumber` | Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SE00002N` |  |
 | `workflowId` | Workflow Code | Header | `string` | `1..1` | `Header.x-hcx-workflow_id` | `19` |  |
-| `nmiDocument` | Need More Info (NMI) Document | Documents | `base64Binary` | `1..1` | `Claim.supportingInfo[category=NMI].valueAttachment.data` | `JVBERi0xLjQK...` |  |
+| `queryAnswerText` | Query Answer (NMI) | Documents | `string` | `1..1` | `Claim.supportingInfo[category=NMI].valueString` | `Pre-operative investigation reports attached: CBC, RFT, chest X-ray and ECG.` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html).

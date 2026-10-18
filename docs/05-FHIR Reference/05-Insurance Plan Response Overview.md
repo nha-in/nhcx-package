@@ -131,6 +131,14 @@ Codes and displays, amounts, quantities and mandatory documents are checked agai
 
 The `Questionnaire` resources are the payer's forms. Render them from the plan, never hard-code them, because they change with the plan.
 
+### 8. Policy form or procedure form
+
+A policy-level form is pointed at from `InsurancePlan.extension` in PMJAY's plan, live and in the sample, and from `coverage[].extension` in the package's sandbox payer's; a procedure-level form from the package's own benefit under `plan[].specificCost[]`. Each is pointed at by a `Claim-SupportingInfoRequirement` with category `INF`, code `ODN` and a `documentationUrl`. A form pointed at from coverage is a policy form, never one of the packages under that coverage; a form not tagged to a procedure is policy-level. The URL never decides which.
+
+### 9. A cover benefit is not a package
+
+A benefit found only under `coverage[]` is a quotable package only when it carries its own `id`. A bare cover benefit, such as Blood, ICU, Oxygen, Organ donor or Ambulance, is a SNOMED CT-coded limit of the policy with no `id`; store it as a benefit and never offer it as a line.
+
 ## PMJAY
 
 The generic bundle above is what every payer takes, IRDAI-regulated insurers and TPAs included. PMJAY takes it with the changes and requirements below.
@@ -166,7 +174,7 @@ The generic bundle above is what every payer takes, IRDAI-regulated insurers and
 
 - Package-based throughout: `InsurancePlan.type` `07` Universal Health Policy, `plan.type` `03` Group.
 - `identifier` carries the policy code typed `NH` and the scheme revision typed `XV`; the revision is what the cache is stamped with.
-- A full scheme plan carries thousands of `Questionnaire` entries, many of them repeated. Deduplicate on `fullUrl`.
+- The scheme's forms are `Questionnaire` entries with numeric ids, 15 in the live SHA Bihar plan of October 2026. Entries can repeat; deduplicate on `fullUrl`.
 
 ### What PMJAY requires
 
@@ -182,7 +190,7 @@ The plan as a benefit structure. Under PMJAY this is the scheme configuration fo
 | :-- | :-- |
 | **API** | `/v1/insuranceplan/on_request` [`apis/09-insurance-plan/v1-insuranceplan-on-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-on-request.bru) |
 | **Callback** | `/v1/insuranceplan/request` [`apis/09-insurance-plan/v1-insuranceplan-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-request.bru) |
-| **Workflow** | none (or 5 under PMJAY) |
+| **Workflow** | none NHA publishes; the PMJAY payer answers on 5, a code not on NHA's Workflow Status Sheet |
 | **Carries JWE** | yes |
 | **Focal resource** | `InsurancePlan` |
 
@@ -194,18 +202,24 @@ The plan as a benefit structure. Under PMJAY this is the scheme configuration fo
 | `x-hcx-recipient_code` | `1000004446@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
-| `x-hcx-workflow_id` | `` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
+| `x-hcx-workflow_id` | `1` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `` |
+| `x-hcx-ben-abha-id` | empty |
+
+**Workflow codes**
+
+| Code | Name | Authored by | `x-hcx-status` | Means |
+| :-- | :-- | :-- | :-- | :-- |
+| `5` | PMJAY eligibility and plan answer | payer |  | Seen, not sent: the PMJAY payer answered a coverage eligibility check and an insurance plan request under 5 on the 17 Oct 2026 sandbox run, with x-hcx-error_details 100. Accept it on those callbacks; never send it. The status it came with was not archived. |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `planName` | Insurance Plan Name | Plan | `string` | `1..1` | `InsurancePlan.name` | `PMJAY Ayushman Bharat` |  |
+| `planName` | Insurance Plan Name | Plan | `string` | `1..1` | `InsurancePlan.name` | `PMJAY - Universal Health Policy` |  |
 | `packageCode` | Benefit Package Code | Plan Cost | `string` | `1..*` | `InsurancePlan.plan[].specificCost[].benefit[].type.coding[0].code` | `MG004A` |  |
-| `packageRate` | Agreed Tariff Rate | Plan Cost | `decimal` | `1..*` | `InsurancePlan.plan[].specificCost[].benefit[].cost[0].value.value` | `15500.00` |  |
+| `packageRate` | Agreed Tariff Rate | Plan Cost | `decimal` | `1..*` | `InsurancePlan.plan[].specificCost[].benefit[].cost[].value.value` | `1800` |  |
 
 NRCeS profiles: [InsurancePlan](https://nrces.in/ndhm/fhir/r4/StructureDefinition-InsurancePlan.html).

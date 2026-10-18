@@ -13,7 +13,7 @@ title: "Respond to a communication"
 side: "provider"
 api: "/v1/communication/on_request"
 callback: "/v1/communication/request"
-workflow: "24 (Preauth query answer), 27 (Claim query answer)"
+workflow: "24, 241 or 27, echoed from the payer's request (preauth query, enhancement query, claim query)"
 carries_jwe: true
 focal_resource: "Communication / Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Communication"
@@ -23,14 +23,14 @@ profiles:
 description: "Answer payer query by attaching requested clinical notes, diagnostic investigations, or clarifications."
 fields:
   - key: "communicationId"
-    label: "Communication Identifier"
+    label: "Case Number the answer is filed under"
     group: "Case"
     data_type: "string"
     cardinality: "1..1"
     required: true
     fhir_resource: "Communication"
     fhir_path: "Communication.identifier[0].value"
-    example_value: "COMM-RESP-001"
+    example_value: "NM-26-0SE00002I"
   - key: "queryRequestId"
     label: "Original Query Reference"
     group: "Case"
@@ -39,7 +39,7 @@ fields:
     required: true
     fhir_resource: "Communication"
     fhir_path: "Communication.basedOn[0].reference"
-    example_value: "Task/task-comm-req-1"
+    example_value: "urn:uuid:4b35a6eb-3f99-5d0c-b0c8-5b2f049fdbde"
   - key: "replyText"
     label: "Clarification Text"
     group: "Payload"
@@ -48,7 +48,7 @@ fields:
     required: false
     fhir_resource: "Communication"
     fhir_path: "Communication.payload[0].contentString"
-    example_value: "Platelet count attached as requested."
+    example_value: "X-ray and clinical notes attached as asked."
   - key: "attachmentData"
     label: "Attached Document Base64"
     group: "Payload"
@@ -56,5 +56,5 @@ fields:
     cardinality: "0..*"
     required: false
     fhir_resource: "Communication"
-    fhir_path: "Communication.payload[0].contentAttachment.data"
+    fhir_path: "Communication.payload[].contentAttachment.data"
     example_value: "JVBERi0xLjQK..."

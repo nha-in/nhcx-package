@@ -26,7 +26,7 @@ A collection bundle: a `Task` with code `deliver` wrapping a `PaymentNotice` and
 
 ### The acknowledgement
 
-A `Task` with `status = completed`, code `status`, and an output of type `status` whose value is `paymentack`, plus the claim number as a second output. Workflow 17. Send it to the payer.
+A `Task` with `status = completed`, code `status`, and an output of type `status` whose value is `paymentack`, plus the claim number as a second output, as `response.complete`. Workflow 17 under PMJAY; to a payer on the generic network the reference hospital build sends it under the notice's own workflow id. Send it to the payer.
 
 Where it goes is stated two ways on the portal: the Payment document and exit checklist say `/v1/paymentnotice/on_request`; the handbook says `/v1/task/submit`. Build to send to `on_request` and make the path configurable per payer.
 
@@ -49,7 +49,7 @@ Switch on `Task.reasonCode`: `additionalinfo`, `tatquery`, `grievance`, `walletu
 
 A collection bundle: a `Task` with code `poll` and an input of type `include` pointing at a `Communication`, plus the `Organization`s. On the `Communication`: `category` (reminder, notification, instruction or questionnaire), `priority` (routine, urgent, asap, stat), `topic` (usually progress-update), and the case reference as its identifier.
 
-The answer is the same bundle shape sent back with the same correlation ID, the provider `Organization` first, and `Task.status = completed`. For a plain acknowledgement, send it within the 30-second window regardless of whether the underlying issue is resolved. For an `additionalinfo` request, the answer carries the requested documents as well.
+The answer is the same bundle shape sent back with the same correlation ID and `Task.status = completed`. Keep both `Organization` entries, typed `prov` and `pay`; their order in the bundle carries no meaning, and the payer tells the answer from the request by your sender code, the correlation ID and the Task status. For a plain acknowledgement, send it within the 30-second window regardless of whether the underlying issue is resolved. For an `additionalinfo` request, the answer carries the requested documents as well.
 
 ## What to reconcile
 
@@ -64,6 +64,8 @@ The reconciliation is what accounts works from, so store its lines rather than o
 
 Net plus deductions should equal the approved amount. When it does not, flag it rather than silently accepting the difference, because that is the only place a short payment shows up before the shortfall window opens.
 
+**Post it to the bill.** A payment that stops at the claim record leaves the hospital's own bill unaware the payer paid. Post each settled payment to the bill the stay is charged against, as a payer-payment line with the date, the payer, the mode, the reference (the UTR) and the amount, keyed on the claim so a redelivered notice updates the line rather than doubling the money. Record on the claim whether the posting happened and where, make it best effort on the callback path (the notice is acknowledged whether or not the bill took it) and give the desk a way to post again by hand. Show the shortfall, claimed less settled, beside the settled amount. See Field Corrections, 13.
+
 A return payment, where money has to come back, has its own codes: RP1 intimation, RP2 acknowledged, RP3 failed.
 
 ## Two acknowledgements, and they are different things
@@ -72,7 +74,7 @@ The screen should not confuse them, and neither should the code.
 
 | | Transport acknowledgement | Business acknowledgement |
 | :---- | :---- | :---- |
-| What it is | The `202` and receipt your callback returns | A `Task` on workflow 17 sent back to the payer |
+| What it is | The `202` and receipt your callback returns | A `Task` sent back to the payer, on workflow 17 under PMJAY |
 | When | Automatically, within 30 seconds of the notice arriving | When the notice has been recorded against the claim |
 | Who sees it | Nobody. It is protocol | The desk, as a button and a sent state |
 | What it means | The message was taken in | The provider has recorded the payment |

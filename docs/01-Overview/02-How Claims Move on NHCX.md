@@ -4,7 +4,7 @@ This chapter describes how a health insurance claim moves from point of care to 
 
 ---
 
-## 1. What Is Claim Settlement?
+## What Is Claim Settlement?
 
 Claim settlement is the end-to-end process by which a policyholder's or treating hospital's request for payment of medical expenses is evaluated, approved, and fulfilled by an insurer or State Health Agency (SHA):
 - **Cashless Treatment**: The beneficiary receives inpatient care without paying out-of-pocket expenses up to policy limits or package rates, executed between an empanelled hospital (Provider) and the insurer/payer.
@@ -16,7 +16,7 @@ Claim settlement is the end-to-end process by which a policyholder's or treating
 
 ---
 
-## 2. From Fragmented Portals to a Unified Exchange
+## From Fragmented Portals to a Unified Exchange
 
 Historically, hospitals interacted with insurers through email correspondence or by logging into 30+ proprietary insurer and TPA portals:
 - **Duplication & Cost**: Every insurer required distinct logins, document formats, and upload conventions, creating administrative bottlenecks.
@@ -30,7 +30,7 @@ NHCX operates as a national clearinghouse (analogous to a financial securities e
 
 ---
 
-## 3. The Asynchronous Request and Callback Pattern
+## The Asynchronous Request and Callback Pattern
 
 Claim decisions cannot be processed synchronously; medical pre-authorisation reviews may require minutes to hours, while complex claim scrutinies may take days. NHCX therefore implements a strict asynchronous two-step exchange for every substantive action:
 
@@ -64,54 +64,54 @@ sequenceDiagram
 
 ---
 
-## 4. The 10 Steps of Claim Settlement on NHCX
+## The Stages of Claim Settlement on NHCX
 
-The traditional ten stages of claim settlement map directly onto NHCX exchanges.
+The traditional ten stages of claim settlement map directly onto NHCX exchanges. They run in the order below, from intimation to payment.
 
-### Step 1: Intimation
+### Intimation
 
 Absorbed into eligibility and preauthorisation. There is no separate intimation call; the patient's arrival is declared in the eligibility check or in the preauthorisation.
 
-### Step 2: Policy verification by the hospital
+### Policy verification by the hospital
 
 On `/v1/coverageeligibility/check`. The provider asks whether the beneficiary's policy is active, in force and within its limits.
 
-### Step 3: Beneficiary and tie-up verification by the payer
+### Beneficiary and tie-up verification by the payer
 
 On `/v1/coverageeligibility/on_check`. The payer confirms member validity, empanelment status and benefit limits in one round trip.
 
-### Step 4: Treatment plan intimation
+### Treatment plan intimation
 
 On `/v1/preauth/submit`. The admission and the planned package codes reach the payer.
 
-### Step 5: Preauthorisation
+### Preauthorisation
 
 On `/v1/preauth/on_submit`. The payer issues the authorisation with its financial limit, and its own case number in `preAuthRef`.
 
-### Step 6: Enhancement
+### Enhancement
 
 On `/v1/preauth/submit` again, with the header `x-hcx-use_case: Enhancement`. The hospital asks for a longer stay or a further surgical package.
 
-### Step 7: Discharge and document submission
+### Discharge and document submission
 
 On `/v1/claim/submit`. The structured discharge summary, operative notes, diagnostic reports and the itemised bill under category `MB`.
 
-### Step 8: Payer query and resolution
+### Payer query and resolution
 
 On `/v1/communication/request` from a private insurer, or on the case's own thread under PMJAY. The payer asks for clinical clarification and the provider answers with supporting evidence.
 
-### Step 9: Claim adjudication
+### Claim adjudication
 
 On `/v1/claim/on_submit`. The final decision: approved, rejected, or approved with line-item deductions.
 
-### Step 10: Payment and reconciliation
+### Payment and reconciliation
 
 On `/v1/paymentnotice/request`. The settlement advice with the bank UTR, TDS and deductions, which the provider acknowledges.
 
 ---
 
 
-## 5. End-to-End Claim Lifecycle Flow
+## End-to-End Claim Lifecycle Flow
 
 ```mermaid
 flowchart TD
@@ -130,14 +130,15 @@ flowchart TD
   Q2 -- Decided --> H[Claim Adjudication Decision]
   H --> I[Payer Issues Payment Notice with UTR]
   I --> J[Hospital Acknowledges Settlement]
-  H -. Rejected or Partial Shortfall .-> K["Task: Reprocess or Arbitration"]
+  H -. Rejected .-> K["Task: Reprocess, workflow 36"]
+  J -. Paid short .-> K2["Task: Release the balance"]
   D -. Voluntary Withdrawal .-> L["Task: Cancel Preauth"]
 
 ```
 
 ---
 
-## 6. What Every Participant Must Implement
+## What Every Participant Must Implement
 
 - **The Provider (Hospital HMIS)**:
   - Initiates outbound API requests for eligibility, preauthorisation, claim submission, search, and tasks (cancellation, reprocess).

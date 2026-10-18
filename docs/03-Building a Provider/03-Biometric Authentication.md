@@ -65,10 +65,17 @@ documentation read the token from `bearer_auth`. These read it from
 `Authorization`. Sending only the habitual header gets a `401` that looks like
 an expired token.
 
-**`process` is a header, and it is the scheme's process type.** `Preauth` at
-admission, `Discharge` at discharge and, on a cyclic case, at every visit. The
-rules elsewhere in this documentation say "process type Discharge" without
-saying it is an HTTP header. This is it.
+**`process` is a header, and it is the scheme's process type.** The stage is
+the screen's: `Preauth` on the pre-authorisation, `Discharge` on the claim and,
+on a cyclic case, at every visit. The rules elsewhere in this documentation say
+"process type Discharge" without saying it is an HTTP header. This is it.
+
+**It may be done before admission.** A pre-authorisation can be raised before
+the patient is admitted, and so can its proof of presence. An authentication
+started then belongs to the case alone, with no patient yet; find the attempt by
+the case when capturing, verifying and refreshing, and move it to the patient
+when the admission is linked. Nothing on the screen needs to mention the
+user-token header.
 
 **`payerid` names the payer** the authentication is being performed for.
 
@@ -78,7 +85,7 @@ A two-call pair. Initiate, capture on the device, verify.
 
 ### Initiate
 
-<!-- build-docs:api 14-biometric/auth-init.bru -->
+<!-- build-docs:api 15-biometric/auth-init.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/hcx/abha/biometric/auth/init' \
   --header 'Accept: */*' \
@@ -131,7 +138,7 @@ The response carries the transaction ID the verify call quotes:
 
 ### Verify
 
-<!-- build-docs:api 14-biometric/auth-verify.bru -->
+<!-- build-docs:api 15-biometric/auth-verify.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/hcx/abha/biometric/auth/verify' \
   --header 'Accept: */*' \
@@ -203,7 +210,7 @@ patient's own phone rather than on a hospital device.
 
 **1. Initiate.**
 
-<!-- build-docs:api 14-biometric/faceauth-init.bru -->
+<!-- build-docs:api 15-biometric/faceauth-init.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy/abha/biometric/faceauth/init' \
   --header 'Accept: application/json' \
@@ -228,7 +235,7 @@ scans it with the ABHA app and completes the face scan there.
 
 **3. Poll for the capture.**
 
-<!-- build-docs:api 14-biometric/faceauth-capture-pid.bru -->
+<!-- build-docs:api 15-biometric/faceauth-capture-pid.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy/abha/biometric/capture/pid' \
   --header 'Accept: application/json' \
@@ -248,7 +255,7 @@ Poll this; there is no callback.
 
 **4. Verify with the encrypted Aadhaar number.**
 
-<!-- build-docs:api 14-biometric/faceauth-v2-auth-verify.bru -->
+<!-- build-docs:api 15-biometric/faceauth-v2-auth-verify.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy/abha/biometric/v2/auth/verify' \
   --header 'Accept: application/json' \
@@ -291,7 +298,7 @@ your record needs.
 | User token | 1,800 seconds, 30 minutes | The PMJAY claim-event header |
 | Refresh token | 1,296,000 seconds, 15 days | `R-token` on the refresh call |
 
-<!-- build-docs:api 14-biometric/auth-refresh-token.bru -->
+<!-- build-docs:api 15-biometric/auth-refresh-token.bru -->
 ```bash
 curl --location --request GET 'https://apisbx.abdm.gov.in/hcx/abha/biometric/auth/refresh/token' \
   --header 'R-token: Bearer <refresh token>' \
@@ -350,7 +357,8 @@ are required at every step and a consent form cannot stand in.
 
 ## What to store
 
-- The user token and its expiry, against the case rather than the session.
+- The user token and its expiry, against the case rather than the session,
+  and against the patient once an admission is linked.
 - The transaction ID of every authentication, the method used and the moment it
   succeeded. On a cyclic case the payer checks each cycle's recorded start and
   end against the biometric timestamp, and a mismatch voids the cycle.
@@ -366,5 +374,7 @@ are required at every step and a consent form cannot stand in.
 - A refresh token older than fifteen days.
 - The consent fallback at preauthorisation and again at discharge.
 - A case authenticated by one method at admission and another at discharge.
+- An authentication on the pre-authorisation before admission, finished, then
+  carried to the patient when the admission is linked.
 - A cyclic case with a capture at every visit, and one deliberately missing, to
   confirm the payer pays only for captured cycles.

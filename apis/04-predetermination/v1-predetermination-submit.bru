@@ -15,7 +15,7 @@ headers {
   x-hcx-sender_code: {{participantCode}}
   x-hcx-recipient_code: {{recipientCode}}
   x-hcx-api_call_id: {{$guid}}
-  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-correlation_id: {{$guid}}
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
 }
@@ -41,7 +41,7 @@ docs {
 
   ## When to use
 
-  Before a planned admission, with a payer that has confirmed it supports predetermination. The exchange is specified but seldom used, so confirm support with the payer before building it. Send `x-hcx-status` `request.initiated` with a new correlation ID. The payer's answer, use case C11, arrives on `/v1/predetermination/on_submit`.
+  Before a planned admission, with a payer that has confirmed it supports predetermination. The exchange is specified but seldom used, so confirm support with the payer before building it. The provider flow in this package has no predetermination step: every line is quoted from the payer's insurance plan, and the coverage benefits and authorisation requirements checks on the preauth step answer the same question. Send `x-hcx-status` `request.initiated` with a new correlation ID. The payer's answer, use case C11, arrives on `/v1/predetermination/on_submit`.
 
   ## Preconditions
 

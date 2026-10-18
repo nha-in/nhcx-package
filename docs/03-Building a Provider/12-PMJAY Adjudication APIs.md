@@ -35,9 +35,14 @@ secret at the sessions endpoint. In the sandbox it lives 1,200 seconds.
 Note that the two endpoints sit on different hosts. That is not a
 documentation error; it is how the service is deployed.
 
+Both addresses are sandbox addresses. `apisbeta.nha.gov.in` is the only
+published address for acting on a case, and no production host is published
+for either call. Ask for both production hosts at onboarding and keep them
+configurable, as Base URLs advises for every other service.
+
 ## Who holds the case
 
-<!-- build-docs:api 12-adjudicator/adjudicator-role.bru -->
+<!-- build-docs:api 13-adjudicator/adjudicator-role.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/nhcxpayerservice/v1/get/user-role' \
   --header 'Accept: application/json' \
@@ -79,7 +84,7 @@ are asking about.
 One endpoint, one body shape, with the action spelled exactly as the table
 gives it for the role that currently holds the case.
 
-<!-- build-docs:api 12-adjudicator/adjudicator-process.bru -->
+<!-- build-docs:api 13-adjudicator/adjudicator-process.bru -->
 ```bash
 curl --location --request POST 'https://apisbeta.nha.gov.in/pmjay/hcx/nhcxpayerservice/wrapper/process/case' \
   --header 'Accept: application/json' \
@@ -155,12 +160,22 @@ fresh every time.
 
 ## What it refuses, and what those refusals mean
 
-| Message | What it means |
-| :---- | :---- |
-| `No Data found with the caseid <id>. Please use the current active case id.` | You asked with the hospital's claim number instead of the scheme's case id |
-| `Event Meta Log not found for correlationId` | The exchange has not finished delivering the request you are acting on. Try again shortly |
-| `Case not found for caseId` | The case is mid-filing. Try again shortly |
-| An action refused for the current role | Read the role again. It has moved, or it never was what you assumed |
+- **`No Data found with the caseid <id>. Please use the current active case id.`**
+
+  You asked with the hospital's claim number instead of the scheme's case id.
+
+- **`Event Meta Log not found for correlationId`**
+
+  The exchange has not finished delivering the request you are acting on. Try
+  again shortly.
+
+- **`Case not found for caseId`**
+
+  The case is mid-filing. Try again shortly.
+
+- **An action refused for the current role**
+
+  Read the role again. It has moved, or it never was what you assumed.
 
 The first is a modelling error and needs a fix. The second and third are timing
 and are safely retried.

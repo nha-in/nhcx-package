@@ -15,11 +15,11 @@ headers {
   x-hcx-recipient_code: 1000004446@hcx
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
-  x-hcx-correlation_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
   x-hcx-workflow_id: 26
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: response.complete
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
   x-hcx-debug_flag: INFO
 }
 
@@ -70,7 +70,7 @@ docs {
   ## Best practices
 
   - Provider: acknowledge first, then decrypt, then update case state; be idempotent on correlation ID and api_call_id.
-  - Provider: parse the PMJAY query audit trail (USER~datetime~type~comment~trust, entries separated by |) as a plain string.
+  - Provider: treat the PMJAY query audit trail (USER~datetime~type~comment~actor, entries separated by |; actor is PPD-Trust, CPD-Trust or the hospital name) as display text. Show each entry's comment and never parse a timestamp from it.
   - Provider: on complete plus approved, trigger settlement tracking and await 30, 31 and 33; the claim is only closed when 33 arrives and the UTR is persisted.
   - Payer: emit 25 on receipt and 28 during processing so the desk sees progress, and put reduction reasons in processNote linked by noteNumber.
   - Both: keep x-hcx-status and x-hcx-workflow_id consistent with the NHA status sheet, since the pair identifies the message.

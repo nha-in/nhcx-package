@@ -10,6 +10,11 @@ get {
   auth: inherit
 }
 
+params:query {
+  transactionId: {{transactionId}}
+  passcode: {{passcode}}
+}
+
 docs {
   # Validate ABHA policy link (v2)
 
@@ -55,7 +60,7 @@ docs {
 
   ## Related scenario
 
-  A TPA's operations desk initiated a policy link for a new member earlier in the day through /v2/participant/link/abha/policy/init and stored the transaction identifier against the case. When the authorised approver supplies the passcode, the system calls GET /v2/participant/link/abha/policy/validate?passcode=...&transactionId=... and receives a 200 with a result string. The desk then runs /V2/participant/get/policies for the member's ABHA number, sees the product listed, and closes the linking task; the next call in the member's journey will be the hospital's coverage-eligibility check.
+  A TPA's operations desk initiated a policy link for a new member earlier in the day through /v2/participant/link/abha/policy/init and stored the transaction identifier against the case. When the authorised approver supplies the passcode, the system calls GET /v2/participant/link/abha/policy/validate?passcode=...&transactionId=... and receives a 200 with a result string. The desk then runs /v2/participant/get/policies for the member's ABHA number, sees the product listed, and closes the linking task; the next call in the member's journey will be the hospital's coverage-eligibility check.
 
   ## Specification
 

@@ -3,16 +3,21 @@
 #   docs/, corpus/             rebuilt in place from the package sources. A model on Amazon
 #                              Bedrock (GLM-5 by default) indexes the corpus, with the chatbot's
 #                              Bedrock key; only pages whose content changed go to the model again.
-#   dist/out/                  the release: apis, docs, fhir, mappings, corpus,
+#   dist/out/                  the release: apis, docs, fhir, mappings, corpus, postman,
 #                              usecases.yaml, workflow.yaml, nhcx-error.yaml, baseurl.yaml and
 #                              MANIFEST, which is written there and never at the package root
+#   dist/postman/              the Postman collection built from apis/ (make postman), also
+#                              written into the release as postman/
 #   dist/release/package.zip   dist/out, zipped under nhcx-package/
 #   dist/reports/              the FHIR bundle validation report, when the validator runs
 #
 # The FHIR bundle validator is off for now: release and package skip it unless FHIR_VALIDATE=1,
 # and make validate runs it on its own.
 #
-# Targets: make docs | corpus | validate | release | package | eval | openapi | ekadocs | clean
+# make skills copies a build of the NHCX skills (SKILLS_DIST, default ../skills/dist, after its npm run build)
+# into skills/ without the plugin copies, and writes skills/CHECKSUMS.sha256. The skills read
+# skills/manifest.json on main to find a newer build of themselves and install it (UPDATE FIRST).
+# Targets: make skills | corpus | validate | release | package | eval | openapi | postman | ekadocs | clean
 # make package VERSION=<tag> is what a GitHub release runs (.github/workflows/release.yml): it
 # rebuilds docs/ and fails if they differ from the committed ones, writes MANIFEST for that
 # version and zips dist/release/nhcx-package-v<version>.zip. It never calls the model,
@@ -33,7 +38,7 @@ STAGE   := $(DIST)/stage
 NAME    := nhcx-package
 NODE    ?= node
 RSYNC   := rsync -a --delete --exclude .DS_Store
-CONTENT := apis docs fhir mappings corpus
+CONTENT := apis docs fhir mappings corpus skills
 FILES   := usecases.yaml workflow.yaml nhcx-error.yaml baseurl.yaml
 EKADOCS_REPO ?= https://github.com/nha-in/docs
 EKADOCS_DIR  ?= $(DIST)/ekadocs
@@ -46,7 +51,7 @@ ZIP     := $(if $(VER),$(NAME)-v$(VER).zip,package.zip)
 FHIR_VALIDATE ?= 0
 CHECKS  := $(if $(filter 1,$(FHIR_VALIDATE)),validate)
 
-.PHONY: all deps docs check-docs corpus validate release package eval openapi ekadocs clean help
+.PHONY: all skills deps docs check-docs corpus validate release package eval openapi postman ekadocs clean help
 
 all: release
 
@@ -60,6 +65,7 @@ define pack
 	mkdir -p $(OUT) $(RELEASE) $(STAGE)
 	$(RSYNC) $(CONTENT) $(OUT)/
 	cp $(FILES) $(OUT)/
+	$(NODE) $(SYSTEM)/build-postman.mjs --out $(OUT)/postman
 	$(NODE) $(SYSTEM)/build-manifest.mjs $(OUT) $(if $(VER),--version $(VER))
 	$(RSYNC) $(OUT)/ $(STAGE)/$(NAME)/
 	cd $(STAGE) && zip -rqX ../release/$(ZIP) $(NAME)
@@ -102,8 +108,21 @@ openapi: deps
 	$(NODE) $(SYSTEM)/build-openapi.mjs
 	$(RSYNC) $(SYSTEM)/misc/ $(DIST)/openapi/
 
+# The Postman collection: one file, four folders (onboarding and use cases, each for the
+# sandbox and for production), built from apis/ and baseurl.yaml.
+postman: deps
+	$(NODE) $(SYSTEM)/build-postman.mjs
+
 ekadocs: docs
 	$(NODE) $(SYSTEM)/build-ekadocs.mjs $(EKADOCS_DIR) --repo $(EKADOCS_REPO) --branch $(EKADOCS_BRANCH)
+
+SKILLS_DIST ?= ../skills/dist
+skills:
+	@test -f $(SKILLS_DIST)/manifest.json || { echo "no skills build at $(SKILLS_DIST): run npm run build in the skills repository" >&2; exit 1; }
+	$(RSYNC) --exclude plugins/ $(SKILLS_DIST)/ skills/
+	cd skills && find . -type f ! -name CHECKSUMS.sha256 ! -name .DS_Store | LC_ALL=C sort | xargs shasum -a 256 > CHECKSUMS.sha256
+	cd skills && shasum -a 256 -c CHECKSUMS.sha256 --quiet
+	@echo "skills: $$(sed -n 's/^  \"version\": \"\(.*\)\",/\1/p' skills/manifest.json | head -1)"
 
 clean:
 	rm -rf $(DIST)

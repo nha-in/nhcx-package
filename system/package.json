@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run build:openapi && npm run build:docs && npm run build:corpus",
     "build:openapi": "node build-openapi.mjs",
+    "build:postman": "node build-postman.mjs",
     "build:docs": "node build-docs.mjs",
     "build:corpus": "node build-corpus.mjs",
     "build:manifest": "node build-manifest.mjs",

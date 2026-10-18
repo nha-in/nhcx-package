@@ -1,0 +1,84 @@
+meta {
+  name: Participant certificate and bridge update (v2)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{registryBase}}/v2/participant/update
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "participantcode": "XXXXX7583@hcx",
+    "encryptioncert": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t...",
+    "endpointurl": "https://nhcx.demotpa.example.in"
+  }
+}
+
+docs {
+  # Participant certificate and bridge update (v2)
+
+  `POST /v2/participant/update`
+
+  ## Summary
+
+  Production call. Stages a change to a participant encryption certificate and/or endpoint URL; returns a transactionid for passcode confirmation via /update/validate.
+
+  ## Business purpose
+
+  Exactly two operational values rotate over a participant's life: the public encryption certificate that counterparties encrypt claims data with, and the endpoint (bridge) URL that the gateway delivers callbacks to. Both are security-sensitive, so the v2 update takes only those fields and gates the change behind an SMS passcode to the registered mobile number. It is step 3 of the production onboarding sequence, where a newly confirmed participant publishes its certificate for the first time, and the documented route for annual key rotation thereafter.
+
+  ## When to use
+
+  Use it immediately after creation confirmation (/validate) to upload encryptioncert and endpointurl, and again whenever either value changes; always follow with GET /update/validate within 24 hours. The production URL is https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/v2/participant/update. If only the certificate changes and passcode validation is not wanted, /v2/update/cert is the documented alternative. This is a synchronous JSON registry call with no workflow or x-hcx-status codes.
+
+  ## Preconditions
+
+  - participantcode is a valid code already registered in NHCX and its creation confirmation has been completed.
+  - The certificate (public key) is Base64-encoded; the update validation explicitly requires this.
+  - Bearer token in bearer_auth with the Bearer prefix, Accept and Content-Type: application/json.
+  - ParticipantCertUpdateRequest: participantcode required; encryptioncert and endpointurl optional (the base URL).
+  - The new private key is already deployed on the callback host so decryption works the moment the change goes live.
+
+  ## Postconditions
+
+  HTTP 200 with ParticipantCertUpdateResp: participant_code, status and transactionid. A passcode is sent to the registered mobile number; the pair is valid for 24 hours and each new trigger replaces it. The change is not live until GET /update/validate succeeds, after which /fetch/certs returns the new certificate and callbacks go to the new endpoint. Counterparties may serve a cached copy for up to 24 hours. Errors use the 400/404/500 ErrorResponse envelope.
+
+  ## Common mistakes
+
+  - Calling it before creation has been confirmed with /validate; the validations require a confirmed participant code.
+  - Sending the raw PEM instead of the Base64-encoded certificate.
+  - Using v1 field names (participant_code, encryption_cert, endpoint_url) in this flattened lowercase body.
+  - Treating the 200 as completion and skipping /update/validate, so the old certificate stays live.
+  - Re-triggering the update while a passcode is pending, invalidating the earlier transaction id.
+  - Losing the transaction id, which forces the update to be issued again.
+
+  ## Best practices
+
+  - Prepare the new key pair, deploy the PKCS8 private key to the callback host and only then publish the certificate.
+  - Keep the previous private key available for at least 24 hours after validation to decrypt callbacks encrypted against a cached certificate.
+  - Persist transactionid with its 24-hour expiry and complete /update/validate promptly.
+  - Rotate encryption keys once a year, matching the 365-day validity of the self-signed certificate.
+  - Verify the new endpointurl is a domain name on an India-based server with the NHCX NAT IPs whitelisted before submitting.
+
+  ## Related scenario
+
+  A TPA has just confirmed its production participant with /validate. Its engineers generate a 2048-bit RSA key, a 365-day self-signed X.509 certificate, Base64-encode it and deploy the private key to the callback host. They call /v2/participant/update with participantcode, encryptioncert and endpointurl; the response returns status and a transactionid, and the registered phone receives a passcode. After GET /update/validate succeeds, the first provider to call /fetch/certs for the TPA receives the new certificate and can encrypt a pre-authorisation for it.
+
+  ## Specification
+
+  Chapter 02.04 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "participant_code": "XXXXX7583@hcx",
+    "status": "Update initiated",
+    "transactionid": "1vouv8tlz2tnl-1fpspjhwj07c6"
+  }
+  ```
+}

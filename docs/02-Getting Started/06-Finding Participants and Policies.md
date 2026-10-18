@@ -32,11 +32,11 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
 
 - `role` is `PAYER`, `PROVIDER` or `TPA`.
 - `fromdate` and `todate` bound the registration date, in `dd/MM/yyyy` only.
-- `entitytype` is optional. `Gov` narrows to government schemes; leave it out for everyone.
+- `entitytype` is optional in the schema, but it decides what comes back: `Gov` answers the government schemes, `Pvt` the private payers, and a request without it answers the private list only (observed on the sandbox by the reference provider). To list everyone, ask twice, once with each.
 
-The response is a list of participant records, each with the participant code, name, roles and entity type. The list is not searchable by name on the server side. Fetch it, filter by name in your own code when a user is looking for a specific insurer, and classify government against private from the entity type. Cache it for the day; it changes rarely.
+The response is a list of participant records, each with the participant code, name, address and state, under `participantdetails` (some instances answer `participants` or a bare array, so read all three). The rows do not say whether a payer is government or private: that comes from the `entitytype` the list was asked with, so keep it on each row. The list is not searchable by name on the server side. Fetch it, filter by name in your own code when a user is looking for a specific insurer. Cache it for the day; it changes rarely. A provider building its payer list asks for `PAYER` and `TPA` only, never `PROVIDER`, and keeps two payer behaviours keyed on the entity type: `gov` for Gov and `generic` for any other. Payer Flexibility in the Overview sets out what they change.
 
-There is no separate call to fetch one participant's details by code. The list is the lookup. Fetching a participant's certificate, covered in the next chapter, is the one per-participant call.
+To read one participant's full record by code, with its roles, status, `endpoint_url` and `encryption_cert`, call `POST /participant/search` or its v2 twin `POST /participant/details`, each with `{"participant_code": "<code>"}` (both in the collection under `10-registry`). Use them to confirm a payer chosen from the list is active before the first message. Fetching a participant's certificate is covered in the next chapter.
 
 ## Looking up a patient's policies
 

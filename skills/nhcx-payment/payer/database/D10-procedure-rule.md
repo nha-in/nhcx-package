@@ -1,0 +1,51 @@
+# D10. procedure_rule
+
+#### D10T. TABLE
+One row is one procedure (package) in the payer's registry: what it is, what it pays, and the forms asked of every case quoting it; primary key `id`, which is the procedure code itself. No parent table. The reference implementation names it `payer_procedure_rules` [REF](../references/PAYERS.md#markers).
+
+#### D10D. DESCRIPTION
+The procedure master the plan and the rulings are built from. A policy names the procedures it covers ([D13. policy_procedure](D13-policy-procedure.md)) and inherits the rules from here rather than copying them, so a document requirement is stated once.
+
+What NHCX reads from the row:
+- `package_rate` is the `Procedure` cost the InsurancePlan quotes under `plan.specificCost` ([F5. InsurancePlan](../fhir/F5-insuranceplan.md)) and the allowed amount an auth-requirements ruling answers per item (F3. CoverageEligibilityResponse (in nhcx-coverage/payer), A1. Eligibility Answer (in nhcx-coverage/payer)). Null is "not priced", which is not the same as free: the procedure is listed on the plan without a rate, and the plan preview (S11. FHIR Preview (in nhcx-coverage/payer)) reports it.
+- `questionnaires` are the procedure's own forms, a JSON list in the same shape as a policy's ([D12. policy](D12-policy.md)): each `{id, title, description, questions: [{text, type, required, options}]}`. Each is published as a Questionnaire at `/questionnaire/<code>/<form id>` ([F6. Questionnaire](../fhir/F6-questionnaire.md)) and pointed at from the package's `plan.specificCost` benefit ([F5. InsurancePlan](../fhir/F5-insuranceplan.md)); the auth-requirements ruling names each by url (F3. CoverageEligibilityResponse (in nhcx-coverage/payer)). A form saved without an id is given one (`QNR-` and a short id [REF](../references/PAYERS.md#markers)) when the row is written, so a retitled form keeps its url. An unpriced procedure's forms are not published on the plan (no `plan.specificCost` entry to carry them) and the plan preview reports it (S11. FHIR Preview (in nhcx-coverage/payer)). Null and an empty list both mean none.
+- `stg_questions` is no longer read: the standard treatment guideline questionnaire is not published. The migration that added `questionnaires` (0006) carried every non-empty list over as one form, id `clinical-details`, title "Clinical details", one required `string` question per old question, wherever `questionnaires` was still null; the column itself stays.
+- `snomed_code` and `pcs10_code` identify the procedure to whoever reads the plan; `category` groups it.
+
+Create:
+- From the Procedure Configurator (S9. Procedure Configurator (in nhcx-coverage/payer)) through `POST procedures`, the forms checked by the same rules as a policy's (S7. Policy Configurator (in nhcx-coverage/payer) section 5). The code is the identifier: underwriters quote it on the policy schedule and hospitals send it on the claim, so `id` and `code` are the same upper-cased value and no second id is invented [REF](../references/PAYERS.md#markers). The document rules ([D11. procedure_rule_doc](D11-procedure-rule-doc.md)) are written in the same transaction.
+- Refused when the code is taken ("A procedure with that code is already in the registry") or a document code named in the rules is not in [D3. document_type](D3-document-type.md).
+
+Update:
+- `PATCH procedures/:id`: every column but the id; the document rules are deleted and rewritten.
+
+Delete:
+- Soft: `deleted_at` set. Refused while a live policy still covers it ("still referenced"), because a policy that lost a procedure quietly would start declining claims it was sold to pay.
+
+#### D10C. COLUMNS
+| column | type | null/default | meaning (and allowed values) |
+|---|---|---|---|
+| id | VARCHAR(32) | primary key | the procedure code, upper case (same as `code`) [REF](../references/PAYERS.md#markers) |
+| name | VARCHAR(200) | NOT NULL | the procedure's name; the display in a bundle |
+| code | VARCHAR(32) | NOT NULL, UNIQUE | the code a hospital sends as `productOrService` |
+| snomed_code | VARCHAR(32) | null | SNOMED CT concept |
+| pcs10_code | VARCHAR(32) | null | ICD-10-PCS code |
+| category | VARCHAR(32) | NOT NULL | `Surgical`, `Medical`, `Emergency`, `Day Care`, `Diagnostic`, `Critical Care` |
+| package_rate | NUMERIC(14,2) | null | what the policy pays for the package; null is not priced |
+| description | VARCHAR(500) | null | free text |
+| stg_questions | JSONB | null | the old treatment-guideline questions, a list of strings; no longer read (carried into `questionnaires` by migration 0006) |
+| questionnaires | JSONB (JSON on MySQL) | null | the procedure's own forms, as above; null for none (migration 0006) |
+| created_at | TIMESTAMPTZ | NOT NULL, default now | |
+| updated_at | TIMESTAMPTZ | NOT NULL, default now | bumped by trigger |
+| deleted_at | TIMESTAMPTZ | null | set when retired |
+
+#### D10K. KEYS AND INDEXES
+- Primary key `id`.
+- Unique `uq_procedure_rules_code` on `code`.
+- Checks: `ck_procedure_rules_category`; `ck_procedure_rules_rate` (null or `>= 0`).
+- Index `idx_procedure_rules_live` on `(deleted_at, category, name)`.
+- Referenced by [D11. procedure_rule_doc](D11-procedure-rule-doc.md) `procedure_id` (`ON DELETE CASCADE`) and [D13. policy_procedure](D13-policy-procedure.md) `procedure_id` (`ON DELETE RESTRICT`).
+
+#### D10U. USED BY
+- FHIR: [F5. InsurancePlan](../fhir/F5-insuranceplan.md), [F6. Questionnaire](../fhir/F6-questionnaire.md)
+- Database: [D11. procedure_rule_doc](D11-procedure-rule-doc.md), [D12. policy](D12-policy.md), [D13. policy_procedure](D13-policy-procedure.md)

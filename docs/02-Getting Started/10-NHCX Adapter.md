@@ -44,7 +44,7 @@ Worth knowing before you plan around it.
 
 ### Before you start
 
-You need what Milestone 1 gave you: a participant code such as `1000003463@hcx`, a client ID and a client secret. If you want to receive callbacks, you also need a public HTTPS address that reaches the machine you will run this on.
+You need a participant code such as `1000003463@hcx`, and the client ID and secret issued when you registered on the ABDM sandbox. If you want to receive callbacks, you also need a public HTTPS address that reaches the machine you will run this on.
 
 ### Build it
 
@@ -130,7 +130,7 @@ The fields you will actually set. Everything has a working default except the fo
 | `callback.timeoutSeconds` | How long one delivery may take. Twenty by default, against the protocol's thirty-second limit |
 | `callback.routes` | Per-path overrides, used exactly as written |
 | `callback.also` | Extra destinations that all receive the same message |
-| `auth.mode` | `sessions` or `get-session`. See the warning below |
+| `auth.tokenTtlSeconds` | The token lifetime assumed when the token response states none. 1200 by default |
 | `ledger.storeBodies` | Set false to record headers and outcomes but keep no patient data on disk |
 | `panel.password` | Enables the browser console. At least eight characters |
 
@@ -138,9 +138,9 @@ A second block, `participants`, holds additional identities on the same adapter,
 
 ### Two settings to get right before production
 
-**`auth.mode`.** The two ways of getting a token, described in Session Token, are both implemented, and the project's own README says the NHA documents disagree about which applies. There is no autodetection. Confirm with your onboarding contact, because the wrong choice fails at the first call with a token error.
+**The session address.** The adapter mints every token one way: a JSON client ID and secret call to the sessions path under `urls.abdm`, the ABDM gateway base. There is no `auth.mode` setting, and because unknown keys are rejected, a config that still carries one will not start. The base defaults to the internal sandbox ABDM gateway, `http://hiecmsbxinternal.abdm.gov.in`, in both environments, where the path is `/api/v3/gateway/sessions`. Set it to `https://dev.abdm.gov.in` and the adapter calls the public address Session Token shows, `/api/hiecm/gateway/v3/sessions`. Confirm with your onboarding contact which address production uses, because the wrong one fails at the first call with a token error.
 
-**The production addresses.** The sandbox addresses are verified. The production ones follow the documented pattern of swapping the sandbox hostnames, and the code says as much in a comment. Check all four against your onboarding letter and override them in the config if they differ.
+**The production addresses.** The sandbox addresses are verified. The production gateway and registry addresses follow the documented pattern of swapping the sandbox hostnames, and the code says as much in a comment. Check all three, `urls.nhcx`, `urls.participant` and `urls.abdm`, against your onboarding letter and override them in the config if they differ.
 
 ## Sending
 

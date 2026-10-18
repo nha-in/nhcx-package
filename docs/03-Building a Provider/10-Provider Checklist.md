@@ -18,7 +18,7 @@ NHA's provider exit process names thirteen use cases. Each must be shown working
 10. Claim search, `/v1/search/submit`, answered on `/v1/search/on_submit`. A caution: the Technical Specifications route `/search/submit` from NHA through NHCX to the payer, a cross-payer search for NHA or a regulator, and a provider's search over its own cases is `/claim/search` under the access-control policy. No source confirms which of the two the sandbox accepts from a provider.
 11. Acknowledge payment notice, received on `/v1/paymentnotice/request`, answered on `/v1/paymentnotice/on_request`.
 12. Reprocess or cancel, `/v1/task/submit`, answered on `/v1/task/on_submit`.
-13. Get status, `/v1/status`, answered on `/v1/on_status`.
+13. Get status, `/v1/status`, answered on `/v1/on_status`. The sandbox refuses `/v1/status` with `NHCX-1012`; a status enquiry goes as a `Task` coded `status` on `/v1/task/submit` under workflow id `1`. Status and Search has it.
 
 Every callback must accept both a `JWEPayload` and a `ProtocolResponse`, and answer with the 202 receipt within 30 seconds. `/v1/error` is not on the list but is required: it takes a plain JSON report of an undeliverable request and must still be answered `202`.
 
@@ -26,7 +26,7 @@ Under PMJAY, add biometric authentication in all three modes and the structured 
 
 ## Test cases
 
-One id per case, by family: `ML1` beneficiary authentication, `PLN` insurance plan, `ELG` coverage eligibility, `PRE` preauthorisation, `CLM` claim, `PAY` payment, `COM` communication, `CBK` callbacks, `SES` session and keys. Cases marked PMJAY apply to the scheme only. The workflow codes named are the ones each leg must carry; the dummy payer's `process/request` hook drives approve, reject and query on demand, and `paymentNotice/init` drives a payment notice. The full list of NHA's own numbered scenarios is in NHCX Use Cases and the harness bundles in `fixtures/reference/payer/`.
+One id per case, by family: `ML1` beneficiary authentication, `PLN` insurance plan, `ELG` coverage eligibility, `PRE` preauthorisation, `CLM` claim, `PAY` payment, `COM` communication, `CBK` callbacks, `SES` session and keys. Cases marked PMJAY apply to the scheme only. The workflow codes named are the ones each leg must carry; the dummy payer's `process/request` hook drives approve, reject and query on demand, and `paymentNotice/init` drives a payment notice. The full list of NHA's own numbered scenarios is in NHCX Use Cases and the sample bundles, by use case, under `fhir/` in this package.
 
 ### Beneficiary authentication
 
@@ -50,7 +50,7 @@ A user token refreshed before the preauthorisation; an expired one refused and r
 
 #### T-PLN-01 Fetch the package master
 
-`InsurancePlan` request keyed on the beneficiary's own policy code and the provider id. Expect the master with packages, inclusions, exclusions, claim conditions and document requirements. A policy the hospital is not empanelled under is refused with `PAYR-1401`.
+`InsurancePlan` request keyed on the beneficiary's own policy code and the provider id, under workflow id `1`, never the case number. Sent unasked when a validation leaves a case in force with no plan for its policy, HFR id and payer, and a ready plan of the same three reused instead of a second request. Expect the master with packages, inclusions, exclusions, claim conditions and document requirements. A policy the hospital is not empanelled under is refused with `PAYR-1401`.
 
 ### Coverage eligibility
 
@@ -74,7 +74,7 @@ Workflow `12`, acknowledged on `20`, approved on `21`. The payer's case number a
 
 #### T-PRE-02 Queried, answered and approved
 
-Workflow `12`, `20`, `24`, `19`, `21`. The query on the case thread under PMJAY or over communication with another payer, then a positive adjudication.
+Workflow `12`, `20`, `24`, `19`, `21`. The query as a queried `ClaimResponse` naming the items, answered by sending the pre-authorisation again from its tab, or, from a payer that asks over communication, a `CommunicationRequest` answered on the Communication tab; then a positive adjudication. The answer on `19` goes as `request.initiated`; `response.complete` there is refused with `NHCX-1011`.
 
 #### T-PRE-03 Rejected, resubmitted, cancelled
 
@@ -82,7 +82,7 @@ Workflow `12`, `23`, `121`, `PC01`, `PC02`. The rejection carries `preAuthRef`; 
 
 #### T-PRE-04 Enhancement queried, answered and approved
 
-Workflow `13`, `241`, `131`, `22`, with the header `x-hcx-use_case: Enhancement`. A longer stay or an added package on the same case.
+Workflow `13`, `241`, `131`, `22`, with the header `x-hcx-use_case: Enhancement`. A longer stay or an added package on the same case, before the claim is submitted.
 
 #### T-PRE-05 Implant, stratification and STG (PMJAY)
 
@@ -91,6 +91,14 @@ A package with an implant line, a ward tier as `item.modifier`, and the STG ques
 #### T-PRE-06 Auto-approval (PMJAY)
 
 A first preauthorisation on a case whose packages all allow it comes back approved without a desk action.
+
+#### T-PRE-07 Before admission
+
+A preauthorisation drafted and sent with a planned admission date, ICD-10 diagnoses and a treating doctor, and no admission linked. Every line quoted from the plan; a cover benefit such as Blood or Ambulance not offered as a line.
+
+#### T-PRE-08 Read only once the claim is submitted
+
+With the claim at the payer, an enhancement or any change to the preauthorisation refused, and a cancel accepted. With the claim decided, the cancel refused too.
 
 ### Claim
 
@@ -104,7 +112,7 @@ Workflow `15`, `25`, `27`, `151`, `26`. Under PMJAY the answer goes on `161`. Th
 
 #### T-CLM-03 Rejected and reprocessed
 
-Workflow `15`, `291`, then a reprocess Task on `36` with the justification attached, acknowledged on `37`, decided on `252` or `253`.
+Workflow `15`, `291`, then a reprocess Task on `36`, reason `claimrejected` or `rejectiondisputed`, with the justification attached, acknowledged on `37`, decided on `252` or `253`; the decision updates the claim. A reprocess asked of a claim that is not rejected is refused before it is sent.
 
 #### T-CLM-04 Discharge in every mode (PMJAY)
 
@@ -112,7 +120,7 @@ Workflow `15`, `291`, then a reprocess Task on `36` with the justification attac
 
 #### T-CLM-05 Shortfall after partial payment (PMJAY)
 
-A Task with reason `partialpayment` after payment notice `33` is acknowledged; refused before it.
+A `release` Task with reason `partialpayment` and the amount, after payment notice `33` is acknowledged; refused before it. `partialpayment` is never sent as a reprocess reason.
 
 #### T-CLM-06 Unusual cases (PMJAY)
 
@@ -121,6 +129,16 @@ An unspecified procedure `SGU100`; a cyclic procedure across several visits; a n
 #### T-CLM-07 Provisional discharge
 
 Where the payer supports it: submitted on `14`, then approved, rejected and queried.
+
+#### T-CLM-08 Never resubmitted
+
+A decided claim refused if sent again; a claim refused at the door, which never reached the payer, sent again and accepted.
+
+### Status
+
+#### T-STA-01 Status enquiry
+
+A `Task` coded `status` on `/v1/task/submit` with `x-hcx-workflow_id` `1`, on the preauthorisation while it waits and on the claim once raised. Never the leg's correlation id in the workflow id. Not offered for a payer that answers no status Task (PMJAY).
 
 ### Payment
 
@@ -171,11 +189,11 @@ The NHCX-PMJAY-HMIS test case workbook carries eight worked cases for a hospital
 | `TC-ABHA-01` | Validate the PMJAY policy using ABHA | Valid ABHA, consent available | `CoverageEligibilityRequest`, purpose `validation` | ABHA `91-XXXX-XXXX-XXXX`, purpose `validation` | ABHA linkage and an active policy | `CoverageEligibilityResponse` with active coverage | Happy path |
 | `TC-HBP-01` | Fetch the admissible HBP package | Policy validated | `InsurancePlan` | Plan id `PMJAY-TS-001`, provider id `HOSP123`, payer id `SHA-HARYANA` | Provider validated against the state's network hospitals | `InsurancePlan` with all HBP packages, their inclusions and exclusions, claim conditions and document requirements | State-specific HBP applied |
 | `TC-CE-01` | Coverage eligibility for auth-requirements | Wallet available | `CoverageEligibilityRequest`, purpose `auth-requirements` | Amount `25000`, package `HBP-123` | Wallet balance and specialty rules | Eligible, balance sufficient | Preauth allowed |
-| `TC-PA-01` | Submit a preauthorisation | Eligibility successful | `/preauth/submit`, `Claim` | Diagnosis `I10`, treatment plan, supporting documents, doctor details | Clinical and financial rules | Preauth id generated, status `PENDING` | Sent to workflow |
-| `TC-PA-02` | Submit a preauthorisation query update | Preauthorisation submitted | `/preauth/submit`, `Claim` | Additional documents | Preauthorisation and treatment details match | Query details accepted for adjudication | Sent to workflow |
-| `TC-CL-01` | Submit the claim after discharge | Preauthorisation approved | `/claim/submit`, `Claim` | Approved amount `23000`, documents attached | Preauthorisation and treatment details match | Claim accepted for adjudication | Sent to workflow |
-| `TC-CL-02` | Submit a claim query update | Claim submitted | `/claim/submit`, `Claim` | Documents | Claim and treatment details match | Query details accepted for adjudication | Sent to workflow |
-| `TC-CL-03` | Submit a CRC claim | Claim rejected or partially paid | `/task/submit`, `Task` | Not given | Claim and treatment details match | Not given | Not given |
+| `TC-PA-01` | Submit a preauthorisation | Eligibility successful | `/v1/preauth/submit`, `Claim` | Diagnosis `I10`, treatment plan, supporting documents, doctor details | Clinical and financial rules | Preauth id generated, status `PENDING` | Sent to workflow |
+| `TC-PA-02` | Submit a preauthorisation query update | Preauthorisation submitted | `/v1/preauth/submit`, `Claim` | Additional documents | Preauthorisation and treatment details match | Query details accepted for adjudication | Sent to workflow |
+| `TC-CL-01` | Submit the claim after discharge | Preauthorisation approved | `/v1/claim/submit`, `Claim` | Approved amount `23000`, documents attached | Preauthorisation and treatment details match | Claim accepted for adjudication | Sent to workflow |
+| `TC-CL-02` | Submit a claim query update | Claim submitted | `/v1/claim/submit`, `Claim` | Documents | Claim and treatment details match | Query details accepted for adjudication | Sent to workflow |
+| `TC-CL-03` | Submit a CRC claim | Claim rejected or partially paid | `/v1/task/submit`, `Task` | Not given | Claim and treatment details match | Not given | Not given |
 
 `TC-CL-03` is incomplete in the workbook: it gives no inputs, expected output or remark. Both query updates go to the same endpoint as the first submission; the workflow code tells them apart, as PMJAY Provider sets out.
 
@@ -231,7 +249,8 @@ The workflow sheet defines families that no NHA document describes beyond their 
 - Discharge correction: `DC01`, `DC02`.
 - Preauthorisation arbitration: `41`, `42`.
 - Wallet upgrade `34`, `35`; fraud alert `38`, `39`; grievance `G11`, `G12`, `G13`.
-- `16`, for a preauthorisation resubmission.
+
+`16` is not on the workflow sheet at all; the PMJAY sandbox refuses it with `PAYR-1321`.
 
 ## Before going live
 

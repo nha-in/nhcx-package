@@ -19,7 +19,7 @@ headers {
   x-hcx-workflow_id: 12
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
   x-hcx-use_case: New
 }
 
@@ -44,7 +44,7 @@ docs {
 
   ## When to use
 
-  Called after eligibility has confirmed cover and the mandatory documents are in hand. The same endpoint carries several business steps; the x-hcx-workflow_id header (and the optional x-hcx-use_case header with values New, Enhancement or Resubmit) is the discriminator: 12 PREAUTH_REQUEST_INITIATED for a new preauth; 121 PREAUTH_REQUEST_RESUBMITTED after a query or rejection; 19 PREAUTH_QUERY_RESPONSE_SUBMITTED to answer a payer query received under 24; 13 ENHANCEMENT_REQUEST_INITIATED for an additional amount on an already approved preauth, with 131 answering an enhancement query (241); and 14 DISCHARGE_SUBMITTED for the provisional pre-discharge submission that the claim chapter describes for non-PMJAY schemes (answered by 261, 262 or 263), with 141 answering a discharge query. Send x-hcx-status request.initiated on every one of these. Cancellation is not sent here; it goes to /v1/task/submit (PC01 or 122).
+  Called after eligibility has confirmed cover and the mandatory documents are in hand. The same endpoint carries several business steps; the x-hcx-workflow_id header (and the optional x-hcx-use_case header with values New, Enhancement or Resubmit) is the discriminator: 12 PREAUTH_REQUEST_INITIATED for a new preauth; 121 PREAUTH_REQUEST_RESUBMITTED after a query or rejection; 19 PREAUTH_QUERY_RESPONSE_SUBMITTED to answer a payer query received under 24; 13 ENHANCEMENT_REQUEST_INITIATED for an additional amount on an already approved preauth, with 131 answering an enhancement query (241); and 14 DISCHARGE_SUBMITTED for the provisional pre-discharge submission that the claim chapter describes for non-PMJAY schemes (answered by 261, 262 or 263), with 141 answering a discharge query. Send x-hcx-status request.initiated on every one of these, the query answers 19 and 131 included: the workflow sheet pairs those with response.complete, and NHCX refuses response.complete on this path with NHCX-1011. Every line of the bundle is quoted from the payer's insurance plan, with no custom line; the preauth may be sent before admission, with a planned admission date. Once the claim has been submitted no enhancement or change is sent here. Cancellation is not sent here; it goes to /v1/task/submit under PC01. Every follow-up (19, 121, 13, 131) carries a new correlation ID and the case number of the original; a query answer travels with x-hcx-use_case Resubmit.
 
   ## Preconditions
 
@@ -52,7 +52,7 @@ docs {
   - Patient resource carries the PMJAY Member ID and ABHA number; an active Coverage resource with a valid policy identifier is included.
   - Diagnosis (ICD-10), procedure (NRCes ndhm-procedure-code), care team and supportingInfo are present, and the mandatory documents named by the InsurancePlan or the eligibility auth-requirements response are attached.
   - For a new PMJAY preauth, either biometric authentication or the Authentication Consent questionnaire response is included (PAYR-1256, PAYR-1271).
-  - For 13, 19, 121 or 131 a prior preauth in the right state exists (PAYR-1212, PAYR-1214, PAYR-1218, PAYR-1219 otherwise) and the message reuses the episode's correlation identity.
+  - For 13, 19, 121 or 131 a prior preauth in the right state exists (PAYR-1212, PAYR-1214, PAYR-1218, PAYR-1219 otherwise) and the message carries the original case number under a new correlation ID; a reused correlation ID is refused with NHCX-1006.
   - Payer certificate fetched, bundle JWE-encrypted, recipient code taken from processingID, timestamp in IST.
 
   ## Postconditions
@@ -75,11 +75,11 @@ docs {
   - Attach every document the auth-requirements response listed (MAND codes) before submitting; the document list is per package, not static.
   - Raise enhancements while the patient is admitted, not retrospectively at discharge (PAYR-1018 time limit expired).
   - Persist preAuthRef from an approved or partially approved response; it is required at final claim.
-  - Implement v1/error and /v1/status so a preauth that never reached the payer is visible at the desk.
+  - Implement v1/error, and ask where a preauth stands with a Task coded status on /v1/task/submit (workflow 1), so a preauth that never reached the payer is visible at the desk.
 
   ## Related scenario
 
-  After the eligibility callback confirms cover for corneal grafting (SE012A) and lists the required documents, the hospital builds a Claim bundle with use preauthorization, ICD-10 H18.6, a total of 13700 INR and the investigation and consent attachments, and posts it to /v1/preauth/submit under workflow 12 with use_case New. NHCX returns 202. The payer queries under 24 asking for detailed ICPs; the hospital answers on the same endpoint under 19 with the same correlation ID. Approval arrives under 21 with preAuthRef PREAUTH-HP-2026-78901. Two days later the surgeon needs a higher bed category, so the hospital posts an enhancement under 13 with use_case Enhancement, and after discharge it moves to /v1/claim/submit.
+  After the eligibility callback confirms cover for corneal grafting (SE012A) and lists the required documents, the hospital builds a Claim bundle with use preauthorization, ICD-10 H18.6, a total of 13700 INR and the investigation and consent attachments, and posts it to /v1/preauth/submit under workflow 12 with use_case New. NHCX returns 202. The payer queries under 24 asking for detailed ICPs; the hospital answers on the same endpoint under 19 with use_case Resubmit and a new correlation ID. Approval arrives under 21 with preAuthRef PREAUTH-HP-2026-78901. Two days later the surgeon needs a higher bed category, so the hospital posts an enhancement under 13 with use_case Enhancement, and after discharge it moves to /v1/claim/submit.
 
   ## Specification
 

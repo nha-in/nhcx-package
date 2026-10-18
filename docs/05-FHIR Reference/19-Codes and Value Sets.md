@@ -285,7 +285,7 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | `DOC104` | Discharge summary | `Claim.supportingInfo.code.coding` | generic |
 | `EST` | Detailed Pre-Auth Cost Estimate | `Claim.supportingInfo.code.coding` | generic |
 | `FCF` | Filled NHCX Claim Form (Signed) | `Claim.supportingInfo.code.coding` | generic |
-| `HDS` | Hospital Discharge Summary | `Claim.supportingInfo.code.coding` | both |
+| `HDS` | Hospital discharge summary | `Claim.supportingInfo.code.coding` | both |
 | `IMP` | Medical Implant Invoice & Barcode Sticker | `Claim.supportingInfo.code.coding` | generic |
 | `MAND0006` | Detailed discharge summary | `Claim.supportingInfo.code.coding` | generic |
 | `MAND0062` | Detailed ICPs | `Claim.supportingInfo.code.coding` | generic |
@@ -679,6 +679,7 @@ System `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code`.
 | `deductible` | Deduction with its reason | category |
 | `tax` | Tax | total |
 | `incentive` | Hospital incentive | total |
+| `submitted` | Received, not yet decided | claim-level reason, on an acknowledgement |
 | `approved` | Approved | claim-level reason |
 | `queried` | Queried | claim-level reason |
 | `cancelled` | Cancelled or rejected | claim-level reason |
@@ -711,6 +712,7 @@ System `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code`.
 | `administrativeerror` | Administrative error | cancel |
 | `other` | Other | cancel |
 | `claimrejected` | Claim rejected | reprocess |
+| `rejectiondisputed` | Rejection disputed | reprocess |
 | `partialpayment` | Partial payment | reprocess, release |
 | `erroneousclaim` | Erroneous claim | reprocess |
 | `referred` | Referred | reprocess |

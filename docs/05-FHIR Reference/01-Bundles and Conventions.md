@@ -42,7 +42,7 @@ Supporting-info categories `DIA`, `HDS`, `CD` and `INF` take a reference to a st
 
 ### 10. Encode attachments once
 
-Base64 the file once. On receipt, check the decoded bytes for a file signature before trusting them, because double-encoded attachments are in circulation and render as a blank page.
+Base64 the file once, as FHIR defines `Attachment.data`, unless the payer asks otherwise; PMJAY does, as below. On receipt, check the decoded bytes for a file signature before trusting them, because double-encoded attachments are in circulation and render as a blank page.
 
 ### 11. One Claim, three uses
 
@@ -70,7 +70,6 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 - [Claim request](12-Claim%20Request.md)
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
 
 ### ClaimResponse
 
@@ -81,7 +80,7 @@ NRCeS profile: [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 - [Claim response](13-Claim%20Response.md)
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
 - [Cancel, reprocess and shortfall](15-Cancel,%20Reprocess%20and%20Shortfall.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
+- [Status and search](18-Status%20and%20Search.md)
 
 ### Communication
 
@@ -114,7 +113,6 @@ NRCeS profile: [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Cove
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
 - [Cancel, reprocess and shortfall](15-Cancel,%20Reprocess%20and%20Shortfall.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
 
 ### CoverageEligibilityRequest
 
@@ -163,7 +161,7 @@ NRCeS profile: [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-
 - [Cancel, reprocess and shortfall](15-Cancel,%20Reprocess%20and%20Shortfall.md)
 - [Payment notice and acknowledgement](16-Payment%20Notice%20and%20Acknowledgement.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
+- [Status and search](18-Status%20and%20Search.md)
 
 ### Patient
 
@@ -180,7 +178,7 @@ NRCeS profile: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patie
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
 - [Cancel, reprocess and shortfall](15-Cancel,%20Reprocess%20and%20Shortfall.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
+- [Status and search](18-Status%20and%20Search.md)
 
 ### PaymentNotice
 
@@ -204,7 +202,6 @@ NRCeS profile: [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-
 - [Claim request](12-Claim%20Request.md)
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
 
 ### PractitionerRole
 
@@ -222,7 +219,6 @@ NRCeS profile: [Procedure](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Pro
 - [Preauthorisation query and answer](11-Preauthorisation%20Query%20and%20Answer.md)
 - [Claim request](12-Claim%20Request.md)
 - [Claim query and answer](14-Claim%20Query%20and%20Answer.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
 
 ### Questionnaire
 
@@ -248,7 +244,7 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 - [Cancel, reprocess and shortfall](15-Cancel,%20Reprocess%20and%20Shortfall.md)
 - [Payment notice and acknowledgement](16-Payment%20Notice%20and%20Acknowledgement.md)
 - [Communication](17-Communication.md)
-- [Predetermination, status and search](18-Predetermination,%20Status%20and%20Search.md)
+- [Status and search](18-Status%20and%20Search.md)
 
 ## Profiles in use
 
@@ -281,12 +277,13 @@ The generic bundle above is what every payer takes, IRDAI-regulated insurers and
 - Payer-generated bundles carry the case number as `Bundle.identifier`, under the payer's own host. The host arrives spelled both `payer.pmjay.nha.gov.in` and `payer.pmajy.nha.gov.in`; echo the spelling that arrived.
 - Payer-generated bundles tag every resource `SUBSETTED` from `http://terminology.hl7.org/CodeSystem/v3-ObservationValue`, "Resource encoded in summary mode". It marks a projection of the payer's record, not an error.
 - Identifier systems on the payer's side are NHA hosts such as `https://hcx.pmjay.gov.in/v1/preauthorization` and `https://payer.nha.gov.in`.
-- A preauthorisation with its embedded clinical records runs to around 30 entries, a claim to over 40, a query answer to nearly a hundred.
+- The live PMJAY provider's bundles are small: 7 to 11 entries on a preauthorisation, a claim or a query answer (the `Claim`, `Patient`, both `Organization` entries, `Coverage`, `Practitioner`, `Procedure` and one `QuestionnaireResponse` per form answered). Documents ride as attachments; no clinical record is embedded.
+- NHA's PMJAY integration guide asks for documents Base64-encoded twice, and the live PMJAY provider sends every attachment that way; the payer's beneficiary photo arrives encoded twice too. Check the decoded bytes for a file signature and decode again when the first pass yields Base64 text.
 
 ### What PMJAY requires
 
-- Element ids on every Claim bundle: the `Claim` its claim number, each `item` `Item/n`, each `procedure` `Procedure/n`, each `supportingInfo` `SupportingInformation/n`; `1` for `Patient`, `Coverage` and the provider `Organization`, `2` for the payer `Organization`. Refused with `PAYR-1027` otherwise.
-- The `Practitioner` carries the HPR id typed `HPIN` under `https://hpr.abdm.gov.in`, beside `HPID` and the registration number typed `MD`. Refused with `PAYR-1083` otherwise.
+- Element ids on every Claim bundle: the `Claim` its claim number, each `item` `Item/n` (refused with `PAYR-1027` otherwise), each `procedure` `Procedure/n`, each document `supportingInfo` `SupportingInformation/n`; `1` for `Patient`, `Coverage` and the provider `Organization`, `2` for the payer `Organization`. The live PMJAY provider gives date and form entries no id.
+- The `Practitioner` carries the HPR id typed `HPIN` under `https://hpr.abdm.gov.in`, beside `HPID`. Refused with `PAYR-1083` otherwise.
 - Items coded from the package master: `item.category` is the master's specialty code, and the ward tier rides as `item.modifier` with the master's stratification code.
-- Every `supportingInfo` carries a `sequence`, numbered from 1 with no gaps. Refused with `PAYR-1019` otherwise.
-- Attachments as `application/pdf`, `application/jpg`, `application/jpeg`, `application/png` or `application/fhir+json`. Anything else is refused with `PAYR-1008`.
+- Every `supportingInfo` carries a `sequence`, unique in the `Claim`. Refused with `PAYR-1019` otherwise. Gaps are taken: the live PMJAY provider numbers a claim's entries 1 and then 22 onward, and numbers a query answer's entries on from the first submission.
+- Attachments as `application/pdf`, `application/jpg`, `application/jpeg`, `application/png` or `application/fhir+json`, as the error list publishes them. Anything else is refused with `PAYR-1008`. The live PMJAY provider sends `image/jpeg` and the payer takes it.

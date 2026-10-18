@@ -6,7 +6,7 @@ The sandbox and production differ here. The sandbox is a single call each way. P
 
 ## Sandbox: create
 
-<!-- build-docs:api 11-onboarding/participant-create.bru -->
+<!-- build-docs:api 11-onboarding-sandbox/participant-create.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/participant/create' \
   --header 'Accept: application/json' \
@@ -42,7 +42,7 @@ Field by field:
 | Field | What to put |
 | :---- | :---- |
 | `linked_registry_codes` | Which registry vouches for you. `10001` HFR, `10002` NIN, `10003` ROHINI, `10004` payer registry. |
-| `registryid` | On the sandbox, your ABDM client ID. In production, the HFR ID for a hospital or the IRDAI ID for a payer. |
+| `registryid` | Your ID in the registry `linked_registry_codes` names: the HFR ID for a hospital, the IRDAI ID for a payer or TPA, the client ID for an end user application. The sandbox sample above fills in the ABDM client ID, which the sandbox accepts for testing when you hold no HFR ID yet; in production it must be the registry's ID. |
 | `roles` | `10001` provider, `10002` payer, `10003` TPA. The full list is in the Overview. |
 | `encryption_cert` | The base64 certificate from the previous chapter. |
 | `signing_cert_path` | Optional. Leave empty. |
@@ -59,7 +59,7 @@ Keep it. It is `x-hcx-sender_code` on everything you send from now on. A hospita
 
 The same shape, keyed on the participant code, used to change the certificate or the callback address:
 
-<!-- build-docs:api 10-registry/participant-update.bru -->
+<!-- build-docs:api 11-onboarding-sandbox/participant-update.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/participant/update' \
   --header 'Accept: application/json' \
@@ -84,6 +84,8 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
 ```
 <!-- build-docs:end -->
 
+Two things the sandbox registry enforces that the field list does not say (observed 14 October 2026). It refuses a body that carries only the field being changed, with "Failed to update participant please check request", so send the record back whole in the shape above, `signing_cert_path` empty, with the change laid over it. And `encryption_cert` must be the Base64 of the PEM: a plain PEM is accepted, but the stored value no longer parses and every later `/fetch/certs` for the participant answers NHCX-1062 "Invalid encryption certificate" until it is sent again encoded.
+
 `endpoint_url` is the base of your callback server, sometimes called the bridge URL. It can be set at creation as well as on update. The exchange appends the callback path to it: a preauthorisation decision arrives at `<endpoint_url>/v1/preauth/on_submit`. The rules for this address are in Receiving a Callback.
 
 ## Production: four steps
@@ -92,9 +94,8 @@ Base: `https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice`.
 
 **1. Create.** `POST v2/participant/create`
 
-<!-- build-docs:api 11-onboarding/v2-participant-create.bru -->
 ```bash
-curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/v2/participant/create' \
+curl --location --request POST 'https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/v2/participant/create' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --header 'bearer_auth: Bearer <access token>' \
@@ -109,26 +110,22 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
     "email": "sample@gmail.com"
   }'
 ```
-<!-- build-docs:end -->
 
 The mobile number must match the one on your HFR record exactly, or for a payer the one NHA holds. The response gives `participantid` and a `transactionid`, and a passcode is sent to that mobile. The participant exists, in a pending state.
 
 **2. Confirm.** `GET validate?transactionId=<id>&passcode=<code>`. Note the method: the two confirmation calls are GETs, not POSTs. The participant becomes active.
 
-<!-- build-docs:api 11-onboarding/validate.bru -->
 ```bash
-curl --location --request GET 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/validate?transactionId=<transaction id>&passcode=<passcode>' \
+curl --location --request GET 'https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/validate?transactionId=<transaction id>&passcode=<passcode>' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --header 'bearer_auth: Bearer <access token>'
 ```
-<!-- build-docs:end -->
 
 **3. Configure.** `POST v2/participant/update`
 
-<!-- build-docs:api 10-registry/v2-participant-update.bru -->
 ```bash
-curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/v2/participant/update' \
+curl --location --request POST 'https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/v2/participant/update' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --header 'bearer_auth: Bearer <access token>' \
@@ -138,20 +135,17 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
     "endpointurl": "https://nhcx.demotpa.example.in"
   }'
 ```
-<!-- build-docs:end -->
 
 A second transaction ID and passcode arrive.
 
 **4. Confirm again.** `GET update/validate?transactionId=<id>&passcode=<code>`. The certificate and address go live.
 
-<!-- build-docs:api 11-onboarding/update-validate.bru -->
 ```bash
-curl --location --request GET 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/update/validate?transactionId=<transaction id>&passcode=<passcode>' \
+curl --location --request GET 'https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/update/validate?transactionId=<transaction id>&passcode=<passcode>' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --header 'bearer_auth: Bearer <access token>'
 ```
-<!-- build-docs:end -->
 
 Passcodes and transaction IDs are valid for 24 hours. If one is lost, repeat that step; a new pair is issued.
 
@@ -159,9 +153,8 @@ Passcodes and transaction IDs are valid for 24 hours. If one is lost, repeat tha
 
 In production there is a shorter path that skips the passcode:
 
-<!-- build-docs:api 10-registry/v2-update-cert.bru -->
 ```bash
-curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice/v2/update/cert' \
+curl --location --request POST 'https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice/v2/update/cert' \
   --header 'Accept: application/json' \
   --header 'Content-Type: application/json' \
   --header 'bearer_auth: Bearer <access token>' \
@@ -170,7 +163,6 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
     "certificate": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t..."
   }'
 ```
-<!-- build-docs:end -->
 
 Use it for the yearly rotation.
 

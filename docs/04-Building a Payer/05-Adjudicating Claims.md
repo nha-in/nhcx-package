@@ -14,7 +14,7 @@ Actions: approve, approve at a reduced amount with a note per item, query, rejec
 /v1/claim/submit      answer on /v1/claim/on_submit
 ```
 
-Workflow 15 is the claim; 151 is an answer to your query. Under PMJAY there is no separate discharge submission; the claim asserts the discharge and carries its details. On the general network a provisional discharge submission (14) may arrive first, answered with 261, 262 or 263.
+Workflow 15 is the claim; 151 is an answer to your query, and it arrives as `request.initiated`, like every send on a submit path. Under PMJAY there is no separate discharge submission; the claim asserts the discharge and carries its details. On the general network a provisional discharge submission (14) may arrive first, answered with 261, 262 or 263.
 
 Acknowledge receipt with 25 and `response.partial`. A claim may receive several interim answers before the final one; each is `response.partial` on the same correlation ID, and only the final carries `response.complete`.
 
@@ -58,11 +58,11 @@ Then at claim level, the tax deducted, any incentive, and the patient-liable amo
 
 ## Appeals
 
-Rejections and shortfalls come back as a `Task` on `/v1/task/submit`, workflow 36, code `reprocess`, reason `claimrejected` or `partialpayment`, with a document attached and, for a shortfall, the amount. Route both to the Claim Review Committee.
+Rejections and shortfalls come back as a `Task` on `/v1/task/submit`, workflow 36. A rejection comes back as code `reprocess`, reason `claimrejected` or `rejectiondisputed`, with a document attached; providers send it only for a claim you rejected, so refuse a reprocess of a claim you approved. A shortfall comes back as code `release`, reason `partialpayment`, with the amount. Route both to the Claim Review Committee. A claim you have decided is never sent to you again as a claim; one refused at your door, which never reached adjudication, may be.
 
 Acknowledge with 37, then answer on `/v1/task/on_submit` with a `Task` whose `status` is `completed` and whose output references a `ClaimResponse` inside the same bundle. The `ClaimResponse` is read by the provider's ordinary parser, so build it with the same outcome and reason fields: 252 approved, 253 rejected, 254 queried.
 
-Under PMJAY the payer enforces four rules. One appeal per claim. A shortfall claim only after payment 33 has been sent and acknowledged. The amount never above the difference. The Committee's decision final, with no shortfall claim allowed after it. A cancellation Task, code `cancel`, is answered with PC02 and refused once payment has begun.
+Under PMJAY the payer enforces four rules. One appeal per claim. A shortfall claim only after payment 33 has been sent and acknowledged. The amount never above the difference. The Committee's decision final, with no shortfall claim allowed after it. A cancellation Task, code `cancel`, is answered with PC02. Accept it while the claim, if raised, is still being decided or queried, and refuse it once the claim is decided; the provider side refuses to send one after that.
 
 ## Search
 

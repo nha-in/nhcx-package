@@ -6,17 +6,18 @@ meta {
 
 post {
   url: {{registryBase}}/get/session
-  body: json
-  auth: inherit
+  body: formUrlEncoded
+  auth: none
 }
 
-body:json {
-  {
-    "_contentType": "application/x-www-form-urlencoded",
-    "client_id": "<NHCX_CLIENT_ID>",
-    "client_secret": "<NHCX_CLIENT_SECRET>",
-    "grant_type": "client_credentials"
-  }
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  client_id: {{clientId}}
+  client_secret: {{clientSecret}}
+  grant_type: client_credentials
 }
 
 docs {
@@ -34,7 +35,7 @@ docs {
 
   ## When to use
 
-  Call it at start-up and whenever the cached token is close to expiry. The Integration Handbook documents it as POST /get/session on host apisbx.abdm.gov.in with Content-Type application/x-www-form-urlencoded and body client_id=<NHCX_CLIENT_ID>&client_secret=<NHCX_CLIENT_SECRET>&grant_type=client_credentials. The response carries access_token, expires_in 1200 and token_type Bearer. Both sandbox-exit checklists list /get/session as the auth-token API. Note that the FAQ instead lists https://dev.abdm.gov.in/api/hiecm/gateway/v3/sessions as the Session API, and the OpenAPI entry (operationId getSession) calls the operation internal and returns ParticipantSessionResponse with a single accessToken field; confirm the current host with your onboarding contact. There is no refresh token: renewal is simply another client-credentials call.
+  Call it at start-up and whenever the cached token is close to expiry. The Integration Handbook documents it as POST /get/session on host apisbx.abdm.gov.in with Content-Type application/x-www-form-urlencoded and body client_id=<ABDM_CLIENT_ID>&client_secret=<ABDM_CLIENT_SECRET>&grant_type=client_credentials. The response carries access_token, expires_in 1200 and token_type Bearer. Both sandbox-exit checklists list /get/session as the auth-token API. Note that the FAQ instead lists https://dev.abdm.gov.in/api/hiecm/gateway/v3/sessions as the Session API, and the OpenAPI entry (operationId getSession) calls the operation internal and returns ParticipantSessionResponse with a single accessToken field; confirm the current host with your onboarding contact. There is no refresh token: renewal is simply another client-credentials call.
 
   ## Preconditions
 
@@ -45,7 +46,7 @@ docs {
 
   ## Postconditions
 
-  HTTP 200 with { access_token, expires_in: 1200, token_type: Bearer }. The access_token is a JWT that should be treated as opaque; place it in the Authorization (bearer_auth) header as Bearer <token> on every subsequent call. Its lifetime is 1200 seconds (20 minutes); after that any call returns 401. The OpenAPI schema names the field accessToken and omits expiry, so read whichever key is present and assume 1200 seconds when expires_in is absent. A 400 indicates a malformed body. Nothing asynchronous follows.
+  HTTP 200 with { access_token, expires_in: 1200, token_type: Bearer }. The access_token is a JWT that should be treated as opaque; place it in the bearer_auth header as Bearer <token> on every subsequent call. Its lifetime is 1200 seconds (20 minutes); after that any call returns 401. The OpenAPI schema names the field accessToken and omits expiry, so read whichever key is present and assume 1200 seconds when expires_in is absent. A 400 indicates a malformed body. Nothing asynchronous follows.
 
   ## Common mistakes
 
@@ -58,7 +59,7 @@ docs {
 
   ## Best practices
 
-  - Cache the token in memory keyed by environment and refresh proactively at roughly 80 to 90 percent of the lifetime computed from the expires_in actually received.
+  - Cache the token in memory keyed by environment and refresh proactively at roughly 80 to 90 percent of the 1200-second (20-minute) lifetime, that is after 16 to 18 minutes.
   - Serialise refresh behind a lock so concurrent workers do not fire simultaneous token requests.
   - On any 401, discard the cached token, mint a new one and replay the original request exactly once; if the second attempt also fails, stop and alert, since the credentials are wrong or revoked.
   - Never log the access_token or client_secret; log the expiry timestamp instead.

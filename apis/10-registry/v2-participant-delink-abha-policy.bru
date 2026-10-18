@@ -1,11 +1,11 @@
 meta {
-  name: De-link ABHA policies (V2)
+  name: De-link ABHA policies (v2)
   type: http
   seq: 16
 }
 
 post {
-  url: {{registryBase}}/V2/participant/delink/abha/policy
+  url: {{registryBase}}/v2/participant/delink/abha/policy
   body: json
   auth: inherit
 }
@@ -26,21 +26,21 @@ body:json {
 }
 
 docs {
-  # De-link ABHA policies (V2)
+  # De-link ABHA policies (v2)
 
-  `POST /V2/participant/delink/abha/policy`
+  `POST /v2/participant/delink/abha/policy`
 
   ## Summary
 
-  V2 variant of the ABHA policy de-link; same ParticipantDeLinkAbhaRequest body and response as the unversioned call.
+  v2 variant of the ABHA policy de-link; same ParticipantDeLinkAbhaRequest body and response as the unversioned call.
 
   ## Business purpose
 
-  This endpoint performs the same member-layer removal as /participant/delink/abha/policy: it takes products out of a member's link for a given payer so that providers stop discovering lapsed or migrated coverage. The OpenAPI document exposes it as participantDeLinkAbhaPolicyV2 with an identical request and response schema; the documentation does not describe any behavioural difference beyond the path and operationId. It is the natural partner of /V2/participant/link/abha/policy for integrations that have standardised on the V2 paths.
+  This endpoint performs the same member-layer removal as /participant/delink/abha/policy: it takes products out of a member's link for a given payer so that providers stop discovering lapsed or migrated coverage. The OpenAPI document exposes it as participantDeLinkAbhaPolicyV2 with an identical request and response schema; the documentation does not describe any behavioural difference beyond the path and operationId. It is the natural partner of /v2/participant/link/abha/policy for integrations that have standardised on the v2 paths.
 
   ## When to use
 
-  Use it in the same situations as the v1 de-link: policy termination, member removal, product migration, or as the first step when an insurer changes TPA (de-link, then link again with the new processingid). It is part of member-layer maintenance and is not tied to any claim workflow code. Pair it consistently with the V2 link and V2 get-policies calls.
+  Use it in the same situations as the v1 de-link: policy termination, member removal, product migration, or as the first step when an insurer changes TPA (de-link, then link again with the new processingid). It is part of member-layer maintenance and is not tied to any claim workflow code. Pair it consistently with the v2 link and V2 get-policies calls.
 
   ## Preconditions
 
@@ -50,7 +50,6 @@ docs {
   - This is a synchronous plain-JSON registry call: no JWE envelope, no x-hcx-* protocol headers and no correlation id are involved.
   - The caller must be the payerid or processingid participant from the original link, using a token minted with the client_id used at participant creation.
   - Body: requestid (UUID), payerid, memberid and policies are required; processingid is optional; there is no abhanumber field.
-  - Note the capital V in /V2/.
 
   ## Postconditions
 
@@ -75,7 +74,7 @@ docs {
 
   ## Related scenario
 
-  A TPA is informed by one of its insurers that a corporate group policy has been cancelled mid-term. The TPA's system lists the affected members from its own records, calls /V2/participant/get/policies to confirm what NHCX currently holds, and then calls /V2/participant/delink/abha/policy per member with the insurer's participant code as payerid, its own code as processingid and the cancelled product. Each success is logged against the member. When a former member later presents at a hospital, the provider's policy lookup (after a forced cache refresh) no longer shows the product, and the desk proceeds as a self-pay case rather than submitting a coverage-eligibility check.
+  A TPA is informed by one of its insurers that a corporate group policy has been cancelled mid-term. The TPA's system lists the affected members from its own records, calls /v2/participant/get/policies to confirm what NHCX currently holds, and then calls /v2/participant/delink/abha/policy per member with the insurer's participant code as payerid, its own code as processingid and the cancelled product. Each success is logged against the member. When a former member later presents at a hospital, the provider's policy lookup (after a forced cache refresh) no longer shows the product, and the desk proceeds as a self-pay case rather than submitting a coverage-eligibility check.
 
   ## Specification
 

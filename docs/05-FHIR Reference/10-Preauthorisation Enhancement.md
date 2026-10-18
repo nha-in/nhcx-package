@@ -44,7 +44,7 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `supportingInfo[]` | id `SupportingInformation/1`, sequence `1` |
 |  | id `SupportingInformation/2`, sequence `2` |
 |  | id `SupportingInformation/3`, sequence `3` |
-| | and 9 more |
+| | and 8 more |
 | `supportingInfo[].category.coding[]` | `INV` Document Type - Investigation in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
 |  | `ONS` Period, start or end dates of aspects of the Condition. (e.g. admission, discha… in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
 |  | `OTH` Other in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
@@ -52,11 +52,11 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `supportingInfo[].code.coding[]` | `POI` Proof of Identity (Aadhaar / Passport / Voter ID) in `https://nhcx.abdm.gov.in/document-code` |
 |  | `CER` Medical Certificate / Doctor Referral in `https://nhcx.abdm.gov.in/document-code` |
 |  | `RAD` Radiology / X-Ray / CT / MRI Scan Reports in `https://nhcx.abdm.gov.in/document-code` |
-| | and 9 more |
+| | and 8 more |
 | `supportingInfo[].valueAttachment` | contentType `application/pdf`, title `Proof of Identity (Aadhaar / Passport / Voter ID)` |
 |  | contentType `application/pdf`, title `Medical Certificate / Doctor Referral` |
 |  | contentType `application/pdf`, title `Radiology / X-Ray / CT / MRI Scan Reports` |
-| | and 6 more |
+| | and 5 more |
 | `supportingInfo[].valueReference` | reference `https://nhcx.abdm.gov.in/questionnaireresponse/1`, display `Total Knee Replacement (Unilateral), Standard Treatment Guidelines` |
 | `diagnosis[]` | sequence `1` |
 | `diagnosis[].diagnosisCodeableConcept.coding[]` | `E11.9` Type 2 diabetes mellitus without complications in `http://hl7.org/fhir/sid/icd-10` |
@@ -69,8 +69,8 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 |  | reference `https://nhcx.abdm.gov.in/procedure/2`, display `Acute Appendectomy (Laparoscopic)` |
 | `insurance[]` | sequence `1`, focal `true` |
 | `insurance[].coverage` | reference `https://nhcx.abdm.gov.in/coverage` |
-| `item[]` | id `Item/1`, sequence `1`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `1`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12` |
-|  | id `Item/2`, sequence `2`, factor `0.5`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `2`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12` |
+| `item[]` | id `Item/1`, sequence `1`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `1`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
+|  | id `Item/2`, sequence `2`, factor `0.5`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `2`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
 | `item[].productOrService.coding[]` | `PROC-KNEE-01` Total Knee Replacement (Unilateral) in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
 |  | `PROC-APP-02` Acute Appendectomy (Laparoscopic) in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
 | `item[].servicedPeriod` | start `2026-09-10`, end `2026-09-10` |
@@ -266,7 +266,7 @@ Adds to an approved pre-authorisation, as many times as needed until discharge, 
 | `x-hcx-workflow_id` | `13` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `Enhancement` |
 
 **Workflow codes**
@@ -274,15 +274,15 @@ Adds to an approved pre-authorisation, as many times as needed until discharge, 
 | Code | Name | Authored by | `x-hcx-status` | Means |
 | :-- | :-- | :-- | :-- | :-- |
 | `13` | Enhancement Request Initiated | provider | `request.initiated` | Enhancement (additional amount) request |
-| `131` | Enhancement Query Response Submitted | provider | `response.partial`, `response.error`, `response.complete` | Response to enhancement query |
+| `131` | Enhancement Query Response Submitted | provider | `response.partial`, `response.error`, `response.complete`; the answer is sent as `request.initiated` | Response to enhancement query. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011 |
 | `241` | Enhancement Request Queried | payer | `request.initiated` | Enhancement request queried by payer |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `VB26AA2600001` |  |
-| `preAuthRef` | Initial Approval Reference | Case | `string` | `1..1` | `Claim.insurance[0].preAuthRef[0]` | `APPR-2026-HP-00891` |  |
+| `claimNumber` | Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SF000031` |  |
+| `preAuthRef` | Initial Approval Reference | Case | `string` | `0..1` | `Claim.insurance[0].preAuthRef[0]` |  |  |
 | `workflowId` | Workflow Code | Header | `string` | `1..1` | `Header.x-hcx-workflow_id` | `13` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html).

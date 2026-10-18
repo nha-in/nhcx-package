@@ -16,10 +16,10 @@ headers {
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
   x-hcx-correlation_id: {{$guid}}
-  x-hcx-workflow_id: 15
+  x-hcx-workflow_id: 24
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
 }
 
 body:json {
@@ -43,19 +43,19 @@ docs {
 
   ## When to use
 
-  Call it whenever the payer needs to communicate outside the direct request-response lifecycle of a preauth or claim. It does not replace the in-band query path (ClaimResponse outcome=partial with a DOC_MISSING processNote); both can be in flight for the same case. The scenario is identified by Task.reasonCode: tatquery, grievance, walletupdate, policychange, additionalinfo and the arbitration code (spelt claimArbitration in one handbook table and claimArbitartion in another). Send x-hcx-status request.initiated; the x-hcx-workflow_id must be the workflow of the associated claim or preauth and is validated at the gateway.
+  Call it whenever the payer needs to communicate outside the direct request-response lifecycle of a preauth or claim. It does not replace the in-band query path (ClaimResponse outcome=partial with a DOC_MISSING processNote); both can be in flight for the same case. The scenario is identified by Task.reasonCode: tatquery, grievance, walletupdate, policychange, additionalinfo and the arbitration code (spelt claimArbitration in one handbook table and claimArbitartion in another). Send x-hcx-status request.initiated under a fresh correlation id. A private insurer raises its query here under the queried leg's code, 24 for a preauthorisation, 241 for an enhancement or 27 for a claim: a CommunicationRequest carrying additionalinfo, or no reason code, is the query itself. Under PMJAY a CommunicationRequest is a notification, not a query; PMJAY raises its queries on the case's own thread as a ClaimResponse.
 
   ## Preconditions
 
   - Payer and provider both registered on NHCX; a valid Bearer token from the client-credentials session call (1200 s expiry).
   - The provider's public certificate fetched via /fetch/certs (cache up to 24 h) and used to JWE-encrypt with RSA-OAEP-256 and A256GCM.
-  - A collection Bundle containing a Task (status completed, intent proposal, code poll, input type include) that references a Communication or CommunicationRequest carrying category, priority and topic; the identifiers key off the claim or preauth reference.
+  - A collection Bundle containing a Task coded poll with an include input that references the CommunicationRequest, which carries category, priority and topic; the identifiers key off the claim or preauth reference. A private insurer's query Task is status requested, intent order; PMJAY's notification Task is status completed, intent proposal.
   - Protected header with x-hcx-sender_code, x-hcx-recipient_code, x-hcx-api_call_id, x-hcx-correlation_id, x-hcx-workflow_id, x-hcx-timestamp (IST +05:30) and x-hcx-status request.initiated. A fresh UUID correlation id opens the conversation.
   - HTTP headers Accept, Content-Type and bearer_auth.
 
   ## Postconditions
 
-  The gateway validates the JWE headers, workflow id and NIIP and returns HTTP 202 with a StatusSuccessResponse (timestamp, api_call_id, correlation_id, result with sender_code, recipient_code, entity_type and protocol_status, and an error object). Nothing is decided synchronously; the gateway forwards the bundle to the provider's registered callback. The provider must acknowledge with 202 within 30 seconds, then close the loop by posting an acknowledgement Task bundle to /v1/communication/on_request under the same x-hcx-correlation_id. Errors are 400 (validation failed), 404 and 500, all in the same envelope. Communication.status completed describes the event, not the resolution of the underlying issue.
+  The gateway validates the JWE headers, workflow id and NIIP and returns HTTP 202 with a StatusSuccessResponse (timestamp, api_call_id, correlation_id, result with sender_code, recipient_code, entity_type and protocol_status, and an error object). Nothing is decided synchronously; the gateway forwards the bundle to the provider's registered callback. The provider must acknowledge with 202 within 30 seconds, then close the loop on /v1/communication/on_request under the same x-hcx-correlation_id and workflow id: a Communication task bundle (Task coded deliver) carrying the answer to a query, or an acknowledgement Task for a notification. Errors are 400 (validation failed), 404 and 500, all in the same envelope. Communication.status completed describes the event, not the resolution of the underlying issue.
 
   ## Common mistakes
 

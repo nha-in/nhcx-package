@@ -8,6 +8,11 @@ NHCX gives each payer room to run a few parts of the exchange its own way. The e
 - **Answer detail.** Every payer uses the same core entries, workflow ids and status words. PMJAY adds a few fields on top. A reader built for the full set reads every payer.
 - **Case number.** The payer's own case number arrives in `preAuthRef`. When it first arrives depends on the payer. File the case under it.
 - **Task spelling.** The reprocess and cancel Tasks both carry `intimationNumber`, whatever the payer.
+- **Two behaviours.** Every option above is held in one of two settings: `gov`, for a payer whose participant record has entity type Gov, and `generic`, for every other.
+
+## Two behaviours, chosen by entity type
+
+A provider needs two payer behaviours and no more. Choose by the entity type on the participant record: `gov` for entity type Gov, `generic` for anything else. Only a payer missing from the participant list falls back to a configuration row naming its behaviour, then to the rule that a State Health Agency is `gov`, else `generic`. The behaviour decides the query mode, the Task spelling, whether proof of presence is required and whether the payer answers a status enquiry. Its name is a setting, never something the desk sees. A provider's participant list asks the registry for payers and TPAs only, since it is where the desk picks who a case goes to; rows of any other role left from an earlier fetch are dropped on refresh.
 
 ## Query mode
 
@@ -17,7 +22,7 @@ Hold a query mode per payer and route the answer by it.
 
 PMJAY uses this mode. The query arrives as a `ClaimResponse` with `outcome` `partial`, on the case's own thread. Its workflow id is 24 for a pre-authorisation, 241 for an enhancement and 27 for a claim.
 
-The answer is the whole bundle again, on `/v1/preauth/submit` or `/v1/claim/submit`, under a new correlation id. Its workflow id is 19, 131 or 161.
+The answer is the whole bundle again, on `/v1/preauth/submit` or `/v1/claim/submit`, under a new correlation id. Its workflow id is 19, 131 or 161, and it travels as `x-hcx-status: request.initiated`: the workflow sheet pairs those codes with `response.complete`, and NHCX refuses that on a submit path with `NHCX-1011`. An answer refused at the door leaves the question open.
 
 In this mode a claim query answered on 151, 19 or 16 is refused with `PAYR-1321`; 161 is the id PMJAY takes. The desk's reply travels on the bundle's `CQD` supporting information, so a resubmission that carries no reply is decided as if none was given.
 
@@ -25,7 +30,7 @@ A `CommunicationRequest` in this mode is not a query. It is a notification: a tu
 
 ### Through the communication API
 
-Private insurers use this mode. The query arrives as a `CommunicationRequest` task bundle on `/v1/communication/request`, on a new thread, carrying 24, 241 or 27 with `request.initiated`. A `CommunicationRequest` carrying `additionalinfo`, or no reason code at all, is the query itself.
+Private insurers use this mode. The query arrives as a `CommunicationRequest` task bundle on `/v1/communication/request`, on a new thread, carrying 24, 241 or 27 with `request.initiated`. A `CommunicationRequest` carrying `additionalinfo`, or no reason code at all, is the query itself. A line-item query, a `ClaimResponse` on the case's own thread naming the queried items, is still answered by sending the leg again, as in the first mode.
 
 The answer is a `Communication` task bundle on `/v1/communication/on_request`, on the request's own correlation id, echoing the request's workflow id.
 
@@ -52,7 +57,7 @@ The payer's own number for the case arrives in `ClaimResponse.preAuthRef`. A pri
 
 ## One spelling on the Task
 
-The cancel and reprocess Tasks both carry their second input as `intimationNumber`. A reprocess under any other spelling is refused with `PAYR-1008`. Reprocess goes on 36 and is acknowledged on 37, and the new verdict follows on the claim's own thread.
+The cancel and reprocess Tasks both carry their second input as `intimationNumber`. A reprocess under any other spelling is refused with `PAYR-1008`. Reprocess goes on 36 and is acknowledged on 37, and the new verdict follows on the claim's own thread. Only a claim the payer rejected is reprocessed; a decided claim is never sent again as a claim.
 
 ## Next steps
 

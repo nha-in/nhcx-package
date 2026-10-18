@@ -15,11 +15,11 @@ headers {
   x-hcx-recipient_code: 1000004446@hcx
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
-  x-hcx-correlation_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
   x-hcx-workflow_id: 11
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: response.complete
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
   x-hcx-debug_flag: INFO
 }
 
@@ -44,7 +44,13 @@ docs {
 
   ## When to use
 
-  The payer calls it after it has processed a /v1/coverageeligibility/check request, using the same x-hcx-correlation_id. The protected header carries x-hcx-status response.complete for a final answer (the coverage-eligibility workbook sheets spell this response.completed; the preauth and claim sheets use response.complete), response.partial for a partial answer, or response.error for a protocol-level rejection with x-hcx-error_details populated. The plaintext is a CoverageEligibilityResponseBundle with outcome complete, insurance[*].inforce, item[*].excluded, item[*].authorizationRequired and item[*].authorizationSupporting. A redirect or forward instruction to another payer is an alternate documented outcome.
+  - The payer calls it after it has processed a `/v1/coverageeligibility/check`, with the same `x-hcx-correlation_id`.
+  - Set `x-hcx-status` to one of these:
+    - `response.complete` for a final answer. Accept `response.completed` as the same value; some samples spell it that way.
+    - `response.partial` for a partial answer.
+    - `response.error` for a protocol-level rejection, with `x-hcx-error_details` filled in.
+  - The payload is a CoverageEligibilityResponseBundle with `outcome` `complete`. It says whether the policy is in force (`insurance[*].inforce`), which items are excluded (`item[*].excluded`), and whether a pre-authorisation is needed and with which documents (`item[*].authorizationRequired`, `item[*].authorizationSupporting`).
+  - A redirect or forward to another payer is also a valid outcome.
 
   ## Preconditions
 

@@ -8,7 +8,7 @@ The Overview's PMJAY chapters explain why these rules exist. This chapter is abo
 
 | Generic flow | Under PMJAY |
 | :---- | :---- |
-| Patient found by ABHA, member ID or mobile | Also by Ayushman ID; a member card is shown; the patient is biometrically verified before registration |
+| Patient found by ABHA, member ID or mobile | Also by Ayushman ID; a member card is shown; the patient is biometrically verified on the pre-authorisation and again on the claim |
 | Plan is coverage-based or package-based | Always package-based, with flags on every package that drive the screen |
 | Documents are attached as scans | Clinical documents must be structured ABDM health-information types |
 | Payer queries arrive as a communication request | Payer queries arrive inside the queried `ClaimResponse`; the answer goes on the preauthorisation or claim endpoint |
@@ -21,7 +21,7 @@ The Overview's PMJAY chapters explain why these rules exist. This chapter is abo
 
 **Search** by Ayushman ID, mobile or ABHA. Show the member card once found.
 
-**Verify the patient biometrically** before registering. Build all three methods, fingerprint, iris and face; any may be the one that works for a given patient, and the scheme requires all three to be available. Fingerprint and iris are an init-then-verify pair. Face is a separate flow: initiate, show a QR code the patient scans in the ABHA app, poll until capture completes, verify with the Aadhaar number encrypted under the key the portal supplies.
+**Verify the patient biometrically.** The scheme asks for proof of presence at admission; the system captures it on the pre-authorisation step, stage `Preauth`, which may come before admission, and again on the claim. Build all three methods, fingerprint, iris and face; any may be the one that works for a given patient, and the scheme requires all three to be available. Fingerprint and iris are an init-then-verify pair. Face is a separate flow: initiate, show a QR code the patient scans in the ABHA app, poll until capture completes, verify with the Aadhaar number encrypted under the key the portal supplies.
 
 On success the system holds a **user token**, valid 30 minutes, with a refresh token. It goes in the header of the eligibility check and the preauthorisation. Refresh it automatically through the transaction; if it lapses, authenticate again. A fresh authentication is required at discharge, and that token rides on the claim. It need not use the same method as the preauthorisation; a case authenticated by fingerprint at admission can be authenticated by face at discharge. And where biometrics fail at discharge, the discharge authentication-consent questionnaire from the plan stands in, exactly as at registration.
 
@@ -54,24 +54,24 @@ Package-based, and large: the reference response is 21 MB with over two thousand
 | `MultipleStratificationAllowed` | Allow more than one bed category on the package |
 | `Standalone` | Refuse any other package alongside it |
 | `ParentProcedure` | Require one of the listed parents |
-| `Unspecified` | Free-text name and free-entry amount, validated on the server against the wallet |
+| `Unspecified` | Quoted from the plan like any package; the amount is an open rate the desk types, validated on the server against the wallet |
 | `CyclicProcedure` | Ask the number of cycles |
 | `MaximumCyclesAllowed` | Cap the number of cycles |
 | `LamaDamaProcedure` | Offer only on a LAMA or DAMA discharge |
 | `DischargeStagesLamaDamaProcedure` | Offer only at the discharge stages it lists |
 | `IsDayCare` | Day-care handling |
-| `Procedure Type` | Medical and surgical packages cannot be combined, and one medical package per episode |
-| `los` | Maximum length of stay for the package; bounds the days claimed, including the `LM100` day count |
-| `gst_applicable` | Whether tax applies to the package |
-| `gst_percentage` | The tax rate when it does |
-| `incentive_applicable` | Whether a hospital incentive applies |
-| `ip_op_flag` | In-patient or out-patient |
-| `rules_yn` | Whether further rules attach to the package |
+| `ProcedureType` | Medical and surgical packages cannot be combined, and one medical package per episode |
+| `LengthOfStay` | Maximum length of stay for the package; bounds the days claimed, including the `LM100` day count |
+| `GstApplicable` | Whether tax applies to the package |
+| `GstPercentage` | The tax rate when it does |
+| `IncentiveApplicable` | Whether a hospital incentive applies |
+| `IpOpFlag` | In-patient or out-patient |
+| `RulesApplicable` | Whether further rules attach to the package |
 
-That table is the specification. The one published plan payload carries sixteen of these flags and not the rest: `Standalone`, `Unspecified`, `LamaDamaProcedure`, `los`, the tax pair, `incentive_applicable`, `ip_op_flag` and `rules_yn` appear nowhere in it. Do not read that as proof they are unused, because the sample is one scheme's plan at one moment. Read it as a warning to code defensively:
-- **`gst_applicable` and `gst_percentage`**: The handbook describes the first as whether GST is applicable for the benefit and the second as the "GST % applicable for the given benefit". No published source gives a rate or says which packages carry tax. In the handbook's worked claim response the tax is a claim-level total, `ClaimResponse.total` with category `tax`: 100 on a claim of 13,700.
-- **`incentive_applicable`**: Described only as whether an incentive to the hospital is applicable for the benefit. No published source gives the criteria or the rate. The same worked response carries a claim-level total with category `incentive` of 137 on 13,700, and the handbook's approved reprocess example repeats both figures.
-- **`los` (Maximum Length of Stay)**: Specifies the ceiling on inpatient days for the procedure. Stays extending beyond `los` require clinical justification or an approved enhancement request (workflow 13); for LAMA/DAMA discharges, procedure `LM100` daily quantity cannot exceed `los`.
+That table is the specification. The one published plan payload carries sixteen of these flags and not the rest: `Standalone`, `Unspecified`, `LamaDamaProcedure`, `LengthOfStay`, the tax pair, `IncentiveApplicable`, `IpOpFlag` and `RulesApplicable` appear nowhere in it. Do not read that as proof they are unused, because the sample is one scheme's plan at one moment. Read it as a warning to code defensively:
+- **`GstApplicable` and `GstPercentage`**: The handbook describes the first as whether GST is applicable for the benefit and the second as the "GST % applicable for the given benefit". No published source gives a rate or says which packages carry tax. In the handbook's worked claim response the tax is a claim-level total, `ClaimResponse.total` with category `tax`: 100 on a claim of 13,700.
+- **`IncentiveApplicable`**: Described only as whether an incentive to the hospital is applicable for the benefit. No published source gives the criteria or the rate. The same worked response carries a claim-level total with category `incentive` of 137 on 13,700, and the handbook's approved reprocess example repeats both figures.
+- **`LengthOfStay` (Maximum Length of Stay)**: Specifies the ceiling on inpatient days for the procedure. Stays extending beyond `LengthOfStay` require clinical justification or an approved enhancement request (workflow 13); for LAMA/DAMA discharges, procedure `LM100` daily quantity cannot exceed `LengthOfStay`.
 
 There is a second trap in the same payload, and it will cost a day if you meet it unprepared. The flags and the money live in two different places. The claim-condition flags, the document requirements and the rate limits hang off the plan's coverage benefits, while the costs hang off the plan's own cost list. Both structures carry the same package codes, and neither is complete on its own, so building the treatment screen means joining them on the package code. The Insurance Plan Response chapter in the FHIR Reference sets out both shapes.
 
@@ -81,10 +81,10 @@ There is a second trap in the same payload, and it will cost a day if you meet i
 
 ## Preauthorisation
 
-The four sections of the generic form, with these additions:
+The five sections of the generic form, with these additions:
 
 - Medical information comes from the HMIS record as structured documents: general findings, personal and family history.
-- The STG questionnaire for each package is rendered from the plan and answered here; a missing response for a package that demands one is refused by name.
+- The questionnaire the plan points at for each package (the scheme's treatment-guideline, STG, form) is rendered from the plan and answered here; a missing response for a package that demands one is refused by name.
 - Documents and questionnaires required for preauthorisation are those the eligibility call with purpose auth-requirements returns. The rest are mandatory at claim.
 - Amounts are the plan's rates and are not editable, except on an unspecified package.
 - A preauthorisation cannot be raised more than one day before admission.
@@ -102,9 +102,9 @@ The four sections of the generic form, with these additions:
 
 **Auto-approval** applies when this is the first preauthorisation for the case and every package carries `ApprovalNotRequired`, or when the policy allows turnaround-time approval and the payer has not acted in its window. Show the user which rule applied.
 
-**Queries arrive inside the response.** A queried `ClaimResponse`, workflow 24, carries the query text in `item.adjudication.reason.coding.display` as a pipe-delimited audit trail, `USER~datetime~type~comment~trust`. Parse it as a string and show the comment. The answer is the same preauthorisation bundle, new correlation ID, original reference, workflow 19, on `/v1/preauth/submit`. Not a communication response, and not a resubmission.
+**Queries arrive inside the response.** A queried `ClaimResponse`, workflow 24, carries the query text in `item.adjudication.reason.coding.display` as a pipe-delimited audit trail, `USER~datetime~type~comment~actor`, where `actor` is whoever wrote the entry: `PPD-Trust` on a preauthorisation, `CPD-Trust` on a claim, or the hospital's name. Treat it as display text: split it on `|` and `~` to show each entry and its comment, but never parse a timestamp from it, because the date formats vary. The answer is the same preauthorisation bundle, new correlation ID, original reference, workflow 19, on `/v1/preauth/submit`. Not a communication response, and not a resubmission.
 
-**Enhancement** (13): only against an approved case, only after the previous request has closed, only for packages flagged enhanceable, unlimited until discharge within the wallet. **Resubmission** (121): revises an approved or rejected case for a different amount or package, and voids everything before it. **Cancel** (PC01): allowed until the claim is raised and refused once payment has started.
+**Enhancement** (13): only against an approved case, only after the previous request has closed, only for packages flagged enhanceable, unlimited until discharge within the wallet. **Resubmission** (121): revises an approved or rejected case for a different amount or package, and voids everything before it. **Cancel** (PC01): allowed while the claim, if raised, is still with the payer, being decided or queried, and refused once the payer has decided the claim, as in the generic flow. Once the claim is submitted the preauthorisation is read only: no enhancement and no resubmission.
 
 **Server-side checks** the payer will make and the screen should make first:
 
@@ -128,24 +128,25 @@ The four sections of the generic form, with these additions:
 
 **Queries** on a claim arrive and are answered the same way as on a preauthorisation, with workflow 161 on `/v1/claim/submit`. The payer refuses 151, 19 and 16 with `PAYR-1321`.
 
-**After the decision**, two Tasks, both on `/v1/task/submit` with workflow 36, code `reprocess`, and a document attached:
+**After the decision**, two Tasks, both on `/v1/task/submit` with workflow 36:
 
 | | Reprocess | Shortfall |
 | :---- | :---- | :---- |
-| When | Claim rejected outright | Claim paid, but short |
-| Reason | `claimrejected` | `partialpayment` |
+| When | Claim rejected outright, and only then | Claim paid, but short |
+| Code | `reprocess`, a document attached | `release` |
+| Reason | `claimrejected`, or `rejectiondisputed` | `partialpayment` |
 | Amount | None | The difference, never more |
 | Gate | None; raise on rejection | Payment notice 33 received, verified, and acknowledged with 17 |
 | Times | Once | Once |
 | Decided by | Claim Review Committee, final | Claim Review Committee, final |
 
-They do not chain; a shortfall cannot follow a Committee decision. The claim number in the Task is the preauthorisation number the hospital generated.
+They do not chain; a shortfall cannot follow a Committee decision. The claim number in the Task is the preauthorisation number the hospital generated. The scheme's use case sheet words the shortfall as the reprocess Task with reason `partialpayment`; a part-paid claim is not rejected, so the reference hospital build sends it as the `release` Task and never sends `partialpayment` as a reprocess reason. Confirm with the scheme which it adjudicates. A claim is never sent again once decided: the query answer on 161 is the only second claim bundle.
 
 ## Scheme cases that change the bundle
 
 Five situations the treatment screen has to recognise before it builds anything. The Overview's PMJAY Scheme Rules chapter explains each; this is what the provider system does.
 
-- **Unspecified procedure.** Offer the specialty's unspecified package only within the treating specialty, with a free-text name and amount, and validate the amount on the server. It is a single line item with nothing else beside it. Auth-requirements is still required. Take the code from the plan rather than building it: the FAQ says the specialty prefix plus `215` and a bare `U100`, while the plan carries the specialty prefix plus `U100`, such as `SGU100`.
+- **Unspecified procedure.** Offer the specialty's unspecified package only within the treating specialty, quoted from the plan like any other line, with its amount as an open rate the desk types, and validate the amount on the server. It is never a custom line. It is a single line item with nothing else beside it. Auth-requirements is still required. Take the code from the plan rather than building it: the FAQ says the specialty prefix plus `215` and a bare `U100`, while the plan carries the specialty prefix plus `U100`, such as `SGU100`.
 - **Cyclic procedure.** Ask the cycles, capped by the plan. Take live biometrics at preauthorisation, at every visit with process type Discharge, and at claim. Enforce the 24-hour rolling gap between visits, and record each visit as a numbered structured document with start and end time. One claim goes after the last cycle, and payment comes only for captured cycles. A change of hospital means discharge and a new preauthorisation.
 - **Medical package.** One per episode; never alongside a surgical package.
 - **Newborn.** Used while the baby has no member ID of its own. Parent's card and wallet, with the parent as primary `Patient` and the child as a linked `Patient` with `link.type = refer`. Date of birth, gender and proof of birth under `DOB` as `BCF` or `DCB` are all mandatory. Twins are two preauthorisations. Bill as "Baby of" the parent with an attachment. A child older than that and under six draws on the parent's wallet as an ordinary case, without the linked-child construct.

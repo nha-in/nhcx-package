@@ -13,13 +13,13 @@ title: "Reprocess or cancel"
 side: "provider"
 api: "/v1/task/submit"
 callback: "/v1/task/on_submit"
-workflow: "PC01 (Cancel), 36 (Reprocess / Dispute)"
+workflow: "PC01 (Cancel), 36 (Reprocess of a rejected claim, or Release), 1 (Status enquiry)"
 carries_jwe: true
 focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 profiles:
   Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
-description: "Submit request to cancel an approved pre-authorisation or appeal a rejected claim."
+description: "Submit request to cancel a pre-authorisation (until its claim is decided), appeal a rejected claim (reason claimrejected or rejectiondisputed), release the balance of a short-paid claim, or ask where a case stands."
 fields:
   - key: "taskCode"
     label: "Action Code"
@@ -46,14 +46,14 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[0].valueString"
-    example_value: "CL0000000001"
+    fhir_path: "Task.input[type=claimNumber].valueString"
+    example_value: "NM-26-0SE00002L"
   - key: "appealDocument"
-    label: "Dispute Justification Document"
+    label: "Supporting Document (mandatory on a reprocess)"
     group: "Task Input"
     data_type: "base64Binary"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "Task"
-    fhir_path: "Task.input[category=document].valueAttachment.data"
+    fhir_path: "Task.input[type=document].valueAttachment.data"
     example_value: "JVBERi0xLjQK..."

@@ -16,7 +16,7 @@
  *              error codes, endpoints, constants, glossary terms and protocol headers.
  *
  * Usage: node system/build-corpus.mjs [--model <id>] [--jobs <n>] [--offline] [--no-index] [--out <dir>]
- *   --model     the model that indexes the pages; default $CORPUS_MODEL, else claude-opus-5
+ *   --model     the model that indexes the pages; default $CORPUS_MODEL, else zai.glm-5 (lib/claude.mjs DEFAULT_MODEL)
  *   --offline   never call the model; fail if a page's index is out of date
  *   --no-index  plain chunks only, without the model's index
  */

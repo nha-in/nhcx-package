@@ -132,7 +132,11 @@ A `Task` coded `poll`, reason `additionalinfo`, with an `include` input referenc
 
 A `Task` coded `deliver` in `ndhm-task-codes`, `completed`, with an `include` input referencing a `Communication` whose `basedOn` names the request and whose `payload` carries the message and the documents. Posted on `/v1/communication/on_request`, echoing the correlation id and workflow id.
 
-### 3. Keep attachments on their codes
+### 3. An answer on the submit path is a request
+
+An answer sent as the claim bundle, on `/v1/claim/submit` under 151 (161 under PMJAY), goes as `x-hcx-status` `request.initiated`; `response.complete` there is refused with `NHCX-1011`. It is a query answer, not a resubmission: a claim the payer has decided is never sent again.
+
+### 4. Keep attachments on their codes
 
 When rebuilding a bundle to answer a query, key each attachment to its document code as you assemble it, and check the pairing before you send.
 
@@ -387,7 +391,7 @@ The `Patient`, `Organization`, `Coverage`, `Practitioner`, `Procedure` entries a
 ### What PMJAY requires
 
 - Answer on 161. A claim query answered on 151, 19 or 16 is refused with `PAYR-1321`.
-- The full bundle, rebuilt from your stored submission, never a delta.
+- The whole `Claim` again, rebuilt from your stored submission: items, diagnoses, dates and the documents asked for. The live PMJAY provider leaves out the documents already sent and the payer takes it.
 
 ## Use cases, APIs and data elements
 
@@ -416,20 +420,20 @@ As D7, on the claim endpoint: the query is a ClaimResponse on 27, the answer a f
 | `x-hcx-workflow_id` | `161` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
 
 | Code | Name | Authored by | `x-hcx-status` | Means |
 | :-- | :-- | :-- | :-- | :-- |
-| `161` | Claim Doc Query Response | status sheet only | `response.complete` |  |
+| `161` | Claim Doc Query Response | status sheet only | `response.complete`; the answer is sent as `request.initiated` | The claim query answer PMJAY takes. Sent as request.initiated on v1/claim/submit, as the live PMJAY provider sends it; the sheet's response.complete is refused there with NHCX-1011 |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `CL26AA2600001` |  |
+| `claimNumber` | Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SF00002T` |  |
 | `workflowId` | Workflow Code | Header | `string` | `1..1` | `Header.x-hcx-workflow_id` | `161` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html).

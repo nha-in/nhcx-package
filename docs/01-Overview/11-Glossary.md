@@ -28,12 +28,12 @@ The terms this documentation uses, in the sense it uses them. Where NHA's docume
 
 ## Identity and registration
 
-- **ABHA.** Ayushman Bharat Health Account. The beneficiary's health ID; sent without hyphens.
+- **ABHA.** Ayushman Bharat Health Account. The beneficiary's health ID; hyphenated as `XX-XXXX-XXXX-XXXX` in the `x-hcx-ben-abha-id` header, without hyphens in the policy lookup.
 - **HFR.** Health Facility Registry. A hospital's registry; its HFR ID is the hospital's registry ID on the exchange.
 - **NIN, ROHINI.** Other registries a participant may be identified by.
 - **Registry ID.** A participant's identity in the registry it belongs to: HFR ID for a hospital, IRDAI ID for an insurer or TPA, client ID for an app.
 - **Participant ID, participant code.** A participant's address on the exchange, in the form `1518@hcx`. The part after the `@` names the exchange instance.
-- **Client ID and secret.** The ABDM credentials used to obtain an access token; the same ones issued for Milestone 1.
+- **Client ID and secret.** The ABDM sandbox credentials used to obtain an access token.
 - **Milestone 1, M1.** The ABDM integration level, ABHA creation and verification, that must be complete before NHCX.
 - **Bridge URL, endpoint URL.** The base address of a participant's callback server, registered on its participant record.
 - **Passcode.** The one-time code sent to a participant's registered mobile to confirm creation or configuration in production.
@@ -67,10 +67,9 @@ The terms this documentation uses, in the sense it uses them. Where NHA's docume
 - **Resubmission.** A revised preauthorisation that replaces an earlier one.
 - **Query.** The payer asking for more before it decides. The case stays open.
 - **Claim.** The request for payment after discharge. A `Claim` with `use = claim`.
-- **Predetermination.** Asking what a payer would approve, without committing.
 - **Adjudication.** The payer's decision on a preauthorisation or claim.
-- **Reprocess.** An appeal against a rejection, raised as a Task.
-- **Shortfall.** A request for the difference when a claim was paid short, raised as a Task after payment settles, under reason `partialpayment`.
+- **Reprocess.** An appeal against a rejection, raised as a Task on workflow 36, reason `claimrejected` or `rejectiondisputed`. Only a rejected claim is reprocessed; a claim is never resubmitted.
+- **Shortfall.** A request for the difference when a claim was paid short, raised as a Task after payment settles, code `release`, under reason `partialpayment`.
 - **Erroneous claim.** In the value set, a separate reason, `erroneousclaim`, for a reprocess caused by a mistaken submission by the provider. The FAQ uses the phrase for the shortfall case; the two senses coexist in the corpus.
 - **Task.** The general-purpose request resource: plan fetch, cancel, reprocess, search, payment notice, acknowledgement, communication.
 - **Communication.** A payer-initiated message outside the claim's own request-and-answer: a TAT alert, a grievance, a wallet or policy change, a request for information.
@@ -82,6 +81,6 @@ The terms this documentation uses, in the sense it uses them. Where NHA's docume
 - **Unspecified procedure.** A treatment not in the package list, allowed under conditions with a free-text name and amount.
 - **Cyclic procedure.** A treatment approved once and delivered over several visits, such as dialysis.
 - **LAMA, DAMA.** Leave against medical advice, without informing the hospital; discharge against medical advice, with a signed undertaking. Two of the four discharge types, with `DTH` (home) and `DTM` (death).
-- **LM100.** The single line item for a LAMA or DAMA stay before surgery, in place of the approved packages.
+- **LM100.** The single line item for a LAMA or DAMA stay before or during surgery, in place of the approved packages.
 - **UTR.** Unique transaction reference. The bank's reference for a payment, carried on the payment reconciliation.
 - **TDS.** Tax deducted at source, itemised on the payment reconciliation.

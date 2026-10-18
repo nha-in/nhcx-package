@@ -5,7 +5,7 @@
 # reference payer's Bridge Error sheet read differently: eighteen of the twenty. PAYR-1001 and PAYR-1002 are
 # a decryption and an encryption failure on both sheets.
 # note, on a code, records what the SHA HP sandbox payer sent that the sheet does not say. The observed space
-# holds the one code the sandbox run met that is on none of the seven sheets.
+# holds the codes the sandbox runs met that are on none of the seven sheets.
 spaces:
   - id: gateway
     name: Gateway
@@ -24,9 +24,9 @@ spaces:
     arrives: Inside the sealed response
   - id: observed
     name: Observed live
-    prefix: ERR-PYR-
-    sent_by: The PMJAY reference implementation, on none of its published sheets
-    arrives: Inside the sealed response
+    prefix: ERR-PYR-, NHCX-1062
+    sent_by: The PMJAY reference implementation and the sandbox participant registry, on none of the published sheets
+    arrives: Inside the sealed response, or on the registry call itself
 collisions:
   - code: PAYR-1003
     standard_payer: Error while connecting to NHCX; the system will resend later
@@ -166,6 +166,7 @@ codes:
     space: gateway
     kind: Business
     message: Invalid response received from receiver.
+    note: "The sheet prints the same text for NHCX-1015 and NHCX-1017. The live registry sends NHCX-1015 as \"You are not authorized to update/modify details\", on a participant update from a client id that did not create the participant. Read an invalid receipt as NHCX-1017."
   - code: NHCX-1016
     space: gateway
     kind: Business
@@ -174,6 +175,7 @@ codes:
     space: gateway
     kind: Business
     message: Invalid response received from receiver
+    note: "The invalid-receipt code. The sheet prints the same text for NHCX-1015, which the live registry sends as a permission refusal on a participant update."
   - code: NHCX-1018
     space: gateway
     kind: Business
@@ -274,6 +276,7 @@ codes:
   - code: PAYR-1008
     space: reference-payer
     message: Invalid FHIR bundle received. Hence request will not be processed further.
+    note: "The Bridge Error sheet lists fifteen more messages directly under this code with an empty code cell (invalid Base64, attachment name or content type, at bundle, item and newborn level; invalid input code and reason code; invalid case number; no user role for the sender; invalid or mismatched HFR id; invalid hospital id). The PMJAY payer sends every one of them as PAYR-1008. The chapter lists them in full."
   - code: PAYR-1009
     space: reference-payer
     message: No identifier found for patient component. Hence request will not be processed further. https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html
@@ -411,7 +414,8 @@ codes:
     message: No section content found for composition component. Hence request will not be processed further.
   - code: PAYR-1055
     space: reference-payer
-    message: Invalid subject type found for composition component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the composition.
+    message: No subject found for composition component. Hence request will not be processed further.
+    note: "The sheet has a second row for this code: \"Invalid subject type found for composition component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the composition.\" Both texts arrive as PAYR-1055."
   - code: PAYR-1056
     space: reference-payer
     message: Invalid contact organization found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please try again with valid data.
@@ -426,7 +430,8 @@ codes:
     message: Invalid encounter type found for composition/observation component. This should be of type Encounter. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-DiagnosticReportRecord.html
   - code: PAYR-1060
     space: reference-payer
-    message: No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
+    message: No encounter found for composition/observation component. Hence request will not be processed further.
+    note: "The sheet has a second row for this code: \"No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html\" Both texts arrive as PAYR-1060."
   - code: PAYR-1061
     space: reference-payer
     message: Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html
@@ -1125,4 +1130,8 @@ codes:
   - code: ERR-PYR-CLM-007
     space: observed
     message: No prior preauthorization or claim record found for case number
-    note: On none of the seven sheets. The SHA HP sandbox sent it for a claim raised under a number of its own rather than the preauthorisation's.
+    note: On none of the seven sheets. The SHA HP sandbox sent it for a claim raised under a number of its own rather than the preauthorisation's, and for a cancel Task whose case number travelled as intimationNumber, where PMJAY reads initimationNumber (sic).
+  - code: NHCX-1062
+    space: observed
+    message: Invalid encryption certificate
+    note: On none of the seven sheets. The sandbox participant registry answers it on every /fetch/certs for a participant whose encryption_cert was updated as a plain PEM (observed 14 October 2026). Send encryption_cert again as the Base64 of the PEM.

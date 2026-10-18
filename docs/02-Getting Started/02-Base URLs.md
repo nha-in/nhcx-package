@@ -1,12 +1,12 @@
 # Base URLs
 
-Every NHCX call is a base URL followed by a path. The paths are the same in the sandbox and in production. The bases are not, and they differ from one service to the next, so keep each one in configuration rather than in code.
+Every NHCX call is a base URL followed by a path. Each base URL is fixed: one value in the sandbox and one in production. It does not change from call to call or from participant to participant. The paths are the same in both environments. Each service has its own base, so keep the bases in configuration and set them once per environment.
 
 ## In short
 
 - Each service has its own base. The exchange, the participant service and the ABDM gateway are three different bases, not one.
 - A path in this documentation, such as `/v1/preauth/submit`, goes after the base of the service that serves it.
-- Only some production bases are published. The rest arrive with your onboarding; Going Live has the order of the switch.
+- Each base is a fixed value for its environment. A production base the table below does not list is given to you at onboarding. Going Live has the order of the switch.
 
 ## Every base, in both environments
 
@@ -14,13 +14,13 @@ Every NHCX call is a base URL followed by a path. The paths are the same in the 
 | Service | Sandbox | Production |
 | :---- | :---- | :---- |
 | ABDM session token | `https://dev.abdm.gov.in` | `https://apis.abdm.gov.in`. ABDM's published production gateway. Confirm it in your onboarding letter. |
-| NHCX exchange | `https://apisbx.abdm.gov.in/hcx` | Shared by NHA after sandbox exit. |
+| NHCX exchange | `https://apisbx.abdm.gov.in/hcx` | `https://apisprod.nha.gov.in/hcx`. NHA's published use-case base. Production access starts once the provider role is assigned after sandbox exit. |
 | Participant service | `https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice` | `https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice` |
 | ABDM proxy | `https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy` | Not published. Confirm at onboarding. |
 | PMJAY payer service, role lookup | `https://apisbx.abdm.gov.in` | Not published. Confirm at onboarding. |
 | PMJAY payer service, act on a case | `https://apisbeta.nha.gov.in` | Not published. Confirm at onboarding. |
 | Dummy payer | `https://apisbx.abdm.gov.in/pmjay/sbxhcx/dummyhcxpayer` | A sandbox test hook only. |
-| NHCX portal | `https://hcxsbx.abdm.gov.in` | Not published. |
+| NHCX portal | `https://hcxsbx.abdm.gov.in` | `https://nhcx.abdm.gov.in`. NHA's published production portal. |
 | Face authentication page | `https://phrsbx.abdm.gov.in/face-auth` | Not published. |
 
 What each one serves:
@@ -32,7 +32,7 @@ What each one serves:
 - **PMJAY payer service, role lookup**: The roles a PMJAY adjudicator user holds, at /pmjay/sbxhcx/nhcxpayerservice/v1/get/user-role.
 - **PMJAY payer service, act on a case**: Acting on a PMJAY case, at /pmjay/hcx/nhcxpayerservice/wrapper/process/case.
 - **Dummy payer**: The sandbox test hooks that make the dummy payer answer.
-- **NHCX portal**: The portal, the live Swagger specifications it publishes, and notification subscribe.
+- **NHCX portal**: The portal, the sandbox Swagger specifications it publishes, and notification subscribe.
 - **Face authentication page**: The QR page a patient opens to complete face authentication, with ?txnId=<txnId>.
 
 The ABDM gateway also reads `X-CM-ID` on the session call: `sbx` in the sandbox, `abdm` in production.
@@ -50,7 +50,7 @@ On the sandbox, a preauthorisation is therefore posted to `https://apisbx.abdm.g
 
 ## Production
 
-The participant service's production address is published, and so is ABDM's production gateway. NHA shares the exchange's production base after sandbox exit. The NHCX Adapter assumes the pattern of swapping the sandbox hostname for the others, but that is an inference. Check every production base against your onboarding letter before you switch.
+The production bases are fixed values. The participant service's is `https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice`, and the ABDM gateway's is `https://apis.abdm.gov.in`. NHA's environments page also lists the production exchange as `https://apisprod.nha.gov.in/hcx` and the production portal as `https://nhcx.abdm.gov.in`; confirm both against your onboarding letter before switching. A production base the table does not list is given to you at onboarding, and it too is one fixed value. When you go live, set each base to its production value once.
 
 ## Next steps
 

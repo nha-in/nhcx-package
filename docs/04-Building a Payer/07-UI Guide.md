@@ -38,7 +38,7 @@ flowchart LR
 | Communications | Any desk | Reason, message, priority | Communication request |
 | Case audit | Anyone | None | None |
 
-## Flow 1: policy admin
+## Policy admin
 
 **Screen.** A search by member, ABHA or mobile, showing the holder's linked products and who processes each. Link and de-link actions, and a bulk tool for moving every policy from one processor to another.
 
@@ -46,9 +46,11 @@ flowchart LR
 
 **Data flow.** Policy system writes a policy; a job links it on the exchange; the screen shows the exchange's record, not the policy system's, so a link that failed is visible.
 
-## Flow 2: plan configuration
+## Plan configuration
 
 **Screen.** A tree: policy, specialty, package. Per package: the rate, the add-ons allowed with their maximums, the flags, the documents required at preauthorisation and at claim, and the questionnaires attached. A version stamp on the plan with a publish action that bumps it. A per-hospital view showing what an empanelled hospital will receive.
+
+**Forms belong to a policy or to a procedure.** The tree attaches a form either to the policy or to one procedure, and the plan response points at it from where it is attached: from `coverage[].extension` for a policy form, from the package's `plan.specificCost` benefit for a procedure form. A procedure with no price publishes no form, and the screen says so. Cover benefits such as Blood, ICU or Ambulance are edited as limits of the policy, not as packages, and carry no package `id`.
 
 **What the UI enforces.** A rate change without publishing is shown as pending, because an unpublished rate is exactly what makes a provider's next claim look tampered with. Every flag is a control, not a text field. The per-hospital preview is what the plan response will actually contain, generated from the same master.
 
@@ -72,11 +74,11 @@ sequenceDiagram
   B->>X: sealed plan response, current version
 ```
 
-## Flow 3: eligibility
+## Eligibility
 
 No screen for the decision; it is answered by rule from the policy master and the wallet. What operations needs is a monitor: volume by hospital, refusals by reason, and the requests that failed validation with the payer's own error code. That is how a hospital sending a malformed request gets told which field. The monitor should also show the requests answered with "not a covered member" by hospital, because a spike there is a linking problem on the payer's side, not the hospital's.
 
-## Flow 4: the preauthorisation queue
+## The preauthorisation queue
 
 **Screen.** A queue ordered by turnaround time remaining, with cases that a rule will auto-approve marked so the doctor can skip them. Opening a case shows, in the payer's order: beneficiary and wallet before and after, diagnosis, and packages with rate, add-ons and the plan's flags. Then care team and dates, documents rendered as records with questionnaires beside the package they belong to, and the case history.
 
@@ -101,13 +103,13 @@ stateDiagram-v2
 
 The doctor sees InQueue cases ordered by how long until TATApproved fires. Get that ordering wrong and the window lapses on cases nobody has looked at.
 
-## Flow 5: writing a query
+## Writing a query
 
 **Screen.** A composer opened from an item or from the whole case. Under PMJAY the text becomes the pipe-delimited audit trail the provider will see, so the composer shows the comment field prominently and fills user, time and type itself. A picker of the documents the plan lists, so the doctor asks for a named document rather than "more documents".
 
-**What the UI enforces.** A query cannot be sent empty. On the general network the query goes out as a communication with reason additional information; under PMJAY as a queried response on the case. The composer knows which and the doctor does not have to.
+**What the UI enforces.** A query cannot be sent empty. A query on named items goes out as a queried response on the case, a `ClaimResponse` with outcome `partial` naming the queried items, and the provider answers it by sending the request again. A standalone query raised before any decision goes out as a communication with reason additional information. Under PMJAY every query is the first kind. The composer knows which and the doctor does not have to. A query answer arrives as `request.initiated` on the submit path; do not expect `response.complete` there.
 
-## Flow 6: the claim queue
+## The claim queue
 
 **Screen.** The claim opened side by side with the approved preauthorisation, differences highlighted: items added, quantities changed, amounts above approval. Discharge type and stage, dates, discharge summary as a record, bill, post-operative evidence. The four checks the handbook names shown as a checklist the doctor ticks: within cover and limits, clinically appropriate, documents complete and consistent, within package rates.
 
@@ -115,13 +117,13 @@ The doctor sees InQueue cases ordered by how long until TATApproved fires. Get t
 
 **What the UI enforces.** Nothing above the approved amount is approvable without a reduction note. A rejection shows the doctor that it closes the case permanently and that the provider's only route is appeal. Under PMJAY a LAMA or DAMA claim before surgery is shown with the stay line only and the approved packages struck through.
 
-## Flow 7: appeals
+## Appeals
 
-**Screen.** A committee queue of reprocess and shortfall requests, each opened against the original claim, its decision, its payment, and the document the provider attached. Decision: uphold, revise with amounts, reject. A note that the decision is final and closes the case to further appeal.
+**Screen.** A committee queue of reprocess requests, which come only for a rejected claim, and balance release requests for a claim paid short, each opened against the original claim, its decision, its payment, and the document the provider attached. Decision: uphold, revise with amounts, reject. A note that the decision is final and closes the case to further appeal.
 
-**What the UI enforces.** A shortfall request that arrived before the settlement notice was acknowledged is shown as premature and is not adjudicated. A second appeal on a case already decided is shown as refused. The decision goes out as a Task carrying a claim response, and the screen shows it as sent only on receipt.
+**What the UI enforces.** A shortfall request that arrived before the settlement notice was acknowledged is shown as premature and is not adjudicated. A second appeal on a case already decided is shown as refused, and so is a reprocess of a claim that was not rejected. A decided claim never comes back as a claim. The decision goes out as a Task carrying a claim response, and the screen shows it as sent only on receipt.
 
-## Flow 8: the payment run
+## The payment run
 
 **Screen.** Approved claims not yet paid, selectable into a run. Per claim: approved amount, deductions itemised (tax deducted at source and any scheme adjustment), net. Actions: initiate, then record the bank's confirmation and UTR. Each action becomes a notice to the provider; the screen shows the three notices per claim and whether the provider acknowledged each.
 
@@ -148,13 +150,13 @@ sequenceDiagram
   B-->>S: claim closed
 ```
 
-## Flow 9: communications
+## Communications
 
 **Screen.** A composer with a reason picker: information request, turnaround alert, grievance, wallet change, policy change, arbitration acknowledgement. Message, priority, and the case it concerns. Most of these should be generated by the system rather than a person. A turnaround alert when a query has gone unanswered past the window, a wallet change when a balance moves, a policy change on every plan publish, an arbitration acknowledgement when an appeal arrives.
 
 **What the UI enforces.** A message about a case carries the case number. Priority is a pick, and only a fraud or safety message may be marked as the highest. The acknowledgement from the provider is shown against each message; it means received, and the screen says so.
 
-## Flow 10: the case audit trail
+## The case audit trail
 
 **Screen.** Every case, every message in and out, in order, with the correlation ID, the workflow code, the status word, the raw message and its decrypted content, and who acted on the payer's side. Read only. Exportable.
 

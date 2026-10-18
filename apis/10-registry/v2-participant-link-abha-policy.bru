@@ -1,11 +1,11 @@
 meta {
-  name: Link ABHA number to policies (V2)
+  name: Link ABHA number to policies (v2)
   type: http
   seq: 12
 }
 
 post {
-  url: {{registryBase}}/V2/participant/link/abha/policy
+  url: {{registryBase}}/v2/participant/link/abha/policy
   body: json
   auth: inherit
 }
@@ -28,13 +28,13 @@ body:json {
 }
 
 docs {
-  # Link ABHA number to policies (V2)
+  # Link ABHA number to policies (v2)
 
-  `POST /V2/participant/link/abha/policy`
+  `POST /v2/participant/link/abha/policy`
 
   ## Summary
 
-  V2 variant of the ABHA policy link; same ParticipantLinkAbhaRequest body and ParticipantLinkAbhaResponse as the unversioned call.
+  v2 variant of the ABHA policy link; same ParticipantLinkAbhaRequest body and ParticipantLinkAbhaResponse as the unversioned call.
 
   ## Business purpose
 
@@ -51,11 +51,10 @@ docs {
   - Base path for the participant service: https://apisbx.abdm.gov.in/pmjay/sbxhcx/participanthcxservice (sandbox) or https://apisprod.nha.gov.in/pmjay/hcx/participanthcxservice (production).
   - This is a synchronous plain-JSON registry call: no JWE envelope, no x-hcx-* protocol headers and no correlation id are involved.
   - The token must belong to the participant named as payerid or processingid, generated with the client_id used at participant creation.
-  - Note the capital V in the path (/V2/participant/...), which differs from the lower-case /v2/ used by the init and validate variants.
 
   ## Postconditions
 
-  A successful call returns HTTP 200 with ParticipantLinkAbhaResponse (optional result string and optional errormessage with errorcode and errordescription). No asynchronous callback follows; the beneficiary's products are immediately discoverable through /participant/get/policies or /V2/participant/get/policies. Errors come back as 400, 404 or 500 with the registry ErrorResponse envelope. The link can later be reversed only through the de-link endpoints, which check that the caller is the payerid or processingid participant.
+  A successful call returns HTTP 200 with ParticipantLinkAbhaResponse (optional result string and optional errormessage with errorcode and errordescription). No asynchronous callback follows; the beneficiary's products are immediately discoverable through /participant/get/policies or /v2/participant/get/policies. Errors come back as 400, 404 or 500 with the registry ErrorResponse envelope. The link can later be reversed only through the de-link endpoints, which check that the caller is the payerid or processingid participant.
 
   ## Common mistakes
 
@@ -64,7 +63,6 @@ docs {
   - Trying to move a payer to a new TPA by re-linking in place; the documented path is de-link, then link again with the new TPA's code as processingid.
   - Omitting one of the required fields (requestid, abhanumber, memberid, payerid, policies with productid and productname) or reusing a non-UUID requestid, which returns 400 with the ErrorResponse envelope.
   - Sending the token without the Bearer prefix, or omitting the Accept header, both of which reject the call before business logic (401 or 400).
-  - Lower-casing the path to /v2/participant/link/abha/policy, which is not the same route; the lower-case /v2/ prefix belongs to the init and validate pair.
 
   ## Best practices
 
@@ -76,7 +74,7 @@ docs {
 
   ## Related scenario
 
-  A TPA that processes claims for several insurers migrates its integration to the V2 participant APIs. When one of its insurers issues a new individual health policy, the TPA's system calls /V2/participant/link/abha/policy with the insurer's participant code as payerid and its own code as processingid, listing the product from the insurer's catalogue. The TPA then confirms the link with /V2/participant/get/policies using the member's ABHA number. When the beneficiary later visits a hospital, the provider resolves the processingid as the receiver code and submits the coverage-eligibility check and preauthorisation to the TPA.
+  A TPA that processes claims for several insurers migrates its integration to the v2 participant APIs. When one of its insurers issues a new individual health policy, the TPA's system calls /v2/participant/link/abha/policy with the insurer's participant code as payerid and its own code as processingid, listing the product from the insurer's catalogue. The TPA then confirms the link with /v2/participant/get/policies using the member's ABHA number. When the beneficiary later visits a hospital, the provider resolves the processingid as the receiver code and submits the coverage-eligibility check and preauthorisation to the TPA.
 
   ## Specification
 

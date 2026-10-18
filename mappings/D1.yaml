@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D1: Fetch the insurance plan - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/insuranceplan/request
 # Callback API: /v1/insuranceplan/on_request
 # Carries JWE: true
@@ -10,10 +10,10 @@
 
 code: "D1"
 title: "Fetch the insurance plan"
-side: "provider"
+side: "pmjay"
 api: "/v1/insuranceplan/request"
 callback: "/v1/insuranceplan/on_request"
-workflow: "none"
+workflow: "1 (hospital-level: the plan belongs to the hospital and the policy, never a case number)"
 carries_jwe: true
 focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
@@ -37,5 +37,14 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[type=PolicyNumber].valueString"
+    fhir_path: "Task.input[type=policyNumber].valueString"
     example_value: "PMJAY/HP/S/G"
+  - key: "providerId"
+    label: "Hospital HFR ID"
+    group: "Task Input"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.input[type=providerId].valueString"
+    example_value: "IN1910000151"

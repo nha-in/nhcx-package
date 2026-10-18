@@ -13,7 +13,7 @@ title: "Respond to a Task"
 side: "payer"
 api: "/v1/task/on_submit"
 callback: "/v1/task/submit"
-workflow: "PC02 (Cancellation done), 37 (Arbitration ack), 252 (Reprocess approved)"
+workflow: "251 (Reprocess acknowledged), 252 (Reprocess approved), 253 (Reprocess rejected), 254 (Reprocess queried), PC02 (Cancellation done), 37 (Arbitration ack)"
 carries_jwe: true
 focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "Task"
     fhir_path: "Task.status"
-    example_value: "completed"
+    example_value: "accepted"
   - key: "outputDecision"
     label: "Decision Reference"
     group: "Task Output"
@@ -38,4 +38,4 @@ fields:
     required: false
     fhir_resource: "Task"
     fhir_path: "Task.output[0].valueReference.reference"
-    example_value: "ClaimResponse/cr-reprocess-approved"
+    example_value: "https://payer.nha.gov.in/v1/task/on_submit/claimresponse/NM-26-0SF00002U"

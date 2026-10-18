@@ -20,16 +20,16 @@ still published and still read.
 | `x-hcx-sender_code` | String | Mandatory | Your participant code |
 | `x-hcx-recipient_code` | String | Mandatory | The recipient's. For a provider, the processor code from the policy lookup |
 | `x-hcx-api_call_id` | UUID | Mandatory | Fresh on every message, including responses |
-| `x-hcx-request_id` | UUID | **Optional** | One per originating request. The Open Protocol page marks it Mandatory; the Technical Specifications page marks it Optional |
+| `x-hcx-request_id` | UUID | **Optional** | One per originating request. The Open Protocol page marks it Mandatory; the Technical Specifications page marks it Optional. Send it anyway, as a fresh UUID per originating request |
 | `x-hcx-correlation_id` | UUID | Mandatory | The thread. See the rule below |
-| `x-hcx-workflow_id` | String | **Optional** | Which step, or which case. See the two readings below |
+| `x-hcx-workflow_id` | String | **Optional** | Which step. See the two readings below. The insurance plan request and the status enquiry send `1`, never a correlation ID or case number |
 | `x-hcx-timestamp` | datetime | Mandatory | See the format note below |
 | `x-hcx-status` | String | Mandatory | Where this message stands. Values below |
-| `x-hcx-ben-abha-id` | String | **Mandatory** | The beneficiary's ABHA number. Mandatory on every exchange, including those with no beneficiary in the payload |
+| `x-hcx-ben-abha-id` | String | **Optional** | The beneficiary's ABHA number, hyphenated as `XX-XXXX-XXXX-XXXX`; any other form is refused with `NHCX-1018`. Send it when the beneficiary has one; exchanges with no beneficiary in the payload, such as the insurance plan poll, can leave it out |
 | `x-hcx-use_case` | String | Optional | Values differ by exchange, see below |
 | `x-hcx-error_details` | JSON object | Optional | `code`, `message`, `trace`. Mandatory on a protocol response |
 | `x-hcx-debug_details` | JSON object | Optional | The same shape, for debugging |
-| `x-hcx-debug_flag` | Enum | Optional | `Error`, `Info` or `Debug`. A server may ignore it |
+| `x-hcx-debug_flag` | Enum | Optional | The specification lists `Error`, `Info` and `Debug`; the samples send `INFO`. A server may ignore it |
 
 **The `x-hcx-use_case` values are not one enum.** The workbook states them on
 three sheets and they are not the same on all three.
@@ -40,7 +40,7 @@ three sheets and they are not the same on all three.
 | Status | `New`, `Enhancement`, `Resubmit` |
 | Claim | `New`, `Resubmit` |
 
-A claim cannot be enhanced, which is why `Enhancement` is absent from that row.
+A claim cannot be enhanced, which is why `Enhancement` is absent from that row. On a claim, `Resubmit` marks a query answer: a claim the payer has decided is never sent again, and goes back only as a reprocess `Task`.
 Both workbooks agree, sheet for sheet.
 
 **`x-hcx-debug_flag` is typed two ways.** The Technical Specifications page
@@ -48,12 +48,16 @@ gives the enum as `Error`, `Info` or `Debug`. The NHCX Requests and Responses
 workbook types it as Enum with the single value `INFO`, on its response
 headers, and every header table in the FHIR Reference and every sample in the
 API collection that carries the field sends `INFO`. The field is optional and a
-server may ignore it. Where you send it, send `INFO`, as the samples do. No
-source says whether a server checks the case of the value.
+server may ignore it. No source says whether a server checks the case of the
+value.
 
 Three of those obligations are not stated anywhere else in this documentation
 and are worth reading twice. `x-hcx-request_id` is optional. `x-hcx-workflow_id`
-is optional. `x-hcx-ben-abha-id` is mandatory.
+is optional. `x-hcx-ben-abha-id` is optional.
+
+Optional does not mean leave it out. Send `x-hcx-request_id` on every message,
+as a fresh UUID per originating request. It is cheap, and it satisfies both
+readings until NHA rules on which one stands.
 
 ## The correlation ID rule, in full
 
@@ -76,6 +80,11 @@ the request."
 
 The sandbox exit checklists describe the initiator's half; the protocol pages
 describe the responder's. Build both and threading works.
+
+The status enquiry row describes `/v1/status`, which the sandbox refuses with
+`NHCX-1012`. A status enquiry sent as a `Task` on `/v1/task/submit` is an
+ordinary request: its correlation ID is its own `api_call_id`, and its
+`x-hcx-workflow_id` is `1`, always. Status and Search has the reasons.
 
 Two further rules, and both bite on retries.
 
@@ -109,6 +118,22 @@ header may simply be omitted. There is nothing to negotiate.
 In practice: send the step code where the sheet gives one, because that is what
 the payer keys on. Send nothing where it does not. Agree the case-thread
 reading with a payer only if one asks for it.
+
+Two exchanges the sheet gives no code for still go out with one, because the
+payers in use expect it. The insurance plan request and the status enquiry
+`Task` both send `1`. Neither ever sends a correlation ID, a UUID or the case
+number in this field: the plan belongs to the hospital and the policy, and no
+workflow code names a status check (the Task codes are 36, reprocess, and PC01,
+cancel).
+
+## Status on a query answer
+
+A query answer on `/v1/preauth/submit` or `/v1/claim/submit` (19, 131, 151,
+or 161 under PMJAY) goes as `x-hcx-status: request.initiated`. The workflow
+sheet pairs those codes with `response.complete`, and NHCX refuses that on a
+submit path with `NHCX-1011`, Invalid Status. The rule is the path's: every send
+to a request path is `request.initiated`, and only a send on an `on_` path,
+such as the payment acknowledgement, is `response.complete`.
 
 ## Status words
 
@@ -221,4 +246,8 @@ thirty seconds of a delivery.
 
 HTTP `202`. Not `200`, not an empty body. `entity_type` is derived from the
 path: the second-to-last segment, or the last where that is `v1`, with `on_`
-stripped.
+stripped, except that `paymentnotice` is named `payment`.
+
+The receipt's `timestamp` is written day first, as `DD/MM/YYYY HH:mm:ss:SSS`.
+That form belongs to the receipt only. The `x-hcx-timestamp` header still takes
+ISO 8601 with `+05:30`.

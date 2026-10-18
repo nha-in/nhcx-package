@@ -203,35 +203,8 @@
             }
           },
           {
-            "id": "SupportingInformation/5",
-            "sequence": 5,
-            "category": {
-              "coding": [
-                {
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category",
-                  "code": "INV",
-                  "display": "Document Type - Investigation"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "system": "https://nhcx.abdm.gov.in/document-code",
-                  "code": "HDS",
-                  "display": "Hospital Discharge Summary"
-                }
-              ]
-            },
-            "valueAttachment": {
-              "contentType": "application/pdf",
-              "data": "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCAzNjAgMTQ0XSAvQ29udGVudHMgNCAwIFIgL1Jlc291cmNlcyA8PCAvRm9udCA8PCAvRjEgNSAwIFIgPj4gPj4gPj4KZW5kb2JqCjQgMCBvYmoKPDwgL0xlbmd0aCAxMDYgPj4Kc3RyZWFtCkJUIC9GMSAxMiBUZiAyNCAxMjAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKQlQgL0YxIDEyIFRmIDI0IDEwNCBUZCAoRmlsZWQgb24gdGhlIGVuZC10by1lbmQgcnVuLikgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8IC9UeXBlIC9Gb250IC9TdWJ0eXBlIC9UeXBlMSAvQmFzZUZvbnQgL0hlbHZldGljYSA+PgplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTggMDAwMDAgbiAKMDAwMDAwMDExNSAwMDAwMCBuIAowMDAwMDAwMjQxIDAwMDAwIG4gCjAwMDAwMDAzOTggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSA2IC9Sb290IDEgMCBSID4+CnN0YXJ0eHJlZgo0NjgKJSVFT0YK",
-              "title": "Hospital Discharge Summary"
-            }
-          },
-          {
             "id": "SupportingInformation/6",
-            "sequence": 6,
+            "sequence": 5,
             "category": {
               "coding": [
                 {
@@ -258,7 +231,7 @@
           },
           {
             "id": "SupportingInformation/7",
-            "sequence": 7,
+            "sequence": 6,
             "category": {
               "coding": [
                 {
@@ -285,7 +258,7 @@
           },
           {
             "id": "SupportingInformation/8",
-            "sequence": 8,
+            "sequence": 7,
             "category": {
               "coding": [
                 {
@@ -312,7 +285,7 @@
           },
           {
             "id": "SupportingInformation/9",
-            "sequence": 9,
+            "sequence": 8,
             "category": {
               "coding": [
                 {
@@ -339,7 +312,7 @@
           },
           {
             "id": "SupportingInformation/10",
-            "sequence": 10,
+            "sequence": 9,
             "category": {
               "coding": [
                 {
@@ -362,7 +335,7 @@
           },
           {
             "id": "SupportingInformation/11",
-            "sequence": 11,
+            "sequence": 10,
             "category": {
               "coding": [
                 {
@@ -385,7 +358,7 @@
           },
           {
             "id": "SupportingInformation/12",
-            "sequence": 12,
+            "sequence": 11,
             "category": {
               "coding": [
                 {
@@ -553,8 +526,7 @@
               8,
               9,
               10,
-              11,
-              12
+              11
             ]
           },
           {
@@ -614,8 +586,7 @@
               8,
               9,
               10,
-              11,
-              12
+              11
             ]
           }
         ],

@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D5: Resubmit pre-authorisation - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/preauth/submit
 # Callback API: /v1/preauth/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D5"
 title: "Resubmit pre-authorisation"
-side: "provider"
+side: "pmjay"
 api: "/v1/preauth/submit"
 callback: "/v1/preauth/on_submit"
 workflow: "121 (Resubmission)"

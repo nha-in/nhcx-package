@@ -12,7 +12,7 @@ A payment run screen, built from approved claims: select the claims, initiate th
 
 ```
 POST /v1/paymentnotice/request      workflows 30, 31, 33
-receive /v1/paymentnotice/on_request   the provider's acknowledgement, workflow 17
+receive /v1/paymentnotice/on_request   the provider's acknowledgement, workflow 17 (or the notice's own code)
 ```
 
 Three notices per claim as the money moves: 30 initiated, 31 processed by the bank, 33 settled with the UTR. Each is a separate message with its own correlation ID. Send 33 only when the bank has confirmed; under PMJAY it is the gate that lets the provider raise a shortfall claim.
@@ -37,7 +37,7 @@ The provider will check that net plus deductions equals the approved amount. Mak
 
 ### The acknowledgement
 
-Arrives as a `Task` with `status = completed`, code `status`, and an output whose value is `paymentack`, with the claim number as a second output. It confirms receipt, not agreement. Record it against the claim and consider the payment lifecycle closed once the acknowledgement of 33 is in.
+Arrives as a `Task` with `status = completed`, code `status`, and an output whose value is `paymentack`, with the claim number as a second output, under workflow 17 from a PMJAY provider; the reference hospital build sends it to a payer on the generic network under the notice's own workflow id, so accept both. It confirms receipt, not agreement. Record it against the claim and consider the payment lifecycle closed once the acknowledgement of 33 is in.
 
 A return payment, where money has to come back, has its own codes: RP1 intimation, RP2 acknowledged, RP3 failed.
 
@@ -72,9 +72,9 @@ The case number as identifier, `status = completed`, a `category` (reminder, not
 
 #### The two Organizations
 
-Payer first, then the provider.
+Both organisations, each typed by `Organization.type` (`pay` and `prov`). Entry order carries no meaning: read each party's role from its type, never from its position in the bundle.
 
-The acknowledgement comes back as the same shape with the provider `Organization` first and the same correlation ID. It means received, not resolved; track resolution in the case, not in the exchange.
+The acknowledgement comes back as the same shape with the same correlation ID; you know it is the answer because it arrives from the provider's sender code on that correlation ID with `Task.status = completed`, not because of where the `Organization` entries sit. It means received, not resolved; track resolution in the case, not in the exchange.
 
 ## What a provider does with each notice
 

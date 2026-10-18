@@ -19,7 +19,7 @@ headers {
   x-hcx-workflow_id: 15
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
   x-hcx-use_case: New
 }
 
@@ -40,11 +40,11 @@ docs {
 
   ## Business purpose
 
-  The claim service publishes its submit operation twice, at /v1 and at /internal/v1. Both let a provider submit or resubmit the final claim bundle for adjudication and settlement. The internal path is documented only as a distinct operationId on the same contract; no separate business purpose is described for it.
+  The claim service publishes its submit operation twice, at /v1 and at /internal/v1. Both let a provider submit the final claim bundle for adjudication and settlement. The internal path is documented only as a distinct operationId on the same contract; no separate business purpose is described for it.
 
   ## When to use
 
-  Documented as the internal variant of claim submit, consumed by providers with a JWEPayload body. The same workflow discriminators apply: 15 for the final claim, 151 for a claim query response, with x-hcx-use_case New or Resubmit and x-hcx-status request.initiated. The OpenAPI specs expose this operation twice, at /v1/... and at /internal/v1/..., with identical descriptions, request bodies and response sets; only the operationId differs (an Internal suffix). The specs do not document what makes the internal variant different beyond that suffix, so treat it as a mirror of the public path and integrate against the public /v1 path unless NHCX onboarding tells you otherwise.
+  Documented as the internal variant of claim submit, consumed by providers with a JWEPayload body. The same workflow discriminators apply: 15 for the final claim, 151 for a claim query response (161 under PMJAY), with x-hcx-use_case New or Resubmit and x-hcx-status request.initiated. The OpenAPI specs expose this operation twice, at /v1/... and at /internal/v1/..., with identical descriptions, request bodies and response sets; only the operationId differs (an Internal suffix). The specs do not document what makes the internal variant different beyond that suffix, so treat it as a mirror of the public path and integrate against the public /v1 path unless NHCX onboarding tells you otherwise.
 
   ## Preconditions
 

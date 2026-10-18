@@ -74,31 +74,26 @@ NRCeS profile: [InsurancePlan](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 
 ## Supporting-information requirements
 
-| Code | Display | Stage | System |
-| :-- | :-- | :-- | :-- |
-| `POI` | Proof of identity | preauth | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `DIA` | Diagnostic report | preauth | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `RAD` | Radiology / X-Ray / CT / MRI Scan Reports | preauth | `<participant-defined>` |
-| `HDS` | Hospital discharge summary | discharge | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `CD` | Clinical document | discharge | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `ICU` | ICU Flow Chart & Vital Monitoring Log | discharge | `<participant-defined>` |
-| `HDS` | Hospital discharge summary | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MB` | Medical bill | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `FCF` | Filled claim form | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `INF` | Additional info related to claim | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `STG` | Standard Treatment Guidelines | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `ANG` | Coronary Angiography Film & CD Report | preauth | `<participant-defined>` |
-| `ECG` | 12-Lead Electrocardiogram (ECG) Strip | preauth | `<participant-defined>` |
-| `MB` | Medical bill | preauth | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `EST` | Detailed Pre-Auth Cost Estimate | preauth | `<participant-defined>` |
-| `IMP` | Document Type - Implant | discharge | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `IMP` | Document Type - Implant | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `CER` | Medical Certficate | preauth | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MB` | Medical bill | discharge | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `DIA` | Diagnostic report | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `HIS_PATH` | Histopathology / Biopsy Report | claim | `<participant-defined>` |
-| `CD` | Clinical document | claim | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `OTR` | Operation Theatre Notes & Surgical Summary | claim | `<participant-defined>` |
+| Code | Display | Category | Stage | System |
+| :-- | :-- | :-- | :-- | :-- |
+| `POI` | Proof of Identity (Aadhaar / Passport / Voter ID) | `POI` | preauth | `<participant-defined>` |
+| `DIA` | Diagnostic & Laboratory Reports | `DIA` | preauth | `<participant-defined>` |
+| `RAD` | Radiology / X-Ray / CT / MRI Scan Reports | `DIA` | preauth | `<participant-defined>` |
+| `HDS` | Hospital Discharge Summary | `HDS` | discharge | `<participant-defined>` |
+| `ICU` | ICU Flow Chart & Vital Monitoring Log | `CD` | discharge | `<participant-defined>` |
+| `HDS` | Hospital Discharge Summary | `HDS` | claim | `<participant-defined>` |
+| `MB` | Medical & Pharmacy Bills Itemized | `MB` | claim | `<participant-defined>` |
+| `FCF` | Filled NHCX Claim Form (Signed) | `FCF` | claim | `<participant-defined>` |
+| `STG` | Standard Treatment Guidelines | `INF` | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
+| `ANG` | Coronary Angiography Film & CD Report | `DIA` | preauth | `<participant-defined>` |
+| `ECG` | 12-Lead Electrocardiogram (ECG) Strip | `DIA` | preauth | `<participant-defined>` |
+| `EST` | Detailed Pre-Auth Cost Estimate | `MB` | preauth | `<participant-defined>` |
+| `IMP` | Medical Implant Invoice & Barcode Sticker | `IMP` | discharge | `<participant-defined>` |
+| `IMP` | Medical Implant Invoice & Barcode Sticker | `IMP` | claim | `<participant-defined>` |
+| `CER` | Medical Certificate / Doctor Referral | `CER` | preauth | `<participant-defined>` |
+| `MB` | Medical & Pharmacy Bills Itemized | `MB` | discharge | `<participant-defined>` |
+| `HIS_PATH` | Histopathology / Biopsy Report | `DIA` | claim | `<participant-defined>` |
+| `OTR` | Operation Theatre Notes & Surgical Summary | `CD` | claim | `<participant-defined>` |
 
 10 of the requirements link a questionnaire through `documentationUrl`.
 

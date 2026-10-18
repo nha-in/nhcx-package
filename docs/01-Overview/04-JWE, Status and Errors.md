@@ -18,11 +18,31 @@ This split explains a pattern that runs through the rest of the documentation. I
 
 NHCX is designed so that more than one exchange instance can run, and messages can be relayed between them. A participant's address carries the instance after the `@`, as in `1518@hcx`. When a hospital and its payer are on the same instance, that instance delivers the message. When they are on different instances, the hospital's instance relays it to the payer's. Each instance does its own registry lookup, validation, audit and routing, and the answer, the payment notice and its acknowledgement come back the same way. An exchange that relays is a participant with the role `HIE/HIO.NHCX`, and it cannot see the payload.
 
-The Technical Specifications appendix names three cases that need a relay:
+A relay is needed whenever the two participants in an exchange sit on different instances. Three cases lead to that:
 
-1. The provider is on one instance and the payer for the policy's scheme is on another.
-2. A beneficiary is treated in a network hospital in another state, and that hospital is on a different instance from the payer.
-3. A top-up case, where the primary insurance is handled by a payer on one instance and the secondary insurance by a payer on another.
+- **Payer on another instance.** The hospital is on instance A. The payer that runs the policy's scheme is on instance B. Instance A passes the hospital's message to instance B, which delivers it to the payer.
+- **Treatment in another state.** A beneficiary is treated at a network hospital in another state. That hospital is on instance A, and the beneficiary's payer is on instance B. The relay works as in the first case.
+- **Top-up cover.** The patient has a primary and a secondary insurance. The primary payer is on instance A and the secondary payer is on instance B. A hospital on instance A reaches the primary payer directly, and its messages to the secondary payer are relayed to instance B.
+
+In every case the answer travels back along the same path, from instance B to instance A and then to the hospital.
+
+```mermaid
+sequenceDiagram
+  participant P as Provider (on instance A)
+  participant A as NHCX instance A
+  participant B as NHCX instance B
+  participant Y as Payer (on instance B)
+  P->>A: Sealed request
+  A->>A: Registry lookup, validation, audit
+  A->>B: Relay the sealed request
+  B->>B: Registry lookup, validation, audit
+  B->>Y: Deliver to the payer's callback
+  Y->>B: Sealed answer
+  B->>A: Relay the sealed answer
+  A->>P: Deliver to the provider's callback
+```
+
+Neither instance can open the letter at any point on this path.
 
 ## Every field on the envelope
 
@@ -38,9 +58,9 @@ The format is JWE, and every NHCX field on it starts with `x-hcx-`.
 | `workflow_id` | Which step of the claim this is. The codes are listed in the Workflow Codes chapter. |
 | `timestamp` | When it was sent. |
 | `status` | Whether this is a request going out or an answer coming back, and how far along. |
-| `ben-abha-id` | The beneficiary's ABHA number, without hyphens. Mandatory on every exchange, including those with no beneficiary in the payload. |
+| `ben-abha-id` | The beneficiary's ABHA number, hyphenated as `XX-XXXX-XXXX-XXXX`; any other form is refused with `NHCX-1018`. Optional: send it when the beneficiary has one. |
 | `use_case` | Optional, and the field that distinguishes an enhancement from a resubmission at the protocol layer. The permitted values differ by exchange: `New`, `Enhancement` or `Resubmit` on preauthorisation and status, `New` or `Resubmit` on a claim. |
-| `error_details`, `debug_details`, `debug_flag` | Used only when something has gone wrong. The specification gives `debug_flag` as `Error`, `Info` or `Debug`; the workbook and the samples send `INFO`. Envelope Fields says which to send. |
+| `error_details`, `debug_details`, `debug_flag` | Used only when something has gone wrong. `debug_flag` is optional: the specification lists `Error`, `Info` and `Debug`; the samples send `INFO`. A server may ignore it. |
 
 Two more fields, `alg` and `enc`, name the encryption used. The specification says `RSA-OAEP` with `A256GCM`; the handbook and the live samples use `RSA-OAEP-256`. Follow the samples.
 
@@ -59,7 +79,7 @@ The correlation ID rule is unified and consistent across the network:
 
 If a request fails at the gateway layer, the exchange retires that correlation ID. Any subsequent retry must generate a fresh `api_call_id` and fresh `correlation_id`; reusing a failed correlation ID causes silent drops.
 
-The timestamp is contested on two axes. Format: the protocol page defines it as a Unix timestamp, and the sample header in Common Mistakes carries epoch milliseconds, while the handbook and FAQ both use ISO 8601. Zone: the FAQ says UTC with a trailing `Z`, the handbook says Indian time with `+05:30` and that UTC will fail validation. The sample bundles use ISO with `+05:30`. It is a validated field; establish the form with the payer before building.
+The timestamp is contested on two axes. Format: the protocol page defines it as a Unix timestamp, and the sample header in Common Mistakes carries epoch milliseconds, while the handbook and FAQ both use ISO 8601. Zone: the FAQ says UTC with a trailing `Z`, the handbook says Indian time with `+05:30` and that UTC will fail validation. Both reference gateways send ISO 8601 in Indian time with a colon-less offset, as in `2023-11-06T13:22:06+0530`. It is a validated field; establish the form with the payer before building.
 
 ## Status words
 
@@ -85,7 +105,7 @@ Put together, a preauthorisation's life reads like this.
 | Provider | 12 | `request.initiated` | New preauthorisation |
 | Payer | 20 | `response.partial` | Received, under review |
 | Payer | 24 | `request.initiated` | Query raised. The payer is now the initiator. |
-| Provider | 19 | `response.complete` | Query answered |
+| Provider | 19 | `request.initiated` | Query answered. The sheet pairs 19 with `response.complete`, but the answer goes out on `/v1/preauth/submit` and NHCX refuses `response.complete` there with `NHCX-1011`. |
 | Payer | 21 | `response.complete` | Approved |
 
 Using the wrong status is the first item on the portal's list of common mistakes. The full table of which status goes with which code is in the Workflow Codes chapter.
@@ -101,7 +121,7 @@ sequenceDiagram
   P->>Y: 12, request.initiated: new preauthorisation
   Y-->>P: 20, response.partial: received
   Y->>P: 24, request.initiated: query, payer now initiates
-  P-->>Y: 19, response.complete: query answered
+  P->>Y: 19, request.initiated: query answered
   Y-->>P: 21, response.complete: approved
 ```
 
@@ -127,18 +147,18 @@ Error codes come in families. `PAYR-` codes are the payer's, and read like plain
 
 The error table reads like a list of code lookups, and several of the codes mean something else in the running sandbox. From the September 2026 run:
 
-| Code | The message | What it turned out to mean |
-| :---- | :---- | :---- |
-| `PAYR-1027` | Invalid item id found for item in claim component | `Claim.item` has no FHIR element `id` (`Item/1`). Nothing to do with the package code |
-| `PAYR-1083` | No HPR details found for the practitioner … category code as HPIN | The `Practitioner` carries no identifier typed `HPIN` |
-| `PAYR-1238` | Beneficiary is having an active preauthorization request at this hospital with reference number … | Scheme rule, not a bundle fault: one live preauthorisation per beneficiary per hospital. The reference number ends in the SHA's case id |
-| `PAYR-1401` | Policy not allowed for the hospital | The plan was asked for under a policy the hospital is not empanelled under; ask under the beneficiary's own |
-| `PAYR-1019` | Invalid sequence received in supporting info element | A `supportingInfo` entry with no `sequence`; number the whole list once it is assembled |
-| `PAYR-1256`, `PAYR-1363` | Response for Authentication Consent Questionnaire is missing | The plan's consent questionnaire, unanswered, where no biometric token was taken |
-| `PAYR-1008` | Invalid content type … / Invalid input, code and reason code | Two different faults on one code: a document outside pdf, jpg, jpeg, png and fhir+json; or a Task code paired with a reason the scheme does not accept |
-| `PAYR-1245` | Only one conservative procedure can be booked for a case | The master's `ProcedureType`; an enhancement on a conservative case must add a medical package |
-| `ERR-PYR-CLM-007` | No prior preauthorization or claim record found for case number | The claim was sent under a number of its own instead of the pre-authorisation's |
-| `PAYR-1322` | Active instance found for case number | A request is already open on that case; the scheme takes one at a time |
+| Code | The message | Cause | What to do |
+| :---- | :---- | :---- | :---- |
+| `PAYR-1027` | Invalid item id found for item in claim component | `Claim.item` has no FHIR element `id` (`Item/1`). Nothing to do with the package code | Give every `Claim.item` an element `id`, then send again. `PAYR-1028` (item sequence) and `PAYR-1029` (bundle id) are the same kind of fault |
+| `PAYR-1083` | No HPR details found for the practitioner … category code as HPIN | The `Practitioner` carries no identifier typed `HPIN` | Add the HPR id as an identifier typed `HPIN` from the NRCeS `ndhm-identifier-type-code` system. PMJAY Sandbox Run shows the full identifier list |
+| `PAYR-1238` | Beneficiary is having an active preauthorization request at this hospital with reference number … | Scheme rule, not a bundle fault: one live preauthorisation per beneficiary per hospital. The reference number ends in the SHA's case id | Cancel the open preauthorisation with a cancel Task on workflow `PC01` from the hospital that raised it, or raise the claim that goes with it |
+| `PAYR-1401` | Policy not allowed for the hospital | The plan was asked for under a policy the hospital is not empanelled under | Ask again under the beneficiary's policy code from the eligibility answer |
+| `PAYR-1019` | Invalid sequence received in supporting info element | A `supportingInfo` entry with no `sequence`, typically one appended after the rest were numbered | Number the whole list once it is assembled |
+| `PAYR-1256`, `PAYR-1363` | Response for Authentication Consent Questionnaire is missing | The plan's consent questionnaire, unanswered, where no biometric token was taken. `PAYR-1256` is at the preauthorisation, `PAYR-1363` at the claim | Answer the questionnaire named in the package master as a `QuestionnaireResponse`, referenced from a supporting-info entry of category `INF`, code `ODN` |
+| `PAYR-1008` | Invalid content type … / Invalid input, code and reason code … | Two of fifteen uncoded texts all sent as `PAYR-1008`: a document outside pdf, jpg, jpeg, png and fhir+json, or a Task code paired with a reason the scheme does not accept | Attach only those five content types, and pair each Task code with a reason the scheme accepts. Error Codes lists all fifteen |
+| `PAYR-1245` | Only one conservative procedure can be booked for a case | The master's `ProcedureType`: the enhancement added a second `Conservative` package | Add a `Medical` package or an enhanceable add-on instead |
+| `ERR-PYR-CLM-007` | No prior preauthorization or claim record found for case number | The claim was sent under a case number of its own instead of the preauthorisation's | Send the claim under the preauthorisation's case number, in the `Claim` identifier. If no preauthorisation exists, submit one first. Resend with a fresh correlation ID |
+| `PAYR-1322` | Active instance found for case number | A request is already open on that case; the scheme takes one at a time | Wait for the decision on the open request before sending the next |
 
 `NHCX-1010`, *no data with given correlation id for call back request*, belongs beside them and is the exchange's own. It is what a payer hears when it answers a submission it left silent. NHCX redelivers an unanswered request, drops it after a few tries and retires the correlation, so a verdict taken minutes later has nowhere to land. The remedy is the one the live PMJAY payer uses: acknowledge the submission at once with a `ClaimResponse` whose `outcome` is `queued`, and send the decision later on the same thread.
 
@@ -184,7 +204,7 @@ Send the compact serialisation, five parts. The message-security page says flatt
 
 ### Timestamp format
 
-Send ISO 8601 with `+05:30`. The samples use it throughout. Accept a Unix epoch on the way in.
+Send ISO 8601 in Indian time, as in `2023-11-06T13:22:06+0530`, which is what both reference gateways send. Accept a Unix epoch on the way in.
 
 ### Correlation ID on a response
 
@@ -208,7 +228,7 @@ Derive it from the path. The second-to-last segment, or the last where that is `
 
 Two points looked unanswerable in earlier versions of this documentation. Both are answered in the sources, and the answers are recorded here.
 
-**The workflow code for eligibility, insurance plan, search, predetermination and status.** The workflow sheet lists none because the header is optional. `x-hcx-workflow_id` is marked Optional on all twenty-five rows on which it appears, across all ten sheets of the NHCX Requests and Responses workbook, including the CoverageEligibility and Insurance Plan sheets. Send the step code where the sheet gives one. Send nothing where it does not. There is nothing to negotiate.
+**The workflow code for eligibility, insurance plan, search and status.** The workflow sheet lists none because the header is optional. `x-hcx-workflow_id` is marked Optional on all twenty-five rows on which it appears, across all ten sheets of the NHCX Requests and Responses workbook, including the CoverageEligibility and Insurance Plan sheets. Send the step code where the sheet gives one. Where it gives none, send what the live PMJAY provider sends: `1` on the insurance plan request, which belongs to the hospital and the policy and never to one case, and `1` on every status enquiry Task, never the leg's correlation id. The eligibility sample carries `11` (Patient Admitted).
 
 The field also carries two readings, which is why it looks unresolved. The Workflow Status Sheet treats it as a step code; the protocol pages define it as an identifier that "may span over a series of message exchanges" for one case. Envelope Fields sets both out.
 

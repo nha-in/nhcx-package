@@ -62,7 +62,8 @@ function escapePipe(text) {
 function buildUsecasesDoc(ucData) {
   const out = [];
   // A fixture lies outside package/ and is not in the release: shown as a path, not linked.
-  const fx = (path) => workspaceRef(path, USECASES_DOC_DIR);
+  // The package's own sample bundle folders, linked so they hold inside the release.
+  const fb = (...codes) => codes.map((c) => fileLink(`fhir/${c}/`, join(FHIR_DIR, c), USECASES_DOC_DIR)).join(", ");
   out.push("# NHCX Use Cases");
   out.push("");
   out.push(
@@ -79,9 +80,6 @@ function buildUsecasesDoc(ucData) {
   );
   out.push(
     "- **Preauth Request Submission**: Submitted by providers before admission or planned surgery. Payers respond with line-item adjudication via `on_submit`."
-  );
-  out.push(
-    "- **Predetermination Request**: Inquires expected coverage and deductible calculations for planned procedures without reserving policy balance."
   );
   out.push(
     "- **Claim Request Submission**: Submitted by providers upon discharge with final bill, discharge summary, and itemised claims."
@@ -247,96 +245,96 @@ function buildUsecasesDoc(ucData) {
 
   out.push("---");
   out.push("");
-  out.push("## The 100 Official NHCX Test Use Cases");
+  out.push("## The 99 NHCX Test Use Cases");
   out.push("");
   out.push(
-    `NHA specifies a formal test matrix of 100 numbered use cases covering every scenario an integrator must demonstrate for network certification. The complete reference manifest is preserved at ${fx("fixtures/usecases.txt")}.`
+    `The test matrix lists 99 numbered use cases, a request and its responses for each scenario an integrator demonstrates. The last column names the package's sample bundle folders for each scenario.`
   );
   out.push("");
   out.push(
-    "| Case IDs | Scenario Category | Exchanges Involved | Key Verification Criteria | Fixture Reference |"
+    "| Case IDs | Scenario Category | Exchanges Involved | Key Verification Criteria | Sample Bundles |"
   );
   out.push("| :--- | :--- | :--- | :--- | :--- |");
   out.push(
-    `| **1 to 3** | Insurance Plan | \`/insuranceplan/request\` & \`on_request\` | Plan query (\`Task\` poll), package master response (\`InsurancePlan\`), error response | ${fx("fixtures/reference/provider/insurance/")} |`
+    `| **1 to 3** | Insurance Plan | \`/v1/insuranceplan/request\` & \`/v1/insuranceplan/on_request\` | Plan query (\`Task\` poll), package master response (\`InsurancePlan\`), error response | ${fb("B2","C4")} |`
   );
   out.push(
-    `| **4 to 7** | Coverage Validation | \`/coverageeligibility/check\` & \`on_check\` | Purpose \`validation\`. Checks policy in force, active dates, error handling | ${fx("fixtures/reference/provider/coverage/validation/")} |`
+    `| **4 to 6** | Coverage Validation | \`/v1/coverageeligibility/check\` & \`/v1/coverageeligibility/on_check\` | Purpose \`validation\`. Checks policy in force, active dates, error handling | ${fb("B1","C3")} |`
   );
   out.push(
-    `| **8 to 10** | Coverage Discovery | \`/coverageeligibility/check\` & \`on_check\` | Purpose \`discovery\`. Discovers policy from ABHA when policy number unknown | ${fx("fixtures/reference/provider/coverage/discovery/")} |`
+    `| **7 to 9** | Coverage Discovery | \`/v1/coverageeligibility/check\` & \`/v1/coverageeligibility/on_check\` | Purpose \`discovery\`. Discovers policy from ABHA when policy number unknown | ${fb("B1","C3")} |`
   );
   out.push(
-    `| **11 to 13** | Auth-Requirements | \`/coverageeligibility/check\` & \`on_check\` | Purpose \`auth-requirements\`. Returns mandatory document codes (\`MAND...\`) | ${fx("fixtures/reference/provider/coverage/authrequirements/")} |`
+    `| **10 to 12** | Auth-Requirements | \`/v1/coverageeligibility/check\` & \`/v1/coverageeligibility/on_check\` | Purpose \`auth-requirements\`. Returns mandatory document codes (\`MAND...\`) | ${fb("B1","C3")} |`
   );
   out.push(
-    `| **14 to 16** | Preauth with Biometric Token | \`/preauth/submit\` & \`on_submit\` | Valid biometric token in header/token. Ack (wf20) & approval (wf21) | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **13 to 15** | Preauth with Biometric Token | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Valid biometric token in header/token. Ack (wf20) & approval (wf21) | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **17 to 19** | Preauth without Token (Consent) | \`/preauth/submit\` & \`on_submit\` | Physical consent form uploaded in supportingInfo questionnaire | ${fx("fixtures/collection/provider/preauth/")} |`
+    `| **16 to 18** | Preauth without Token (Consent) | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Physical consent form uploaded in supportingInfo questionnaire | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **20 to 22** | Preauth Newborn Registration | \`/preauth/submit\` & \`on_submit\` | Newborn registered under mother's ABHA/PMJAY policy, birth certificate | ${fileLink("docs/05-FHIR Reference/12-Claim Request.md", join(FHIR_REFERENCE_DIR, "12-Claim Request.md"), USECASES_DOC_DIR)} |`
+    `| **19 to 21** | Preauth Newborn Registration | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Newborn registered under mother's ABHA/PMJAY policy, birth certificate | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **23 to 25** | Preauth with STG | \`/preauth/submit\` & \`on_submit\` | Standard Treatment Guidelines questionnaire answered under supportingInfo | ${fx("fixtures/collection/pmjay-payer/insurance/")} |`
+    `| **22 to 24** | Preauth with STG | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Standard Treatment Guidelines questionnaire answered under supportingInfo | ${fb("D4","C4")} |`
   );
   out.push(
-    `| **26 to 28** | Preauth with Implant & Attendant | \`/preauth/submit\` & \`on_submit\` | Implant product details and attendant certification included | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **25 to 27** | Preauth with Implant & Attendant | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Implant product details and attendant certification included | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **29 to 31** | Preauth Query & Resolution | \`/preauth/submit\` / \`/communication/\` | Payer queries additional remarks/documents; provider answers (wf19/131) | ${fx("fixtures/reference/provider/preauth/queryupdate/")} |`
+    `| **28 to 30** | Preauth Query & Resolution | \`/preauth/submit\` / \`/communication/\` | Provider answers a payer query with additional remarks and documents (wf19), then the acknowledgement and the adjudication | ${fb("D7","C5")} |`
   );
   out.push(
-    `| **32 to 34** | Preauth Standalone Procedure | \`/preauth/submit\` & \`on_submit\` | Single stand-alone medical or surgical package booking | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **31 to 33** | Preauth Standalone Procedure | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Single stand-alone medical or surgical package booking | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **35 to 37** | Preauth Cyclic Procedure | \`/preauth/submit\` & \`on_submit\` | Recurring cyclic treatments (e.g. hemodialysis, chemotherapy cycles) | ${fx("fixtures/collection/provider/preauth/")} |`
+    `| **34 to 36** | Preauth Cyclic Procedure | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Recurring cyclic treatments (e.g. hemodialysis, chemotherapy cycles) | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **38 to 40** | Preauth Unspecified Procedure | \`/preauth/submit\` & \`on_submit\` | Unspecified surgical package (\`SGU100\`) with surgical notes attached | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **37 to 39** | Preauth Unspecified Procedure | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Unspecified surgical package (\`SGU100\`) with surgical notes attached | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **41 to 43** | Enhancement: Length of Stay | \`/preauth/submit\` & \`on_submit\` | Increase in LOS (\`x-hcx-use_case: Enhancement\`), updated clinical justification | ${fx("fixtures/reference/provider/preauth/enhancement/")} |`
+    `| **40 to 42** | Enhancement: Length of Stay | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Increase in LOS (\`x-hcx-use_case: Enhancement\`), updated clinical justification | ${fb("D6","C5")} |`
   );
   out.push(
-    `| **44 to 46** | Enhancement: Additional Procedures | \`/preauth/submit\` & \`on_submit\` | Additional secondary procedures or STG questionnaire inclusion | ${fx("fixtures/reference/provider/preauth/enhancement/")} |`
+    `| **43 to 45** | Enhancement: Additional Procedures | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Additional secondary procedures or STG questionnaire inclusion | ${fb("D6","C5")} |`
   );
   out.push(
-    `| **47 to 49** | Resubmission with STG | \`/preauth/submit\` & \`on_submit\` | Procedure modification/addition after rejection with STG questionnaire | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **46 to 48** | Resubmission with STG | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Procedure modification/addition after rejection with STG questionnaire | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **50 to 52** | Resubmission without STG | \`/preauth/submit\` & \`on_submit\` | Procedure modification/addition after rejection without STG questionnaire | ${fx("fixtures/reference/provider/preauth/request/")} |`
+    `| **49 to 51** | Resubmission without STG | \`/v1/preauth/submit\` & \`/v1/preauth/on_submit\` | Procedure modification/addition after rejection without STG questionnaire | ${fb("B3","C5")} |`
   );
   out.push(
-    `| **53 to 54** | Preauth Cancellation | \`/task/submit\` & \`on_submit\` | Cancellation \`Task\` (\`PC01\`/\`PC02\`) referencing original preauthorisation | ${fx("fixtures/reference/payer/task/cancelled/")} |`
+    `| **52 to 53** | Preauth Cancellation | \`/v1/task/submit\` & \`/v1/task/on_submit\` | Cancellation \`Task\` (\`PC01\`/\`PC02\`) referencing original preauthorisation | ${fb("D8","C10")} |`
   );
   out.push(
-    `| **55 to 57** | Claim Cyclic Procedure | \`/claim/submit\` & \`on_submit\` | Claim submission for completed cyclic treatment cycle | ${fx("fixtures/collection/provider/claim/")} |`
+    `| **54 to 56** | Claim Cyclic Procedure | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | Claim submission for completed cyclic treatment cycle | ${fb("B5","C7")} |`
   );
   out.push(
-    `| **58 to 60** | Claim Live Discharge | \`/claim/submit\` & \`on_submit\` | Normal completed discharge to home (\`DTH\`). Final bills and summary | ${fx("fixtures/reference/provider/claim/request/")} |`
+    `| **57 to 59** | Claim Live Discharge | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | Normal completed discharge to home (\`DTH\`). Final bills and summary | ${fb("B5","C7")} |`
   );
   out.push(
-    `| **61 to 63** | Claim Query & Resolution | \`/claim/submit\` / \`/communication/\` | Payer raises query on claim (wf27); provider submits answer (wf141/151) | ${fx("fixtures/reference/provider/claim/queryupdate/")} |`
+    `| **60 to 62** | Claim Query & Resolution | \`/claim/submit\` / \`/communication/\` | Payer raises query on claim (wf27); provider submits answer (wf151, wf161 under PMJAY) | ${fb("D10","C7")} |`
   );
   out.push(
-    `| **64 to 72** | Claim LAMA Scenarios | \`/claim/submit\` & \`on_submit\` | LAMA before surgery (\`LM100\` per diem), after surgery (package), during surgery (\`LM100\`) | ${fx("fixtures/reference/payer/claim/approved/")} |`
+    `| **63 to 71** | Claim LAMA Scenarios | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | LAMA before surgery (\`LM100\` per diem), after surgery (package), during surgery (\`LM100\`) | ${fb("D9","C7")} |`
   );
   out.push(
-    `| **73 to 81** | Claim DAMA Scenarios | \`/claim/submit\` & \`on_submit\` | DAMA before surgery (\`LM100\`), after surgery (package), during surgery (\`LM100\`) | ${fx("fixtures/reference/payer/claim/approved/")} |`
+    `| **72 to 80** | Claim DAMA Scenarios | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | DAMA before surgery (\`LM100\`), after surgery (package), during surgery (\`LM100\`) | ${fb("D9","C7")} |`
   );
   out.push(
-    `| **82 to 90** | Claim Death Scenarios | \`/claim/submit\` & \`on_submit\` | Discharge to mortuary (\`DTM\`). Before, after, and during surgery | ${fx("fixtures/collection/provider/claim/")} |`
+    `| **81 to 89** | Claim Death Scenarios | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | Discharge to mortuary (\`DTM\`). Before, after, and during surgery | ${fb("B5","C7")} |`
   );
   out.push(
-    `| **91 to 93** | Claim Erroneous Request | \`/claim/submit\` & \`on_submit\` | Erroneous submission corrected with remaining balance and mandatory docs | ${fx("fixtures/reference/provider/claim/request/")} |`
+    `| **90 to 92** | Claim Erroneous Request | \`/v1/claim/submit\` & \`/v1/claim/on_submit\` | Erroneous submission corrected with remaining balance and mandatory docs | ${fb("B5","C7")} |`
   );
   out.push(
-    `| **94 to 96** | Claim Reprocess / Dispute | \`/task/submit\` & \`on_submit\` | Reprocess \`Task\` (code 36) with appeal justification and mandatory docs | ${fx("fixtures/reference/provider/claim/reprocess/")} |`
+    `| **93 to 95** | Claim Reprocess / Dispute | \`/v1/task/submit\` & \`/v1/task/on_submit\` | Reprocess \`Task\` (workflow 36) with appeal justification and mandatory docs | ${fb("D11","C10")} |`
   );
   out.push(
-    `| **97 to 100**| Payment Notice & Settlement | \`/paymentnotice/request\` & \`on_request\` | Payment initiation (wf30), ack (wf17/31), cleared update, and final ack | ${fx("fixtures/reference/payer/payment/notice/")} |`
+    `| **96 to 99** | Payment Notice & Settlement | \`/v1/paymentnotice/request\` & \`/v1/paymentnotice/on_request\` | Payment initiation (wf30), its acknowledgement, the update to cleared, and its acknowledgement (wf17 under PMJAY) | ${fb("C9","B7")} |`
   );
   out.push("");
   out.push("## Testing Against the Dummy Payer");
@@ -468,7 +466,7 @@ function buildWorkflowsDoc(wfData) {
   out.push("");
   out.push("---");
   out.push("");
-  out.push("## Master Catalog of All 74 Workflow Codes");
+  out.push(`## Master Catalog of All ${(wfData.codes || []).length} Workflow Codes`);
   out.push("");
   out.push(
     "Complete index of all published codes:"
@@ -487,7 +485,7 @@ function buildWorkflowsDoc(wfData) {
     // Codes known only from the Workflow Status Sheet have no author; leave the cell empty.
     const rawAuthor = /status sheet only/i.test(c.authored_by || "") ? "" : c.authored_by || "";
     const author = rawAuthor.charAt(0).toUpperCase() + rawAuthor.slice(1);
-    const statuses = (c.statuses || []).map((s) => `\`${s}\``).join(", ");
+    const statuses = statusCell(c);
     const stages = (c.stages || []).join(", ");
     const reused = c.reused ? "Yes" : "No";
     out.push(
@@ -496,6 +494,17 @@ function buildWorkflowsDoc(wfData) {
   }
 
   out.push("");
+  const unpublished = wfData.unpublished || [];
+  if (unpublished.length) {
+    out.push("### Codes Not on the Sheet");
+    out.push("");
+    out.push("Codes sent or received on the exchange that the Workflow Status Sheet does not publish:");
+    out.push("");
+    out.push("| Code | Means | Statuses |");
+    out.push("| :--- | :--- | :--- |");
+    for (const c of unpublished) out.push(`| **\`${escapePipe(String(c.code))}\`** | ${escapePipe(c.means || "")} | ${statusCell(c)} |`);
+    out.push("");
+  }
   out.push("---");
   out.push("");
   out.push("## Reconciled Discrepancies and Authority Rules");
@@ -523,32 +532,47 @@ function buildWorkflowsDoc(wfData) {
     "1. **251**: Reconciled as Preauthorisation Resubmission acknowledgement in the sheet; the PMJAY handbook uses it in its claim reprocess section."
   );
   out.push(
-    "2. **Cancellation (PC01 vs 122)**: The sheet and handbook code table prescribe `PC01` (request) and `PC02` (completion). The handbook prose mentions `122`, which clashes with `R122` (reimbursement claim reprocess). Integrators should strictly use `PC01` and `PC02` on `/v1/task/submit`."
+    "2. **Cancellation (PC01 vs 122)**: The sheet and handbook code table prescribe `PC01` (request) and `PC02` (completion). The handbook prose mentions `122`, which clashes with `R122` (reimbursement claim reprocess). Send `PC01` on `/v1/task/submit`; the payer answers with `PC02` on `/v1/task/on_submit`."
   );
   out.push(
     "3. **18**: Defined as Preauthorisation Query Acknowledgement in the sheet; the handbook repurposes it for claim reprocess."
   );
   out.push(
-    "4. **Reprocess (36 vs 18)**: Section 11 gives `18` for reprocess, while Section 12 gives `36` (Claim Arbitration). Integrators should use `36` with task code `reprocess` and reason `claimrejected`."
+    "4. **Reprocess (36 vs 18)**: The handbook's reprocess section (Section 10) gives `18` for reprocess, while its provider code table (Section 4.1) gives `36`, which the sheet names Claim Arbitration Intimation. Integrators should use `36` with task code `reprocess` and reason `claimrejected` or `rejectiondisputed`, and only for a rejected claim: a claim is never resubmitted."
   );
   out.push(
-    "5. **Shortfall**: Rides on `36` as a Task with code `reprocess` and reason `partialpayment`, raised only after payment notice `33` has arrived and been acknowledged with `17`."
+    "5. **Shortfall**: Rides on `36` with reason `partialpayment`, raised only after payment notice `33` has arrived and been acknowledged with `17`. The scheme words it as a `reprocess`; a part-paid claim is not rejected, so send it as the Task coded `release` with reason `partialpayment`, never as a `reprocess` Task."
   );
   out.push(
-    "6. **25 and 291**: Named as Claim *Document* acknowledgement and denial in the sheet, and Claim request received and denied in the value sets. Both refer to the same transition."
+    "6. **25 and 291**: Named Claim *Doc* Ack and Claim Doc Deny in the sheet. The handbook calls `25` Claim Request Received; both name the payer's acknowledgement and denial of the claim."
+  );
+  out.push(
+    "7. **No code, still `1`**: The sheet gives no code for the insurance plan request or the status enquiry. Both are sent under `1`: the plan belongs to the hospital and the policy, never to a case, and no code names a status check (the Task codes are `36` and `PC01`). Never a correlation id, a UUID or the case number."
   );
   out.push("");
   out.push("### Protocol Fault Flags");
   out.push("");
+  // The rows the sheet marks "This should be handled as protocal error", read
+  // from workflow.yaml so the list follows the sheet.
+  const flagged = new Map();
+  for (const row of wfData.sheet || []) {
+    if (!/protocal error|protocol error/i.test(row.outcome || "")) continue;
+    const code = String(row.code);
+    if (!flagged.has(code)) flagged.set(code, []);
+    flagged.get(code).push(row);
+  }
   out.push(
-    "The source sheet's audit flags mark certain code-and-status pairs as protocol errors rather than normal traffic:"
+    "The sheet marks these code-and-status pairs \"This should be handled as protocal error\". Each is an acknowledgement of a message, a success or a failure of delivery, not a business decision: handle it in the protocol layer, and never read an Ack Failed as a rejection."
+  );
+  out.push("");
+  for (const [code, rows] of flagged) {
+    out.push(`- \`${code}\`: ${rows.map((r) => `${escapePipe(r.stage)} with \`${r.status}\``).join("; ")}.`);
+  }
+  out.push(
+    "- `20` and `25` with `response.error` (PreAuth Ack Failed, Claim Doc Ack Failed) carry the outcome `error` rather than the flag, and are read the same way."
   );
   out.push(
-    "- For `131`, `45`, `47`, and `30`, sending **either** `response.partial` or `response.error` is flagged as an invalid state transition."
-  );
-  out.push("- `18` sent with `response.error` is flagged as an invalid terminal state.");
-  out.push(
-    "- Query `27` sent as `response.partial` or `response.complete` is invalid (must be `request.initiated`)."
+    "- The query answers `19`, `131`, `151` and `161` are paired with `response.complete` in the sheet, but they travel on `/v1/preauth/submit` and `/v1/claim/submit`, where NHCX refuses `response.complete` with `NHCX-1011`. Send them as `request.initiated`; only a send on an `on_` path is `response.complete`."
   );
   out.push("");
 
@@ -643,12 +667,18 @@ function workflowCodesIn(...texts) {
   const found = new Map();
   for (const text of texts) {
     if (!text) continue;
-    for (const token of String(text).match(/\b(?:[A-Z]{1,2}\d{1,3}|\d{2,3})\b/g) || []) {
+    for (const token of String(text).match(/\b(?:[A-Z]{1,2}\d{1,3}|\d{1,3})\b/g) || []) {
       const wf = CTX.wfByCode.get(token);
       if (wf && !found.has(token)) found.set(token, wf);
     }
   }
   return [...found.values()];
+}
+
+/** The statuses a code is published with, and the one it must be sent with where that differs. */
+function statusCell(wf) {
+  const listed = (wf.statuses || []).map((s) => `\`${s}\``).join(", ");
+  return wf.sent_as ? `${listed}; the answer is sent as \`${wf.sent_as}\`` : listed;
 }
 
 function dataElementTable(mapping) {
@@ -709,7 +739,9 @@ function renderUseCase(uc) {
     out.push("");
     out.push("| Header | Example value |");
     out.push("| :-- | :-- |");
-    for (const [k, v] of Object.entries(headers)) out.push(`| \`${k}\` | \`${escapePipe(v)}\` |`);
+    // An empty value reads as the word empty; a pair of backticks with nothing
+    // between them renders as two literal backticks.
+    for (const [k, v] of Object.entries(headers)) out.push(`| \`${k}\` | ${v === "" || v == null ? "empty" : `\`${escapePipe(v)}\``} |`);
     out.push("");
   }
 
@@ -721,7 +753,7 @@ function renderUseCase(uc) {
     out.push("| :-- | :-- | :-- | :-- | :-- |");
     for (const wf of codes) {
       out.push(
-        `| \`${wf.code}\` | ${escapePipe(wf.name)} | ${escapePipe(wf.authored_by || "")} | ${(wf.statuses || []).map((s) => `\`${s}\``).join(", ")} | ${escapePipe(wf.means || "")} |`
+        `| \`${wf.code}\` | ${escapePipe(wf.name)} | ${escapePipe(wf.authored_by || "")} | ${statusCell(wf)} | ${escapePipe(wf.means || "")} |`
       );
     }
     out.push("");
@@ -823,7 +855,9 @@ function renderCurl(req) {
   const headers = req.auth === "none" ? { ...req.headers } : { ...CTX.collectionHeaders, ...req.headers };
   for (const [k, v] of Object.entries(headers)) lines.push(`  --header ${shellQuote(`${k}: ${fillVars(v)}`)}`);
 
-  if (req.body && req.body.trim()) {
+  if (req.form) {
+    for (const [k, v] of Object.entries(req.form)) lines.push(`  --data-urlencode ${shellQuote(`${k}=${fillVars(v)}`)}`);
+  } else if (req.body && req.body.trim()) {
     let body = fillVars(req.body).trim();
     try {
       body = JSON.stringify(JSON.parse(body), null, 2);
@@ -1041,7 +1075,7 @@ function main() {
   const collectionHeaders = parseBru(readFileSync(join(APIS_DIR, "collection.bru"), "utf8")).headers || {};
 
   const ucByCode = new Map((ucData.nha_use_cases || []).map((uc) => [uc.code, uc]));
-  const wfByCode = new Map((wfData.codes || []).map((wf) => [String(wf.code), wf]));
+  const wfByCode = new Map([...(wfData.codes || []), ...(wfData.unpublished || [])].map((wf) => [String(wf.code), wf]));
   const mappings = new Map();
   for (const code of ucByCode.keys()) {
     const file = join(MAPPINGS_DIR, `${code}.yaml`);

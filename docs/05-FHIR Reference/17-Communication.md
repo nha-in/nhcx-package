@@ -222,10 +222,10 @@ A message about a case, typed by its reason code: additionalinfo, tatquery for a
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
 | `x-hcx-correlation_id` | `{{$guid}}` |
-| `x-hcx-workflow_id` | `15` |
+| `x-hcx-workflow_id` | `24` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -241,7 +241,7 @@ A message about a case, typed by its reason code: additionalinfo, tatquery for a
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskReason` | Query Reason | Query | `code` | `1..1` | `Task.reasonCode.coding[0].code` | `additionalinfo` |  |
-| `queryText` | Query Questions | Query | `string` | `1..1` | `CommunicationRequest.payload[0].contentString` | `Please attach pre-operative ultrasound scan.` |  |
+| `queryText` | Query Questions | Query | `string` | `1..1` | `CommunicationRequest.payload[0].contentString` | `Share the pre-operative X-ray and the clinical notes.` |  |
 
 NRCeS profiles: [CommunicationRequest](https://nrces.in/ndhm/fhir/r4/StructureDefinition-CommunicationRequest.html), [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
@@ -265,11 +265,11 @@ Acknowledge or answer a message the payer sent about a case. A generic or IRDAI 
 | `x-hcx-recipient_code` | `1518@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
-| `x-hcx-workflow_id` | `15` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
+| `x-hcx-workflow_id` | `24` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -283,9 +283,9 @@ Acknowledge or answer a message the payer sent about a case. A generic or IRDAI 
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `communicationId` | Communication Identifier | Case | `string` | `1..1` | `Communication.identifier[0].value` | `COMM-RESP-001` |  |
-| `queryRequestId` | Original Query Reference | Case | `reference` | `1..1` | `Communication.basedOn[0].reference` | `Task/task-comm-req-1` |  |
-| `replyText` | Clarification Text | Payload | `string` | `0..1` | `Communication.payload[0].contentString` | `Platelet count attached as requested.` |  |
-| `attachmentData` | Attached Document Base64 | Payload | `base64Binary` | `0..*` | `Communication.payload[0].contentAttachment.data` | `JVBERi0xLjQK...` |  |
+| `communicationId` | Case Number the answer is filed under | Case | `string` | `1..1` | `Communication.identifier[0].value` | `NM-26-0SE00002I` |  |
+| `queryRequestId` | Original Query Reference | Case | `reference` | `1..1` | `Communication.basedOn[0].reference` | `urn:uuid:4b35a6eb-3f99-5d0c-b0c8-5b2f049fdbde` |  |
+| `replyText` | Clarification Text | Payload | `string` | `0..1` | `Communication.payload[0].contentString` | `X-ray and clinical notes attached as asked.` |  |
+| `attachmentData` | Attached Document Base64 | Payload | `base64Binary` | `0..*` | `Communication.payload[].contentAttachment.data` | `JVBERi0xLjQK...` |  |
 
 NRCeS profiles: [Communication](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Communication.html).

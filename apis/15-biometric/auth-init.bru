@@ -1,0 +1,90 @@
+meta {
+  name: Biometric auth init
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{nhcxBase}}/abha/biometric/auth/init
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: */*
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+  process: Preauth
+  payerid: {{payerCode}}
+}
+
+body:json {
+  {
+    "scope": ["abha-login", "aadhaar-bio-verify"],
+    "loginHint": "abha-number",
+    "loginId": "91-XXXX-XXXX-1234",
+    "otpSystem": "aadhaar",
+    "authMode": "FINGERPRINT"
+  }
+}
+
+docs {
+  # Biometric auth init
+
+  `POST /abha/biometric/auth/init`
+
+  ## Summary
+
+  Starts a fingerprint or iris authentication of a PMJAY beneficiary against the ABHA registry and returns the `txnId` the verify call needs.
+
+  ## Business purpose
+
+  PMJAY requires proof that the beneficiary was physically present. A hospital proves it by authenticating them against their ABHA, biometrically, and the user token that results rides on the eligibility check, the pre-authorisation and the claim. A request without it, and without the consent form that stands in for it, is refused by name. These are ABDM calls built for the PMJAY payer, not NHCX calls: no JWE and no callbacks.
+
+  ## When to use
+
+  At the desk with the beneficiary present: at admission with `process` `Preauth`, and at discharge, and at every visit of a cyclic case, with `process` `Discharge`. `scope` selects the modality, `aadhaar-bio-verify` for fingerprint and `aadhaar-iris-verify` for iris. `authMode` is `FINGERPRINT` or `IRIS`. The NHCX-PMJAY-HMIS Integration Guide and the Biometric Authentication APIs Postman collection also list face on this call, `aadhaar-face-verify` with `FACE_AUTH`, but show no face request made this way; the face path documented end to end is `Face auth init` on the ABDM proxy host. `payerid` names the scheme payer the authentication is performed for.
+
+  ## Preconditions
+
+  - The beneficiary's ABHA is linked to their PMJAY card. Where it is not, biometric authentication does not apply and the scheme's existing KYC protocols are followed.
+  - The ABDM session token on `Authorization: Bearer`, not on `bearer_auth`.
+  - `loginId` is the ABHA number with hyphens, the same form as `x-hcx-ben-abha-id` on the envelope and unlike the hyphen-free member lookups.
+  - A capture device, whose capture needs the wrapped Aadhaar data hash built with `lr` set to `Y`.
+
+  ## Postconditions
+
+  Returns the `txnId` that `Biometric auth verify` quotes, with a message saying the authentication request was sent.
+
+  ## Common mistakes
+
+  - Sending the token on `bearer_auth` only, which gets a `401` that looks like an expired token.
+  - Calling it on the face-authentication host. Fingerprint and iris sit under `/hcx/abha/biometric/`, face under `/pmjay/sbxhcx/abdmproxy/abha/biometric/`.
+  - Stripping the hyphens from `loginId`.
+  - Building the wrapped Aadhaar data hash with `lr` as `N`, which the biometric APIs answer with `K-547`.
+
+  ## Best practices
+
+  - Implement fingerprint, iris and face. Each is mandatory, because any one of them may be the only one that works for a given patient.
+  - Set `process` from the stage of the case, not from a constant.
+  - Record the transaction ID, the method and the moment it succeeded against the case.
+
+  ## Related scenario
+
+  A PMJAY beneficiary arrives for admission. The desk posts this request with `scope` `["abha-login", "aadhaar-bio-verify"]`, `authMode` `FINGERPRINT`, the ABHA number with hyphens, `process` `Preauth` and the scheme payer's code, and gets a `txnId` back. The fingerprint is captured on the device and sent with that `txnId` to `Biometric auth verify`.
+
+  ## Specification
+
+  Chapter 03.03 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "txnId": "8c8a12e3-xxxx-4278-xxxx-10acffa44f07",
+    "authMode": null,
+    "message": "FingerPrint authentication request successfully sent.",
+    "status": null
+  }
+  ```
+}

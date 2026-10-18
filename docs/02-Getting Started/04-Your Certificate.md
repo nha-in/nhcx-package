@@ -7,13 +7,13 @@ Every message on the exchange is sealed for the receiver. For anyone to send you
 Three commands, on a machine you control.
 
 ```bash
-# 1. A 2048-bit RSA private key
+# A 2048-bit RSA private key
 openssl genpkey -algorithm RSA -out private.key -pkeyopt rsa_keygen_bits:2048
 
-# 2. A signing request. It will ask for country, state, organisation and so on.
+# A signing request. It will ask for country, state, organisation and so on.
 openssl req -new -key private.key -out request.csr
 
-# 3. A self-signed X.509 certificate, valid for a year
+# A self-signed X.509 certificate, valid for a year
 openssl x509 -req -in request.csr -signkey private.key -out certificate.crt -days 365
 ```
 

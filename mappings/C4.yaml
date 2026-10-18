@@ -13,7 +13,7 @@ title: "Respond to insurance plan request"
 side: "payer"
 api: "/v1/insuranceplan/on_request"
 callback: "/v1/insuranceplan/request"
-workflow: "none (or 5 under PMJAY)"
+workflow: "none NHA publishes; the PMJAY payer answers on 5, a code not on NHA's Workflow Status Sheet"
 carries_jwe: true
 focal_resource: "InsurancePlan"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/InsurancePlan"
@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "InsurancePlan"
     fhir_path: "InsurancePlan.name"
-    example_value: "PMJAY Ayushman Bharat"
+    example_value: "PMJAY - Universal Health Policy"
   - key: "packageCode"
     label: "Benefit Package Code"
     group: "Plan Cost"
@@ -46,5 +46,5 @@ fields:
     cardinality: "1..*"
     required: true
     fhir_resource: "InsurancePlan"
-    fhir_path: "InsurancePlan.plan[].specificCost[].benefit[].cost[0].value.value"
-    example_value: "15500.00"
+    fhir_path: "InsurancePlan.plan[].specificCost[].benefit[].cost[].value.value"
+    example_value: "1800"

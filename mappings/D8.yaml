@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D8: Cancel pre-authorisation - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/task/submit
 # Callback API: /v1/task/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D8"
 title: "Cancel pre-authorisation"
-side: "provider"
+side: "pmjay"
 api: "/v1/task/submit"
 callback: "/v1/task/on_submit"
 workflow: "PC01 (Cancellation requested)"
@@ -37,5 +37,5 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[0].valueString"
-    example_value: "VB26AA2600001"
+    fhir_path: "Task.input[type=claimNumber].valueString"
+    example_value: "NM-26-0SF00002R"

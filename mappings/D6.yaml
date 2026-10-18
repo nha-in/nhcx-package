@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D6: Raise an enhancement - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/preauth/submit
 # Callback API: /v1/preauth/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D6"
 title: "Raise an enhancement"
-side: "provider"
+side: "pmjay"
 api: "/v1/preauth/submit"
 callback: "/v1/preauth/on_submit"
 workflow: "13 (Enhancement requested), 131 (Enhancement query answered)"
@@ -29,16 +29,16 @@ fields:
     required: true
     fhir_resource: "Claim"
     fhir_path: "Claim.identifier[0].value"
-    example_value: "VB26AA2600001"
+    example_value: "NM-26-0SF000031"
   - key: "preAuthRef"
     label: "Initial Approval Reference"
     group: "Case"
     data_type: "string"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "Claim"
     fhir_path: "Claim.insurance[0].preAuthRef[0]"
-    example_value: "APPR-2026-HP-00891"
+    example_value: null
   - key: "workflowId"
     label: "Workflow Code"
     group: "Header"

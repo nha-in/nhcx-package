@@ -13,7 +13,7 @@ title: "Raise a communication"
 side: "payer"
 api: "/v1/communication/request"
 callback: "/v1/communication/on_request"
-workflow: "24 (Preauth queried), 27 (Claim queried), N02 (Notification)"
+workflow: "24 (Preauth queried), 241 (Enhancement queried), 27 (Claim queried), N02 (Notification)"
 carries_jwe: true
 focal_resource: "CommunicationRequest / Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CommunicationRequest"
@@ -39,4 +39,4 @@ fields:
     required: true
     fhir_resource: "CommunicationRequest"
     fhir_path: "CommunicationRequest.payload[0].contentString"
-    example_value: "Please attach pre-operative ultrasound scan."
+    example_value: "Share the pre-operative X-ray and the clinical notes."

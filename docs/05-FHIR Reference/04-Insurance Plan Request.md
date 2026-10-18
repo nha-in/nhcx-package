@@ -38,17 +38,25 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 
 ### 3. Inputs
 
-`valueString`, typed `policyNumber` and `providerId` under `ndhm-task-input-type-code`. At least one; both narrow the answer to the packages this hospital is empanelled for.
+`valueString`, typed `policyNumber` and `providerId` under `ndhm-task-input-type-code`. Both are required, one of each: the policy number and the hospital's HFR ID (`facilityId` in the data elements below). Together they narrow the answer to the packages this hospital is empanelled for.
 
 ### 4. No case yet
 
 No case exists, so the bundle carries no case number. The callback is the only link between request and answer.
 
-### 5. Task codes differ by system across the exchange
+### 5. Workflow id 1
+
+Send `x-hcx-workflow_id` `1`. The plan belongs to the hospital and the policy, never to one case, and NHA publishes no workflow code for the request, so the case number is never sent there.
+
+### 6. Fetched when the policy is in force
+
+Fetch it whenever a validation leaves a case in force and no plan is held for that policy, HFR ID and payer. Reuse a ready plan of the same three before requesting another.
+
+### 7. Task codes differ by system across the exchange
 
 `poll`, `cancel`, `reprocess`, `release` and `status` in `financialtaskcode`; `deliver` in `ndhm-task-codes`; `approve` in `http://hl7.org/fhir/CodeSystem/task-code`. Switch on system and code together.
 
-### 6. When to send it
+### 8. When to send it
 
 Once per policy, not per patient. Refresh on a `policychange` communication and on your own schedule.
 
@@ -64,6 +72,7 @@ The PMJAY bundle has the same resources, elements and systems as the generic one
 
 - `policyNumber` is the beneficiary's own policy code from the policy lookup, of the form `PMJAY/<state>/S/G`.
 - `providerId` is the hospital's HFR ID, the same value as on its participant record.
+- The live PMJAY provider's request differs from the rules above and is still answered: its `Task` carries no `code`, `intent` `plan`, a `requester` naming the provider `Organization` it adds as a second entry, and the bundle carries an unrelated case number as `Bundle.identifier`. Send the generic shape; expect this one.
 
 ### What PMJAY requires
 
@@ -74,12 +83,13 @@ The PMJAY bundle has the same resources, elements and systems as the generic one
 
 ### B2 Request insurance plan (provider)
 
-A Task with code poll, keyed on policy number and provider id. The answer is the policy as a benefit structure: packages, rates, documents, questionnaires.
+A Task with code poll, keyed on policy number and provider id, under workflow id 1, never a case number. The answer is the policy as a benefit structure: packages, rates, documents, questionnaires. Fetch it once a validation leaves a case in force and no plan is held for that policy, HFR id and payer.
 
 | | |
 | :-- | :-- |
 | **API** | `/v1/insuranceplan/request` [`apis/09-insurance-plan/v1-insuranceplan-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-request.bru) |
 | **Callback** | `/v1/insuranceplan/on_request` [`apis/09-insurance-plan/v1-insuranceplan-on-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-on-request.bru) |
+| **Workflow** | 1 (hospital-level: the plan belongs to the hospital and the policy, never a case number) |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
 
@@ -92,18 +102,24 @@ A Task with code poll, keyed on policy number and provider id. The answer is the
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
 | `x-hcx-correlation_id` | `{{$guid}}` |
-| `x-hcx-workflow_id` | `` |
+| `x-hcx-workflow_id` | `1` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `` |
+| `x-hcx-ben-abha-id` | empty |
+
+**Workflow codes**
+
+| Code | Name | Authored by | `x-hcx-status` | Means |
+| :-- | :-- | :-- | :-- | :-- |
+| `1` | Insurance plan request and status enquiry | provider | `request.initiated`, `response.complete` | The insurance plan request and the status enquiry Task. The sheet names no code for either; both are sent under 1, never a correlation id, a UUID or a case number. The answer echoes 1. |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `poll` |  |
-| `policyNumber` | Policy Number | Task Input | `string` | `1..1` | `Task.input[type=PolicyNumber].valueString` | `PMJAY/HP/S/G` |  |
-| `facilityId` | Provider HFR ID | Task Input | `string` | `1..1` | `Task.input[type=ProviderId].valueString` | `IN1910000151` |  |
+| `policyNumber` | Policy Number | Task Input | `string` | `1..1` | `Task.input[type=policyNumber].valueString` | `POL7UMU001` |  |
+| `facilityId` | Provider HFR ID | Task Input | `string` | `1..1` | `Task.input[type=providerId].valueString` | `IN1910000151` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
@@ -115,6 +131,7 @@ Keyed on provider id, policy code and participant id. The answer is the scheme c
 | :-- | :-- |
 | **API** | `/v1/insuranceplan/request` [`apis/09-insurance-plan/v1-insuranceplan-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-request.bru) |
 | **Callback** | `/v1/insuranceplan/on_request` [`apis/09-insurance-plan/v1-insuranceplan-on-request.bru`](../../apis/09-insurance-plan/v1-insuranceplan-on-request.bru) |
+| **Workflow** | 1 (hospital-level: the plan belongs to the hospital and the policy, never a case number) |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
 
@@ -127,16 +144,23 @@ Keyed on provider id, policy code and participant id. The answer is the scheme c
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
 | `x-hcx-correlation_id` | `{{$guid}}` |
-| `x-hcx-workflow_id` | `` |
+| `x-hcx-workflow_id` | `1` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `` |
+| `x-hcx-ben-abha-id` | empty |
+
+**Workflow codes**
+
+| Code | Name | Authored by | `x-hcx-status` | Means |
+| :-- | :-- | :-- | :-- | :-- |
+| `1` | Insurance plan request and status enquiry | provider | `request.initiated`, `response.complete` | The insurance plan request and the status enquiry Task. The sheet names no code for either; both are sent under 1, never a correlation id, a UUID or a case number. The answer echoes 1. |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `poll` |  |
-| `schemeId` | Scheme Policy Identifier | Task Input | `string` | `1..1` | `Task.input[type=PolicyNumber].valueString` | `PMJAY/HP/S/G` |  |
+| `schemeId` | Scheme Policy Identifier | Task Input | `string` | `1..1` | `Task.input[type=policyNumber].valueString` | `PMJAY/HP/S/G` |  |
+| `providerId` | Hospital HFR ID | Task Input | `string` | `1..1` | `Task.input[type=providerId].valueString` | `IN1910000151` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).

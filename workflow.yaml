@@ -12,6 +12,13 @@
 # Spellings are as published, typos included, so a value seen in a payload
 # can be searched for.
 #
+# sent_as, where present, is the x-hcx-status a code must actually travel
+# with when it differs from the sheet's pairing: the query answers go on a
+# submit path, where NHCX refuses response.complete with NHCX-1011.
+#
+# unpublished lists the codes sent or received on the exchange that the sheet
+# does not publish, so a value seen in a header can still be looked up.
+#
 # sheet is NHA's Workflow Status Sheet row by row, in its order: a reused
 # code has one row per x-hcx-status, which the per-code lists cannot pair up.
 # disagreements lists where the handbook and the sheet differ.
@@ -23,7 +30,8 @@ counts:
   codes: 74
   sheet_rows: 86
   reused: 8
-  disagreements: 7
+  disagreements: 9
+  unpublished: 2
 families:
   - prefix: R
     name: Reimbursement
@@ -106,7 +114,8 @@ codes:
     constant: PREAUTH_QUERY_RESPONSE_SUBMITTED
     authored_by: provider
     use_case: Query Response
-    means: Response to payer's query on preauth
+    means: 'Response to payer''s query on preauth. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011'
+    sent_as: request.initiated
     statuses:
       - response.complete
     stages:
@@ -129,7 +138,8 @@ codes:
     constant: ENHANCEMENT_QUERY_RESPONSE_SUBMITTED
     authored_by: provider
     use_case: Enhancement Query
-    means: Response to enhancement query
+    means: 'Response to enhancement query. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011'
+    sent_as: request.initiated
     statuses:
       - response.partial
       - response.error
@@ -180,7 +190,8 @@ codes:
     constant: CLAIM_QUERY_RESPONSE_SUBMITTED
     authored_by: provider
     use_case: Claim Query
-    means: 'Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response)'
+    means: 'Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response). Sent as request.initiated on v1/claim/submit: NHCX refuses response.complete on a submit path with NHCX-1011'
+    sent_as: request.initiated
     statuses:
       - response.complete
     stages:
@@ -475,6 +486,8 @@ codes:
   - code: '161'
     name: Claim Doc Query Response
     authored_by: status sheet only
+    means: 'The claim query answer PMJAY takes. Sent as request.initiated on v1/claim/submit, as the live PMJAY provider sends it; the sheet''s response.complete is refused there with NHCX-1011'
+    sent_as: request.initiated
     statuses:
       - response.complete
     stages:
@@ -1100,3 +1113,22 @@ disagreements:
   - code: '36'
     handbook: CLAIM_ARBITRATION_REQUEST_SUBMITTED, use case "Reprocess/Erroneous request"
     sheet: '"Claim Arbitration Intimation"'
+  - code: '18'
+    handbook: REPROCESS_REQUEST_SUBMITTED in the reprocess section, sent on /v1/task/submit
+    sheet: '"PreAuth Query Ack Success" response.partial and "PreAuth Query Ack Failed" response.error'
+  - code: '122'
+    handbook: PREAUTH_CANCEL_INITIATED in the cancellation section and the quick reference card, beside PC01 in the code table
+    sheet: 'No 122; cancellation is "Preauthorization Cancellation" PC01, accomplished on PC02'
+# Codes on the wire that NHA's Workflow Status Sheet does not publish.
+unpublished:
+  - code: '1'
+    name: Insurance plan request and status enquiry
+    authored_by: provider
+    means: 'The insurance plan request and the status enquiry Task. The sheet names no code for either; both are sent under 1, never a correlation id, a UUID or a case number. The answer echoes 1.'
+    statuses:
+      - request.initiated
+      - response.complete
+  - code: '5'
+    name: PMJAY eligibility and plan answer
+    authored_by: payer
+    means: 'Seen, not sent: the PMJAY payer answered a coverage eligibility check and an insurance plan request under 5 on the 17 Oct 2026 sandbox run, with x-hcx-error_details 100. Accept it on those callbacks; never send it. The status it came with was not archived.'

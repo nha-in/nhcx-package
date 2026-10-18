@@ -114,9 +114,9 @@ The same bundle, told apart by the workflow code, `outcome` and the claim-level 
 
 ## Rules
 
-### 1. partial is two things
+### 1. queued is not partial
 
-An acknowledgement and a query are both `partial`. Read the claim-level reason, then `disposition`, then the totals.
+The acknowledgement is `queued` with claim-level reason `submitted`; a query is `partial` with reason `queried`, and can approve some items while it queries others. Read the claim-level reason, then `disposition`, then the totals.
 
 ### 2. Deductions
 
@@ -144,7 +144,7 @@ PMJAY sends this exchange in the generic shape.
 
 ### What PMJAY specifies
 
-- `total[]` adds a `tax` line beside `benefit` and `submitted`.
+- `total[]` adds `tax` and `incentive` lines beside `benefit` and `submitted`.
 - The adjudication reason carries the desk's audit trail, with mixed date formats. Display it; never parse a timestamp from it.
 - A benefit of 0 on a query means undetermined, not refused.
 
@@ -170,11 +170,11 @@ The adjudicated claim, item by item, with any deduction and its reason. The ackn
 | `x-hcx-recipient_code` | `1000004446@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `26` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-debug_flag` | `INFO` |
 
 **Workflow codes**
@@ -193,8 +193,8 @@ The adjudicated claim, item by item, with any deduction and its reason. The ackn
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `outcome` | Claim Outcome | Adjudication | `code` | `1..1` | `ClaimResponse.outcome` | `complete` |  |
-| `approvedBenefit` | Approved Claim Amount | Financials | `decimal` | `1..1` | `ClaimResponse.total[category=benefit].amount.value` | `15500.00` |  |
+| `approvedBenefit` | Approved Claim Amount | Financials | `decimal` | `1..1` | `ClaimResponse.total[category=benefit].amount.value` | `150000` |  |
 | `copayAmount` | Beneficiary Co-payment | Financials | `decimal` | `0..1` | `ClaimResponse.total[category=copay].amount.value` | `0.00` |  |
-| `deductionReason` | Deduction Justification | Adjudication | `string` | `0..1` | `ClaimResponse.item[].adjudication[category=deduction].reason.coding[0].display` | `Non-medical consumables deducted` |  |
+| `deductionReason` | Deduction Justification | Adjudication | `string` | `0..1` | `ClaimResponse.item[].adjudication[category=deductible].reason.coding[0].display` | `Non-Covered Service: The claimed service is not covered under the policy and therefore the amount is deducted.` |  |
 
 NRCeS profiles: [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition-ClaimResponse.html).

@@ -25,15 +25,16 @@ passed, which is why a scheme-rule refusal is good news about your bundle.
 
 | What you see | Layer | Most likely cause | What to do |
 | :---- | :---- | :---- | :---- |
-| `401` on the sessions call | 1 | Wrong client ID or secret, or Milestone 1 incomplete | Check the credentials against onboarding |
+| `401` on the sessions call | 1 | Wrong client ID or secret | Check the credentials against onboarding |
 | `401` naming a header on the sessions call | 1 | `REQUEST-ID` reused or absent, `TIMESTAMP` stale or malformed, `X-CM-ID` missing | Generate a fresh UUID per call; take the time from the system clock |
 | `401 Sender is not authorized to execute the operation` | 1 | Token expired | Fetch a new token and retry once. Never retry with the same token |
-| `401` immediately after a fresh token | 1 | `Bearer ` prefix missing, or the token sent on the wrong header name | Send `bearer_auth: Bearer <token>`, and `Authorization` alongside it |
+| `401` immediately after a fresh token | 1 | `Bearer ` prefix missing, or the token sent on the wrong header name | Send `bearer_auth: Bearer <token>`. NHCX reads `bearer_auth`, not `Authorization` |
 | `401` on policy link or de-link only | 1 | The client ID calling is not the one that created the participant | Run the linking job under the credentials that created the record |
 | `400` on a use-case call | 2 | Envelope failed validation | Check every `x-hcx-` field against Envelope Fields |
 | `NHCX-1005` invalid request header | 2 | A header missing, malformed or of the wrong type | As above |
 | `NHCX-1006` duplicate request | 2 | A correlation ID reused, usually on a retry after a failure | Mint a fresh correlation ID. A failed correlation is retired |
-| `NHCX-1011` invalid status | 2 | The status word does not match the leg of the message | Requests send `request.initiated`; responses send `response.partial`, `complete` or `error` |
+| `NHCX-1011` invalid status | 2 | The status word does not match the leg of the message, often a query answer sent as `response.complete` on `/v1/preauth/submit` or `/v1/claim/submit` | Requests send `request.initiated`, query answers on a submit path included; responses on an `on_` path send `response.partial`, `complete` or `error` |
+| `NHCX-1012` on `/v1/status` | 2 | The sandbox does not take the status path, whatever correlation ID it carries | Ask the payer with a `Task` coded `status` on `/v1/task/submit`, workflow id `1` |
 | `NHCX-1018` invalid ABHA number | 2 | ABHA sent in the wrong shape | The gateway wants `XX-XXXX-XXXX-XXXX` on this field, though the bundle carries it without hyphens |
 | `NHCX-1010` no data with given correlation id | 2 | You answered a request whose correlation the exchange had already retired | Acknowledge every submission immediately, then send the decision on the same thread |
 | `NHCX-1002` or `NHCX-1003` not registered | 2 | Sender or recipient is not active on the exchange | Check the participant record's status. Only `Active` can send or receive |
@@ -58,7 +59,7 @@ passed, which is why a scheme-rule refusal is good news about your bundle.
 | `PAYR-1256`, `PAYR-1363` consent questionnaire missing | 5 | No biometric token and no authentication-consent response | Answer the plan's questionnaire, found by title in the master |
 | `PAYR-1301` claim already raised | 5 | One case, one claim | Nothing to resubmit. Use a Task |
 | `PAYR-1302` no approved preauthorisation | 5 | The claim went out under a number of its own | Send the claim under the pre-authorisation's number |
-| `PAYR-1321` | 5 | A claim query answered under the wrong workflow id | Answer on 161, not 151, 19 or 16 |
+| `PAYR-1321` | 5 | A claim query answered under a workflow id the payer does not take | The SHA sandbox takes 161 and refuses 151 (the published code), 19 and 16. Keep the code configurable per payer |
 | `PAYR-1322` active instance found | 5 | Another request is already open on that case | The scheme takes one at a time. Wait |
 | `PAYR-1401` policy not allowed for the hospital | 5 | The plan was asked for under a policy the hospital is not empanelled under | Ask under the beneficiary's own policy from the eligibility answer |
 | `PAYR-1406` existing request in progress | 5 | A second plan request before the first was answered | Wait 15 to 60 minutes. Past 60, raise it with support |
@@ -122,6 +123,33 @@ In order, and stop at the first that explains it.
   passed validation, so it is the first evidence the bundle is right.
 - **A `SUBSETTED` meta tag.** Every payer-generated bundle carries it. It marks
   a projection of the payer's record, not an error.
+
+## Service names in logs and URLs
+
+A name in a log line, a Swagger address or a stack trace does not always match
+the exchange you think you are calling. Reprocess is served by
+`taskhcxservice`, notifications by `subscriptionhcxservice`, payment by
+`servicehcxpayment`. Read the name off this table before you look for a fault
+in the wrong service.
+
+| Service name in a log or URL | Exchange it serves |
+| :---- | :---- |
+| `coverageeligibilityhcxservice` | Coverage eligibility |
+| `insuranceplanhcxservice` | Insurance plan |
+| `preauthhcxservice` | Preauthorisation |
+| `claimhcxservice` | Claim |
+| `communicationhcxservice` | Communication, including a request for additional attachments |
+| `servicehcxpayment` | Payment notice |
+| `statushcxservice` | Status check |
+| `taskhcxservice` | Task: reprocess and cancel |
+| `searchhcxservice` | Search |
+| `participanthcxservice` | Participant service: registry, certificates and policies |
+| `subscriptionhcxservice` | Notifications |
+| `abdmproxy` | Face authentication for PMJAY biometrics |
+| `nhcxpayerservice` | PMJAY payer service: the role lookup and acting on a case |
+| `dummyhcxpayer` | The sandbox dummy payer's test hooks |
+
+Environments and Addresses has the full address of each.
 
 ## Before you raise it with support
 

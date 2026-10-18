@@ -1,6 +1,6 @@
 # NHCX API Collection (Bruno)
 
-Comprehensive, production-ready Bruno collection containing all **82 API operations** across the National Health Claims Exchange (NHCX), ABDM Gateway, Participant Registry, and PMJAY Adjudicator services.
+Comprehensive, production-ready Bruno collection containing **83 requests** across the National Health Claims Exchange (NHCX), ABDM Gateway, Participant Registry, and PMJAY Adjudicator services.
 
 This collection includes **both** sides of every exchange:
 1. **Outbound Requests & Inbound Callbacks**: Every asynchronous exchange is represented with both the triggering request (`/check`, `/submit`, `/request`) and its corresponding callback (`/on_check`, `/on_submit`, `/on_request`).
@@ -15,7 +15,7 @@ This collection includes **both** sides of every exchange:
 2. Open Bruno, choose **Open Collection**, and select this directory: `package/apis`.
 3. In the top-right environment selector, pick **sandbox**.
 4. Configure your credentials in `environments/sandbox.bru`:
-   - `clientId`: Your ABDM Milestone 1 / NHCX Client ID
+   - `clientId`: Your ABDM sandbox client ID
    - `clientSecret`: Your Client Secret
    - `token`: Automatically populated by the session endpoint
 5. Run **01-session > Session token** once.
@@ -35,8 +35,12 @@ This collection includes **both** sides of every exchange:
 | `adjudicatorProcessUrl` | `https://apisbeta.nha.gov.in/pmjay/hcx/nhcxpayerservice/wrapper/process/case` | PMJAY adjudicator, act on a case |
 | `dummyPayerBase` | `https://apisbx.abdm.gov.in/pmjay/sbxhcx/dummyhcxpayer` | Sandbox dummy payer test hooks |
 | `abdmProxyBase` | `https://apisbx.abdm.gov.in/pmjay/sbxhcx/abdmproxy` | ABDM proxy for face authentication |
-| `clientId` | `your-client-id` | Gateway Client ID |
-| `clientSecret` | `your-client-secret` | Gateway Client Secret |
+| `portalBase` | `https://hcxsbx.abdm.gov.in` | NHCX portal, notification subscribe |
+| `cmId` | `sbx` | `X-CM-ID` on the session call |
+| `clientId` | empty, fill in | Gateway Client ID |
+| `clientSecret` | empty, fill in | Gateway Client Secret |
+| `correlationId` | empty | The request's correlation ID, echoed on every `on_` callback |
+| `originalApiCallId` | empty | The `api_call_id` of the message a `/v1/status` call asks about |
 
 ---
 
@@ -53,11 +57,12 @@ This collection includes **both** sides of every exchange:
 | `07-communication/` | `/v1/communication/request`, `/on_request`, plus `/internal/v1/...` | Query requests, clinical documentation requests, TAT alerts, beneficiary communications. |
 | `08-status/` | `/v1/status`, `/v1/search/submit`, `/on_submit` | Request dispatch status tracking and audit/investigation search. |
 | `09-insurance-plan/` | `/v1/insuranceplan/request`, `/on_request`, plus `/internal/v1/...` | Empanelled packages, tariff master, STG questionnaires, co-pay rules. |
-| `10-registry/` | Participant search, certs (`/fetch/certs`), policy lookup (`/participant/get/policies`), etc. | Participant registry lookup, receiver encryption certificates, policy binding. |
-| `11-onboarding/` | Participant registration, KYC, endpoints, update APIs | Onboarding new payers, providers, and TPAs onto NHCX. |
-| `12-adjudicator/` | Dummy payer process hooks (`/process/request`, `/paymentNotice/init`) | Direct simulation hooks for sandbox testing. |
-| `13-other/` | Notifications (`/v1/notification/subscribe`), errors (`/v1/error`), ping/health | Webhooks, error handling, system health checks. |
-| `14-biometric/` | ABHA biometric `auth/init`, `auth/verify`, `auth/refresh/token`, face auth `faceauth/init`, `capture/pid`, `v2/auth/verify` | Beneficiary authentication before a PMJAY pre-authorisation or claim; the user token rides on the exchange calls. |
+| `10-registry/` | Participant search, certs (`/fetch/certs`), policy lookup (`/participant/get/policies`), etc. | Participant registry lookup, receiver encryption certificates, policy binding. Creating and updating a participant are in the two onboarding folders. |
+| `11-onboarding-sandbox/` | `/participant/create`, `/participant/update` | Onboarding on the sandbox: one call to create a participant and one to update it, no passcode. |
+| `12-onboarding-production/` | `/v2/participant/create`, `/validate`, `/v2/participant/update`, `/update/validate`, `/v2/update/cert` | Onboarding in production: the four passcode-confirmed steps, and the certificate-only shortcut. |
+| `13-adjudicator/` | PMJAY payer service (`/v1/get/user-role`, `/wrapper/process/case`), dummy payer hooks (`/process/request`, `/paymentNotice/init`), `/update/abhanumber` | Acting on a PMJAY case as the adjudicator, sandbox simulation hooks, and replacing a placeholder ABHA number. |
+| `14-other/` | Task (`/v1/task/submit`, `/on_submit`, plus `/internal/v1/...`), `/v1/error`, `/v1/on_status`, `/v1/delete`, notifications (`/v1/notification/subscribe`, `/on_subscribe`), Swagger documents | Cancel (PC01), reprocess and balance release (36), status enquiry (workflow 1), error reports, troubleshooting, notification subscription and the service's own API documents. |
+| `15-biometric/` | ABHA biometric `auth/init`, `auth/verify`, `auth/refresh/token`, face auth `faceauth/init`, `capture/pid`, `v2/auth/verify` | Beneficiary authentication before a PMJAY pre-authorisation or claim; the user token rides on the exchange calls. |
 
 ---
 

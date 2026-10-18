@@ -4,6 +4,10 @@ On the general network the claim is two submissions. A provisional one goes befo
 
 ## What the user does
 
+**Link the IPD admission.** The pre-authorisation was raised without one; the claim needs it. Offer the admissions found by the case's ABHA number and let the desk link one. Until it does, the next action on an approved case reads "Link the IPD admission".
+
+**Proof of presence.** When the payer or the plan requires it, the beneficiary is authenticated again on the claim, stage `Discharge`. Biometric Authentication has the calls.
+
 **Discharge.** The user records the discharge type, from the NRCeS set: to home, to mortuary, left against medical advice, discharged against medical advice. Discharge date, and surgery date where there was one. The documents available at this point are attached and the provisional submission goes.
 
 **Final claim.** After the payer's answer to the provisional submission, the finance section: hospital bill number and date, the bill itself, the amount claimed. Post-operative evidence and anything the payer flagged on the provisional review are attached. The claim amount may not exceed the preauthorisation's approved amount; enforce it before submit.
@@ -45,6 +49,8 @@ The provisional submission is answered with 261 approved, 262 rejected or 263 qu
 
 The final claim uses the same decision table as preauthorisation, with two additions. The payer may send several interim answers on the same correlation ID before a final one: `28` in process, `29` forwarded, each with `response.partial`. Keep listening until `response.complete`. And a rejection, `291` with reason `cancelled`, closes the claim permanently; nothing further can be submitted against that claim number except a Task.
 
+**A claim is never resubmitted.** A claim the payer has decided does not go again, and a send is refused with "The payer has decided this claim; it goes back for another look as a reprocess request, not as a claim sent again." The only way back is a reprocess, and only for a rejected claim. A claim refused at the door, which never reached the payer, may be sent again; that is the only "send again" the screen offers. A claim query is answered with the claim bundle under the query-answer workflow id, as `x-hcx-status: request.initiated`, which is a query answer and not a resubmission.
+
 The claim is only closed once payment code 33 arrives with a UTR. Adjudication closes the decision; settlement closes the money.
 
 ## What the payer checks on a claim
@@ -65,6 +71,7 @@ On top of the preauthorisation checks, a claim is refused for these.
 | Situation | What the user does | What the system sends |
 | :---- | :---- | :---- |
 | Query | Attaches what was asked, replies from the inbox | Communication response, or claim bundle with workflow 151 where the payer takes it there |
-| Rejected or reduced | Appeals, with a document | Task, code `reprocess`, workflow 36 |
+| Rejected | Asks for a reprocess, with a reason and a document | Task, code `reprocess`, workflow 36 |
+| Approved or reduced, paid short | Asks for the balance | Task, code `release`, reason `partialpayment`, the amount, workflow 36 |
 
-The Task names the case by claim number and carries a reason: `claimrejected` for a rejection, `partialpayment` for a shortfall, and the value set also allows `erroneousclaim`. The payer's answer comes on `/v1/task/on_submit` as a Task wrapping a `ClaimResponse`, read with the same parser as any other: 252 approved, 253 rejected, 254 queried. Map the payer's denial reasons, `ClaimError-1` onward, into the appeal screen so the user sees why before deciding whether to appeal.
+The reprocess Task names the case by claim number and carries a reason: `claimrejected`, or `rejectiondisputed` where the hospital disputes the rejection with further evidence. It is offered and accepted only for a rejected claim; anything else is refused with "Only a claim the payer has rejected can be sent back for reprocessing." `partialpayment` is not a reprocess reason, because a part-paid claim is not rejected: it is the fixed reason of the release Task, a separate action. The value set also allows `erroneousclaim`. The payer's answer comes on `/v1/task/on_submit` as a Task wrapping a `ClaimResponse`, read with the same parser as any other: 252 approved, 253 rejected, 254 queried. That `ClaimResponse` is the reprocess decision and updates the claim. Map the payer's denial reasons, `ClaimError-1` onward, into the appeal screen so the user sees why before deciding whether to appeal.

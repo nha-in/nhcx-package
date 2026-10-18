@@ -94,77 +94,72 @@ NRCeS profile: [InsurancePlan](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 | `MaximumCyclesAllowed` | `0`, `6` | Cap on the number of cycles |
 | `Standalone` | `N` | Refuse any other package alongside it |
 | `ParentProcedure` | `NA`, `IN015A,SB003C,SB015C,SB072A,SB088MLA,SB103MLC,SB106MLA,SL038MLA,SM001MLA,SM003B…`, `IN058A,IN071A,MC023MLA,SB095MLB,SB100MLB,SB108MLA,SE012MLA,SM007B,SM027MLA,SN05…` | On an implant, the package it may accompany |
-| `Unspecified` | `N`, `Y` | Free-text name and free-entry amount, validated against the wallet |
+| `Unspecified` | `N`, `Y` | Quoted from the plan like any package, its amount an open rate the desk types, validated against the wallet |
 | `LamaDamaProcedure` | `Y` | Offer only on a LAMA or DAMA discharge |
 | `DischargeStagesLamaDamaProcedure` | `Before Surgery, During Surgery` | The discharge stages at which a LAMA or DAMA package may be billed, before or during surgery |
-| `los` | not carried | Maximum length of stay; bounds the days claimed, the `LM100` count included |
+| `LengthOfStay` | not carried | Maximum length of stay; bounds the days claimed, the `LM100` count included |
 
 ## Supporting-information requirements
 
-| Code | Display | Stage | System |
-| :-- | :-- | :-- | :-- |
-| `POI` | Proof of identity | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `ADN` | Aadhaar Number | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `INF` | Additional info related to claim ( conveying additional situation and condition… | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `ODN` | Other document | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `DIA` | Diagnostic report | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MAND0409` | any investigations done | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0064` | All investigations reports | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0006` | Detailed discharge summary | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0062` | Detailed ICPs | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0063` | Treatment details | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `CD` |  | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MAND0408` | Clinical notes detailing history and Admission notes showing vitals and examina… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `STG` | Standard Treatment Guidelines | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MAND0952` | MLC/ FIR +/- Nerve conduction velocity (NCV) + /- MRI + /- MRA + /- EMG (Electr… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0300` | Detailed operatives notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0309` | Intra operative still photograph | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0946` | Clinical notes detailing the injury and need of surgery | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `HDS` |  | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
-| `MAND0368` | Procedure / Operative Notes, Detailed Discharge Summary | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND1045` | Clinical notes with planned line of treatment (including indication for need of… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0384` | MLC/ FIR if traumatic | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0592` | X Ray of affected limb | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0008` | Detailed Procedure / Operative Notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0112` | Post Procedure clinical photgraph | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0582` | clinical photograph of affected part | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0604` | clinical notes justifying the indication | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0067` | CBC | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0459` | CECT Thorax, abdomen and Pelvis | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0564` | histopathology (non small cell - adenocarcinoma or adenosquamous carcinoma) | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0074` | LFT | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0457` | RBS | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0447` | RFT | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0099` | BAR CODE OF THE DRUGS | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0102` | CHARTS OF CHEMOTHERAPY REGIMEN | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0101` | DISCHARGE SUMMARY OF INPATIENT DEPARTMENT / DISCHARGE SUMMARY OF DAY CARE DEPAR… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0100` | REPORTS OF THE TESTS (PATHOLOGY, RADIOLOGY, MICROBIOLOGY, HEMATOLOGY, BIOCHEMIS… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0103` | TRANFUSION SLIPS | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0189` | Histopathology report | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0226` | Post Procedure Photograph of affected part | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0030` | Procedure / Operative Notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0822` | Clinical notes with planned line of treatment justifying indication | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0647` | FIR/MLC in case of accident | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0161` | operative notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0159` | Still image of the the procedure with pt. ID and date | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0003` | Clinical notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0588` | clinical photograph | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0649` | doctors notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0648` | Patient details | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0650` | photo | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0162` | Discharge notes | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0163` | microbiology report | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0164` | Still image of the patient undergoing the procedure with date stamp | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0622` | CECT | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0621` | FNAC/ BIOPSY | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0152` | HPE report | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0151` | Post Procedure Photographs of surgical site | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0339` | Clinical notes with planned line of treatment | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0831` | Audiogram report justfying surgery | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0832` | CT- TEMPORAL BONE of affected side /X-RAY BOTH MASTOIDS | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0730` | USG/CT Abdomen | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0327` | Detailed discharge summary; | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
-| `MAND0326` | Reports of all investigations done and consultation paper of treating doctor me… | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| Code | Display | Category | Stage | System |
+| :-- | :-- | :-- | :-- | :-- |
+| `ADN` | Aadhaar Number | `POI` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `ODN` | Other document | `INF` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0409` | any investigations done | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0064` | All investigations reports | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0006` | Detailed discharge summary | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0062` | Detailed ICPs | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0063` | Treatment details | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0408` | Clinical notes detailing history and Admission notes showing vitals and examina… | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `STG` | Standard Treatment Guidelines | `INF` | any | `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
+| `MAND0952` | MLC/ FIR +/- Nerve conduction velocity (NCV) + /- MRI + /- MRA + /- EMG (Electr… | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0300` | Detailed operatives notes | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0309` | Intra operative still photograph | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0946` | Clinical notes detailing the injury and need of surgery | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0368` | Procedure / Operative Notes, Detailed Discharge Summary | `HDS` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND1045` | Clinical notes with planned line of treatment (including indication for need of… | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0384` | MLC/ FIR if traumatic | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0592` | X Ray of affected limb | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0008` | Detailed Procedure / Operative Notes | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0112` | Post Procedure clinical photgraph | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0582` | clinical photograph of affected part | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0604` | clinical notes justifying the indication | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0067` | CBC | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0459` | CECT Thorax, abdomen and Pelvis | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0564` | histopathology (non small cell - adenocarcinoma or adenosquamous carcinoma) | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0074` | LFT | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0457` | RBS | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0447` | RFT | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0099` | BAR CODE OF THE DRUGS | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0102` | CHARTS OF CHEMOTHERAPY REGIMEN | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0101` | DISCHARGE SUMMARY OF INPATIENT DEPARTMENT / DISCHARGE SUMMARY OF DAY CARE DEPAR… | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0100` | REPORTS OF THE TESTS (PATHOLOGY, RADIOLOGY, MICROBIOLOGY, HEMATOLOGY, BIOCHEMIS… | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0103` | TRANFUSION SLIPS | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0189` | Histopathology report | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0226` | Post Procedure Photograph of affected part | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0030` | Procedure / Operative Notes | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0822` | Clinical notes with planned line of treatment justifying indication | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0647` | FIR/MLC in case of accident | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0161` | operative notes | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0159` | Still image of the the procedure with pt. ID and date | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0003` | Clinical notes | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0588` | clinical photograph | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0649` | doctors notes | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0648` | Patient details | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0650` | photo | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0162` | Discharge notes | `HDS` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0163` | microbiology report | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0164` | Still image of the patient undergoing the procedure with date stamp | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0622` | CECT | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0621` | FNAC/ BIOPSY | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0152` | HPE report | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0151` | Post Procedure Photographs of surgical site | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0339` | Clinical notes with planned line of treatment | `CD` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0831` | Audiogram report justfying surgery | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0832` | CT- TEMPORAL BONE of affected side /X-RAY BOTH MASTOIDS | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0730` | USG/CT Abdomen | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0327` | Detailed discharge summary; | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
+| `MAND0326` | Reports of all investigations done and consultation paper of treating doctor me… | `DIA` | any | `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-supportinginfo-code` |
 
 5 of the requirements link a questionnaire through `documentationUrl`.
 
@@ -186,11 +181,11 @@ NRCeS profile: [InsurancePlan](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 
 ### 2. Categories
 
-`coverage[].type` and `specificCost[].category` bind to `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-benefitcategory`. Codes beginning `S` are surgical, `M` medical.
+`coverage[].type` and `specificCost[].category` bind to `https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-benefitcategory`. Codes beginning `S` are surgical, `M` medical; others, such as `HD` and `HP`, also occur. Take the pathway from `ProcedureType`, not from the category.
 
 ### 3. Flags are strings
 
-Every flag except `ParentProcedure` is a `valueString`. `"N"` is truthy in most languages; compare against the literal `"Y"`.
+Every flag is a `valueString` except `ParentProcedure`, which is a `valueCodeableConcept` under `coverage[]` and a `valueString` (`NA` or a comma-separated list of packages) under `specificCost[]`. `"N"` is truthy in most languages; compare against the literal `"Y"`.
 
 ### 4. Cost lines
 
@@ -202,7 +197,7 @@ A base limit of 0 means the payable amount is set entirely by the ward tier chos
 
 ### 6. Document requirements come in two shapes
 
-Nested, one sub-extension per document, and flat, with `category`, `code` and `documentationUrl` directly under the extension. Recurse, or one shape is silently dropped.
+Nested, one sub-extension per document, and flat, with `category`, `code` and `documentationUrl` directly under the extension. The plan-level proof-of-identity requirement (`POI` / `ADN`) names its parts `SupportInfoCategory` and `SupportInfoCode` instead. Recurse and match on the last url segment, or a shape is silently dropped.
 
 ### 7. Where the question is
 
@@ -210,7 +205,7 @@ Policy-level questionnaires put the question in `item.text`, STG questionnaires 
 
 ### 8. Implant codes repeat
 
-Once per parent procedure they may accompany. Key on the package code with its parent, or on the element `id`.
+Once per parent procedure they may accompany, and a package can be listed under more than one speciality. The benefit `id` repeats with the code, so it is no key on its own. Key on the package code with its parent and its speciality.
 
 ### 9. Extension urls change form
 

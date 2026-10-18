@@ -119,23 +119,27 @@ NRCeS profile: [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-
 
 Use `CoverageEligibilityResponse.request.reference`, never a resource id, to join the answer to what you sent.
 
-### 3. Index entries by fullUrl
+### 3. Items come back in your own codes
+
+`insurance[].item[].productOrService` carries the package code you sent, for example `MG004A`, as NHA's published PMJAY bundles show. Match items by that code. The numbers in the handbook's response table (100005, 100478, 100063, 100012) are not item codes; in the published bundles they are questionnaire, document-requirement and question identifiers.
+
+### 4. Index entries by fullUrl
 
 A response can carry more than one `Patient` or `Organization`. Index by `fullUrl`, not by resource type.
 
-### 4. Money
+### 5. Money
 
 `allowedMoney` is the balance remaining and `usedMoney` the amount used, not the sum insured. There is one benefit per wallet; read them all.
 
-### 5. Build for the fuller form
+### 6. Build for the fuller form
 
 `benefit[]` with `Procedure`, `Investigation` and `Stratification` types for benefits, and `authorizationSupporting[]` with the mandatory document codes for auth-requirements. Tolerate a leaner answer.
 
-### 6. Documents by stage
+### 7. Documents by stage
 
 `authorizationSupporting[]` lists the documents the next request must carry. Its `text` names the stage: pre for the preauthorisation, post for the claim.
 
-### 7. The identifier is not a correlation key
+### 8. The identifier is not a correlation key
 
 `CoverageEligibilityResponse.identifier` identifies the beneficiary at the hospital. Correlate on the protocol headers.
 
@@ -215,7 +219,7 @@ The eligibility and plan details for the beneficiary asked about. A payer may in
 | :-- | :-- |
 | **API** | `/v1/coverageeligibility/on_check` [`apis/02-eligibility/v1-coverageeligibility-on-check.bru`](../../apis/02-eligibility/v1-coverageeligibility-on-check.bru) |
 | **Callback** | `/v1/coverageeligibility/check` [`apis/02-eligibility/v1-coverageeligibility-check.bru`](../../apis/02-eligibility/v1-coverageeligibility-check.bru) |
-| **Workflow** | none (or 5 under PMJAY) |
+| **Workflow** | none NHA publishes; the PMJAY payer answers on 5, a code not on NHA's Workflow Status Sheet |
 | **Carries JWE** | yes |
 | **Focal resource** | `CoverageEligibilityResponse` |
 
@@ -227,12 +231,18 @@ The eligibility and plan details for the beneficiary asked about. A payer may in
 | `x-hcx-recipient_code` | `1000004446@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `11` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-debug_flag` | `INFO` |
+
+**Workflow codes**
+
+| Code | Name | Authored by | `x-hcx-status` | Means |
+| :-- | :-- | :-- | :-- | :-- |
+| `5` | PMJAY eligibility and plan answer | payer |  | Seen, not sent: the PMJAY payer answered a coverage eligibility check and an insurance plan request under 5 on the 17 Oct 2026 sandbox run, with x-hcx-error_details 100. Accept it on those callbacks; never send it. The status it came with was not archived. |
 
 **Data elements**
 
@@ -240,6 +250,6 @@ The eligibility and plan details for the beneficiary asked about. A payer may in
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `outcome` | Verdict Outcome | Verdict | `code` | `1..1` | `CoverageEligibilityResponse.outcome` | `complete` |  |
 | `inforce` | Policy In Force | Coverage | `boolean` | `1..1` | `CoverageEligibilityResponse.insurance[0].inforce` | `true` |  |
-| `allowedMoney` | Remaining Balance Amount | Benefit | `decimal` | `0..1` | `CoverageEligibilityResponse.insurance[0].item[].benefit[type=benefit].allowedMoney.value` | `485000.00` |  |
+| `allowedMoney` | Remaining Balance Amount | Benefit | `decimal` | `0..1` | `CoverageEligibilityResponse.insurance[0].item[].benefit[type=benefit].allowedMoney.value` | `150000` |  |
 
 NRCeS profiles: [CoverageEligibilityResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition-CoverageEligibilityResponse.html).

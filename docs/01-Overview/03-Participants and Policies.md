@@ -9,7 +9,7 @@ This chapter covers how a participant joins the network, how it makes itself rea
 Every entity on the exchange is a registered participant with three identifiers that do different jobs.
 
 - **Participant ID.** The address on the exchange, written as `1518@hcx`. The part after the `@` names the exchange. This is what goes on the envelope as sender and recipient.
-- **Client ID and secret.** The login used to get an access token. These are the same credentials a hospital already holds from its ABDM Milestone 1 integration. There is no separate NHCX login.
+- **Client ID and secret.** The login used to get an access token. They are the client ID and secret issued when you register on the ABDM sandbox. There is no separate NHCX login.
 - **Registry ID.** Proof of who you are, issued by a registry the exchange trusts. For a hospital it is the Health Facility Registry (HFR) ID. For an insurer or TPA it is the IRDAI registry ID, sent without leading zeros, so 0123 becomes 123. For a patient app it is the app's own client ID.
 
 When a participant is created, its role and its registry are given as numbered codes.
@@ -36,7 +36,7 @@ Each role comes with a fixed list of what it may send and receive, and the excha
 
 Registration is a short sequence of calls to the participant service. Each is confirmed by a one-time passcode sent to the mobile number the registry holds, so nobody can register a hospital they do not control.
 
-1. **Create.** Send the registry type, registry ID, role, mobile number and email. The mobile number must be the one on the HFR record, or for a payer the one NHA holds. The exchange returns a participant ID and a transaction number, and sends a passcode to that phone. The participant now exists but is pending.
+1. **Create.** Send the registry type, registry ID, role, callback address, mobile number and email. The mobile number must be the one on the HFR record, or for a payer the one NHA holds. The exchange returns a participant ID and a transaction number, and sends a passcode to that phone. The participant now exists but is pending.
 2. **Confirm.** Send the transaction number and passcode. The participant becomes active.
 3. **Configure.** Send the participant's public certificate and the address the exchange should call back on, which the portal calls the bridge URL. A second passcode arrives.
 4. **Confirm again.** The address and certificate go live. The exchange can now reach you.
@@ -73,9 +73,9 @@ What matters downstream is the chosen payer's participant code, because it is on
 
 ## Authenticating
 
-Every call carries a bearer token. The token comes from the ABDM gateway's sessions endpoint, not from NHCX itself, using the Milestone 1 client ID and secret.
+Every call carries a bearer token. The token comes from the ABDM gateway's sessions endpoint, not from NHCX itself, using your ABDM sandbox client ID and secret.
 
-Tokens are short-lived. The portal's documents disagree on exactly how short, with five minutes, twenty minutes and a hundred minutes all appearing. Build for the strictest: refresh automatically, and treat a `401` as "get a new token and retry" rather than as a failure.
+A token lasts 1200 seconds (20 minutes). Refresh it automatically before the 20 minutes run out, and treat a `401` as "get a new token and retry" rather than as a failure.
 
 Sandbox addresses:
 

@@ -13,7 +13,7 @@ title: "Request insurance plan"
 side: "provider"
 api: "/v1/insuranceplan/request"
 callback: "/v1/insuranceplan/on_request"
-workflow: "none"
+workflow: "1 (hospital-level: the plan belongs to the hospital and the policy, never a case number)"
 carries_jwe: true
 focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
@@ -37,8 +37,8 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[type=PolicyNumber].valueString"
-    example_value: "PMJAY/HP/S/G"
+    fhir_path: "Task.input[type=policyNumber].valueString"
+    example_value: "POL7UMU001"
   - key: "facilityId"
     label: "Provider HFR ID"
     group: "Task Input"
@@ -46,5 +46,5 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[type=ProviderId].valueString"
+    fhir_path: "Task.input[type=providerId].valueString"
     example_value: "IN1910000151"

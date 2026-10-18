@@ -1,0 +1,8 @@
+# Callbacks
+
+Every message NHCX delivers to the application, in one list. Each row links to its full spec in [../callbacks/](../callbacks/INDEX.md). NHCX posts to the application's public route (`/in/<path>` or `/v1/<path>`); [G8. Receive](../gateway/G8-receive.md) decrypts it and calls C1 in-process, then records the message and C1's outcome in [G9. Ledger](../gateway/G9-ledger.md). Every handler answers `settled`, `unmatched`, `ignored`, `rejected` or `error`; only `error` makes NHCX redeliver.
+
+| # | Callback | NHCX route | What it does | Matched by | Writes | Answers | Screens |
+|---|---|---|---|---|---|---|---|
+| [C1](../callbacks/C1-callback-door.md) | Callback Door | every route | Takes each decrypted message, archives it beside its case, and routes it by type to C2 to C10. Holds the shared rules: redelivery, refusals (ProtocolResponse), reopening a failed send. | type from the path | [D9](../database/D9-claim.md), [D20](../database/D20-claim-submission.md), [D21](../database/D21-claim-payment.md) | [A8](../apis/A8-paymentnotice-on-request.md), [A10](../apis/A10-txn-related.md), [A13](../apis/A13-txn-list.md) | [S6](../screens/S6-claim-detail.md) |
+| [C10](../callbacks/C10-paymentnotice-request.md) | Payment Notice | `v1/paymentnotice/request` | Records a payment notice and its breakdown against the claim it names, updates a repeat of the same payment, and acknowledges it at once. | the claim number in the notice | [D9](../database/D9-claim.md), [D20](../database/D20-claim-submission.md), [D21](../database/D21-claim-payment.md), [D22](../database/D22-claim-payment-detail.md) | [A8](../apis/A8-paymentnotice-on-request.md) | [S12](../screens/S12-payments.md) |

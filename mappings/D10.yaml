@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D10: Answer a claim query - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/claim/submit
 # Callback API: /v1/claim/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D10"
 title: "Answer a claim query"
-side: "provider"
+side: "pmjay"
 api: "/v1/claim/submit"
 callback: "/v1/claim/on_submit"
 workflow: "161 (Claim document query answered)"
@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "Claim"
     fhir_path: "Claim.identifier[0].value"
-    example_value: "CL26AA2600001"
+    example_value: "NM-26-0SF00002T"
   - key: "workflowId"
     label: "Workflow Code"
     group: "Header"

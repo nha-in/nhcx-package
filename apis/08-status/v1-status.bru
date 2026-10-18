@@ -18,7 +18,7 @@ headers {
   x-hcx-correlation_id: {{originalApiCallId}}
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
 }
 
 body:json {
@@ -42,7 +42,7 @@ docs {
 
   ## When to use
 
-  Call it after a submission whose callback has not arrived within your operational tolerance, for example a preauth (workflow 12) or claim (workflow 15) still awaiting its on_submit. It is only for requests you originated; x-hcx-correlation_id carries the x-hcx-api_call_id of the request being checked (the Status sheet: "same as API caller ID of the request that requires a status check"). Send x-hcx-status request.initiated. x-hcx-workflow_id and x-hcx-use_case (New, Enhancement or Resubmit) are optional on this call; x-hcx-ben-abha-id is mandatory. If the reply is request.queued, the payer has never seen the request and no callback will come; if request.dispatched, the payer holds it and will answer on the status callback.
+  Call it after a submission whose callback has not arrived within your operational tolerance, for example a preauth (workflow 12) or claim (workflow 15) still awaiting its on_submit. It is only for requests you originated; x-hcx-correlation_id carries the x-hcx-api_call_id of the request being checked (the Status sheet: "same as API caller ID of the request that requires a status check"). Send x-hcx-status request.initiated. x-hcx-workflow_id and x-hcx-use_case (New, Enhancement or Resubmit) are optional on this call; x-hcx-ben-abha-id is mandatory. If the reply is request.queued, the payer has never seen the request and no callback will come; if request.dispatched, the payer holds it and will answer on the status callback. The sandbox refuses this path with NHCX-1012 whatever correlation id it carries. To ask the payer where a preauth or claim stands, send a Task coded status on /v1/task/submit with the input claimNumber, x-hcx-workflow_id 1 always and a fresh correlation id. No NHCX workflow code names a status check, so the workflow id never carries the leg's correlation id.
 
   ## Preconditions
 
@@ -67,7 +67,7 @@ docs {
 
   ## Best practices
 
-  - Persist the correlation id against the case record before every submission so a status check is always possible.
+  - Persist the api_call_id of every submission against the case record, so a status check is always possible.
   - Use a bounded, spaced schedule tied to the correlation id, then escalate; do not poll aggressively.
   - Branch on protocol_status: wait on request.queued, expect the status callback on request.dispatched.
   - Use a fresh x-hcx-api_call_id per status call and IST timestamps.
@@ -76,7 +76,7 @@ docs {
 
   ## Related scenario
 
-  A hospital's TPA desk submitted a preauth on /v1/preauth/submit at 09:00 and by 13:00 nothing has arrived on /v1/preauth/on_submit. Rather than resubmit, the integration posts /v1/status with the preauth's correlation id. The synchronous reply shows protocol_status request.dispatched, so the request is with the payer, not stuck at the gateway; the desk stops worrying about a lost message and waits for the status callback and the eventual preauth decision. Had the reply been request.queued, the desk would have waited on the gateway and, if the delay persisted, escalated to NHCX support with the correlation id.
+  A hospital's TPA desk submitted a preauth on /v1/preauth/submit at 09:00 and by 13:00 nothing has arrived on /v1/preauth/on_submit. Rather than resubmit, the integration posts /v1/status with the preauth's api_call_id in x-hcx-correlation_id. The synchronous reply shows protocol_status request.dispatched, so the request is with the payer, not stuck at the gateway; the desk stops worrying about a lost message and waits for the status callback and the eventual preauth decision. Had the reply been request.queued, the desk would have waited on the gateway and, if the delay persisted, escalated to NHCX support with the correlation id.
 
   ## Specification
 

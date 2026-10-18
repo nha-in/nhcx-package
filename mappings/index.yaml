@@ -1,4 +1,6 @@
 # Index of all use case mapping specifications
+# 40 files: the 38 use cases in usecases.yaml, plus B9 and C11 (predetermination),
+# which usecases.yaml no longer lists; build-docs reads only the 38.
 total_use_cases: 40
 families:
   A_shared:

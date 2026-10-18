@@ -199,11 +199,9 @@ documentation, collected so it is asked once.
   The specification gives it one sentence.
 - The **`/v1/error` body schema**. The sources say to implement the endpoint
   and receive the reject details, but its field names are not published.
-- The **currency rule** for money fields. The claim sample carries no
-  `currency` on `Claim.total`, the payment notice sample carries it on the paid
-  amount, and no source states a rule.
-- The **coverage-based insurance plan**. Only the package-based plan is
-  sampled, in either direction.
+- The **currency rule** for money fields. Every claim and payment notice sample
+  carries `currency` `INR` on `Claim.total` and on the paid amount, but no
+  source states that it is required.
 - **Payment notices 31 and 33**. Only the initiation is sampled, so the notice
   that carries a real bank reference has never been observed.
 - The **timestamp form**, format and zone. The handbook says Indian time

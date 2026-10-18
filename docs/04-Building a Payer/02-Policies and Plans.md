@@ -38,7 +38,7 @@ The flags are the scheme's rules made machine-readable, and the provider's scree
 /v1/insuranceplan/request      answer on /v1/insuranceplan/on_request
 ```
 
-The request is a `Task` with code `poll` and inputs `policyNumber` and `providerId`. The answer is scoped to that provider: only the specialties and packages its empanelment allows. That scoping is a validation as much as a filter. The payer's own error codes reject a policy not allowed for the hospital, a renewal code that does not match, a policy with no specialty configured, and an HFR ID it has no enrolment for.
+The request is a `Task` with code `poll` and inputs `policyNumber` and `providerId`, sent under workflow id `1`: it belongs to the hospital and the policy, never to one case. The answer is scoped to that provider: only the specialties and packages its empanelment allows. That scoping is a validation as much as a filter. The payer's own error codes reject a policy not allowed for the hospital, a renewal code that does not match, a policy with no specialty configured, and an HFR ID it has no enrolment for.
 
 Answer with a collection bundle: one `InsurancePlan`, the `Organization`s, and one `Questionnaire` per requirement. The reference sample carries 2,215 questionnaires and is 21 MB; that is what a real PMJAY plan looks like. Build the bundle from the plan master, never by hand.
 
@@ -51,6 +51,15 @@ The Insurance Plan guide gives two ways to structure benefits, and a payer picks
 **Coverage-based**, the private-insurer shape: `coverage → benefit → limit`. Coverage types such as in-patient, benefits such as ICU charges and room rent, and a limit per benefit with its own conditions and required documents.
 
 Element tables for both are in the FHIR Reference.
+
+### Packages, cover benefits and where the forms hang
+
+Providers quote every line of a preauthorisation from your plan, so what you mark as a package is what they can quote.
+
+- **A package has an `id`.** A benefit under `plan[].specificCost[]` is a package. A benefit you list only under `coverage[]` is read as a package only when it carries its own `id`, as the PMJAY master does for its coverage-only packages.
+- **A cover benefit has none.** Blood, ICU, Oxygen, Organ donor, Ambulance: SNOMED CT-coded limits of the policy, published under `coverage[].benefit[]` with no `id`. Providers never offer one as a line.
+- **Policy forms from coverage, procedure forms from the package.** Point at a policy-level form from `InsurancePlan.coverage[].extension`, and at a procedure-level form from the package's own benefit under `plan[].specificCost[]`, each with a `Claim-SupportingInfoRequirement`, category `INF`, code `ODN`, and the form's `documentationUrl`. A procedure carries its own forms in the same shape as a policy's: a title, a description and typed questions. A form you do not tag to a procedure is read as policy-level. The URL tells nothing apart: providers decide by where the pointer sits, so you may publish every form under one path shape. Do not publish a form for a procedure that has no price; report it instead.
+- **Proof of identity only when required.** List the proof-of-identity document (`POI`, code `ADN`) in the policy's requirements only when the policy requires biometric proof of presence, because a provider reads that code as the requirement.
 
 ### Keeping it honest
 

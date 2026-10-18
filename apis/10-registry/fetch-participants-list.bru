@@ -39,7 +39,7 @@ docs {
   ## Preconditions
 
   - Bearer token in bearer_auth with the Bearer prefix; Accept and Content-Type: application/json.
-  - FetchParticipantRequest: role (PAYER, PROVIDER or TPA), fromdate and todate in dd/MM/yyyy format only, all required; entitytype optional (for example Gov).
+  - FetchParticipantRequest: role (PAYER, PROVIDER or TPA), fromdate and todate in dd/MM/yyyy format only, all required; entitytype optional, Gov or Pvt. The sandbox registry answers the private list when no entity type is sent, so a provider's payer list takes two calls per role, Gov and Pvt, for the roles PAYER and TPA, and reads the scheme behaviour from the entity type: gov for Gov, generic for anything else.
   - A date window wide enough to cover the registration dates of the participants you expect; the handbook example spans 01/04/2021 to 20/03/2026.
 
   ## Postconditions

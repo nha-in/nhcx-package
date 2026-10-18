@@ -96,13 +96,13 @@ Complete index of all published codes:
 | **`12`** | Preauth Request Initiated | Provider | `request.initiated` | Preauth  Request Initiated | No |
 | **`121`** | Preauth Request Resubmitted | Provider | `request.initiated` | PreAuth Reprocess(Resubmission) Initimation | No |
 | **`PC01`** | Preauth Cancel Initiated | Provider | `request.initiated` | Preauthorization Cancellation | No |
-| **`19`** | Preauth Query Response Submitted | Provider | `response.complete` | PreAuth Query Response Submitted | No |
+| **`19`** | Preauth Query Response Submitted | Provider | `response.complete`; the answer is sent as `request.initiated` | PreAuth Query Response Submitted | No |
 | **`13`** | Enhancement Request Initiated | Provider | `request.initiated` | Enhancement Request Initiated | No |
-| **`131`** | Enhancement Query Response Submitted | Provider | `response.partial`, `response.error`, `response.complete` | Enhancement Query Ack Success, Enhancement Query Ack Failed, Enhancement Query Response Submitted | Yes |
+| **`131`** | Enhancement Query Response Submitted | Provider | `response.partial`, `response.error`, `response.complete`; the answer is sent as `request.initiated` | Enhancement Query Ack Success, Enhancement Query Ack Failed, Enhancement Query Response Submitted | Yes |
 | **`14`** | Discharge Submitted | Provider | `request.initiated` | Discharge Submitted | No |
 | **`141`** | Discharge Query Response Submitted | Provider | `response.complete` | Discharge Query Response Submitted | No |
 | **`15`** | Claim Request Initiated | Provider | `request.initiated` | Claim Request Initiated | No |
-| **`151`** | Claim Query Response Submitted | Provider | `response.complete` | Claim Query Response Submitted | No |
+| **`151`** | Claim Query Response Submitted | Provider | `response.complete`; the answer is sent as `request.initiated` | Claim Query Response Submitted | No |
 | **`17`** | Payment Received | Provider | `response.complete` | Payment Notice Recived | No |
 | **`36`** | Claim Arbitration Request Submitted | Provider | `request.initiated` | Claim Arbitration Intimation | No |
 | **`20`** | Preauth Request Received | Payer | `response.partial`, `response.error` | PreAuth Ack Success, PreAuth Ack Failed | Yes |
@@ -128,7 +128,7 @@ Complete index of all published codes:
 | **`33`** | Payment Settled | Payer | `request.initiated` | Payment Settled | No |
 | **`45`** | Final Bill Initimation |  | `request.initiated`, `response.partial`, `response.error` | Final Bill Initimation, Final Bill Ack Success, Final Bill Ack Failed | Yes |
 | **`181`** | Final Bill Query Response |  | `response.complete` | Final Bill Query Response | No |
-| **`161`** | Claim Doc Query Response |  | `response.complete` | Claim Doc Query Response | No |
+| **`161`** | Claim Doc Query Response |  | `response.complete`; the answer is sent as `request.initiated` | Claim Doc Query Response | No |
 | **`18`** | Preauth Query Ack Success |  | `response.partial`, `response.error` | PreAuth Query Ack Success, PreAuth Query Ack Failed | Yes |
 | **`231`** | Enhancement Deny |  | `response.complete` | Enhancement Deny | No |
 | **`46`** | Final Bill Approve |  | `response.complete` | Final Bill Approve | No |
@@ -166,11 +166,20 @@ Complete index of all published codes:
 | **`DC02`** | Acknowledgement For Discharge Correction |  | `response.complete` | Acknowledgement for Discharge Correction | No |
 | **`PC02`** | Preauthorization Cancellation Accomplished |  | `response.complete` | Preauthorization Cancellation Accomplished | No |
 
+### Codes Not on the Sheet
+
+Codes sent or received on the exchange that the Workflow Status Sheet does not publish:
+
+| Code | Means | Statuses |
+| :--- | :--- | :--- |
+| **`1`** | The insurance plan request and the status enquiry Task. The sheet names no code for either; both are sent under 1, never a correlation id, a UUID or a case number. The answer echoes 1. | `request.initiated`, `response.complete` |
+| **`5`** | Seen, not sent: the PMJAY payer answered a coverage eligibility check and an insurance plan request under 5 on the 17 Oct 2026 sandbox run, with x-hcx-error_details 100. Accept it on those callbacks; never send it. The status it came with was not archived. |  |
+
 ---
 
 ## Reconciled Discrepancies and Authority Rules
 
-Seven codes are published differently in the PMJAY Handbook and the Workflow Status Sheet, resolved here by taking the Workflow Status Sheet as the definitive authority:
+Nine codes are published differently in the PMJAY Handbook and the Workflow Status Sheet, resolved here by taking the Workflow Status Sheet as the definitive authority:
 
 | Code | PMJAY Handbook | Workflow Status Sheet |
 | :--- | :--- | :--- |
@@ -181,19 +190,28 @@ Seven codes are published differently in the PMJAY Handbook and the Workflow Sta
 | **`31 / 33`** | Payer-side response codes | header request.initiated |
 | **`251`** | REPROCESS_REQUEST_RECEIVED | "PreAuth Reprocess Ack" |
 | **`36`** | CLAIM_ARBITRATION_REQUEST_SUBMITTED, use case "Reprocess/Erroneous request" | "Claim Arbitration Intimation" |
+| **`18`** | REPROCESS_REQUEST_SUBMITTED in the reprocess section, sent on /v1/task/submit | "PreAuth Query Ack Success" response.partial and "PreAuth Query Ack Failed" response.error |
+| **`122`** | PREAUTH_CANCEL_INITIATED in the cancellation section and the quick reference card, beside PC01 in the code table | No 122; cancellation is "Preauthorization Cancellation" PC01, accomplished on PC02 |
 
 The same authority settles these conflicts across official NHA publications (Workflow Status Sheet vs PMJAY Handbook vs Value Sets):
 
 1. **251**: Reconciled as Preauthorisation Resubmission acknowledgement in the sheet; the PMJAY handbook uses it in its claim reprocess section.
-2. **Cancellation (PC01 vs 122)**: The sheet and handbook code table prescribe `PC01` (request) and `PC02` (completion). The handbook prose mentions `122`, which clashes with `R122` (reimbursement claim reprocess). Integrators should strictly use `PC01` and `PC02` on `/v1/task/submit`.
+2. **Cancellation (PC01 vs 122)**: The sheet and handbook code table prescribe `PC01` (request) and `PC02` (completion). The handbook prose mentions `122`, which clashes with `R122` (reimbursement claim reprocess). Send `PC01` on `/v1/task/submit`; the payer answers with `PC02` on `/v1/task/on_submit`.
 3. **18**: Defined as Preauthorisation Query Acknowledgement in the sheet; the handbook repurposes it for claim reprocess.
-4. **Reprocess (36 vs 18)**: Section 11 gives `18` for reprocess, while Section 12 gives `36` (Claim Arbitration). Integrators should use `36` with task code `reprocess` and reason `claimrejected`.
-5. **Shortfall**: Rides on `36` as a Task with code `reprocess` and reason `partialpayment`, raised only after payment notice `33` has arrived and been acknowledged with `17`.
-6. **25 and 291**: Named as Claim *Document* acknowledgement and denial in the sheet, and Claim request received and denied in the value sets. Both refer to the same transition.
+4. **Reprocess (36 vs 18)**: The handbook's reprocess section (Section 10) gives `18` for reprocess, while its provider code table (Section 4.1) gives `36`, which the sheet names Claim Arbitration Intimation. Integrators should use `36` with task code `reprocess` and reason `claimrejected` or `rejectiondisputed`, and only for a rejected claim: a claim is never resubmitted.
+5. **Shortfall**: Rides on `36` with reason `partialpayment`, raised only after payment notice `33` has arrived and been acknowledged with `17`. The scheme words it as a `reprocess`; a part-paid claim is not rejected, so send it as the Task coded `release` with reason `partialpayment`, never as a `reprocess` Task.
+6. **25 and 291**: Named Claim *Doc* Ack and Claim Doc Deny in the sheet. The handbook calls `25` Claim Request Received; both name the payer's acknowledgement and denial of the claim.
+7. **No code, still `1`**: The sheet gives no code for the insurance plan request or the status enquiry. Both are sent under `1`: the plan belongs to the hospital and the policy, never to a case, and no code names a status check (the Task codes are `36` and `PC01`). Never a correlation id, a UUID or the case number.
 
 ### Protocol Fault Flags
 
-The source sheet's audit flags mark certain code-and-status pairs as protocol errors rather than normal traffic:
-- For `131`, `45`, `47`, and `30`, sending **either** `response.partial` or `response.error` is flagged as an invalid state transition.
-- `18` sent with `response.error` is flagged as an invalid terminal state.
-- Query `27` sent as `response.partial` or `response.complete` is invalid (must be `request.initiated`).
+The sheet marks these code-and-status pairs "This should be handled as protocal error". Each is an acknowledgement of a message, a success or a failure of delivery, not a business decision: handle it in the protocol layer, and never read an Ack Failed as a rejection.
+
+- `131`: Enhancement Query Ack Success with `response.partial`; Enhancement Query Ack Failed with `response.error`.
+- `45`: Final Bill Ack Success with `response.partial`; Final Bill Ack Failed with `response.error`.
+- `18`: PreAuth Query Ack Failed with `response.error`.
+- `47`: Final Bill Query Ack Success with `response.partial`; Final Bill Query Ack Failed with `response.error`.
+- `27`: Claim Request Queried with `response.partial/complete`.
+- `30`: Payment Notice Ack Success with `response.partial`; Payment Notice Ack Failed with `response.error`.
+- `20` and `25` with `response.error` (PreAuth Ack Failed, Claim Doc Ack Failed) carry the outcome `error` rather than the flag, and are read the same way.
+- The query answers `19`, `131`, `151` and `161` are paired with `response.complete` in the sheet, but they travel on `/v1/preauth/submit` and `/v1/claim/submit`, where NHCX refuses `response.complete` with `NHCX-1011`. Send them as `request.initiated`; only a send on an `on_` path is `response.complete`.

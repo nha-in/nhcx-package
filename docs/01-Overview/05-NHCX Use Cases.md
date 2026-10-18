@@ -7,7 +7,6 @@ A use case covers each stage of the claims lifecycle: onboarding providers and p
 - **Onboarding Providers and Payers**: Onboard participants onto NHCX to validate and route requests to target applications.
 - **Check Coverage Eligibility**: Called by providers to verify beneficiary coverage, policy validity, sum insured, sub-limits, and document requirements.
 - **Preauth Request Submission**: Submitted by providers before admission or planned surgery. Payers respond with line-item adjudication via `on_submit`.
-- **Predetermination Request**: Inquires expected coverage and deductible calculations for planned procedures without reserving policy balance.
 - **Claim Request Submission**: Submitted by providers upon discharge with final bill, discharge summary, and itemised claims.
 - **Communication Request**: Enables payers to query providers for additional documents (`additionalinfo`), flag turnaround-time breaches (`tatquery`), or issue policy updates.
 - **Payment Notice & Reconciliation**: Payers notify providers of bank transfers (UTR), detailing claimed, approved, TDS, and settled amounts.
@@ -18,7 +17,7 @@ A use case covers each stage of the claims lifecycle: onboarding providers and p
 
 ## Master Use Cases Matrix
 
-All 40 NHA use cases by role, each with its API call and callback.
+All 38 NHA use cases by role, each with its API call and callback.
 
 ### Shared
 
@@ -30,7 +29,7 @@ The participants in the registry, by role.
 
 #### A2 Get policy
 
-The policies a beneficiary holds, by mobile number or ABHA.
+The policies a beneficiary holds, by ABHA number, member ID or mobile number.
 
 **API Call:** `/participant/get/policies`
 
@@ -42,7 +41,7 @@ The recipient's certificate, which is what the bundle is encrypted with.
 
 #### A4 Get auth token
 
-The ABDM session token every NHCX call carries, minted with the Milestone 1 client id and secret.
+The ABDM session token every NHCX call carries, minted with your ABDM sandbox client ID and secret.
 
 **API Call:** `/get/session`
 
@@ -71,7 +70,7 @@ Is the policy in force, what is left in the wallet, and what must be attached.
 
 #### B2 Request insurance plan
 
-A Task with code poll, keyed on policy number and provider id.
+A Task with code poll, keyed on policy number and provider id, under workflow id 1, never a case number.
 
 **API Call:** `/v1/insuranceplan/request`
 **Callback:** `/v1/insuranceplan/on_request`
@@ -113,17 +112,10 @@ The receipt for a payment notice, as a Task on this endpoint.
 
 #### B8 Reprocess or cancel
 
-One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected, shortfall with partialpayment, cancel.
+One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected or rejectiondisputed, only for a rejected claim; release with partialpayment for a short payment; cancel; status.
 
 **API Call:** `/v1/task/submit`
 **Callback:** `/v1/task/on_submit`
-
-#### B9 Submit predetermination
-
-What would the payer approve for this treatment?
-
-**API Call:** `/v1/predetermination/submit`
-**Callback:** `/v1/predetermination/on_submit`
 
 ### PMJAY
 
@@ -198,14 +190,14 @@ As D7, on the claim endpoint: the query is a ClaimResponse on 27, the answer a f
 
 #### D11 Reprocess a rejected claim
 
-An appeal, not a resubmission: a Task with code reprocess and reason claimrejected, a supporting document attached, no amount.
+An appeal, not a resubmission: a Task with code reprocess and reason claimrejected or rejectiondisputed, only for a rejected claim, a supporting document attached, no amount.
 
 **API Call:** `/v1/task/submit`
 **Callback:** `/v1/task/on_submit`
 
 #### D12 Claim a shortfall
 
-The same Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17.
+A Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17.
 
 **API Call:** `/v1/task/submit`
 **Callback:** `/v1/task/on_submit`
@@ -287,13 +279,6 @@ The answer to a reprocess, shortfall or cancel.
 **API Call:** `/v1/task/on_submit`
 **Callback:** `/v1/task/submit`
 
-#### C11 Respond to predetermination
-
-What the payer would approve for the proposed treatment.
-
-**API Call:** `/v1/predetermination/on_submit`
-**Callback:** `/v1/predetermination/submit`
-
 ### Patient app
 
 #### E1 Subscribe to notifications
@@ -324,13 +309,12 @@ The participants in the registry, by role. How a provider finds a payer and a pa
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `roles` | Requested Role Filter | Request | `array[string]` | `1..*` | `Request.roles` | `["payor"]` |  |
-| `participantCode` | Participant ID (@hcx) | Response | `string` | `1..1` | `Organization.identifier[system=https://nhcx.gov.in].value` | `1000003538@hcx` | also at `Header.x-hcx-recipient_code` |
-| `participantName` | Entity Name | Response | `string` | `1..1` | `Organization.name` | `State Health Agency Himachal` |  |
-| `endpointUrl` | Gateway Callback URL | Response | `url` | `1..1` | `Endpoint.address` | `https://payer.example.org/nhcx/v1` |  |
-| `encryptionCertPath` | Encryption Certificate Path | Response | `url` | `1..1` | `Response.encryption_cert_path` | `https://apisbx.abdm.gov.in/certs/1000003538.pem` |  |
-
-NRCeS profiles: [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html).
+| `role` | Role Filter (PAYER, PROVIDER or TPA) | Request | `string` | `1..1` | `Request.role` | `PAYER` |  |
+| `fromDate` | Registered From (dd/MM/yyyy) | Request | `string` | `1..1` | `Request.fromdate` | `01/04/2021` |  |
+| `toDate` | Registered To (dd/MM/yyyy) | Request | `string` | `1..1` | `Request.todate` | `20/03/2026` |  |
+| `entityType` | Entity Type | Request | `string` | `0..1` | `Request.entitytype` | `Gov` |  |
+| `participantCode` | Participant ID (@hcx) | Response | `string` | `1..1` | `Response.participantdetails[].participantcode` | `1000003538@hcx` |  |
+| `participantName` | Entity Name | Response | `string` | `1..1` | `Response.participantdetails[].participantname` | `NHCX Dummy Payer` |  |
 
 ### A2: Get policy
 
@@ -340,19 +324,18 @@ NRCeS profiles: [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 - **Simulator Console:** `/search`
 - **Data Element Mapping:** [`package/mappings/A2.yaml`](../../mappings/A2.yaml)
 
-The policies a beneficiary holds, by mobile number or ABHA. Each names the insurer and the processor, and the processor is the recipient for every claim-side call.
+The policies a beneficiary holds, by ABHA number, member ID or mobile number. Each names the insurer and the processor, and the processor is the recipient for every claim-side call.
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `mobile` | Beneficiary Mobile | Request | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `abhaNumber` | ABHA Number | Request | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `policyNumber` | Discovered Policy Number | Response | `string` | `1..1` | `Coverage.identifier[0].value` | `POL-HOSP-2026-0045` |  |
-| `insurerId` | Insurer Participant Code | Response | `string` | `1..1` | `Organization[type=pay].identifier[system=https://nhcx.gov.in].value` | `1000003538@hcx` |  |
-| `processorId` | Claim Processor Participant Code | Response | `string` | `1..1` | `Organization[type=tpa].identifier[system=https://nhcx.gov.in].value` | `1000004520@hcx` |  |
-
-NRCeS profiles: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html).
+| `identifierType` | Identifier Type (AbhaNumber, MemberId or MobileNo) | Request | `string` | `1..1` | `Request.identifiertype` | `AbhaNumber` |  |
+| `identifierValue` | Identifier Value (ABHA without hyphens) | Request | `string` | `1..1` | `Request.identifiervalue` | `12345678910111` |  |
+| `memberId` | Member ID | Response | `string` | `0..1` | `Response[].memberid` | `MEM-2026-000123` |  |
+| `productId` | Policy Product ID | Response | `string` | `0..1` | `Response[].productid` | `PRD-FLOATER-01` |  |
+| `insurerId` | Insurer Participant Code | Response | `string` | `1..1` | `Response[].payerid` | `100234@sbx` |  |
+| `processorId` | Claim Processor Participant Code (the recipient of claim-side calls) | Response | `string` | `1..1` | `Response[].processingid` | `100235@sbx` |  |
 
 ### A3: Get public key
 
@@ -368,8 +351,8 @@ The recipient's certificate, which is what the bundle is encrypted with. Fetched
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `participantCode` | Target Participant Code | Request | `string` | `1..1` | `Request.participant_code` | `1000003538@hcx` |  |
-| `certData` | Public Key PEM Certificate | Response | `string` | `1..1` | `Response.certs[0]` | `-----BEGIN CERTIFICATE----- MIIBIjANBgkqhkiG9w0BAQEFAAO...` |  |
+| `participantCode` | Target Participant Code | Request | `string` | `1..1` | `Request.participantid` | `1518@hcx` |  |
+| `certData` | Public Key PEM Certificate | Response | `string` | `1..1` | `Response (string body)` | `-----BEGIN CERTIFICATE----- MIIBIjANBgkqhkiG9w0BAQEFAAO...` |  |
 
 ### A4: Get auth token
 
@@ -379,7 +362,7 @@ The recipient's certificate, which is what the bundle is encrypted with. Fetched
 - **Simulator Console:** `/session`
 - **Data Element Mapping:** [`package/mappings/A4.yaml`](../../mappings/A4.yaml)
 
-The ABDM session token every NHCX call carries, minted with the Milestone 1 client id and secret.
+The ABDM session token every NHCX call carries, minted with your ABDM sandbox client ID and secret.
 
 **Data elements**
 
@@ -387,8 +370,8 @@ The ABDM session token every NHCX call carries, minted with the Milestone 1 clie
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `clientId` | Client ID | Request | `string` | `1..1` | `Request.clientId` | `SBX_001205` |  |
 | `clientSecret` | Client Secret | Request | `string` | `1..1` | `Request.clientSecret` | `secret_xyz` |  |
-| `accessToken` | Bearer Access Token | Response | `string` | `1..1` | `Header.Authorization` | `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...` | also at `Header.bearer_auth` |
-| `expiresIn` | Token Validity Seconds | Response | `integer` | `1..1` | `Response.expiresIn` | `3600` |  |
+| `accessToken` | Bearer Access Token | Response | `string` | `1..1` | `Response.accessToken` | `eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...` | also at `Header.bearer_auth` |
+| `expiresIn` | Token Validity Seconds | Response | `integer` | `1..1` | `Response.expiresIn` | `1200` |  |
 
 ### A5: Get status
 
@@ -398,9 +381,9 @@ The ABDM session token every NHCX call carries, minted with the Milestone 1 clie
 - **Carries JWE:** `true`
 - **Simulator Console:** `/status`
 - **Data Element Mapping:** [`package/mappings/A5.yaml`](../../mappings/A5.yaml)
-- **FHIR Reference:** [Predetermination, Status and Search, A5](../05-FHIR%20Reference/18-Predetermination,%20Status%20and%20Search.md#a5-get-status-shared)
+- **FHIR Reference:** [Status and Search, A5](../05-FHIR%20Reference/18-Status%20and%20Search.md#a5-get-status-shared)
 
-Where any request you made got to, by its correlation id. The sandbox's own status page answers without a token.
+Where any request you made got to, by its correlation id. The sandbox's own status page answers without a token. The sandbox refuses /v1/status with NHCX-1012; to ask the payer where a case stands, send a Task coded status on /v1/task/submit under workflow id 1.
 
 ### A6: Receive errors
 
@@ -417,8 +400,8 @@ Where the exchange tells you a request could not be delivered after five attempt
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `correlationId` | Failed Transaction ID | Error | `uuid` | `1..1` | `Header.x-hcx-correlation_id` | `4f9d2b80-13b4-4e2a-9e12-8f9024a56789` |  |
-| `errorCode` | Error Code | Error | `string` | `1..1` | `Error.code` | `ERR_RECIPIENT_UNREACHABLE` |  |
-| `errorMessage` | Error Description | Error | `string` | `1..1` | `Error.message` | `Recipient gateway timed out after 5 attempts` |  |
+| `errorCode` | Error Code | Error | `string` | `1..1` | `Header.x-hcx-error_details.code` | `ERR_DELIVERY_FAILED` |  |
+| `errorMessage` | Error Description | Error | `string` | `1..1` | `Header.x-hcx-error_details.message` | `Recipient endpoint unreachable after five attempts` |  |
 
 ## Provider Use Cases
 
@@ -447,7 +430,7 @@ Is the policy in force, what is left in the wallet, and what must be attached. O
 - **FHIR Reference:** [Insurance Plan Request, B2](../05-FHIR%20Reference/04-Insurance%20Plan%20Request.md#b2-request-insurance-plan-provider)
 - **Sample FHIR Bundles (2):** [`B2-request.json`](../../fhir/B2/B2-request.json), [`insurance-plan-request.json`](../../fhir/B2/insurance-plan-request.json)
 
-A Task with code poll, keyed on policy number and provider id. The answer is the policy as a benefit structure: packages, rates, documents, questionnaires.
+A Task with code poll, keyed on policy number and provider id, under workflow id 1, never a case number. The answer is the policy as a benefit structure: packages, rates, documents, questionnaires. Fetch it once a validation leaves a case in force and no plan is held for that policy, HFR id and payer.
 
 ### B3: Submit pre-authorisation
 
@@ -495,7 +478,7 @@ Reimbursement after discharge. The amount may not exceed what the pre-authorisat
 - **Callback API:** `/v1/search/on_submit`
 - **Carries JWE:** `true`
 - **Data Element Mapping:** [`package/mappings/B6.yaml`](../../mappings/B6.yaml)
-- **FHIR Reference:** [Predetermination, Status and Search, B6](../05-FHIR%20Reference/18-Predetermination,%20Status%20and%20Search.md#b6-search-claims-provider)
+- **FHIR Reference:** [Status and Search, B6](../05-FHIR%20Reference/18-Status%20and%20Search.md#b6-search-claims-provider)
 - **Sample FHIR Bundles (1):** [`claim-search.json`](../../fhir/B6/claim-search.json)
 
 Look up claim information by criteria. The provider sandbox exit checklist names /v1/search/submit for claim search, while the Technical Specifications route /search/submit from NHA through NHCX to the payer: a cross-payer search for NHA or a regulator. A provider's search over its own cases is /claim/search in the protocol, which the access-control policy allows for requests that originated from the provider. No source confirms which of the two the sandbox accepts from a provider.
@@ -518,25 +501,13 @@ The receipt for a payment notice, as a Task on this endpoint. The notice arrives
 - **Role / Side:** `provider`
 - **API Called:** `/v1/task/submit`
 - **Callback API:** `/v1/task/on_submit`
-- **Workflow ID:** `PC01 cancel, 36 reprocess or shortfall`
+- **Workflow ID:** `PC01 cancel, 36 reprocess or release, 1 status`
 - **Carries JWE:** `true`
 - **Data Element Mapping:** [`package/mappings/B8.yaml`](../../mappings/B8.yaml)
 - **FHIR Reference:** [Cancel, Reprocess and Shortfall, B8](../05-FHIR%20Reference/15-Cancel,%20Reprocess%20and%20Shortfall.md#b8-reprocess-or-cancel-provider)
 - **Sample FHIR Bundles (2):** [`B8-cancel.json`](../../fhir/B8/B8-cancel.json), [`B8-reprocess.json`](../../fhir/B8/B8-reprocess.json)
 
-One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected, shortfall with partialpayment, cancel. A reprocess goes on 36 and is acknowledged on 37; a cancel goes on PC01 and is done on PC02. Both carry the input intimationNumber. A supporting document is mandatory on a reprocess.
-
-### B9: Submit predetermination
-
-- **Role / Side:** `provider`
-- **API Called:** `/v1/predetermination/submit`
-- **Callback API:** `/v1/predetermination/on_submit`
-- **Carries JWE:** `true`
-- **Data Element Mapping:** [`package/mappings/B9.yaml`](../../mappings/B9.yaml)
-- **FHIR Reference:** [Predetermination, Status and Search, B9](../05-FHIR%20Reference/18-Predetermination,%20Status%20and%20Search.md#b9-submit-predetermination-provider)
-- **Sample FHIR Bundles (1):** [`predetermination-request.json`](../../fhir/B9/predetermination-request.json)
-
-What would the payer approve for this treatment? Same bundle shape as a pre-authorisation, asked before committing to one.
+One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected or rejectiondisputed, only for a rejected claim; release with partialpayment for a short payment; cancel; status. A reprocess goes on 36 and is acknowledged on 37; a cancel goes on PC01 and is done on PC02; a status enquiry goes on 1 always. Reprocess and cancel carry the input intimationNumber. A supporting document is mandatory on a reprocess. A claim is never resubmitted: a reprocess is its only way back.
 
 ## PMJAY Scheme Use Cases
 
@@ -567,11 +538,9 @@ Fingerprint, iris or face; all three must be built. Success yields a user token 
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `abhaNumber` | ABHA Number | Auth | `string` | `1..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `authMode` | Authentication Mode | Auth | `string` | `1..1` | `Request.authMode` | `DEMOGRAPHICS` |  |
-| `authToken` | Biometric Consent Token | Auth | `string` | `1..1` | `Response.token` | `bio-token-778899` |  |
-
-NRCeS profiles: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html).
+| `abhaNumber` | ABHA Number | Request | `string` | `1..1` | `Request.loginId` | `91-XXXX-XXXX-1234` |  |
+| `authMode` | Authentication Mode (FINGERPRINT, IRIS or FACE) | Request | `string` | `1..1` | `Request.authMode` | `FINGERPRINT` |  |
+| `authToken` | Beneficiary User Token (valid 1800 seconds) | Response | `string` | `1..1` | `Response.token` | `eyZhx...` |  |
 
 ### D3: Check coverage eligibility
 
@@ -694,7 +663,7 @@ As D7, on the claim endpoint: the query is a ClaimResponse on 27, the answer a f
 - **FHIR Reference:** [Cancel, Reprocess and Shortfall, D11](../05-FHIR%20Reference/15-Cancel,%20Reprocess%20and%20Shortfall.md#d11-reprocess-a-rejected-claim-pmjay)
 - **Sample FHIR Bundles (1):** [`D11-reprocess.json`](../../fhir/D11/D11-reprocess.json)
 
-An appeal, not a resubmission: a Task with code reprocess and reason claimrejected, a supporting document attached, no amount. Raise it the moment the rejection arrives. Once only; the Claim Review Committee is final.
+An appeal, not a resubmission: a Task with code reprocess and reason claimrejected or rejectiondisputed, only for a rejected claim, a supporting document attached, no amount. Raise it the moment the rejection arrives. Once only; the Claim Review Committee is final.
 
 ### D12: Claim a shortfall
 
@@ -707,7 +676,7 @@ An appeal, not a resubmission: a Task with code reprocess and reason claimreject
 - **Data Element Mapping:** [`package/mappings/D12.yaml`](../../mappings/D12.yaml)
 - **FHIR Reference:** [Cancel, Reprocess and Shortfall, D12](../05-FHIR%20Reference/15-Cancel,%20Reprocess%20and%20Shortfall.md#d12-claim-a-shortfall-pmjay)
 
-The same Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17. Once only, and never after a reprocess.
+A Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17. Once only, and never after a reprocess. The scheme words it as a reprocess; a part-paid claim is not rejected, so send it as the release Task, code release, and confirm with the scheme.
 
 ### D13: Acknowledge the payment notice
 
@@ -741,11 +710,14 @@ Tie the ABHA number, mobile and member id to the policy's products at policy cre
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `abhaNumber` | ABHA Number | Link | `string` | `1..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `policyNumber` | Policy Number | Link | `string` | `1..1` | `Coverage.identifier[0].value` | `POL-HOSP-2026-0045` |  |
-| `payerId` | Insurer Participant Code | Link | `string` | `1..1` | `Organization.identifier.value` | `1000003538@hcx` |  |
-
-NRCeS profiles: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html).
+| `requestId` | Request ID (UUID) | Request | `string` | `1..1` | `Request.requestid` | `7f3f2a4e-0c6b-4b7a-9e2d-2c1f8a5b6d90` |  |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `1..1` | `Request.abhanumber` | `12345678910111` |  |
+| `mobileNumber` | Mobile Number | Beneficiary | `string` | `0..1` | `Request.mobilenumber` | `9876543210` |  |
+| `memberId` | Member ID | Beneficiary | `string` | `1..1` | `Request.memberid` | `MEM-2026-000123` |  |
+| `payerId` | Insurer Participant Code | Payer | `string` | `1..1` | `Request.payerid` | `100234@sbx` |  |
+| `processingId` | Claim Processor Participant Code | Payer | `string` | `0..1` | `Request.processingid` | `100235@sbx` |  |
+| `productId` | Policy Product ID | Policy | `string` | `1..*` | `Request.policies[].productid` | `PRD-FLOATER-01` |  |
+| `productName` | Policy Product Name | Policy | `string` | `1..*` | `Request.policies[].productname` | `Family Floater Gold` |  |
 
 ### C2: De-link ABHA from policy
 
@@ -760,10 +732,11 @@ Undo C1. Only the party named as payer or processor on the link may do this.
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `abhaNumber` | ABHA Number | Delink | `string` | `1..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `policyNumber` | Policy Number | Delink | `string` | `1..1` | `Coverage.identifier[0].value` | `POL-HOSP-2026-0045` |  |
-
-NRCeS profiles: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html).
+| `requestId` | Request ID (UUID) | Request | `string` | `1..1` | `Request.requestid` | `9a7c5e3d-1b2f-4c8a-b6d4-0e9f8a7b6c55` |  |
+| `memberId` | Member ID | Beneficiary | `string` | `1..1` | `Request.memberid` | `MEM-2026-000123` |  |
+| `payerId` | Insurer Participant Code | Payer | `string` | `1..1` | `Request.payerid` | `100234@sbx` |  |
+| `processingId` | Claim Processor Participant Code | Payer | `string` | `0..1` | `Request.processingid` | `100235@sbx` |  |
+| `productId` | Policy Product ID | Policy | `string` | `1..*` | `Request.policies[].productid` | `PRD-FLOATER-01` |  |
 
 ### C3: Respond to coverage eligibility
 
@@ -835,7 +808,7 @@ The adjudicated claim, item by item, with any deduction and its reason. The ackn
 - **Callback API:** `/v1/search/submit`
 - **Carries JWE:** `true`
 - **Data Element Mapping:** [`package/mappings/C8.yaml`](../../mappings/C8.yaml)
-- **FHIR Reference:** [Predetermination, Status and Search, C8](../05-FHIR%20Reference/18-Predetermination,%20Status%20and%20Search.md#c8-respond-to-search-payer)
+- **FHIR Reference:** [Status and Search, C8](../05-FHIR%20Reference/18-Status%20and%20Search.md#c8-respond-to-search-payer)
 - **Sample FHIR Bundles (1):** [`search-response.json`](../../fhir/C8/search-response.json)
 
 The ClaimResponse objects matching the criteria asked for.
@@ -866,18 +839,6 @@ The money, on a new thread of its own, with the reconciliation itemised by type:
 
 The answer to a reprocess, shortfall or cancel. A cancellation done is PC02 and carries the case's ClaimResponse in its output; a reprocess on 36 is acknowledged on 37 as arbitration. Both payers answer this way.
 
-### C11: Respond to predetermination
-
-- **Role / Side:** `payer`
-- **API Called:** `/v1/predetermination/on_submit`
-- **Callback API:** `/v1/predetermination/submit`
-- **Carries JWE:** `true`
-- **Data Element Mapping:** [`package/mappings/C11.yaml`](../../mappings/C11.yaml)
-- **FHIR Reference:** [Predetermination, Status and Search, C11](../05-FHIR%20Reference/18-Predetermination,%20Status%20and%20Search.md#c11-respond-to-predetermination-payer)
-- **Sample FHIR Bundles (1):** [`predetermination-response.json`](../../fhir/C11/predetermination-response.json)
-
-What the payer would approve for the proposed treatment.
-
 ## Beneficiary & Patient App Use Cases
 
 Personal health record apps and beneficiary portals register on NHCX to receive real-time updates on a patient's claims and authorizations.
@@ -897,11 +858,10 @@ A patient app subscribes when the beneficiary logs in with their ABHA, and the m
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `abhaNumber` | Beneficiary ABHA | Subscription | `string` | `1..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `topic` | Subscription Topic | Subscription | `string` | `1..*` | `Subscription.criteria` | `workflow_events` |  |
-| `endpointUrl` | Push Notification URL | Subscription | `url` | `1..1` | `Subscription.channel.endpoint` | `https://phrapp.example.org/webhook/claims` |  |
-
-NRCeS profiles: [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html).
+| `subscriberId` | Beneficiary ABHA Address | Subscription | `string` | `1..1` | `Payload.subscriber.id` | `ravi@abdm` |  |
+| `topic` | Subscription Topics | Subscription | `string` | `1..*` | `Payload.topic_code[]` | `workflow_events` |  |
+| `recipientCode` | Subscribing App Participant Code | Subscription | `string` | `1..1` | `Payload.recipient_code` | `phr-app-xyz@bsp` |  |
+| `endpointUrl` | Notification Callback URL | Subscription | `url` | `1..1` | `Payload.on_notification_url` | `https://api.phrapp.com/v1/hcx/notification/on_subscribe` |  |
 
 ---
 
@@ -920,50 +880,49 @@ The NHCX FHIR Builder provides pre-configured templates and presets for generati
 | `preauth` | `resubmit` | **Resubmit** | `claim` | `v1/preauth/submit` | `request` | Revise an approved or rejected case. Nullifies every earlier instance; keep the same case number. |
 | `preauth` | `enhance` | **Enhancement** | `claim` | `v1/preauth/submit` | `request` | Add to an approved pre-authorisation. Quote its approval reference, and only add packages the plan allows to be enhanced. |
 | `preauth` | `query-answer` | **Answer a query** | `claim` | `v1/preauth/submit` | `request` | The payer asked for more. Same bundle, same case number, the extra documents attached; never a fresh 12. |
-| `preauth` | `predetermination` | **Predetermination** | `claim` | `v1/predetermination/submit` | `request` | What would the payer approve for this treatment? Asked before committing to a pre-authorisation, on its own endpoint. |
 | `preauth` | `cancel` | **Cancel** | `claim-cancel` | `v1/task/submit` | `request` | Withdraw an active pre-authorisation with a Task. Allowed at any point until the claim is raised. |
 | `claim` | `submit` | **Submit** | `claim` | `v1/claim/submit` | `request` | Reimbursement after discharge. Under PMJAY this also asserts the discharge, so it carries the discharge type and dates. |
 | `claim` | `query-answer` | **Answer a query** | `claim` | `v1/claim/submit` | `request` | The claim processing doctor asked for more. Same bundle, same case number, the extra evidence attached. |
 | `claim` | `reprocess` | **Reprocess** | `claim-reprocess` | `v1/task/submit` | `request` | Appeal a rejected claim with a Task and a supporting document. Once only; the Committee is final. |
 | `claim` | `shortfall` | **Shortfall** | `claim-release` | `v1/task/submit` | `request` | The claim was paid short. Ask for the difference, after payment notice 33 has been acknowledged. |
 | `paymentnotice` | `acknowledge` | **Acknowledge** | `payment-ack` | `v1/paymentnotice/on_request` | `on_request` | The receipt for a payment notice. Acknowledging does not resolve whatever the notice was about. |
-| `search` | `search` | **Search** | `search` | `v1/search/submit` | `request` | Where a case got to, asked as a Task. Check Status answers the same question without a bundle. |
+| `search` | `search` | **Search** | `search` | `v1/search/submit` | `request` | Where a case got to, asked as a Task. Check Status answers the same question without a bundle, on a path the sandbox refuses with NHCX-1012; the status enquiry that works is a Task coded status on v1/task/submit under workflow id 1. |
 
 ---
 
-## The 100 Official NHCX Test Use Cases
+## The 99 NHCX Test Use Cases
 
-NHA specifies a formal test matrix of 100 numbered use cases covering every scenario an integrator must demonstrate for network certification. The complete reference manifest is preserved at `fixtures/usecases.txt`.
+The test matrix lists 99 numbered use cases, a request and its responses for each scenario an integrator demonstrates. The last column names the package's sample bundle folders for each scenario.
 
-| Case IDs | Scenario Category | Exchanges Involved | Key Verification Criteria | Fixture Reference |
+| Case IDs | Scenario Category | Exchanges Involved | Key Verification Criteria | Sample Bundles |
 | :--- | :--- | :--- | :--- | :--- |
-| **1 to 3** | Insurance Plan | `/insuranceplan/request` & `on_request` | Plan query (`Task` poll), package master response (`InsurancePlan`), error response | `fixtures/reference/provider/insurance/` |
-| **4 to 7** | Coverage Validation | `/coverageeligibility/check` & `on_check` | Purpose `validation`. Checks policy in force, active dates, error handling | `fixtures/reference/provider/coverage/validation/` |
-| **8 to 10** | Coverage Discovery | `/coverageeligibility/check` & `on_check` | Purpose `discovery`. Discovers policy from ABHA when policy number unknown | `fixtures/reference/provider/coverage/discovery/` |
-| **11 to 13** | Auth-Requirements | `/coverageeligibility/check` & `on_check` | Purpose `auth-requirements`. Returns mandatory document codes (`MAND...`) | `fixtures/reference/provider/coverage/authrequirements/` |
-| **14 to 16** | Preauth with Biometric Token | `/preauth/submit` & `on_submit` | Valid biometric token in header/token. Ack (wf20) & approval (wf21) | `fixtures/reference/provider/preauth/request/` |
-| **17 to 19** | Preauth without Token (Consent) | `/preauth/submit` & `on_submit` | Physical consent form uploaded in supportingInfo questionnaire | `fixtures/collection/provider/preauth/` |
-| **20 to 22** | Preauth Newborn Registration | `/preauth/submit` & `on_submit` | Newborn registered under mother's ABHA/PMJAY policy, birth certificate | [`docs/05-FHIR Reference/12-Claim Request.md`](../05-FHIR%20Reference/12-Claim%20Request.md) |
-| **23 to 25** | Preauth with STG | `/preauth/submit` & `on_submit` | Standard Treatment Guidelines questionnaire answered under supportingInfo | `fixtures/collection/pmjay-payer/insurance/` |
-| **26 to 28** | Preauth with Implant & Attendant | `/preauth/submit` & `on_submit` | Implant product details and attendant certification included | `fixtures/reference/provider/preauth/request/` |
-| **29 to 31** | Preauth Query & Resolution | `/preauth/submit` / `/communication/` | Payer queries additional remarks/documents; provider answers (wf19/131) | `fixtures/reference/provider/preauth/queryupdate/` |
-| **32 to 34** | Preauth Standalone Procedure | `/preauth/submit` & `on_submit` | Single stand-alone medical or surgical package booking | `fixtures/reference/provider/preauth/request/` |
-| **35 to 37** | Preauth Cyclic Procedure | `/preauth/submit` & `on_submit` | Recurring cyclic treatments (e.g. hemodialysis, chemotherapy cycles) | `fixtures/collection/provider/preauth/` |
-| **38 to 40** | Preauth Unspecified Procedure | `/preauth/submit` & `on_submit` | Unspecified surgical package (`SGU100`) with surgical notes attached | `fixtures/reference/provider/preauth/request/` |
-| **41 to 43** | Enhancement: Length of Stay | `/preauth/submit` & `on_submit` | Increase in LOS (`x-hcx-use_case: Enhancement`), updated clinical justification | `fixtures/reference/provider/preauth/enhancement/` |
-| **44 to 46** | Enhancement: Additional Procedures | `/preauth/submit` & `on_submit` | Additional secondary procedures or STG questionnaire inclusion | `fixtures/reference/provider/preauth/enhancement/` |
-| **47 to 49** | Resubmission with STG | `/preauth/submit` & `on_submit` | Procedure modification/addition after rejection with STG questionnaire | `fixtures/reference/provider/preauth/request/` |
-| **50 to 52** | Resubmission without STG | `/preauth/submit` & `on_submit` | Procedure modification/addition after rejection without STG questionnaire | `fixtures/reference/provider/preauth/request/` |
-| **53 to 54** | Preauth Cancellation | `/task/submit` & `on_submit` | Cancellation `Task` (`PC01`/`PC02`) referencing original preauthorisation | `fixtures/reference/payer/task/cancelled/` |
-| **55 to 57** | Claim Cyclic Procedure | `/claim/submit` & `on_submit` | Claim submission for completed cyclic treatment cycle | `fixtures/collection/provider/claim/` |
-| **58 to 60** | Claim Live Discharge | `/claim/submit` & `on_submit` | Normal completed discharge to home (`DTH`). Final bills and summary | `fixtures/reference/provider/claim/request/` |
-| **61 to 63** | Claim Query & Resolution | `/claim/submit` / `/communication/` | Payer raises query on claim (wf27); provider submits answer (wf141/151) | `fixtures/reference/provider/claim/queryupdate/` |
-| **64 to 72** | Claim LAMA Scenarios | `/claim/submit` & `on_submit` | LAMA before surgery (`LM100` per diem), after surgery (package), during surgery (`LM100`) | `fixtures/reference/payer/claim/approved/` |
-| **73 to 81** | Claim DAMA Scenarios | `/claim/submit` & `on_submit` | DAMA before surgery (`LM100`), after surgery (package), during surgery (`LM100`) | `fixtures/reference/payer/claim/approved/` |
-| **82 to 90** | Claim Death Scenarios | `/claim/submit` & `on_submit` | Discharge to mortuary (`DTM`). Before, after, and during surgery | `fixtures/collection/provider/claim/` |
-| **91 to 93** | Claim Erroneous Request | `/claim/submit` & `on_submit` | Erroneous submission corrected with remaining balance and mandatory docs | `fixtures/reference/provider/claim/request/` |
-| **94 to 96** | Claim Reprocess / Dispute | `/task/submit` & `on_submit` | Reprocess `Task` (code 36) with appeal justification and mandatory docs | `fixtures/reference/provider/claim/reprocess/` |
-| **97 to 100**| Payment Notice & Settlement | `/paymentnotice/request` & `on_request` | Payment initiation (wf30), ack (wf17/31), cleared update, and final ack | `fixtures/reference/payer/payment/notice/` |
+| **1 to 3** | Insurance Plan | `/v1/insuranceplan/request` & `/v1/insuranceplan/on_request` | Plan query (`Task` poll), package master response (`InsurancePlan`), error response | [`fhir/B2/`](../../fhir/B2), [`fhir/C4/`](../../fhir/C4) |
+| **4 to 6** | Coverage Validation | `/v1/coverageeligibility/check` & `/v1/coverageeligibility/on_check` | Purpose `validation`. Checks policy in force, active dates, error handling | [`fhir/B1/`](../../fhir/B1), [`fhir/C3/`](../../fhir/C3) |
+| **7 to 9** | Coverage Discovery | `/v1/coverageeligibility/check` & `/v1/coverageeligibility/on_check` | Purpose `discovery`. Discovers policy from ABHA when policy number unknown | [`fhir/B1/`](../../fhir/B1), [`fhir/C3/`](../../fhir/C3) |
+| **10 to 12** | Auth-Requirements | `/v1/coverageeligibility/check` & `/v1/coverageeligibility/on_check` | Purpose `auth-requirements`. Returns mandatory document codes (`MAND...`) | [`fhir/B1/`](../../fhir/B1), [`fhir/C3/`](../../fhir/C3) |
+| **13 to 15** | Preauth with Biometric Token | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Valid biometric token in header/token. Ack (wf20) & approval (wf21) | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **16 to 18** | Preauth without Token (Consent) | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Physical consent form uploaded in supportingInfo questionnaire | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **19 to 21** | Preauth Newborn Registration | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Newborn registered under mother's ABHA/PMJAY policy, birth certificate | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **22 to 24** | Preauth with STG | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Standard Treatment Guidelines questionnaire answered under supportingInfo | [`fhir/D4/`](../../fhir/D4), [`fhir/C4/`](../../fhir/C4) |
+| **25 to 27** | Preauth with Implant & Attendant | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Implant product details and attendant certification included | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **28 to 30** | Preauth Query & Resolution | `/preauth/submit` / `/communication/` | Provider answers a payer query with additional remarks and documents (wf19), then the acknowledgement and the adjudication | [`fhir/D7/`](../../fhir/D7), [`fhir/C5/`](../../fhir/C5) |
+| **31 to 33** | Preauth Standalone Procedure | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Single stand-alone medical or surgical package booking | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **34 to 36** | Preauth Cyclic Procedure | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Recurring cyclic treatments (e.g. hemodialysis, chemotherapy cycles) | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **37 to 39** | Preauth Unspecified Procedure | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Unspecified surgical package (`SGU100`) with surgical notes attached | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **40 to 42** | Enhancement: Length of Stay | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Increase in LOS (`x-hcx-use_case: Enhancement`), updated clinical justification | [`fhir/D6/`](../../fhir/D6), [`fhir/C5/`](../../fhir/C5) |
+| **43 to 45** | Enhancement: Additional Procedures | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Additional secondary procedures or STG questionnaire inclusion | [`fhir/D6/`](../../fhir/D6), [`fhir/C5/`](../../fhir/C5) |
+| **46 to 48** | Resubmission with STG | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Procedure modification/addition after rejection with STG questionnaire | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **49 to 51** | Resubmission without STG | `/v1/preauth/submit` & `/v1/preauth/on_submit` | Procedure modification/addition after rejection without STG questionnaire | [`fhir/B3/`](../../fhir/B3), [`fhir/C5/`](../../fhir/C5) |
+| **52 to 53** | Preauth Cancellation | `/v1/task/submit` & `/v1/task/on_submit` | Cancellation `Task` (`PC01`/`PC02`) referencing original preauthorisation | [`fhir/D8/`](../../fhir/D8), [`fhir/C10/`](../../fhir/C10) |
+| **54 to 56** | Claim Cyclic Procedure | `/v1/claim/submit` & `/v1/claim/on_submit` | Claim submission for completed cyclic treatment cycle | [`fhir/B5/`](../../fhir/B5), [`fhir/C7/`](../../fhir/C7) |
+| **57 to 59** | Claim Live Discharge | `/v1/claim/submit` & `/v1/claim/on_submit` | Normal completed discharge to home (`DTH`). Final bills and summary | [`fhir/B5/`](../../fhir/B5), [`fhir/C7/`](../../fhir/C7) |
+| **60 to 62** | Claim Query & Resolution | `/claim/submit` / `/communication/` | Payer raises query on claim (wf27); provider submits answer (wf151, wf161 under PMJAY) | [`fhir/D10/`](../../fhir/D10), [`fhir/C7/`](../../fhir/C7) |
+| **63 to 71** | Claim LAMA Scenarios | `/v1/claim/submit` & `/v1/claim/on_submit` | LAMA before surgery (`LM100` per diem), after surgery (package), during surgery (`LM100`) | [`fhir/D9/`](../../fhir/D9), [`fhir/C7/`](../../fhir/C7) |
+| **72 to 80** | Claim DAMA Scenarios | `/v1/claim/submit` & `/v1/claim/on_submit` | DAMA before surgery (`LM100`), after surgery (package), during surgery (`LM100`) | [`fhir/D9/`](../../fhir/D9), [`fhir/C7/`](../../fhir/C7) |
+| **81 to 89** | Claim Death Scenarios | `/v1/claim/submit` & `/v1/claim/on_submit` | Discharge to mortuary (`DTM`). Before, after, and during surgery | [`fhir/B5/`](../../fhir/B5), [`fhir/C7/`](../../fhir/C7) |
+| **90 to 92** | Claim Erroneous Request | `/v1/claim/submit` & `/v1/claim/on_submit` | Erroneous submission corrected with remaining balance and mandatory docs | [`fhir/B5/`](../../fhir/B5), [`fhir/C7/`](../../fhir/C7) |
+| **93 to 95** | Claim Reprocess / Dispute | `/v1/task/submit` & `/v1/task/on_submit` | Reprocess `Task` (workflow 36) with appeal justification and mandatory docs | [`fhir/D11/`](../../fhir/D11), [`fhir/C10/`](../../fhir/C10) |
+| **96 to 99** | Payment Notice & Settlement | `/v1/paymentnotice/request` & `/v1/paymentnotice/on_request` | Payment initiation (wf30), its acknowledgement, the update to cleared, and its acknowledgement (wf17 under PMJAY) | [`fhir/C9/`](../../fhir/C9), [`fhir/B7/`](../../fhir/B7) |
 
 ## Testing Against the Dummy Payer
 

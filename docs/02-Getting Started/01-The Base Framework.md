@@ -50,7 +50,7 @@ sequenceDiagram
 ## Before you start
 
 - **An identity in a registry.** A hospital needs its Health Facility Registry (HFR) ID. An insurer or TPA needs its IRDAI registry ID.
-- **ABDM sandbox credentials.** A client ID and secret from the ABDM sandbox, with Milestone 1 completed. NHCX uses these same credentials; there is no separate login.
+- **ABDM sandbox credentials.** A client ID and secret from the ABDM sandbox. NHCX uses these same credentials; there is no separate login.
 - **A public HTTPS server in India** with a domain name, for the callback. The exchange will not call an IP address or a port number.
 - **openssl** on the machine that will hold the private key.
 - **A JOSE library** in your language. The portal's own samples use Nimbus for Java. The examples here use `jwcrypto` and `cryptography` for Python, because they are short; any library that does RSA-OAEP-256 with A256GCM will do.

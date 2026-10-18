@@ -219,9 +219,9 @@ The generic bundle above is what every payer takes, IRDAI-regulated insurers and
 
 ### What PMJAY specifies
 
-- Dates ride as supporting information: the stay under category `ONS`, code `ADDD`, the encounter under `OTH`, code `EDT`, and the surgery under code `PSP`, each as a `valueString` in `+05:30`.
+- Dates ride as supporting information: the stay under category `ONS`, code `ADDD`, the encounter under `OTH`, code `EDT`, and the surgery under code `PSP`, each as a `valueString` in `+05:30`. The live PMJAY provider sends instead `ADDD` under categories `ADMD`, `SURD` and `DSCHD` beside `EDT`, at midnight `+00:00`, and the payer takes it; read both forms.
 - Discharge types `DTH`, `DTM`, `LAMA` and `DAMA` under category `DIS`, with the stage, before, during or after surgery, as the `valueString`.
-- LAMA or DAMA before or during surgery voids the approved packages: one item `LM100`, quantity the days admitted, capped by the package's `los`. After surgery the package stays billable.
+- LAMA or DAMA before or during surgery voids the approved packages: one item `LM100`, quantity the days admitted, capped by the package's `LengthOfStay`. After surgery the package stays billable.
 - A death records its date under category `ONS`, code `DTM`.
 - The discharge consent and the other policy questionnaires ride as `QuestionnaireResponse` resources, each referenced from a `supportingInfo` entry.
 
@@ -260,7 +260,7 @@ Reimbursement after discharge. The amount may not exceed what the pre-authorisat
 | `x-hcx-workflow_id` | `15` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
@@ -268,36 +268,36 @@ Reimbursement after discharge. The amount may not exceed what the pre-authorisat
 | Code | Name | Authored by | `x-hcx-status` | Means |
 | :-- | :-- | :-- | :-- | :-- |
 | `15` | Claim Request Initiated | provider | `request.initiated` | Final claim submission |
-| `161` | Claim Doc Query Response | status sheet only | `response.complete` |  |
+| `161` | Claim Doc Query Response | status sheet only | `response.complete`; the answer is sent as `request.initiated` | The claim query answer PMJAY takes. Sent as request.initiated on v1/claim/submit, as the live PMJAY provider sends it; the sheet's response.complete is refused there with NHCX-1011 |
 | `14` | Discharge Submitted | provider | `request.initiated` | Discharge summary submitted |
-| `151` | Claim Query Response Submitted | provider | `response.complete` | Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response) |
+| `151` | Claim Query Response Submitted | provider | `response.complete`; the answer is sent as `request.initiated` | Response to claim query, as published; the PMJAY sandbox refuses it with PAYR-1321 and takes 161 (Claim Doc Query Response). Sent as request.initiated on v1/claim/submit: NHCX refuses response.complete on a submit path with NHCX-1011 |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | Final Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `CL0000000001` | also at `Bundle.id` |
+| `claimNumber` | Final Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SE00002L` | also at `Bundle.id` |
 | `use` | Claim Use | Case | `code` | `1..1` | `Claim.use` | `claim` |  |
-| `preAuthRef` | Approved Pre-auth Reference | Case | `string` | `1..1` | `Claim.insurance[0].preAuthRef[0]` | `APPR-2026-HP-00891` |  |
-| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `Ramesh Chandra Sharma` |  |
-| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` | also at `Coverage.subscriberId` |
-| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
+| `preAuthRef` | Approved Pre-auth Reference | Case | `string` | `1..1` | `Claim.insurance[0].preAuthRef[0]` | `CL/26/0SE000107` |  |
+| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `E2E Nano UV0I4` |  |
+| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `MRAV1985001` | also at `Coverage.subscriberId` |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91-1234-1234-1234` |  |
 | `gender` | Gender | Beneficiary | `code` | `1..1` | `Patient.gender` | `male` | code system `http://hl7.org/fhir/administrative-gender` |
-| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1982-06-15` |  |
+| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1985-06-15` |  |
 | `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `PMJAY/HP/S/G` |  |
-| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value` | `IN1910000151` |  |
-| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `Apex Multispeciality Hospital` |  |
-| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[system=https://irdai.gov.in].value` | `1000003538` |  |
-| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `National Health Authority - PMJAY` |  |
-| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `21-8899-4455-6677` |  |
-| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Arvind Kumar` |  |
-| `admissionDate` | Admission Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.start` | `2026-02-26T10:00:00+05:30` |  |
-| `dischargeDate` | Discharge Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.end` | `2026-03-02T14:30:00+05:30` |  |
-| `careSetting` | Care Setting | Stay | `code` | `1..1` | `Claim.type.coding[0].code` | `institutional` | code system `http://terminology.hl7.org/CodeSystem/claim-type` |
-| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `A97.0` | code system `http://hl7.org/fhir/sid/icd-10` |
-| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.procedure[0].procedureCodeableConcept.coding[0].code` | `MG004A` |  |
-| `finalBilledAmount` | Total Claim Amount | Billing | `decimal` | `1..1` | `Claim.total.value` | `15500.00` |  |
+| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `POL7UMU001` |  |
+| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[type=NPI].value` | `IN1910000151` |  |
+| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `KyroCare Multispeciality Hospital` |  |
+| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[type=NIIP].value` | `1000004805` |  |
+| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `Sandbox Payer` |  |
+| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `71-8422-5818-7201` |  |
+| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Ananya Rao` |  |
+| `admissionDate` | Admission Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.start` | `2026-09-10T00:00:00+05:30` |  |
+| `dischargeDate` | Discharge Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.end` | `2026-09-10T00:00:00+05:30` |  |
+| `careSetting` | Claim Type (care setting) | Stay | `code` | `1..1` | `Claim.type.coding[0].code` | `737481003` | code system `http://snomed.info/sct` |
+| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `E11.9` | code system `http://hl7.org/fhir/sid/icd-10` |
+| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.item[0].productOrService.coding[0].code` | `PROC-KNEE-01` | code system `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
+| `finalBilledAmount` | Total Claim Amount | Billing | `decimal` | `1..1` | `Claim.total.value` | `150000` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html), [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Practitioner.html).
 
@@ -326,7 +326,7 @@ There is no discharge submission: the claim asserts the discharge and carries it
 | `x-hcx-workflow_id` | `15` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
@@ -339,19 +339,19 @@ There is no discharge submission: the claim asserts the discharge and carries it
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | PMJAY Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `CL26AA2600001` |  |
+| `claimNumber` | PMJAY Claim Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SF000030` |  |
 | `dischargeSummary` | Hospital Discharge Summary (HDS) | Documents | `base64Binary` | `1..1` | `Claim.supportingInfo[category=HDS].valueAttachment.data` | `JVBERi0xLjQK...` |  |
-| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `Ramesh Chandra Sharma` |  |
-| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` | also at `Coverage.subscriberId` |
-| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
+| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `E2E Nano VZ4Q2` |  |
+| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY0000X` | also at `Coverage.subscriberId` |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91-0000-0000-0000` |  |
 | `gender` | Gender | Beneficiary | `code` | `1..1` | `Patient.gender` | `male` | code system `http://hl7.org/fhir/administrative-gender` |
-| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1982-06-15` |  |
+| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `2002-01-01` |  |
 | `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value` | `IN1910000151` |  |
-| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `Apex Multispeciality Hospital` |  |
-| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[system=https://irdai.gov.in].value` | `1000003538` |  |
-| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `National Health Authority - PMJAY` |  |
-| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `21-8899-4455-6677` |  |
-| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Arvind Kumar` |  |
+| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[type=NPI].value` | `IN1910000151` |  |
+| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `KyroCare Multispeciality Hospital` |  |
+| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[type=NIIP].value` | `1518` |  |
+| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `PMJAY / Ayushman Bharat` |  |
+| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `71-8422-5818-7201` |  |
+| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Ananya Rao` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html), [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Practitioner.html).

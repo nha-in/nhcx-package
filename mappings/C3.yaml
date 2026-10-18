@@ -13,7 +13,7 @@ title: "Respond to coverage eligibility"
 side: "payer"
 api: "/v1/coverageeligibility/on_check"
 callback: "/v1/coverageeligibility/check"
-workflow: "none (or 5 under PMJAY)"
+workflow: "none NHA publishes; the PMJAY payer answers on 5, a code not on NHA's Workflow Status Sheet"
 carries_jwe: true
 focal_resource: "CoverageEligibilityResponse"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/CoverageEligibilityResponse"
@@ -38,7 +38,7 @@ fields:
     required: true
     fhir_resource: "CoverageEligibilityResponse"
     fhir_path: "CoverageEligibilityResponse.insurance[0].inforce"
-    example_value: true
+    example_value: "true"
   - key: "allowedMoney"
     label: "Remaining Balance Amount"
     group: "Benefit"
@@ -47,4 +47,4 @@ fields:
     required: false
     fhir_resource: "CoverageEligibilityResponse"
     fhir_path: "CoverageEligibilityResponse.insurance[0].item[].benefit[type=benefit].allowedMoney.value"
-    example_value: "485000.00"
+    example_value: "150000"

@@ -131,7 +131,7 @@ use_cases:
         resource_type: Bundle
         entries: 1
         label: Plan request
-        summary: A poll Task with the policy number and the provider id as inputs. At least one of the two is required; both narrow the answer.
+        summary: A poll Task with the policy number and the provider id as inputs. Both are required; together they narrow the answer.
         direction: request
         side: provider
         scheme: generic

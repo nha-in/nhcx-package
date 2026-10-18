@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D11: Reprocess a rejected claim - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/task/submit
 # Callback API: /v1/task/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D11"
 title: "Reprocess a rejected claim"
-side: "provider"
+side: "pmjay"
 api: "/v1/task/submit"
 callback: "/v1/task/on_submit"
 workflow: "36 (Claim arbitration requested)"
@@ -19,7 +19,7 @@ focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 profiles:
   Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
-description: "Submit grievance / arbitration appeal to State Health Agency for an improperly rejected claim."
+description: "Submit grievance / arbitration appeal to State Health Agency for an improperly rejected claim. Only a rejected claim is reprocessed; reason claimrejected or rejectiondisputed."
 fields:
   - key: "taskCode"
     label: "Task Code"
@@ -46,5 +46,5 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[0].valueString"
-    example_value: "CL26AA2600001"
+    fhir_path: "Task.input[type=claimNumber].valueString"
+    example_value: "NM-26-0SF00002U"

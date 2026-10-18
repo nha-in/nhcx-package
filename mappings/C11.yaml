@@ -38,4 +38,4 @@ fields:
     required: true
     fhir_resource: "ClaimResponse"
     fhir_path: "ClaimResponse.total[category=benefit].amount.value"
-    example_value: "15500.00"
+    example_value: "150000"

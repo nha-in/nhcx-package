@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D7: Answer a pre-authorisation query - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/preauth/submit
 # Callback API: /v1/preauth/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D7"
 title: "Answer a pre-authorisation query"
-side: "provider"
+side: "pmjay"
 api: "/v1/preauth/submit"
 callback: "/v1/preauth/on_submit"
 workflow: "19 (Query answered under PMJAY)"
@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "Claim"
     fhir_path: "Claim.identifier[0].value"
-    example_value: "VB26AA2600001"
+    example_value: "NM-26-0SE00002N"
   - key: "workflowId"
     label: "Workflow Code"
     group: "Header"
@@ -39,12 +39,12 @@ fields:
     fhir_resource: "Header"
     fhir_path: "Header.x-hcx-workflow_id"
     example_value: "19"
-  - key: "nmiDocument"
-    label: "Need More Info (NMI) Document"
+  - key: "queryAnswerText"
+    label: "Query Answer (NMI)"
     group: "Documents"
-    data_type: "base64Binary"
+    data_type: "string"
     cardinality: "1..1"
     required: true
     fhir_resource: "Claim.supportingInfo[category=NMI]"
-    fhir_path: "Claim.supportingInfo[category=NMI].valueAttachment.data"
-    example_value: "JVBERi0xLjQK..."
+    fhir_path: "Claim.supportingInfo[category=NMI].valueString"
+    example_value: "Pre-operative investigation reports attached: CBC, RFT, chest X-ray and ECG."

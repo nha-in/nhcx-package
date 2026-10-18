@@ -1,0 +1,8 @@
+# Callbacks
+
+Every message NHCX delivers to the application, in one list. Each row links to its full spec in [../callbacks/](../callbacks/INDEX.md). NHCX posts to the application's public route (`/in/<path>` or `/v1/<path>`); [G8. Receive](../gateway/G8-receive.md) decrypts it and calls C1 in-process, then records the message and C1's outcome in [G9. Ledger](../gateway/G9-ledger.md). Every handler answers `settled`, `unmatched`, `ignored`, `rejected` or `error`; only `error` makes NHCX redeliver.
+
+| # | Callback | NHCX route | What it does | Matched by | Writes | Answers | Screens |
+|---|---|---|---|---|---|---|---|
+| [C1](../callbacks/C1-callback-door.md) | Callback Door | every route | Takes each decrypted message, archives it beside its case, and routes it by type to C2 to C10. Holds the shared rules: redelivery, refusals (ProtocolResponse), reopening a failed send. | type from the path | [D9](../database/D9-claim.md), [D18](../database/D18-claim-preauth.md), [D20](../database/D20-claim-submission.md), [D21](../database/D21-claim-payment.md), [D23](../database/D23-claim-query.md), [D29](../database/D29-claim-enquiry.md) | [A6](../apis/A6-task-submit.md), [A10](../apis/A10-txn-related.md), [A13](../apis/A13-txn-list.md) | [S6](../screens/S6-claim-detail.md) |
+| [C8](../callbacks/C8-enquiry-on-submit.md) | Enquiry Reply | `v1/task/on_submit`, status route | Applies the answer to a status, reprocess or release request; an accepted reprocess or release reopens the claim. | correlation id on the enquiry | [D9](../database/D9-claim.md), [D20](../database/D20-claim-submission.md), [D29](../database/D29-claim-enquiry.md) | [A6](../apis/A6-task-submit.md) | [S11](../screens/S11-claim-submission.md) |

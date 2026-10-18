@@ -51,7 +51,7 @@ A request by ABHA with purpose `validation`. Answer on `/v1/coverageeligibility/
 
 #### T-ELG-02 Auth-requirements
 
-Purpose `auth-requirements` for a package. Answer with `authorizationRequired: true` and the mandatory documents and STG codes, after checking wallet adequacy and the specialty constraints.
+Purpose `auth-requirements` for a package. Answer with `authorizationRequired: true` and the mandatory documents and questionnaire codes, after checking wallet adequacy and the specialty constraints.
 
 #### T-ELG-03 Every purpose and the refusals
 
@@ -61,17 +61,17 @@ Purpose `auth-requirements` for a package. Answer with `authorizationRequired: t
 
 #### T-PLN-01 Publish the plan
 
-Answer on `/v1/insuranceplan/on_request` with the collection bundle: empanelled packages, claim-condition flags, STG questionnaires and the rate master, carrying a version.
+Answer on `/v1/insuranceplan/on_request` with the collection bundle: empanelled packages, claim-condition flags, the policy and procedure questionnaires and the rate master, carrying a version.
 
 ### Preauthorisation
 
 #### T-PRE-01 Acknowledge, then approve
 
-Acknowledge on `20` as `response.partial`, then approve on `21` as `response.complete` with `preAuthRef`, after STG validation and biometric token verification.
+Acknowledge on `20` as `response.partial`, then approve on `21` as `response.complete` with `preAuthRef`, after the questionnaire answers and the biometric token are verified.
 
 #### T-PRE-02 Query and its answer
 
-Raise the query on `24`, on the case thread under PMJAY or over communication otherwise. Take the answer on `19`, clear the hold, then decide on `21`.
+Raise the query on `24` as a queried `ClaimResponse` naming the items on the case thread, or, before any decision, as a standalone communication. Take the answer on `19` as `request.initiated`, clear the hold, then decide on `21`.
 
 #### T-PRE-03 Reject with a denial code
 
@@ -91,7 +91,7 @@ Approve on `22`; deny on `231`; query on `241`.
 
 #### T-PRE-07 Resubmission and cancellation
 
-A resubmission on `121` treated as the new base request. A cancel Task on `PC01` answered `PC02` before payment, and refused after payment has been initiated.
+A resubmission on `121` treated as the new base request. A cancel Task on `PC01` answered `PC02` while the claim, if raised, is undecided, and refused once the claim is decided.
 
 ### Claim
 
@@ -123,7 +123,7 @@ A reprocess Task on `36` acknowledged on `37` with the Task `accepted`, then re-
 
 #### T-TSK-02 Shortfall
 
-A `partialpayment` Task accepted after payment notice `33` has been acknowledged, and refused before it.
+A `release` Task, reason `partialpayment`, accepted after payment notice `33` has been acknowledged, and refused before it. A reprocess is accepted only for a rejected claim.
 
 #### T-TSK-03 The Committee's answer
 

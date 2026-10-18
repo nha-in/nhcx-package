@@ -114,7 +114,7 @@ The `Organization` entries are shaped as in the chapters that introduce them.
 
 ### 1. The notice
 
-A `Task` coded `deliver` in `ndhm-task-codes` whose input references the `PaymentNotice`. `PaymentNotice.amount` is the net that reaches the account. `PaymentReconciliation` carries the payment date, the `UTR` and one `detail[]` line per money type.
+A `Task` coded `deliver` in `ndhm-task-codes` whose input references the `PaymentNotice`. The `Payment` line of `detail[]` is the net that reaches the account; `PaymentNotice.amount` is the net in the samples and the gross from a live PMJAY payer, so never read the net from it. `PaymentReconciliation` carries the payment date, the `UTR` and one `detail[]` line per money type.
 
 ### 2. The arithmetic
 
@@ -151,7 +151,8 @@ The PMJAY bundle has the same resources, elements and systems as the generic one
 
 ### What PMJAY specifies
 
-- Deduction lines use the scheme's own codes, such as `RF`, beside the `Payment` line.
+- Deduction lines use the scheme's own codes, such as `RF` or `TDS`, beside the `Payment` line.
+- A live SHA notice of October 2026 gave `PaymentNotice.amount` and `paymentAmount` as the gross, the `TDS` and `Payment` lines summing to it; the package's PMJAY samples give the net there.
 - The notice names the claim under `https://hcx.pmjay.gov.in/v1/preauthorization`.
 - Before 33 the `UTR` field can carry a scheme reference rather than a bank reference. Store it; reconcile against the bank only on 33.
 
@@ -186,7 +187,7 @@ The money, on a new thread of its own, with the reconciliation itemised by type:
 | `x-hcx-workflow_id` | `30` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -200,10 +201,10 @@ The money, on a new thread of its own, with the reconciliation itemised by type:
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `utrNumber` | Bank UTR Number | Payment | `string` | `1..1` | `PaymentReconciliation.paymentIdentifier.value` | `CMS2602260081728` |  |
-| `paymentDate` | Remittance Date | Payment | `date` | `1..1` | `PaymentReconciliation.paymentDate` | `2026-03-05` |  |
-| `settledAmount` | Net Bank Remittance Amount | Payment | `decimal` | `1..1` | `PaymentReconciliation.paymentAmount.value` | `14850.00` |  |
-| `tdsDeduction` | Tax Deducted at Source (TDS) | Payment Detail | `decimal` | `0..1` | `PaymentReconciliation.detail[type=tds].amount.value` | `650.00` |  |
+| `utrNumber` | Bank UTR Number | Payment | `string` | `1..1` | `PaymentReconciliation.paymentIdentifier.value` | `UTR1789064619092` |  |
+| `paymentDate` | Remittance Date | Payment | `date` | `1..1` | `PaymentReconciliation.paymentDate` | `2026-09-10` |  |
+| `settledAmount` | Net Bank Remittance Amount | Payment | `decimal` | `1..1` | `PaymentReconciliation.paymentAmount.value` | `135000` |  |
+| `tdsDeduction` | Tax Deducted at Source (TDS) | Payment Detail | `decimal` | `0..1` | `PaymentReconciliation.detail[type=TDS].amount.value` | `15000` |  |
 
 NRCeS profiles: [PaymentReconciliation](https://nrces.in/ndhm/fhir/r4/StructureDefinition-PaymentReconciliation.html).
 
@@ -217,7 +218,7 @@ The receipt for a payment notice, as a Task on this endpoint. The notice arrives
 | **Callback** | `/v1/paymentnotice/request` [`apis/06-payment-notice/v1-paymentnotice-request.bru`](../../apis/06-payment-notice/v1-paymentnotice-request.bru) |
 | **Workflow** | 30 echoed from the notice on the generic network; 17 under PMJAY |
 | **Carries JWE** | yes |
-| **Focal resource** | `PaymentReconciliation / Task` |
+| **Focal resource** | `Task` |
 
 **Request headers**
 
@@ -227,11 +228,11 @@ The receipt for a payment notice, as a Task on this endpoint. The notice arrives
 | `x-hcx-recipient_code` | `1518@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `17` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-debug_flag` | `INFO` |
 
 **Workflow codes**
@@ -245,10 +246,12 @@ The receipt for a payment notice, as a Task on this endpoint. The notice arrives
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `settlementNumber` | Payment Reference | Settlement | `string` | `1..1` | `PaymentReconciliation.identifier[0].value` | `SETTLE-2026-001` |  |
-| `status` | Acknowledgment Status | Settlement | `code` | `1..1` | `PaymentReconciliation.status` | `active` |  |
+| `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `status` | code system `http://terminology.hl7.org/CodeSystem/financialtaskcode` |
+| `status` | Acknowledgment Status | Task | `code` | `1..1` | `Task.status` | `completed` |  |
+| `ackValue` | Acknowledgment | Task Output | `code` | `1..1` | `Task.output[type=status].valueCodeableConcept.coding[0].code` | `paymentack` | code system `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value` |
+| `claimNumber` | Claim Number paid | Task Output | `string` | `1..1` | `Task.output[type=claimNumber].valueString` | `NM-26-0SE00002L` |  |
 
-NRCeS profiles: [PaymentReconciliation](https://nrces.in/ndhm/fhir/r4/StructureDefinition-PaymentReconciliation.html).
+NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
 ### D13 Acknowledge the payment notice (pmjay)
 
@@ -260,7 +263,7 @@ Three notices may arrive: 30 when the transfer is initiated, 31 when the bank pr
 | **Callback** | `/v1/paymentnotice/request` [`apis/06-payment-notice/v1-paymentnotice-request.bru`](../../apis/06-payment-notice/v1-paymentnotice-request.bru) |
 | **Workflow** | 17 |
 | **Carries JWE** | yes |
-| **Focal resource** | `PaymentReconciliation / Task` |
+| **Focal resource** | `Task` |
 | **Simulator console** | `/builder?family=paymentnotice&usecase=acknowledge` |
 
 **Request headers**
@@ -271,11 +274,11 @@ Three notices may arrive: 30 when the transfer is initiated, 31 when the bank pr
 | `x-hcx-recipient_code` | `1518@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `17` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-debug_flag` | `INFO` |
 
 **Workflow codes**
@@ -288,7 +291,10 @@ Three notices may arrive: 30 when the transfer is initiated, 31 when the bank pr
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `settlementNumber` | Settlement Advice Number | Payment | `string` | `1..1` | `PaymentReconciliation.identifier[0].value` | `SETTLE-PMJAY-001` |  |
+| `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `status` | code system `http://terminology.hl7.org/CodeSystem/financialtaskcode` |
+| `status` | Acknowledgment Status | Task | `code` | `1..1` | `Task.status` | `completed` |  |
+| `ackValue` | Acknowledgment | Task Output | `code` | `1..1` | `Task.output[type=status].valueCodeableConcept.coding[0].code` | `paymentack` | code system `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value` |
+| `claimNumber` | Claim Number paid | Task Output | `string` | `1..1` | `Task.output[type=claimNumber].valueString` | `NM-26-0SF000030` |  |
 | `workflowId` | Workflow Code | Header | `string` | `1..1` | `Header.x-hcx-workflow_id` | `17` |  |
 
-NRCeS profiles: [PaymentReconciliation](https://nrces.in/ndhm/fhir/r4/StructureDefinition-PaymentReconciliation.html).
+NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).

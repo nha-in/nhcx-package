@@ -356,24 +356,37 @@ export function makeFhirReference({ fhirDir, spec, escapePipe, useCaseBlock, cha
   }
 
   function requirementTable(resource) {
+    // One row per requirement: the extension whose own sub-extensions name the
+    // document (`code` or `SupportInfoCode`) and its category (`category` or
+    // `SupportInfoCategory`). A nested requirement is visited once, and a
+    // category code is never listed as a document code.
     const found = new Map();
     let links = 0;
-    walkJson(resource, (n) => {
-      if (typeof n.url !== "string" || !n.url.includes("Claim-SupportingInfoRequirement")) return;
-      const tail = n.url.split("Claim-SupportingInfoRequirement")[1] || "";
-      const stage = ["preauth", "discharge", "claim"].find((s) => tail.includes(`/${s}/`)) || "";
-      walkJson(n, (c) => {
-        if (c.url === "documentationUrl") links += 1;
-        for (const coding of c.valueCodeableConcept?.coding || []) {
-          const key = `${coding.code}|${stage}`;
-          if (!found.has(key)) found.set(key, { ...coding, stage, count: 0 });
-          found.get(key).count += 1;
+    const isReq = (u) => typeof u === "string" && u.includes("Claim-SupportingInfoRequirement");
+    const coding = (ext) => ext?.valueCodeableConcept?.coding?.[0] || (ext?.valueCoding ?? null);
+    const visit = (node, stageFrom) => {
+      if (Array.isArray(node)) return node.forEach((n) => visit(n, stageFrom));
+      if (!node || typeof node !== "object") return;
+      let stage = stageFrom;
+      if (isReq(node.url)) {
+        const tail = node.url.split("Claim-SupportingInfoRequirement")[1] || "";
+        stage = ["preauth", "discharge", "claim"].find((st) => tail.includes(`/${st}/`)) || stageFrom;
+        const subs = node.extension || [];
+        const by = (...names) => subs.find((e) => names.includes(e.url));
+        if (by("documentationUrl")) links += 1;
+        const code = coding(by("code", "SupportInfoCode"));
+        const category = coding(by("category", "SupportInfoCategory"));
+        if (code) {
+          const key = `${code.code}|${category?.code || ""}|${stage}`;
+          if (!found.has(key)) found.set(key, { ...code, category: category?.code || "", stage });
         }
-      });
-    });
+      }
+      for (const v of Object.values(node)) if (v && typeof v === "object") visit(v, stage);
+    };
+    visit(resource, "");
     if (!found.size) return [];
-    const out = ["| Code | Display | Stage | System |", "| :-- | :-- | :-- | :-- |"];
-    for (const c of found.values()) out.push(`| \`${c.code}\` | ${plain(c.display || "")} | ${c.stage || "any"} | ${c.system ? tick(c.system) : "none"} |`);
+    const out = ["| Code | Display | Category | Stage | System |", "| :-- | :-- | :-- | :-- | :-- |"];
+    for (const c of found.values()) out.push(`| \`${c.code}\` | ${plain(c.display || "")} | ${c.category ? tick(c.category) : ""} | ${c.stage || "any"} | ${c.system ? tick(c.system) : "none"} |`);
     out.push("");
     if (links) out.push(`${links} of the requirements link a questionnaire through \`documentationUrl\`.`, "");
     return out;

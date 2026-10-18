@@ -43,7 +43,7 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `supportingInfo[]` | id `SupportingInformation/1`, sequence `1` |
 |  | id `SupportingInformation/2`, sequence `2` |
 |  | id `SupportingInformation/3`, sequence `3` |
-| | and 9 more |
+| | and 8 more |
 | `supportingInfo[].category.coding[]` | `INV` Document Type - Investigation in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
 |  | `ONS` Period, start or end dates of aspects of the Condition. (e.g. admission, discha… in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
 |  | `OTH` Other in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category` |
@@ -51,11 +51,11 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `supportingInfo[].code.coding[]` | `POI` Proof of Identity (Aadhaar / Passport / Voter ID) in `https://nhcx.abdm.gov.in/document-code` |
 |  | `CER` Medical Certificate / Doctor Referral in `https://nhcx.abdm.gov.in/document-code` |
 |  | `RAD` Radiology / X-Ray / CT / MRI Scan Reports in `https://nhcx.abdm.gov.in/document-code` |
-| | and 9 more |
+| | and 8 more |
 | `supportingInfo[].valueAttachment` | contentType `application/pdf`, title `Proof of Identity (Aadhaar / Passport / Voter ID)` |
 |  | contentType `application/pdf`, title `Medical Certificate / Doctor Referral` |
 |  | contentType `application/pdf`, title `Radiology / X-Ray / CT / MRI Scan Reports` |
-| | and 6 more |
+| | and 5 more |
 | `supportingInfo[].valueReference` | reference `https://nhcx.abdm.gov.in/questionnaireresponse/1`, display `Total Knee Replacement (Unilateral), Standard Treatment Guidelines` |
 | `diagnosis[]` | sequence `1` |
 | `diagnosis[].diagnosisCodeableConcept.coding[]` | `E11.9` Type 2 diabetes mellitus without complications in `http://hl7.org/fhir/sid/icd-10` |
@@ -66,7 +66,7 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `procedure[].procedureReference` | reference `https://nhcx.abdm.gov.in/procedure/1`, display `Total Knee Replacement (Unilateral)` |
 | `insurance[]` | sequence `1`, focal `true` |
 | `insurance[].coverage` | reference `https://nhcx.abdm.gov.in/coverage` |
-| `item[]` | id `Item/1`, sequence `1`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `1`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12` |
+| `item[]` | id `Item/1`, sequence `1`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `1`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
 | `item[].productOrService.coding[]` | `PROC-KNEE-01` Total Knee Replacement (Unilateral) in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
 | `item[].servicedPeriod` | start `2026-09-10`, end `2026-09-10` |
 | `item[].quantity` | value `1` |
@@ -258,7 +258,7 @@ Permission to treat. A resubmission, an enhancement and a query answer all reuse
 | `x-hcx-workflow_id` | `12` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
@@ -268,35 +268,35 @@ Permission to treat. A resubmission, an enhancement and a query answer all reuse
 | `12` | Preauth Request Initiated | provider | `request.initiated` | New preauth submission |
 | `121` | Preauth Request Resubmitted | provider | `request.initiated` | Resubmission after query/rejection |
 | `13` | Enhancement Request Initiated | provider | `request.initiated` | Enhancement (additional amount) request |
-| `19` | Preauth Query Response Submitted | provider | `response.complete` | Response to payer's query on preauth |
-| `131` | Enhancement Query Response Submitted | provider | `response.partial`, `response.error`, `response.complete` | Response to enhancement query |
+| `19` | Preauth Query Response Submitted | provider | `response.complete`; the answer is sent as `request.initiated` | Response to payer's query on preauth. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011 |
+| `131` | Enhancement Query Response Submitted | provider | `response.partial`, `response.error`, `response.complete`; the answer is sent as `request.initiated` | Response to enhancement query. Sent as request.initiated on v1/preauth/submit: NHCX refuses response.complete on a submit path with NHCX-1011 |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | Pre-auth Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `PA20260226001` | also at `Bundle.id` |
+| `claimNumber` | Pre-auth Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SE00002M` | also at `Bundle.id` |
 | `use` | Claim Use | Case | `code` | `1..1` | `Claim.use` | `preauthorization` |  |
-| `preAuthRef` | Approval Reference (if enhancement) | Case | `string` | `0..1` | `Claim.insurance[0].preAuthRef[0]` | `APPR-2026-HP-00891` |  |
-| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `Ramesh Chandra Sharma` |  |
-| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` | also at `Coverage.subscriberId` |
-| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
+| `preAuthRef` | Approval Reference (if enhancement) | Case | `string` | `0..1` | `Claim.insurance[0].preAuthRef[0]` | `CL/26/0SE000108` |  |
+| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `E2E Nano UW2QU` |  |
+| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `MRAV1985001` | also at `Coverage.subscriberId` |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91-1234-1234-1234` |  |
 | `gender` | Gender | Beneficiary | `code` | `1..1` | `Patient.gender` | `male` | code system `http://hl7.org/fhir/administrative-gender` |
-| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1982-06-15` |  |
+| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1985-06-15` |  |
 | `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `PMJAY/HP/S/G` |  |
-| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value` | `IN1910000151` |  |
-| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `Apex Multispeciality Hospital` |  |
-| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[system=https://irdai.gov.in].value` | `1000003538` |  |
-| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `National Health Authority - PMJAY` |  |
-| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `21-8899-4455-6677` |  |
-| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Arvind Kumar` |  |
-| `admissionDate` | Admission Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.start` | `2026-02-26T10:00:00+05:30` |  |
-| `dischargeDate` | Discharge Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.end` | `2026-03-02T14:30:00+05:30` |  |
-| `careSetting` | Care Setting | Stay | `code` | `1..1` | `Claim.type.coding[0].code` | `institutional` | code system `http://terminology.hl7.org/CodeSystem/claim-type` |
-| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `A97.0` | code system `http://hl7.org/fhir/sid/icd-10` |
-| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.procedure[0].procedureCodeableConcept.coding[0].code` | `MG004A` |  |
-| `estimatedTotal` | Estimated Package Amount | Billing | `decimal` | `1..1` | `Claim.total.value` | `15500.00` |  |
+| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `POL7UMU001` |  |
+| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[type=NPI].value` | `IN1910000151` |  |
+| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `KyroCare Multispeciality Hospital` |  |
+| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[type=NIIP].value` | `1000004805` |  |
+| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `Sandbox Payer` |  |
+| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `71-8422-5818-7201` |  |
+| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Ananya Rao` |  |
+| `admissionDate` | Admission Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.start` | `2026-09-10T00:00:00+05:30` |  |
+| `dischargeDate` | Discharge Date | Stay | `dateTime` | `1..1` | `Claim.billablePeriod.end` | `2026-09-10T00:00:00+05:30` |  |
+| `careSetting` | Claim Type (care setting) | Stay | `code` | `1..1` | `Claim.type.coding[0].code` | `737481003` | code system `http://snomed.info/sct` |
+| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `E11.9` | code system `http://hl7.org/fhir/sid/icd-10` |
+| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.item[0].productOrService.coding[0].code` | `PROC-KNEE-01` | code system `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
+| `estimatedTotal` | Estimated Package Amount | Billing | `decimal` | `1..1` | `Claim.total.value` | `150000` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html), [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Practitioner.html).
 
@@ -325,7 +325,7 @@ Not more than one day before admission, with the biometric token or the consent 
 | `x-hcx-workflow_id` | `12` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `New` |
 
 **Workflow codes**
@@ -338,22 +338,22 @@ Not more than one day before admission, with the biometric token or the consent 
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `claimNumber` | PMJAY Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `VB26AA2600001` |  |
-| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `Ramesh Chandra Sharma` |  |
-| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` | also at `Coverage.subscriberId` |
-| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
+| `claimNumber` | PMJAY Case Number | Case | `string` | `1..1` | `Claim.identifier[0].value` | `NM-26-0SF000031` |  |
+| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `E2E Nano W8EO9` |  |
+| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY0000X` | also at `Coverage.subscriberId` |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91-0000-0000-0000` |  |
 | `gender` | Gender | Beneficiary | `code` | `1..1` | `Patient.gender` | `male` | code system `http://hl7.org/fhir/administrative-gender` |
-| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1982-06-15` |  |
+| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `2002-01-01` |  |
 | `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value` | `IN1910000151` |  |
-| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `Apex Multispeciality Hospital` |  |
-| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[system=https://irdai.gov.in].value` | `1000003538` |  |
-| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `National Health Authority - PMJAY` |  |
-| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `21-8899-4455-6677` |  |
-| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Arvind Kumar` |  |
-| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `A97.0` | code system `http://hl7.org/fhir/sid/icd-10` |
-| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.procedure[0].procedureCodeableConcept.coding[0].code` | `MG004A` |  |
-| `patientPhoto` | Patient Photo on Bed (POI) | Documents | `base64Binary` | `1..1` | `Claim.supportingInfo[category=POI].valueAttachment.data` | `JVBERi0xLjQK...` |  |
+| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[type=NPI].value` | `IN1910000151` |  |
+| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `KyroCare Multispeciality Hospital` |  |
+| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[type=NIIP].value` | `1518` |  |
+| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `PMJAY / Ayushman Bharat` |  |
+| `practitionerId` | Practitioner ID (HPID/HPIN) | Practitioner | `string` | `1..1` | `Practitioner.identifier[system=https://hpr.abdm.gov.in].value` | `71-8422-5818-7201` |  |
+| `practitionerName` | Doctor Name | Practitioner | `string` | `1..1` | `Practitioner.name[0].text` | `Dr. Ananya Rao` |  |
+| `primaryDiagnosisCode` | Primary Diagnosis (ICD-10) | Clinical | `string` | `1..1` | `Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code` | `E11.9` | code system `http://hl7.org/fhir/sid/icd-10` |
+| `procedureCode` | Package / Procedure Code | Clinical | `string` | `1..1` | `Claim.item[0].productOrService.coding[0].code` | `MG0111A` | code system `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
+| `patientPhoto` | Proof of Identity (when the policy requires it) | Documents | `base64Binary` | `0..1` | `Claim.supportingInfo[code=POI].valueAttachment.data` | `JVBERi0xLjQK...` |  |
 
 NRCeS profiles: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html), [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Practitioner.html).
 
@@ -382,7 +382,7 @@ Revises an approved or rejected case for a different amount or package. Nullifie
 | `x-hcx-workflow_id` | `121` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-use_case` | `Resubmit` |
 
 **Workflow codes**

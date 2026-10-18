@@ -8,7 +8,7 @@ A consolidated, production-grade package containing all APIs, wire-tested sample
 
 ```text
 package/
-├── apis/                   # 82 APIs in Bruno format (both request & callback, external & internal)
+├── apis/                   # 83 APIs in Bruno format (both request & callback, external & internal)
 │   ├── 01-session/         # ABDM Gateway session token minting
 │   ├── 02-eligibility/     # Coverage eligibility check & on_check (/v1 and /internal/v1)
 │   ├── 03-preauth/         # Pre-authorisation submit & on_submit (/v1 and /internal/v1)
@@ -19,10 +19,12 @@ package/
 │   ├── 08-status/          # Request dispatch tracking & search
 │   ├── 09-insurance-plan/  # Package master & tariff policy polling
 │   ├── 10-registry/        # Participant registry, certificates (/fetch/certs), policies
-│   ├── 11-onboarding/      # Participant onboarding & registration
-│   ├── 12-adjudicator/     # PMJAY sandbox adjudicator simulation hooks
-│   ├── 13-other/           # Health checks, error callbacks, webhooks
-│   ├── environments/       # Sandbox host definitions & credentials
+│   ├── 11-onboarding-sandbox/     # Participant onboarding on the sandbox (v1, no passcode)
+│   ├── 12-onboarding-production/  # Participant onboarding in production (v2, passcode-confirmed)
+│   ├── 13-adjudicator/     # PMJAY payer service (adjudicator role and process), dummy payer hooks, ABHA number update
+│   ├── 14-other/           # Task submit (cancel, reprocess, release, status), /v1/error, /v1/on_status, notification subscribe, Swagger docs
+│   ├── 15-biometric/       # ABHA biometric authentication: fingerprint and iris init/verify, face auth, token refresh
+│   ├── environments/       # Sandbox host definitions (credentials left blank)
 │   ├── bruno.json          # Bruno collection manifest
 │   └── collection.bru      # Global auth & headers configuration
 │
@@ -38,19 +40,20 @@ package/
 │   ├── B9/                 # Predetermination treatment cost estimate request
 │   ├── C3/                 # Payer coverage eligibility responses (Generic & PMJAY)
 │   ├── C4/                 # Payer insurance plan responses with tariffs & questionnaires
-│   ├── C5/                 # Payer preauth decisions (Ack wf20, Approved wf21, Denied wf23, Queried wf24)
+│   ├── C5/                 # Payer preauth decisions (Ack wf20, Approved wf21, Enhancement approved wf22, Denied wf23, Queried wf24)
 │   ├── C6/                 # Payer communication queries & push notifications
 │   ├── C7/                 # Payer claim decisions (Ack wf25, Approved wf26, Queried wf27, Denied wf291)
 │   ├── C8/                 # Payer search response Task bundle
 │   ├── C9/                 # Payer payment remittance notice (wf30 with bank UTR & TDS)
 │   ├── C10/                # Payer task decisions (Cancel done PC02, Arbitration ack wf37)
 │   ├── C11/                # Payer predetermination response
-│   ├── D1..D13/            # Dedicated PMJAY State Health Agency (SHA) wire bundles
-│   ├── index.yaml          # Machine-readable catalog of all bundles
+│   ├── D1, D3, D4, D6..D11, D13/ # Dedicated PMJAY State Health Agency (SHA) wire bundles (D2, D5, D12 carry no bundle)
+│   ├── index.yaml          # Machine-readable catalog of all 80 bundles
+│   ├── reference.yaml      # The rules the FHIR Reference chapters are rendered with
 │   └── README.md           # Guide to FHIR bundle directory
 │
 ├── workflow.yaml           # Canonical catalogue of all 74 workflow IDs & 6 code families
-├── usecases.yaml           # Complete specification of all NHA (A1..E1) & Builder use cases
+├── usecases.yaml           # The 38 NHA use cases (A1..E1) & 16 builder use cases
 ├── nhcx-error.yaml         # Every gateway and payer error code, by code space
 │
 ├── mappings/               # 40 Use Case Field definitions & FHIR element mappings (A1..E1)
@@ -62,32 +65,38 @@ package/
 │   ├── index.yaml          # Master mapping catalog
 │   └── README.md           # Guide to mapping definitions
 │
-├── docs/                   # Complete 72-chapter NHCX guide & reference
-│   ├── 01-Overview/        # Fundamentals, architecture, use cases, workflow codes
-│   ├── 02-Network Roles/   # Gateway, trust store, registry, certificate exchange
+├── docs/                   # The 70-chapter NHCX guide & reference, with README.md and GAPS.md
+│   ├── 01-Overview/        # Fundamentals, architecture, use cases, workflow codes, PMJAY, glossary
+│   ├── 02-Getting Started/ # Base framework: base URLs, session token, certificates, registry, JWE, callbacks, adapter, status and search
 │   ├── 03-Building a Provider/ # Hospital & daycare integration guide
 │   ├── 04-Building a Payer/    # Insurer & TPA integration guide
 │   ├── 05-FHIR Reference/  # NRCeS profiles, bundles, mappings
-│   └── 06-Reference/       # API catalog, error codes, troubleshooting, governance
+│   ├── 06-Reference/       # Error codes, troubleshooting, envelope fields, roles, governance, environments, notifications
+│   └── 07-Go Live/         # Leaving the sandbox and switching to production
 │
+├── skills/                 # The built NHCX integration skills (provider 1.9.0: nhcx-full and six focused skills;
+│                           # payer 1.2.0 under payer/), manifest.json and CHECKSUMS.sha256. The skills read
+│                           # skills/manifest.json on main and install a newer build of themselves (make skills)
 ├── corpus/                 # The AI corpus the NHCX chatbot answers from (section 8)
 ├── Makefile                # `make` rebuilds the content and releases it (section 8)
-├── dist/                   # Build output: the release, in dist/out/ and dist/release/package.zip
+├── dist/                   # Build output: the release, in dist/out/ and dist/release/package.zip, and dist/postman/
 ├── .github/workflows/      # A GitHub release builds nhcx-package-v<version>.zip in CI (section 8)
 │
 └── system/                 # Everything that is not data: tooling (100% Node.js) and its output
     ├── build-docs.mjs      # Documentation compiler from package sources
     ├── build-openapi.mjs   # OpenAPI 3.1 & Postman exporter
+    ├── build-postman.mjs   # The Postman collection: four folders, sandbox and production (section 5)
     ├── build-corpus.mjs    # AI corpus builder: chunks, a model's index of every chunk, facts
     ├── eval-corpus.mjs     # Scores the corpus as the chatbot retrieves it
     ├── eval/               # The held-out question set the corpus is scored with
     ├── build-manifest.mjs  # Writes the release's MANIFEST
+    ├── build-ekadocs.mjs   # Ports docs/ and apis/ into a github.com/nha-in/docs checkout (make ekadocs)
     ├── generate-all-mappings.mjs # Mapping file generator
     ├── validate-bundles.mjs# Bundle schema & reference validator
-    ├── lib/                # Shared Bruno parser & YAML emitter modules
+    ├── lib/                # Shared modules: Bruno parser, YAML emitter, FHIR Reference renderer, corpus, BM25, model client
     ├── bin/                # CLI wrappers: validate (nhcx-validate), build-docs (nhcx-build-docs)
-    ├── misc/               # Generated OpenAPI 3.1 (YAML, JSON) & Postman Collection v2.1
-    ├── reports/            # Generated bundle validation reports
+    ├── misc/               # Generated, not committed: OpenAPI 3.1 (YAML, JSON) & Postman Collection v2.1
+    ├── reports/            # Generated, not committed: bundle validation reports (make validate writes dist/reports/)
     ├── package.json        # NPM package manifest with build scripts
     ├── node_modules/       # Installed dependencies
     └── README.md           # Script usage instructions
@@ -99,7 +108,7 @@ Commands below run from the package root. `npm --prefix system run <script>` run
 
 ## 1. APIs (`package/apis`)
 
-The `apis/` directory is a complete [Bruno](https://www.usebruno.com) collection containing all **82 APIs** required to integrate with NHCX:
+The `apis/` directory is a complete [Bruno](https://www.usebruno.com) collection containing all **83 APIs** required to integrate with NHCX:
 - **Both Directions**: Every exchange includes both the triggering outbound request (e.g. `/v1/claim/submit`) and the inbound callback webhook (e.g. `/v1/claim/on_submit`).
 - **Both Layers**: Includes external gateway endpoints (`/v1/...`) and internal service handlers (`/internal/v1/...`).
 - **Authentication**: Pre-configured for ABDM session token minting with automatic bearer token propagation.
@@ -111,7 +120,7 @@ The `apis/` directory is a complete [Bruno](https://www.usebruno.com) collection
 Packed into clean, dedicated directories by use case code:
 - `package/fhir/B1/` through `package/fhir/B9/` for generic hospital provider operations.
 - `package/fhir/C3/` through `package/fhir/C11/` for payer responses and adjudication verdicts.
-- `package/fhir/D1/` through `package/fhir/D13/` for government scheme (PMJAY) transactions.
+- `package/fhir/D1/` through `package/fhir/D13/` for government scheme (PMJAY) transactions, where a D use case has a bundle of its own (D2, D5 and D12 have none).
 
 All bundles are valid HL7 FHIR R4 `Bundle` resources of type `collection` conformant to NRCeS India profiles.
 
@@ -120,21 +129,14 @@ All bundles are valid HL7 FHIR R4 `Bundle` resources of type `collection` confor
 ## 3. Workflows & Use Cases (`workflow.yaml`, `usecases.yaml`)
 
 - **`workflow.yaml`**: Covers all 74 workflow IDs across pre-authorisation (12, 13, 20, 21, 23, 24, 121, PC01, PC02), claims (15, 25, 26, 27, 28, 29, 291, 151, 36, 37), settlements (30, 31, 33, 17), and specialized families (Grievance, Return Payment, Notifications).
-- **`usecases.yaml`**: Documents all 40 NHA-defined use cases (Shared A1-A6, Provider B1-B9, Payer C1-C11, Scheme D1-D13, Patient E1) and 17 builder workflows.
+- **`usecases.yaml`**: Documents all 38 NHA-defined use cases (Shared A1-A6, Provider B1-B8, Payer C1-C10, Scheme D1-D13, Patient E1) and 16 builder use cases. `mappings/` and `fhir/` also carry B9 (predetermination) and C11 (its response), which `usecases.yaml` does not list.
 
 ---
 
 ## 4. Field Mappings (`package/mappings`)
 
-- **`package/mappings/A1.yaml`**: The canonical master data dictionary. Details field keys, data types, cardinalities, validation constraints, NRCeS code systems, and exact FHIR paths for:
-  1. Participant Registry & Routing (`A1`)
-  2. Beneficiary & Demographics
-  3. Facility & Practitioner Identifiers (NPI, HFR, HPIN, HPID)
-  4. Clinical Diagnoses (ICD-10) & Procedures (SNOMED / Package codes)
-  5. Billing Line Items, Rates & Totals
-  6. Supporting Clinical Documents & Base64 Attachments
-  7. Adjudication Outcomes & Settlement UTRs
-- Modular use case files: `B1.yaml`, `B2.yaml`, `B3.yaml`, `B4.yaml`, `B5.yaml`, `B7.yaml`, `B8.yaml`.
+- Each mapping file defines one use case: its API and callback, whether it carries a JWE, its workflow codes, and every data element with its key, data type, cardinality, validation, code system and exact FHIR path. `A1.yaml` is the first of them, Get participant list on `/fetch/participants/list`, a registry call with no FHIR resource.
+- One mapping file per use case, 40 in all: `A1.yaml` to `A6.yaml`, `B1.yaml` to `B9.yaml`, `C1.yaml` to `C11.yaml`, `D1.yaml` to `D13.yaml` and `E1.yaml`, catalogued in `mappings/index.yaml`.
 - **NRCeS profiles.** Every mapping file names the NRCeS profile of its focal resource in `nrces_profile`, and the profile of every resource its fields map in `profiles`. Each resolves to its published definition at `https://nrces.in/ndhm/fhir/r4/StructureDefinition-<Type>.html`. `system/generate-all-mappings.mjs` writes both, and the documentation links the same profiles under every data element table.
 
 ---
@@ -148,6 +150,16 @@ npm --prefix system run build:openapi
 # Or: node system/build-openapi.mjs
 ```
 
+### The Postman collection
+
+`make postman` (or `node system/build-postman.mjs [--out <dir>]`) builds the collection integrators import, into `dist/postman/`:
+
+- `nhcx.postman_collection.json`: one collection, four folders. **NHCX Onboarding (SANDBOX)** and **NHCX Onboarding (PROD)** hold the session token, participant creation and the registry. **NHCX Usecase (SANDBOX)** and **NHCX Usecase (PROD)** hold the session token and every exchange call. Inside each, the Bruno folders keep their names and order.
+- `nhcx.postman_environment.json`: every variable, the hosts filled in and the credentials blank.
+- `nhcx.postman_manifest.json`: what was written, for a site that serves the files.
+
+The hosts come from `baseurl.yaml`, so a production address blank there is blank in the collection. Every variable is prefixed by its environment, `sbx_` or `prod_`, and each environment's folders authenticate with their own token: running **Session token** in a folder stores that environment's token for the calls after it. The release carries the collection as `postman/`, and the documentation site at github.com/nha-in/docs builds it from this package on every build.
+
 ---
 
 ## 6. Bundle Validator CLI & Automated Reports (`package/system/validate-bundles.mjs`)
@@ -157,7 +169,7 @@ Validate all HL7 FHIR R4 bundles organized by use case against NHCX / NRCeS stru
 ### Running the Validator
 
 ```bash
-# Validate all 64 bundles across all use cases:
+# Validate all 80 bundles across all use cases:
 npm --prefix system run validate
 
 # Or using the direct CLI binary:
@@ -174,9 +186,9 @@ node system/validate-bundles.mjs --report custom-reports/
 ```
 
 ### Generated Reports
-Every run automatically outputs:
-- **Markdown Report**: [`system/reports/validation-report.md`](system/reports/validation-report.md)
-- **JSON Report**: [`system/reports/validation-report.json`](system/reports/validation-report.json)
+Every run writes two reports, into `system/reports/` by default (not committed), or into `dist/reports/` under `make validate`:
+- **Markdown Report**: `validation-report.md`
+- **JSON Report**: `validation-report.json`
 
 ---
 
@@ -208,6 +220,7 @@ make corpus                                 # the AI corpus only, after rebuildi
 make eval                                   # score the corpus as the chatbot retrieves it
 CORPUS_MODEL=claude-sonnet-5 make corpus    # index the corpus with another model
 make openapi                                # OpenAPI 3.1 and Postman, into dist/openapi/
+make postman                                # the Postman collection integrators import, into dist/postman/ (section 5)
 make ekadocs EKADOCS_DIR=../nha-docs        # port docs and apis into a github.com/nha-in/docs checkout (not in `make`)
 make package VERSION=v1.2.0                 # what a GitHub release runs: dist/release/nhcx-package-v1.2.0.zip
 make clean                                  # remove dist/
@@ -215,7 +228,7 @@ make clean                                  # remove dist/
 
 `make` rebuilds `docs/` and `corpus/` in place, and then releases the package's NHCX content, and only that:
 
-- `dist/out/`: `apis/`, `docs/`, `fhir/`, `mappings/`, `corpus/`, `usecases.yaml`, `workflow.yaml`, `nhcx-error.yaml`, `baseurl.yaml` and `MANIFEST`. The tooling in `system/`, this README and the `Makefile` stay out. `MANIFEST` lists every file with its size and sha256. It is written into the release as it is packed and exists nowhere else, never at the package root.
+- `dist/out/`: `apis/`, `docs/`, `fhir/`, `mappings/`, `corpus/`, `postman/`, `usecases.yaml`, `workflow.yaml`, `nhcx-error.yaml`, `baseurl.yaml` and `MANIFEST`. The tooling in `system/`, this README and the `Makefile` stay out. `MANIFEST` lists every file with its size and sha256. It is written into the release as it is packed and exists nowhere else, never at the package root.
 - `dist/release/package.zip`: the same, under one folder, `nhcx-package/`.
 
 Publishing a release on GitHub builds the package in CI (`.github/workflows/release.yml`) and attaches it to the release as `nhcx-package-v<version>.zip`, where the version is the release's tag without a leading `v`. CI runs `make package`. It rebuilds `docs/` and fails if the result differs from the committed docs, and writes `MANIFEST` with the release's version. It does not index the corpus, because that needs the chatbot's Bedrock key. The release therefore carries the committed `corpus/`, so run `make` and commit before tagging. To rebuild the package for an existing tag, run the workflow by hand from the Actions tab and give it that tag.

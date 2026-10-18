@@ -15,11 +15,11 @@ headers {
   x-hcx-recipient_code: 1518@hcx
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
-  x-hcx-correlation_id: {{$guid}}
-  x-hcx-workflow_id: 15
+  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-workflow_id: 24
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: response.complete
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
 }
 
 body:json {
@@ -35,7 +35,7 @@ docs {
 
   ## Summary
 
-  Provider returns the acknowledgement Task bundle for a payer communication, echoing the reason code and correlation id so the payer can close the loop.
+  Provider answers a payer's query with a Communication task bundle, or acknowledges a payer's notification, echoing the reason code, correlation id and workflow id so the payer can close the loop.
 
   ## Business purpose
 
@@ -43,19 +43,19 @@ docs {
 
   ## When to use
 
-  Call it after receiving and persisting a /v1/communication/request bundle. The gateway has already been given a 202 within 30 seconds; this call is the separate business acknowledgement. Echo the same Task.reasonCode (tatquery, grievance, walletupdate, policychange, additionalinfo or the arbitration code) and Task.code poll, keep Task.intent proposal, and use the same x-hcx-correlation_id as the incoming request. x-hcx-workflow_id is validated at the gateway for the acknowledgement as well as the request. Responder status values are response.complete, response.partial or response.error.
+  Call it after receiving and persisting a /v1/communication/request bundle. The gateway has already been given a 202 within 30 seconds; this call is the separate business acknowledgement. Use the same x-hcx-correlation_id and x-hcx-workflow_id as the incoming request, and echo its Task.reasonCode. What the bundle carries depends on the payer's query mode. A private insurer's query (additionalinfo, or no reason code) is answered here: a Task coded deliver, status completed, intent order, whose include input references a Communication that names the request in basedOn and carries the reply text and the documents. A PMJAY notification (tatquery, grievance, walletupdate, policychange, additionalinfo or the arbitration code) is acknowledged with the same Task bundle, Task.status completed, within thirty seconds, and the case's status is left alone. x-hcx-workflow_id is validated at the gateway for the answer as well as the request. Responder status values are response.complete, response.partial or response.error.
 
   ## Preconditions
 
   - The inbound JWE was extracted from the payload field, validated as a five-part string, decrypted with your PKCS8 private key and its protected header parsed for correlation id, status and workflow id.
   - The provider is a registered NHCX participant and holds a valid Bearer token.
   - The payer's certificate is available to encrypt the acknowledgement bundle.
-  - The acknowledgement bundle mirrors the request (Task completed, intent proposal, code poll, reasonCode echoed) with the provider Organization listed before the payer Organization and Bundle.timestamp updated to the acknowledgement time.
+  - The bundle is the answer (a deliver Task with the Communication) for a private insurer's query, or the request's Task bundle with Task.status completed for a PMJAY notification, reasonCode echoed, the provider Organization listed before the payer Organization and Bundle.timestamp updated to the time of sending.
   - Protected header reuses the request's x-hcx-correlation_id, carries a fresh x-hcx-api_call_id and a responder x-hcx-status.
 
   ## Postconditions
 
-  The gateway returns HTTP 202 with the StatusSuccessResponse envelope (timestamp, api_call_id, correlation_id, result, error) and forwards the bundle to the payer. The payer's system can link the acknowledgement to the original notification by correlation id and by the shared claim or preauth reference in Task.identifier and Communication.id. The underlying issue is not resolved by this call: a TAT breach or grievance may still be open, and any documents requested via additionalinfo are supplied through the relevant preauth or claim resubmission path. Validation failures come back as 400, unknown resources as 404, downstream faults as 500.
+  The gateway returns HTTP 202 with the StatusSuccessResponse envelope (timestamp, api_call_id, correlation_id, result, error) and forwards the bundle to the payer. The payer's system can link the acknowledgement to the original notification by correlation id and by the shared claim or preauth reference in Task.identifier and Communication.id. The underlying issue is not resolved by this call: a TAT breach or grievance may still be open, Documents a private insurer asks for with additionalinfo travel in the Communication answered here; a line-item query on the case's own thread is answered by sending the leg again, and a decided claim is never resubmitted. Validation failures come back as 400, unknown resources as 404, downstream faults as 500.
 
   ## Common mistakes
 
@@ -77,7 +77,7 @@ docs {
 
   ## Related scenario
 
-  A district hospital receives a communication from the scheme payer on its registered callback: reasonCode additionalinfo, category instruction, asking for an updated discharge summary on a claim submitted last week. The endpoint returns 202 immediately and queues the bundle. The claims desk is notified, and the integration posts the acknowledgement Task on /v1/communication/on_request with the same correlation id and reasonCode. The desk then attaches the discharge summary through the claim's resubmission path, and the final adjudication arrives later on /v1/claim/on_submit, possibly followed by a payment notice on /v1/paymentnotice/request.
+  A district hospital receives a communication from a private insurer on its registered callback under workflow 27: reasonCode additionalinfo, category instruction, asking for an updated discharge summary on a claim submitted last week. The endpoint returns 202 immediately and queues the bundle. The claims desk is notified, and its reply, with the discharge summary attached, goes back on /v1/communication/on_request as a deliver Task carrying a Communication, under the same correlation id and workflow 27. The final adjudication arrives later on /v1/claim/on_submit, possibly followed by a payment notice on /v1/paymentnotice/request.
 
   ## Specification
 

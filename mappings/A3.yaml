@@ -25,8 +25,8 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "N/A (Query Param)"
-    fhir_path: "Request.participant_code"
-    example_value: "1000003538@hcx"
+    fhir_path: "Request.participantid"
+    example_value: "1518@hcx"
   - key: "certData"
     label: "Public Key PEM Certificate"
     group: "Response"
@@ -34,5 +34,5 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "N/A (Crypto)"
-    fhir_path: "Response.certs[0]"
+    fhir_path: "Response (string body)"
     example_value: "-----BEGIN CERTIFICATE-----\nMIIBIjANBgkqhkiG9w0BAQEFAAO..."

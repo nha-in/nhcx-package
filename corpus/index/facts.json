@@ -3151,154 +3151,154 @@
       "method": "POST",
       "service": "PMJAY adjudicator",
       "purpose": "Makes the sandbox dummy payer, participant 1000003538@hcx, approve, reject or query a pre-authorisation or claim you have submitted, by correlation ID.",
-      "cite": "07-api-collection/12-adjudicator.md"
+      "cite": "07-api-collection/13-adjudicator.md"
     },
     "/paymentnotice/init": {
       "path": "/paymentnotice/init",
       "method": "POST",
       "service": "PMJAY adjudicator",
       "purpose": "Makes the sandbox dummy payer send a payment notice to the provider named, on /v1/paymentnotice/request.",
-      "cite": "07-api-collection/12-adjudicator.md"
+      "cite": "07-api-collection/13-adjudicator.md"
     },
     "/v1/task/submit": {
       "path": "/v1/task/submit",
       "method": "POST",
       "service": "Other",
       "purpose": "Provider sends a FHIR Task asking the payer to reprocess a rejected or short-paid claim or to cancel a preauth; Task.code and reasonCode set the intent.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/task/on_submit": {
       "path": "/v1/task/on_submit",
       "method": "POST",
       "service": "Other",
       "purpose": "Payer returns a Task bundle with Task.status completed whose Task.output references a ClaimResponse carrying the reprocess or cancellation outcome.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/internal/v1/task/submit": {
       "path": "/internal/v1/task/submit",
       "method": "POST",
       "service": "Other",
       "purpose": "Internal twin of /v1/task/submit on the taskhcxservice, operationId hcxTaskPostInternal, with the same JWEPayload Task body and 202 envelope.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/internal/v1/task/on_submit": {
       "path": "/internal/v1/task/on_submit",
       "method": "POST",
       "service": "Other",
       "purpose": "Internal twin of /v1/task/on_submit (hcxOnTaskPostInternal): the payer Task bundle wrapping the ClaimResponse outcome of a reprocess or cancel.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/notification/subscribe": {
       "path": "/v1/notification/subscribe",
       "method": "POST",
       "service": "Other",
       "purpose": "A Beneficiary Service Provider (PHR app) subscribes an ABHA id to notification topics; NHCX persists it synchronously, Last-Linked-Wins per ABHA id.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/notification/on_subscribe": {
       "path": "/v1/notification/on_subscribe",
       "method": "POST",
       "service": "Other",
       "purpose": "BSP-side subscription acknowledgement; the same name denotes the callback where NHCX pushes claim-event notifications for a subscribed ABHA id.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/delete": {
       "path": "/v1/delete",
       "method": "POST",
       "service": "Other",
       "purpose": "Internal troubleshooting operation on the claim service that deletes records by correlationid and action; not part of the business transaction flows.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v3/api-docs": {
       "path": "/v3/api-docs",
       "method": "GET",
       "service": "Other",
       "purpose": "Serves the status service's OpenAPI 3 document, optionally filtered by a group query parameter; a discovery endpoint, not a protocol API.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v2/api-docs": {
       "path": "/v2/api-docs",
       "method": "GET",
       "service": "Other",
       "purpose": "Serves the status service's Swagger 2 document, optionally filtered by a group query parameter; a discovery endpoint, not a protocol API.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/swagger-resources": {
       "path": "/swagger-resources",
       "method": "GET",
       "service": "Other",
       "purpose": "Lists the Swagger resources (API document locations) exposed by the status service; used by Swagger UI, not by integrations.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/swagger-resources/configuration/ui": {
       "path": "/swagger-resources/configuration/ui",
       "method": "GET",
       "service": "Other",
       "purpose": "Returns the Swagger UI display configuration for the status service; consumed by Swagger UI, not by integrations.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/swagger-resources/configuration/security": {
       "path": "/swagger-resources/configuration/security",
       "method": "GET",
       "service": "Other",
       "purpose": "Returns the Swagger UI security configuration for the status service; consumed by Swagger UI, not by integrations.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/on_status": {
       "path": "/v1/on_status",
       "method": "POST",
       "service": "Other",
       "purpose": "The answer to a status request, delivered to the sender that asked. The x-hcx-status in the protected header says where the message you asked about got to. The payload is an empty string.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/v1/error": {
       "path": "/v1/error",
       "method": "POST",
       "service": "Other",
       "purpose": "Where the exchange tells a sender that a request could not be delivered after five attempts. Received by every participant under its registered address. There is no outbound form.",
-      "cite": "07-api-collection/13-other.md"
+      "cite": "07-api-collection/14-other.md"
     },
     "/abha/biometric/auth/init": {
       "path": "/abha/biometric/auth/init",
       "method": "POST",
       "service": "ABHA biometric authentication",
       "purpose": "Starts a fingerprint or iris authentication of a PMJAY beneficiary against the ABHA registry and returns the txnId the verify call needs.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     },
     "/abha/biometric/auth/verify": {
       "path": "/abha/biometric/auth/verify",
       "method": "POST",
       "service": "ABHA biometric authentication",
       "purpose": "Completes the authentication started by Biometric auth init with the captured PID block, and returns the beneficiary's user token, valid thirty minutes.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     },
     "/abha/biometric/auth/refresh/token": {
       "path": "/abha/biometric/auth/refresh/token",
       "method": "GET",
       "service": "ABHA biometric authentication",
       "purpose": "Exchanges the refresh token from Biometric auth verify for a new thirty-minute user token without a fresh capture.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     },
     "/abha/biometric/faceauth/init": {
       "path": "/abha/biometric/faceauth/init",
       "method": "POST",
       "service": "ABHA biometric authentication",
       "purpose": "Starts a face authentication on the ABDM proxy host and returns the txnId the rest of the face flow quotes.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     },
     "/abha/biometric/capture/pid": {
       "path": "/abha/biometric/capture/pid",
       "method": "POST",
       "service": "ABHA biometric authentication",
       "purpose": "Polls for the face capture the patient completes in the ABHA app after scanning the QR code for the txnId from Face auth init.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     },
     "/abha/biometric/v2/auth/verify": {
       "path": "/abha/biometric/v2/auth/verify",
       "method": "POST",
       "service": "ABHA biometric authentication",
       "purpose": "Completes a face authentication with the encrypted Aadhaar number, the Aadhaar-linked mobile and the txnId, and returns the beneficiary's user token.",
-      "cite": "07-api-collection/14-biometric.md"
+      "cite": "07-api-collection/15-biometric.md"
     }
   },
   "glossary": {

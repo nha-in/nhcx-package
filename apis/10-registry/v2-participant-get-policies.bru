@@ -1,11 +1,11 @@
 meta {
-  name: Get beneficiary policies (V2)
+  name: Get beneficiary policies (v2)
   type: http
   seq: 18
 }
 
 post {
-  url: {{registryBase}}/V2/participant/get/policies
+  url: {{registryBase}}/v2/participant/get/policies
   body: json
   auth: inherit
 }
@@ -18,17 +18,17 @@ body:json {
 }
 
 docs {
-  # Get beneficiary policies (V2)
+  # Get beneficiary policies (v2)
 
-  `POST /V2/participant/get/policies`
+  `POST /v2/participant/get/policies`
 
   ## Summary
 
-  V2 variant of the beneficiary policy lookup; same FetchParticipantPoliciesRequest body and ParticipantListResponse as the unversioned call.
+  v2 variant of the beneficiary policy lookup; same FetchParticipantPoliciesRequest body and ParticipantListResponse as the unversioned call.
 
   ## Business purpose
 
-  This endpoint answers the same question as /participant/get/policies: which payer products is this beneficiary linked to, and therefore which payer or TPA should the hospital address. The OpenAPI document exposes it as getParticipantGetPoliciesV2 with an identical request and response schema and the same Registry APIs tag; the documentation records no behavioural difference beyond the path. Integrations that use the V2 link and de-link calls typically read back through this endpoint.
+  This endpoint answers the same question as /participant/get/policies: which payer products is this beneficiary linked to, and therefore which payer or TPA should the hospital address. The OpenAPI document exposes it as getParticipantGetPoliciesV2 with an identical request and response schema and the same Registry APIs tag; the documentation records no behavioural difference beyond the path. Integrations that use the v2 link and de-link calls typically read back through this endpoint.
 
   ## When to use
 
@@ -42,7 +42,6 @@ docs {
   - This is a synchronous plain-JSON registry call: no JWE envelope, no x-hcx-* protocol headers and no correlation id are involved.
   - A payer or TPA must already have linked the beneficiary.
   - Body: identifiertype (AbhaNumber, MemberId or MobileNo) and identifiervalue, both required; ABHA without hyphens.
-  - Note the capital V in /V2/.
 
   ## Postconditions
 
@@ -55,7 +54,6 @@ docs {
   - Trying only one identifier type; the handbook prescribes a cascade of AbhaNumber, then MemberId, then MobileNo.
   - Dereferencing fields blindly; every field of ParticipantDetails is optional and the response shape may arrive as participantdetails, participants or a raw array.
   - Trusting a permanent policy cache after a payer-side change instead of passing forceRefresh: true.
-  - Lower-casing the path to /v2/participant/get/policies, which is not a documented route.
 
   ## Best practices
 
@@ -67,7 +65,7 @@ docs {
 
   ## Related scenario
 
-  A TPA has just linked a new member through /V2/participant/link/abha/policy and wants to verify the write before closing the ticket. It calls /V2/participant/get/policies with identifiertype AbhaNumber and the member's hyphen-free ABHA number and sees the product returned. Months later the same member is admitted; the hospital's HMIS runs the identifier cascade (ABHA, then member id, then mobile) against this endpoint, caches the result, and proceeds to /v1/insuranceplan/request and /v1/preauth/submit addressed to the TPA's participant code taken from processingID.
+  A TPA has just linked a new member through /v2/participant/link/abha/policy and wants to verify the write before closing the ticket. It calls /v2/participant/get/policies with identifiertype AbhaNumber and the member's hyphen-free ABHA number and sees the product returned. Months later the same member is admitted; the hospital's HMIS runs the identifier cascade (ABHA, then member id, then mobile) against this endpoint, caches the result, and proceeds to /v1/insuranceplan/request and /v1/preauth/submit addressed to the TPA's participant code taken from processingID.
 
   ## Specification
 

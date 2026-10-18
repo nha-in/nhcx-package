@@ -29,8 +29,8 @@ why a status check costs nothing to answer.
 | `x-hcx-status` | `request.initiated` |
 | `x-hcx-correlation_id` | **The `api_call_id` of the message whose status you are asking about** |
 | `x-hcx-api_call_id` | A fresh UUID, as always |
-| `x-hcx-sender_code`, `x-hcx-recipient_code` | You, and the exchange |
-| `x-hcx-ben-abha-id` | Mandatory |
+| `x-hcx-sender_code`, `x-hcx-recipient_code` | The same two codes as the message you are asking about: you, and its recipient |
+| `x-hcx-ben-abha-id` | Optional |
 | `x-hcx-workflow_id` | Optional |
 | `x-hcx-use_case` | Optional. `New`, `Enhancement` or `Resubmit` on the status sheet |
 
@@ -62,8 +62,9 @@ when a case has gone quiet for longer than the payer's expected turnaround, and
 call it from a support screen rather than from the claims desk.
 
 The Provider UI Guide makes the point the other way round: do not offer a
-refresh or chase control unless you have implemented this exchange behind it,
-because a control that does nothing is worse than no control.
+chase control unless you have implemented this exchange behind it, because a
+control that does nothing is worse than no control. A Refresh button that reads
+again what the callbacks have stored is not a chase, and is the default.
 
 ### A note on the path
 
@@ -73,9 +74,39 @@ The Technical Specifications table names the pair `/hcx/status` and
 against the Postman form, which is what the sandbox serves, and keep the path
 configurable.
 
-The status service's live specification is at
+The status service's sandbox specification is at
 `https://hcxsbx.abdm.gov.in/statushcxservice/swagger-ui-custom.html`.
 Environments and Addresses lists it with the others.
+
+### The status enquiry as a Task
+
+The sandbox refuses `/v1/status` with `NHCX-1012`, whatever correlation ID it
+carries. What works is asking the payer: a `Task` coded `status` on
+`/v1/task/submit`, answered on `/v1/task/on_submit`.
+
+| Field | Value |
+| :---- | :---- |
+| `Task.code` | `status`, from the financial task code system |
+| `Task.input` | `claimNumber` alone, the case's claim number |
+| `Task.status`, `intent` | `requested`, `order` |
+| `x-hcx-workflow_id` | **`1`, always**, for the preauthorisation and the claim alike |
+| `x-hcx-correlation_id` | A fresh one, as on any request. The enquiry is its own thread |
+| `x-hcx-status` | `request.initiated` |
+
+**Why `1`.** No NHCX workflow code names a status check: the only Task codes
+the workflow sheet gives are 36, reprocess, and PC01, cancel. So the header
+never carries the leg's correlation ID, which is a UUID and not a workflow id,
+nor a stage code that means something else. A build that sent the claim's
+correlation ID there got an answer with an empty workflow id. The insurance
+plan request goes under `1` for a similar reason: it belongs to the hospital and
+the policy, not to one case.
+
+The answer is a `Task` whose output includes a `ClaimResponse`, read with the
+parser you already have. Ask it of the preauthorisation only while that is
+waiting for the payer; once it is decided, ask it of the claim. A payer that
+answers no status Task, PMJAY among them, is not asked: the screen does not
+offer the action, and "What neither exchange gives you" below says what to do
+instead.
 
 ## Search
 
@@ -103,7 +134,7 @@ source confirms which of the two endpoints the sandbox accepts from a provider.
 Treat it as open: confirm with NHA before the demo, and keep the endpoint
 configurable. Access Control and Roles sets out the same rule.
 
-The search service's live specification is at
+The search service's sandbox specification is at
 `https://hcxsbx.abdm.gov.in/searchhcxservice/swagger-ui-custom.html`.
 
 ### The request bundle

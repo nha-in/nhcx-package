@@ -13,7 +13,7 @@ title: "Respond to pre-authorisation"
 side: "payer"
 api: "/v1/preauth/on_submit"
 callback: "/v1/preauth/submit"
-workflow: "20 (Received), 21 (Approved), 22 (Enhancement approved), 23 (Rejected), 24 (Queried)"
+workflow: "20 (Received), 21 (Approved), 22 (Enhancement approved), 23 (Rejected), 231 (Enhancement denied), 24 (Queried), 241 (Enhancement queried)"
 carries_jwe: true
 focal_resource: "ClaimResponse"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/ClaimResponse"
@@ -38,7 +38,7 @@ fields:
     required: false
     fhir_resource: "ClaimResponse"
     fhir_path: "ClaimResponse.preAuthRef"
-    example_value: "APPR-2026-HP-00891"
+    example_value: "CL/26/0SE000108"
   - key: "approvedAmount"
     label: "Approved Pre-auth Sanction"
     group: "Financials"
@@ -47,7 +47,7 @@ fields:
     required: false
     fhir_resource: "ClaimResponse"
     fhir_path: "ClaimResponse.total[category=benefit].amount.value"
-    example_value: "15500.00"
+    example_value: "150000"
   - key: "disposition"
     label: "Adjudicator Remarks"
     group: "Verdict"
@@ -56,4 +56,4 @@ fields:
     required: false
     fhir_resource: "ClaimResponse"
     fhir_path: "ClaimResponse.disposition"
-    example_value: "Approved by PPD-Trust committee"
+    example_value: "Approved after the status enquiry on the nanoemr e2e run."

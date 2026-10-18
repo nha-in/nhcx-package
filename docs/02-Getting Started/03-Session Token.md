@@ -1,6 +1,6 @@
 # Session token
 
-Every call carries a bearer token. The token does not come from NHCX. It comes from the ABDM gateway, with the client ID and secret you were given for Milestone 1.
+Every call carries a bearer token. The token does not come from NHCX. It comes from the ABDM gateway, with the client ID and secret you received when you registered on the ABDM sandbox. The handbook calls them `ABDM_CLIENT_ID` and `ABDM_CLIENT_SECRET`.
 
 ## Getting one
 
@@ -27,12 +27,14 @@ Three headers matter here, and none of them is optional.
 
 `grantType` is `client_credentials`. The older form of this call omitted it, which is why an otherwise correct request copied from an old sample can be rejected.
 
+A second token call is published: `POST /get/session` on the participant service, form-encoded (`client_id`, `client_secret`, `grant_type=client_credentials`), answering `access_token` and `expires_in` `1200`. It takes the same credentials, and the sandbox exit checklists name it as the auth-token call. Keep the address, body encoding and the two response field names in configuration, so either call can be used without a code change.
+
 The response:
 
 ```json
 {
   "accessToken": "eyJhbGciOiJSUzI1NiIs...",
-  "expiresIn": 300,
+  "expiresIn": 1200,
   "refreshTokenIn": 300,
   "refreshToken": "eyJhbGciOiJSUzI1NiIs...",
   "tokenType": "bearer"
@@ -41,7 +43,7 @@ The response:
 
 ## Using it
 
-On every NHCX call, the token goes in a header called `bearer_auth`, with the word `Bearer` and a space in front. The sources are not unanimous: the authentication page and the FAQ both write the example as `Authorization`, and the notification endpoint uses `Authorization`. The safe course, and what the adapter does, is to send both headers with the same value.
+On every NHCX call, the token goes in a header called `bearer_auth`, with the word `Bearer` and a space in front. NHCX reads `bearer_auth`, not `Authorization`.
 
 ```
 bearer_auth: Bearer eyJhbGciOiJSUzI1NiIs...
@@ -51,10 +53,10 @@ Leaving out the `Bearer` prefix is the portal's own example of how to get a `401
 
 ## Keeping it fresh
 
-The token is short-lived. The portal's documents put its life at 300 seconds in the authentication note, 1200 in the handbook and 6000 in the notification guide, so do not rely on any of them. Build it like this:
+The token lasts 1200 seconds (20 minutes) from the moment it arrives. Build it like this:
 
 - Keep the token and the time you got it.
-- Before each call, if it is older than a few minutes, get a new one first.
+- Before each call, if the token is more than about 18 minutes old, get a new one first.
 - If any call answers `401`, get a new token and retry that call once. Do not retry with the same token; it will fail the same way.
 - Never write the token or the secret to a log.
 
@@ -64,7 +66,7 @@ One token serves every call: the participant service, the use-case endpoints, an
 
 | Symptom | Cause |
 | :---- | :---- |
-| `401` on the sessions call itself | Wrong client ID or secret, or Milestone 1 not complete |
+| `401` on the sessions call itself | Wrong client ID or secret |
 | An error on the sessions call naming a header | `REQUEST-ID` reused or absent, `TIMESTAMP` stale or in the wrong format, or `X-CM-ID` missing |
 | An error on the sessions call naming the body | `grantType` omitted, which the v3 address requires |
 | `401 Sender is not authorized to execute the operation` on an NHCX call | Token expired |
@@ -75,7 +77,7 @@ One token serves every call: the participant service, the use-case endpoints, an
 Two ISO 8601 shapes appear on NHCX, and they are not interchangeable.
 
 - The ABDM gateway headers, `TIMESTAMP` on the sessions call, take UTC with milliseconds and a trailing `Z`: `2026-09-04T06:15:51.975Z`.
-- The exchange header `x-hcx-timestamp` and `Bundle.timestamp` take Indian Standard Time as an offset, without milliseconds: `2026-09-04T11:46:34+05:30`. The two examples are the same instant.
+- The exchange header `x-hcx-timestamp` and `Bundle.timestamp` take Indian Standard Time as an offset: `2026-09-04T11:46:34+05:30`. The two examples are the same instant. Milliseconds are optional there: most of the package's sample bundles carry them in `Bundle.timestamp` (`2026-02-26T18:23:17.269+05:30`), and the snippets below leave them out. NHA does not fix this format in one place: the handbook says Indian time, the FAQ says UTC with `Z`, and the reference adapter writes the offset without a colon, `+0530`, which the sandbox accepts. Building and Sending a JWE and JWE, Status and Errors in the Overview have the detail; the samples' `+05:30` is the safe default.
 
 Take the time from the system clock, keep the clock synchronised with NTP, and let a date library do the formatting. Each snippet below produces `utc` for the gateway and `ist` for the exchange.
 
@@ -178,4 +180,4 @@ ist=$(TZ=Asia/Kolkata date +%Y-%m-%dT%H:%M:%S%:z)
 
 macOS `date` has no `%N`; use `gdate` from coreutils, or generate the value in the application rather than the shell.
 
-Whichever language, the check is the same: the gateway value ends in `Z` and has three digits after the seconds; the exchange value ends in `+05:30` and has none.
+Whichever language, the check is the same: the gateway value ends in `Z` and has three digits after the seconds; the exchange value ends in an Indian offset, `+05:30` as the samples write it.

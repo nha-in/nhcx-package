@@ -16,7 +16,7 @@
 # it is obtained.
 #
 # Sources: the sandbox bases are the collection's own environment. The
-# participant service's production address is NHA's. The ABDM gateway's
+# participant service's, the use-case base's and the portal's production addresses are NHA's. The ABDM gateway's
 # production host and the X-CM-ID values are ABDM's published documentation.
 
 environments:
@@ -41,8 +41,8 @@ services:
     used_for: Every use-case call under /v1, fingerprint and iris authentication under /abha
     variable: nhcxBase
     sandbox: https://apisbx.abdm.gov.in/hcx
-    production: null
-    production_note: Shared by NHA after sandbox exit.
+    production: https://apisprod.nha.gov.in/hcx
+    production_note: NHA's published use-case base. Production access starts once the provider role is assigned after sandbox exit.
 
   - id: registry
     name: Participant service
@@ -86,11 +86,11 @@ services:
 
   - id: portal
     name: NHCX portal
-    used_for: The portal, the live Swagger specifications it publishes, and notification subscribe
+    used_for: The portal, the sandbox Swagger specifications it publishes, and notification subscribe
     variable: portalBase
     sandbox: https://hcxsbx.abdm.gov.in
-    production: null
-    production_note: Not published.
+    production: https://nhcx.abdm.gov.in
+    production_note: NHA's published production portal.
 
   - id: face-auth-page
     name: Face authentication page

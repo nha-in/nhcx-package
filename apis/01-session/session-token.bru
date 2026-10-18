@@ -37,7 +37,7 @@ docs {
 
   ## Summary
 
-  Mints the ABDM gateway session token that every NHCX call carries, from the client ID and secret issued for Milestone 1.
+  Mints the ABDM gateway session token that every NHCX call carries, from the client ID and secret you received when you registered on the ABDM sandbox (`ABDM_CLIENT_ID` and `ABDM_CLIENT_SECRET`).
 
   ## Business purpose
 
@@ -45,11 +45,11 @@ docs {
 
   ## When to use
 
-  Before the first call, and again whenever the token you hold is more than a few minutes old or any call answers `401`. Build against this v3 address.
+  Before the first call, and again whenever the token you hold is more than about 18 minutes old, ahead of its 20-minute (1200-second) expiry, or any call answers `401`. Build against this v3 address.
 
   ## Preconditions
 
-  - Milestone 1 is complete and you hold its client ID and secret.
+  - You hold the client ID and secret you received when you registered on the ABDM sandbox (`ABDM_CLIENT_ID` and `ABDM_CLIENT_SECRET`).
   - `REQUEST-ID` is a fresh UUID generated for this call.
   - `TIMESTAMP` is the current time in UTC, ISO 8601 with milliseconds and a trailing `Z`, as in `2026-09-04T06:15:51.975Z`, taken from a synchronised system clock.
   - `X-CM-ID` is `sbx` on the sandbox.
@@ -57,7 +57,7 @@ docs {
 
   ## Postconditions
 
-  The gateway returns `accessToken`, `expiresIn`, `refreshToken` and `tokenType` `bearer`. On every NHCX call the token goes in `bearer_auth` as `Bearer <token>`. Some pages and the notification endpoint use `Authorization` instead, so this collection sends both with the same value. The documents put the token's life at 300, 1200 and 6000 seconds in different places, so do not rely on any of them.
+  The gateway returns `accessToken`, `expiresIn` `1200` (20 minutes), `refreshToken` and `tokenType` `bearer`. On every NHCX call the token goes in the `bearer_auth` header as `Bearer <token>`. The token lasts 1200 seconds (20 minutes).
 
   ## Common mistakes
 
@@ -70,9 +70,9 @@ docs {
 
   ## Best practices
 
-  - Keep the token together with the time you got it, and fetch a new one before a call if it is more than a few minutes old.
+  - Keep the token together with the time you got it, and fetch a new one before a call if it is more than about 18 minutes old, ahead of the 20-minute expiry.
   - On any `401`, get a new token and retry that call once.
-  - Send the token on both `bearer_auth` and `Authorization`.
+  - Send the token in `bearer_auth` on every NHCX call.
   - Keep the clock synchronised with NTP and let a date library format the timestamp.
 
   ## Related scenario
@@ -88,7 +88,7 @@ docs {
   ```json response
   {
     "accessToken": "eyJhbGciOiJSUzI1NiIs...",
-    "expiresIn": 300,
+    "expiresIn": 1200,
     "refreshTokenIn": 300,
     "refreshToken": "eyJhbGciOiJSUzI1NiIs...",
     "tokenType": "bearer"

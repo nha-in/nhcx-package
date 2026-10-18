@@ -118,7 +118,7 @@ The same bundle, told apart by the workflow code, `outcome` and the claim-level 
 
 ### 1. Read outcome with the reason
 
-`outcome` `complete` covers approval and rejection alike. Read it with `adjudication[].reason` at claim level.
+`outcome` alone does not say approved or rejected. The acknowledgement is `queued`, a query `partial`, an approval `complete`. A rejection is `complete` with reason `cancelled` in NHA's PMJAY handbook, and `error` with reason `rejected` in the samples here and from the live PMJAY payer. Read `outcome` with `adjudication[].reason` at claim level.
 
 ### 2. Answer early, decide later
 
@@ -158,8 +158,8 @@ PMJAY sends this exchange in the generic shape.
 
 ### What PMJAY specifies
 
-- A rejection is `outcome` `error` with reason `rejected` and benefit 0. Generic payers send `complete` with `cancelled` or `rejected`. Handle both.
-- A query is `outcome` `partial` with reason `queried`, the question as free text in the item adjudication; see the query chapter.
+- A rejection is `outcome` `error` with reason `rejected` and benefit 0. The PMJAY handbook documents `complete` with `cancelled` instead. Handle both.
+- A query is `outcome` `partial` with reason `queried`, the question as free text in `disposition` and in the queried item's adjudication; see the query chapter.
 - `preAuthRef` carries the scheme's case id. It is what the payer service uses to address the case.
 
 ### What PMJAY requires
@@ -188,11 +188,11 @@ The adjudicated pre-authorisation. The acknowledgement on 20 travels as response
 | `x-hcx-recipient_code` | `1000004446@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `21` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 | `x-hcx-debug_flag` | `INFO` |
 
 **Workflow codes**
@@ -212,8 +212,8 @@ The adjudicated pre-authorisation. The acknowledgement on 20 travels as response
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `outcome` | Verdict Outcome | Verdict | `code` | `1..1` | `ClaimResponse.outcome` | `complete` |  |
-| `preAuthRef` | Payer Case Tracking ID | Verdict | `string` | `0..1` | `ClaimResponse.preAuthRef` | `APPR-2026-HP-00891` |  |
-| `approvedAmount` | Approved Pre-auth Sanction | Financials | `decimal` | `0..1` | `ClaimResponse.total[category=benefit].amount.value` | `15500.00` |  |
-| `disposition` | Adjudicator Remarks | Verdict | `string` | `0..1` | `ClaimResponse.disposition` | `Approved by PPD-Trust committee` |  |
+| `preAuthRef` | Payer Case Tracking ID | Verdict | `string` | `0..1` | `ClaimResponse.preAuthRef` | `CL/26/0SE000108` |  |
+| `approvedAmount` | Approved Pre-auth Sanction | Financials | `decimal` | `0..1` | `ClaimResponse.total[category=benefit].amount.value` | `150000` |  |
+| `disposition` | Adjudicator Remarks | Verdict | `string` | `0..1` | `ClaimResponse.disposition` | `Approved after the status enquiry on the nanoemr e2e run.` |  |
 
 NRCeS profiles: [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition-ClaimResponse.html).

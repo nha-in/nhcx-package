@@ -16,7 +16,7 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/particip
 ```
 <!-- build-docs:end -->
 
-That participant code is the sandbox dummy payer. For the smoke test at the end of this section it is the recipient.
+That participant code, `1518@hcx`, is the PMJAY payer the Bruno request is written for. The sandbox dummy payer is `1000003538@hcx`, and for the smoke test at the end of this section it is the recipient.
 
 ## What comes back
 

@@ -17,7 +17,7 @@ workflow: "none"
 carries_jwe: true
 focal_resource: "None; the payload is an empty string and the protected header carries the call"
 profiles: {}
-description: "Query the status of a request you sent, named by its api_call_id; the payload is an empty string."
+description: "Query the status of a request you sent, named by its api_call_id; the payload is an empty string. The sandbox refuses /v1/status with NHCX-1012; the status enquiry that works is a Task coded status on /v1/task/submit under workflow id 1."
 fields:
   - key: "correlationId"
     label: "API call ID of the request being checked"

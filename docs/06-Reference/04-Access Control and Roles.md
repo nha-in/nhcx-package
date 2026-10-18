@@ -140,5 +140,7 @@ bank details found for the provider", refers to. It is optional at
 registration and not optional if you expect to be paid.
 
 Only `Active` may send or receive. The registry offers create, update, delete
-and search, with modification controlled by the exchange operator as part of
-onboarding rather than exposed to participants.
+and search. A participant creates and updates its own record through the
+participant service, as Creating and Updating a Participant in Getting Started
+shows, and only the client ID that created a record may change it: any other
+earns `NHCX-1015`, "You are not authorized to update/modify details".

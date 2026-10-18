@@ -231,7 +231,7 @@ As with D7, the provider answers a payer query with a claim query response using
 
 When a claim is rejected outright and the hospital disputes it, it asks for a re-evaluation. This is an appeal, not a resubmission: the claim itself is not sent again.
 
-The Task carries the code `reprocess` and the reason `claimrejected`. It names the case by its claim number, which under PMJAY is the preauthorisation number the hospital generated. No amount is sent, because the whole claim is in dispute. A supporting document is mandatory; without one there is no ground for the appeal. It can be raised as soon as the rejection arrives, with no dependency on any payment notice.
+The Task carries the code `reprocess` and the reason `claimrejected`, or `rejectiondisputed` where the hospital brings further evidence against the rejection. Only a rejected claim is reprocessed, and a decided claim is never sent again as a claim. It names the case by its claim number, which under PMJAY is the preauthorisation number the hospital generated. No amount is sent, because the whole claim is in dispute. A supporting document is mandatory; without one there is no ground for the appeal. It can be raised as soon as the rejection arrives, with no dependency on any payment notice.
 
 The request goes to the Claim Review Committee, whose decision is final. A claim can be reprocessed once. The original claim number carries forward; no new case is created.
 
@@ -242,7 +242,7 @@ The request goes to the Claim Review Committee, whose decision is final. A claim
 **Workflow ID:** 36
 **Payload:** Task bundle, with a supporting document attached
 
-When a claim is approved and paid, but for less than was claimed, the hospital can ask for the difference. This uses the same Task as a reprocess with one change: the reason is `partialpayment`, and an amount is sent.
+When a claim is approved and paid, but for less than was claimed, the hospital can ask for the difference. The scheme describes this as the same Task as a reprocess with one change: the reason is `partialpayment`, and an amount is sent. A part-paid claim is not rejected, so `partialpayment` is never a reprocess reason; send it as the balance release Task, code `release`, and confirm the code with the scheme.
 
 The amount is capped at the shortfall. A claim raised for 10,000 and paid at 6,000 can ask for up to 4,000, with justification, and never more. The request can only be raised once the payment cycle is complete: after the payment notice with workflow 33 has arrived and the hospital has verified the money and sent its acknowledgement, code 17. As with a reprocess, it can be raised once, and a supporting document is mandatory.
 
@@ -255,7 +255,7 @@ flowchart TD
   B -- paid in full --> D[Done]
   B -- paid short --> E[Wait for payment notice 33]
   E --> F[Verify the money, send acknowledgement 17]
-  F --> G["D12 Shortfall: Task, reason partialpayment, amount up to the difference"]
+  F --> G["D12 Shortfall: release Task, reason partialpayment, amount up to the difference"]
   C --> H[Claim Review Committee decides, and that is final]
   G --> H
 ```
@@ -276,7 +276,7 @@ This requirement applies to every preauthorisation and claim bundle, D4 through 
 
 Supporting clinical information travels through the `SupportingInfo` to `DocumentReference` resource. Inside `DocumentReference.content.attachment`, the `attachment.data` field carries a Base64-encoded FHIR Bundle holding the relevant structured resources, for example DiagnosticReport, DischargeSummary or WellnessRecord. This is the difference from an unstructured submission, where the same field would carry a Base64-encoded PDF or JPG. For structured submissions the content type is set to `application/json` or `application/fhir+json`.
 
-The category code decides which of the two applies. Structured data uses a supporting info category among DIA, HDS, CD and INF, with the value sent as a reference. Unstructured data uses a category among POI, POA, DOB, DEF, FIR and ATT, with the value sent as an attachment. Questionnaire responses are configured under supporting info with category INF, code AT, and a reference value.
+The category code decides which of the two applies. Structured data uses a supporting info category among DIA, HDS, CD and INF, with the value sent as a reference. Unstructured data uses a category among POI, POA, DOB, DEF, FIR and ATT, with the value sent as an attachment. Questionnaire responses are configured under supporting info with category INF, code ODN, and a reference value.
 
 Each document is limited to 2 MB, against a whole-bundle maximum of 20 MB, and only one document can be linked per item, so multiple documents for a single item must be merged.
 

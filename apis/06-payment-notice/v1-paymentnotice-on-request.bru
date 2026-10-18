@@ -15,11 +15,11 @@ headers {
   x-hcx-recipient_code: 1518@hcx
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
-  x-hcx-correlation_id: {{$guid}}
+  x-hcx-correlation_id: {{correlationId}}
   x-hcx-workflow_id: 17
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: response.complete
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
   x-hcx-debug_flag: INFO
 }
 
@@ -44,7 +44,7 @@ docs {
 
   ## When to use
 
-  Called by the provider after processing a /v1/paymentnotice/request message, using the same correlation ID, with x-hcx-workflow_id 17 PAYMENT_RECEIVED and x-hcx-status response.complete (the NHA sheet lists 17 Payment Notice Received as response.complete). The plaintext is a Task with status completed, intent order, code status from the HL7 financialtaskcode system, output[0] paymentack (Payment is acknowledged) and output[1] claimNumber carrying the acknowledged claim number; Task.requester is the provider and Task.owner the payer, the reverse of the notice. The handbook narrative alternatively places this acknowledgement on /v1/task/submit; the OpenAPI contract and the Payment use-case document support this endpoint.
+  Called by the provider after processing a /v1/paymentnotice/request message, using the same correlation ID, with x-hcx-workflow_id 17 PAYMENT_RECEIVED to PMJAY and x-hcx-status response.complete (the NHA sheet lists 17 Payment Notice Received as response.complete). A generic payer takes the acknowledgement with the notice's own workflow id echoed, 30 for an initiation. The plaintext is a Task with status completed, intent order, code status from the HL7 financialtaskcode system, output[0] paymentack (Payment is acknowledged) and output[1] claimNumber carrying the acknowledged claim number; Task.requester is the provider and Task.owner the payer, the reverse of the notice. The handbook narrative alternatively places this acknowledgement on /v1/task/submit; the OpenAPI contract and the Payment use-case document support this endpoint.
 
   ## Preconditions
 

@@ -57,7 +57,7 @@ sequenceDiagram
 
 ## Subscribing
 
-<!-- build-docs:api 13-other/v1-notification-subscribe.bru -->
+<!-- build-docs:api 14-other/v1-notification-subscribe.bru -->
 ```bash
 curl --location --request POST 'https://hcxsbx.abdm.gov.in/v1/notification/subscribe' \
   --header 'Content-Type: application/json' \
@@ -186,8 +186,10 @@ status-word vocabulary. It is a third, simpler set, designed for display.
 ## What the payer and provider do
 
 Nothing extra. The exchange generates notifications from the traffic that
-already flows. A payer's ordinary responses feed them, and the payer's own
-notifications carry workflow N01.
+already flows, and a payer's ordinary responses feed them. The workflow code
+names the notification's addressee, not its author: a payer's own notice to a
+hospital goes as N02, as the SHA does on `/v1/communication/request` in the
+C6 sample, and one meant for the beneficiary as N03.
 
 For a hospital that also runs a patient app, the two are separate participants
 with separate codes and separate certificates, even inside one organisation.
@@ -215,9 +217,12 @@ beneficiary at a time.
 The integration document is written against an older reading of the protocol
 than the rest of the corpus. It gives `alg` as `RSA-OAEP` rather than
 `RSA-OAEP-256`, and a token life of
-6,000 seconds where other sources say 300 or 1,200. Follow the current
+6,000 seconds. That figure is wrong: the token lasts 1,200 seconds (20
+minutes). Follow the current
 protocol as Envelope Fields and Session Token give it, and treat the document's
 payload shapes as the part that is specific to notifications.
 
-No sample notification bundle exists in the corpus, and no participant is
-recorded as having exercised this exchange.
+No sample of a notification to a patient app exists in the package, and no
+participant is recorded as having exercised this exchange. The one N-coded
+sample, a payer's N02 notice to a hospital, is a communication request, not
+this exchange.

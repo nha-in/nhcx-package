@@ -1,36 +1,65 @@
 # ==============================================================================
 # Use Case D13: Acknowledge the payment notice - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/paymentnotice/on_request
 # Callback API: /v1/paymentnotice/request
 # Carries JWE: true
-# Focal Resource: PaymentReconciliation / Task
-# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
 # ==============================================================================
 
 code: "D13"
 title: "Acknowledge the payment notice"
-side: "provider"
+side: "pmjay"
 api: "/v1/paymentnotice/on_request"
 callback: "/v1/paymentnotice/request"
 workflow: "17 (Payment notice acknowledged)"
 carries_jwe: true
-focal_resource: "PaymentReconciliation / Task"
-nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 profiles:
   PaymentReconciliation: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
   Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 description: "Acknowledge PMJAY SHA bank settlement remittance advice."
 fields:
-  - key: "settlementNumber"
-    label: "Settlement Advice Number"
-    group: "Payment"
+  - key: "taskCode"
+    label: "Task Code"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    code_system: "http://terminology.hl7.org/CodeSystem/financialtaskcode"
+    example_value: "status"
+  - key: "status"
+    label: "Acknowledgment Status"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.status"
+    example_value: "completed"
+  - key: "ackValue"
+    label: "Acknowledgment"
+    group: "Task Output"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.output[type=status].valueCodeableConcept.coding[0].code"
+    code_system: "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value"
+    example_value: "paymentack"
+  - key: "claimNumber"
+    label: "Claim Number paid"
+    group: "Task Output"
     data_type: "string"
     cardinality: "1..1"
     required: true
-    fhir_resource: "PaymentReconciliation"
-    fhir_path: "PaymentReconciliation.identifier[0].value"
-    example_value: "SETTLE-PMJAY-001"
+    fhir_resource: "Task"
+    fhir_path: "Task.output[type=claimNumber].valueString"
+    example_value: "NM-26-0SF000030"
   - key: "workflowId"
     label: "Workflow Code"
     group: "Header"

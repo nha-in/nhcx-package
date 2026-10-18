@@ -113,7 +113,19 @@ function operation(request, folder) {
       .replace(/\.bru$/, "")
       .replace(/[^a-zA-Z0-9]+(.)/g, (_, c) => c.toUpperCase()),
     ...(headers.length ? { parameters: headers } : {}),
-    ...(body
+    ...(request.form
+      ? {
+          requestBody: {
+            required: true,
+            content: {
+              "application/x-www-form-urlencoded": {
+                schema: schemaOf(request.form),
+                example: request.form,
+              },
+            },
+          },
+        }
+      : body
       ? {
           requestBody: {
             required: true,
@@ -146,7 +158,16 @@ function toOpenApi() {
       if (origin) servers.set(origin, (servers.get(origin) ?? 0) + 1);
       const key = path || "/";
       paths[key] ??= {};
-      paths[key][request.method.toLowerCase()] = {
+      const method = request.method.toLowerCase();
+      // Two requests on one path and method (a preauth submit and its
+      // enhancement) are one operation in OpenAPI: keep the first, in the
+      // collection's order, and name the other in its description rather
+      // than letting the later one replace it.
+      if (paths[key][method]) {
+        paths[key][method].description += `\n\nAlso sent as ${request.name}: ${summaryOf(request)}`;
+        continue;
+      }
+      paths[key][method] = {
         ...operation(request, folder),
         ...(origin ? { servers: [{ url: origin }] } : {}),
       };
@@ -214,7 +235,14 @@ function postmanRequest(request) {
     request: {
       method: request.method,
       header: headers,
-      ...(request.body
+      ...(request.form
+        ? {
+            body: {
+              mode: "urlencoded",
+              urlencoded: Object.entries(request.form).map(([key, value]) => ({ key, value, type: "text" })),
+            },
+          }
+        : request.body
         ? {
             body: {
               mode: "raw",

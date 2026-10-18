@@ -69,7 +69,7 @@ The payer exit checklist states four validations on every response a payer sends
 
 The correlation rule is the same everywhere. On a request you initiate, such as a payment notice or a communication, set `correlation_id` to that message's own `api_call_id`. On a response, echo the request's `correlation_id` and give the response a fresh `api_call_id`. On a status enquiry, set `correlation_id` to the `api_call_id` of the message you are asking about. Envelope Fields has the full rule.
 
-And the status word: `response.complete` for a final answer, `response.partial` for an interim one or a query, `response.error` with a protocol response when the request could not be opened or failed validation. The exit checklist names the type field on a good answer `JWEPayloadResponse`; the sandbox collection uses `JWEPayload`. Accept both when reading, and confirm which to send.
+And the status word: `response.complete` for a final answer, `response.partial` for an acknowledgement or an interim one, `response.error` with a protocol response when the request could not be opened or failed validation. The exit checklist names the type field on a good answer `JWEPayloadResponse`; the sandbox collection uses `JWEPayload`. Accept both when reading, and confirm which to send. A query is the odd one: the workflow sheet lists 24, 241 and 27 under `request.initiated`, while the reference payer sends its line-item query on the submission's own thread as `response.complete`. Confirm which the exchange accepts from you.
 
 ## Build it in this order
 

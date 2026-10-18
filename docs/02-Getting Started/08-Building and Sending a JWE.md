@@ -18,16 +18,16 @@ Every field the exchange needs to route and log the message. All the `x-hcx-` na
   "x-hcx-workflow_id": "12",
   "x-hcx-timestamp": "2026-09-04T11:46:34+05:30",
   "x-hcx-status": "request.initiated",
-  "x-hcx-ben-abha-id": "91123456781234"
+  "x-hcx-ben-abha-id": "91-1234-5678-1234"
 }
 ```
 
 - `alg` and `enc` are the encryption. The protocol page says `RSA-OAEP`; the handbook, the code samples and every Postman body on the portal say `RSA-OAEP-256`. Use `-256`.
 - The three IDs are fresh UUIDs. `api_call_id` is new per call, `request_id` per request, `correlation_id` per conversation and reused on the answer.
 - `workflow_id` says which step this is. `12` is a new preauthorisation.
-- `timestamp` is ISO 8601. Which zone is contested: the handbook says Indian time and that UTC will fail validation, the FAQ says UTC with a trailing `Z`. The sample bundles use `+05:30`. Confirm before building; it is a validated field.
+- `timestamp` is ISO 8601. Which zone is contested: the handbook says Indian time and that UTC will fail validation, the FAQ says UTC with a trailing `Z`. The sample bundles use `+05:30`, and the reference adapter sends Indian time with the offset written without a colon, `+0530`. Confirm before building; it is a validated field.
 - `status` is always `request.initiated` on something you initiate.
-- `ben-abha-id` is the beneficiary's ABHA number without hyphens.
+- `ben-abha-id` is the beneficiary's ABHA number, hyphenated as `XX-XXXX-XXXX-XXXX`; any other form is refused with `NHCX-1018`. The policy lookup takes the same number without hyphens.
 
 ## The smallest possible bundle
 
@@ -83,7 +83,7 @@ Java users can take the portal's `JWEPayloadUtil` sample as-is; it does the same
 
 ## Sending it
 
-The request body is a JSON object with one field.
+The request body is a JSON object with one field. The `x-hcx-` fields are not HTTP headers: they travel inside the JWE's protected header, sealed above. The only headers on the wire are the token and the content types. The Bruno request below repeats the `x-hcx-` values as HTTP headers as well; the reference adapter does not send them, and the protected header is where the exchange reads them.
 
 <!-- build-docs:api 03-preauth/v1-preauth-submit.bru -->
 ```bash
@@ -99,7 +99,7 @@ curl --location --request POST 'https://apisbx.abdm.gov.in/hcx/v1/preauth/submit
   --header 'x-hcx-workflow_id: 12' \
   --header 'x-hcx-timestamp: <iso timestamp>' \
   --header 'x-hcx-status: request.initiated' \
-  --header 'x-hcx-ben-abha-id: 91711234567890' \
+  --header 'x-hcx-ben-abha-id: 91-7112-3456-7890' \
   --header 'x-hcx-use_case: New' \
   --data-raw '{
     "payload": "eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwieC1oY3gtc2VuZGVyX2NvZGUiOi4uLn0.encrypted_key.iv.ciphertext.tag"

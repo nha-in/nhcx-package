@@ -1,0 +1,81 @@
+meta {
+  name: Adjudicator: get the user role for a case
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{adjudicatorRoleUrl}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "caseid": "{{caseNumber}}",
+    "payerid": "{{payerCode}}"
+  }
+}
+
+docs {
+  # Adjudicator: get the user role for a case
+
+  `POST /pmjay/sbxhcx/nhcxpayerservice/v1/get/user-role`
+
+  ## Summary
+
+  Asks the NHCX Payer Service which role in the State Health Agency's Transaction Management System holds a PMJAY case, and so which actions may be taken on it next.
+
+  ## Business purpose
+
+  A PMJAY case is not decided over NHCX. The exchange carries the submission to the scheme and the verdict back, but the decision is taken in the SHA's own system, by a named role, on that system's schedule. This call is how an integrator reads that queue. It is also the only way to see where a PMJAY case stands, because a status `Task` sent to the scheme over NHCX is refused, first with `PAYR-1018` and then with `PAYR-1008`.
+
+  ## When to use
+
+  It is mandatory before any claim action. Call it before every `Adjudicator: act on a case`, because the role that answers is the only one whose action names are legal, and whenever a PMJAY case has gone quiet. The service moves cases on its own schedule, so read the role again rather than assuming the next step.
+
+  ## Preconditions
+
+  - `caseid` is the scheme's case ID, the digits at the end of the case reference the payer issues, not the hospital's claim number. The sandbox hands it out inside the `PAYR-1238` refusal of a later request for the same beneficiary, and in the payer's acknowledgement and status answers once a request is accepted.
+  - `payerid` is the scheme payer's code.
+  - An ordinary ABDM session token on `bearer_auth`, with `Content-Type` and `Accept` set to `application/json`.
+
+  ## Postconditions
+
+  The service answers with the role that holds the case in `currentuserrole`, and `errormessage` empty. Once a case is decided, the lookup answers with no role at all. Asked about the hospital's own number, it answers `No Data found with the caseid <id>. Please use the current active case id.`
+
+  ## Common mistakes
+
+  - Sending the hospital's claim number as `caseid`.
+  - Acting on the case without reading the role first, and being refused because it has moved.
+  - Reading a pre-authorisation role on a claim as an error. `PPD-Trust` while you are asking about a claim means the case has not yet left the pre-authorisation queue.
+  - Expecting a status API over NHCX for a PMJAY case.
+
+  ## Best practices
+
+  - Store the scheme's case ID beside your own claim number the moment it appears.
+  - Read the role before every action, and again after it.
+  - Expect this lookup and the action call to sit on different hosts. That is how the service is deployed, not a documentation error.
+
+  ## Related scenario
+
+  A hospital has raised a pre-authorisation that sits at `request.initiated`. It takes the case ID from the payer's acknowledgement and posts it here with the payer code. The answer is `PPD-Trust`, so it approves the case as that role with `Adjudicator: act on a case`. After the claim is raised it reads the role again at every step, through `CEX-Trust`, `CPD-Trust`, `ACO-Trust` and `SHA-Trust`, until the lookup answers with no role and the verdict arrives on the claim's own callback.
+
+  ## Specification
+
+  Chapter 03.12 of the NHCX integration specification.
+
+  ## Example response
+
+  ```json response
+  {
+    "currentuserrole": "PPD-Trust",
+    "errormessage": null
+  }
+  ```
+}

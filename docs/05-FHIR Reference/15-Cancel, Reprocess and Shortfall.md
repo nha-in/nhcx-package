@@ -300,7 +300,7 @@ The `Patient`, `Organization`, `Coverage` entries are shaped as in the chapters 
 
 ### 2. Reprocess
 
-`Task.code` `reprocess`, reason `claimrejected` for a rejected claim or `partialpayment` for one paid short, `basedOn` naming the claim by its `CLN` identifier, `for` the member, and the inputs `claimNumber` and `intimationNumber`, spelled so.
+`Task.code` `reprocess`, reason `claimrejected` or `rejectiondisputed`, `basedOn` naming the claim by its `CLN` identifier, `for` the member, and the inputs `claimNumber` and `intimationNumber`, spelled so. Sent only for a claim the payer rejected: a claim is never resubmitted, and a reprocess is its only way back. `partialpayment` is not a reprocess reason; a claim paid short is not rejected, and its balance is asked for by release.
 
 ### 3. Release
 
@@ -316,7 +316,7 @@ The Reprocess sheet of the requests-and-responses workbook gives `Task.code` on 
 
 ### 6. The answer
 
-A `Task` whose `output` of type `include` references a `ClaimResponse` in the same bundle. Read the result from that `ClaimResponse`'s adjudication reason, not from `outcome` and not from `Task.code`. A cancellation is `completed` with reason `cancelled`; a reprocess is `accepted` with the `ClaimResponse` `queued`, and the new verdict follows on the claim's own thread.
+A `Task` whose `output` of type `include` references a `ClaimResponse` in the same bundle. Read the result from that `ClaimResponse`'s adjudication reason, not from `outcome` and not from `Task.code`. A cancellation is `completed` with reason `cancelled`; a reprocess is `accepted` with the `ClaimResponse` `queued`, and the new verdict follows on the claim's own thread. A reprocess decision carried on the Task reply updates the claim.
 
 ### 7. Switch on system and code together
 
@@ -352,13 +352,14 @@ The PMJAY bundle has the same resources, elements and systems as the generic one
 
 ### What PMJAY specifies
 
-- A shortfall is the reprocess `Task` with reason `partialpayment` and an amount capped at the difference.
-- The reprocess carries the supporting document as a `document` input with a `valueAttachment`, and names the member by the `PMJAY` identifier.
+- A shortfall is asked for with reason `partialpayment` and an amount capped at the difference. The scheme's use case sheet words it as a reprocess `Task`; send it as the `release` Task, since a part-paid claim is not rejected, and confirm with the scheme.
+- The reprocess carries the supporting document as a `document` input with a `valueAttachment`, and names the member by the `PMJAY` identifier, as the package's capture shows. The live PMJAY provider's reprocess of October 2026 carried `claimNumber` alone, its reason in `description`, and was accepted.
 - The reprocess is acknowledged on 37; the new verdict then arrives on the claim's own thread.
 
 ### What PMJAY requires
 
 - Cancel is allowed until the claim is raised, and refused once payment has been initiated (`PAYR-1257`).
+- On a cancel, the intimation input is coded `initimationNumber`, spelled so, as the live PMJAY provider sends it and as the handbook notes real payloads do. The payer reads the case from it and refuses the published `intimationNumber` with `ERR-PYR-CLM-007`.
 - Reprocess once, the moment the rejection arrives, with a supporting document. The Claim Review Committee is final.
 - Shortfall only after payment notice 33 has arrived and been acknowledged on 17, once, and never after a reprocess.
 - A `Task` coded `status` is not taken (`PAYR-1018`, `PAYR-1008`). Read where a case stands from the payer service instead.
@@ -367,13 +368,13 @@ The PMJAY bundle has the same resources, elements and systems as the generic one
 
 ### B8 Reprocess or cancel (provider)
 
-One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected, shortfall with partialpayment, cancel. A reprocess goes on 36 and is acknowledged on 37; a cancel goes on PC01 and is done on PC02. Both carry the input intimationNumber. A supporting document is mandatory on a reprocess.
+One endpoint, several jobs, told apart by the Task's code and reason: reprocess with claimrejected or rejectiondisputed, only for a rejected claim; release with partialpayment for a short payment; cancel; status. A reprocess goes on 36 and is acknowledged on 37; a cancel goes on PC01 and is done on PC02; a status enquiry goes on 1 always. Reprocess and cancel carry the input intimationNumber. A supporting document is mandatory on a reprocess. A claim is never resubmitted: a reprocess is its only way back.
 
 | | |
 | :-- | :-- |
-| **API** | `/v1/task/submit` [`apis/13-other/v1-task-submit.bru`](../../apis/13-other/v1-task-submit.bru) |
-| **Callback** | `/v1/task/on_submit` [`apis/13-other/v1-task-on-submit.bru`](../../apis/13-other/v1-task-on-submit.bru) |
-| **Workflow** | PC01 cancel, 36 reprocess or shortfall |
+| **API** | `/v1/task/submit` [`apis/14-other/v1-task-submit.bru`](../../apis/14-other/v1-task-submit.bru) |
+| **Callback** | `/v1/task/on_submit` [`apis/14-other/v1-task-on-submit.bru`](../../apis/14-other/v1-task-on-submit.bru) |
+| **Workflow** | PC01 cancel, 36 reprocess or release, 1 status |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
 
@@ -389,7 +390,7 @@ One endpoint, several jobs, told apart by the Task's code and reason: reprocess 
 | `x-hcx-workflow_id` | `PC01` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -397,6 +398,7 @@ One endpoint, several jobs, told apart by the Task's code and reason: reprocess 
 | :-- | :-- | :-- | :-- | :-- |
 | `PC01` | Preauth Cancel Initiated | provider | `request.initiated` | Cancel an existing preauth |
 | `36` | Claim Arbitration Request Submitted | provider | `request.initiated` | Reprocess/Erroneous request, with input intimationNumber; acknowledged on 37 |
+| `1` | Insurance plan request and status enquiry | provider | `request.initiated`, `response.complete` | The insurance plan request and the status enquiry Task. The sheet names no code for either; both are sent under 1, never a correlation id, a UUID or a case number. The answer echoes 1. |
 
 **Data elements**
 
@@ -404,8 +406,8 @@ One endpoint, several jobs, told apart by the Task's code and reason: reprocess 
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskCode` | Action Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `reprocess` |  |
 | `taskReason` | Appeal Reason Code | Task | `code` | `1..1` | `Task.reasonCode.coding[0].code` | `claimrejected` |  |
-| `originalCaseNumber` | Original Case Number | Task Input | `string` | `1..1` | `Task.input[0].valueString` | `CL0000000001` |  |
-| `appealDocument` | Dispute Justification Document | Task Input | `base64Binary` | `1..1` | `Task.input[category=document].valueAttachment.data` | `JVBERi0xLjQK...` |  |
+| `originalCaseNumber` | Original Case Number | Task Input | `string` | `1..1` | `Task.input[type=claimNumber].valueString` | `NM-26-0SE00002L` |  |
+| `appealDocument` | Supporting Document (mandatory on a reprocess) | Task Input | `base64Binary` | `0..1` | `Task.input[type=document].valueAttachment.data` | `JVBERi0xLjQK...` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
@@ -415,8 +417,8 @@ A Task with code cancel, the case number as input and one of seven reasons: trea
 
 | | |
 | :-- | :-- |
-| **API** | `/v1/task/submit` [`apis/13-other/v1-task-submit.bru`](../../apis/13-other/v1-task-submit.bru) |
-| **Callback** | `/v1/task/on_submit` [`apis/13-other/v1-task-on-submit.bru`](../../apis/13-other/v1-task-on-submit.bru) |
+| **API** | `/v1/task/submit` [`apis/14-other/v1-task-submit.bru`](../../apis/14-other/v1-task-submit.bru) |
+| **Callback** | `/v1/task/on_submit` [`apis/14-other/v1-task-on-submit.bru`](../../apis/14-other/v1-task-on-submit.bru) |
 | **Workflow** | PC01 |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
@@ -434,7 +436,7 @@ A Task with code cancel, the case number as input and one of seven reasons: trea
 | `x-hcx-workflow_id` | `PC01` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -447,18 +449,18 @@ A Task with code cancel, the case number as input and one of seven reasons: trea
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskCode` | Action Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `cancel` |  |
-| `caseNumber` | Pre-auth Case Number | Task Input | `string` | `1..1` | `Task.input[0].valueString` | `VB26AA2600001` |  |
+| `caseNumber` | Pre-auth Case Number | Task Input | `string` | `1..1` | `Task.input[type=claimNumber].valueString` | `NM-26-0SF00002R` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
 ### D11 Reprocess a rejected claim (pmjay)
 
-An appeal, not a resubmission: a Task with code reprocess and reason claimrejected, a supporting document attached, no amount. Raise it the moment the rejection arrives. Once only; the Claim Review Committee is final.
+An appeal, not a resubmission: a Task with code reprocess and reason claimrejected or rejectiondisputed, only for a rejected claim, a supporting document attached, no amount. Raise it the moment the rejection arrives. Once only; the Claim Review Committee is final.
 
 | | |
 | :-- | :-- |
-| **API** | `/v1/task/submit` [`apis/13-other/v1-task-submit.bru`](../../apis/13-other/v1-task-submit.bru) |
-| **Callback** | `/v1/task/on_submit` [`apis/13-other/v1-task-on-submit.bru`](../../apis/13-other/v1-task-on-submit.bru) |
+| **API** | `/v1/task/submit` [`apis/14-other/v1-task-submit.bru`](../../apis/14-other/v1-task-submit.bru) |
+| **Callback** | `/v1/task/on_submit` [`apis/14-other/v1-task-on-submit.bru`](../../apis/14-other/v1-task-on-submit.bru) |
 | **Workflow** | 36 |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
@@ -476,7 +478,7 @@ An appeal, not a resubmission: a Task with code reprocess and reason claimreject
 | `x-hcx-workflow_id` | `36` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -490,18 +492,18 @@ An appeal, not a resubmission: a Task with code reprocess and reason claimreject
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `reprocess` |  |
 | `taskReason` | Dispute Reason | Task | `code` | `1..1` | `Task.reasonCode.coding[0].code` | `claimrejected` |  |
-| `claimNumber` | Rejected Claim ID | Task Input | `string` | `1..1` | `Task.input[0].valueString` | `CL26AA2600001` |  |
+| `claimNumber` | Rejected Claim ID | Task Input | `string` | `1..1` | `Task.input[type=claimNumber].valueString` | `NM-26-0SF00002U` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
 ### D12 Claim a shortfall (pmjay)
 
-The same Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17. Once only, and never after a reprocess.
+A Task with reason partialpayment and an amount capped at the difference, allowed only after payment notice 33 has arrived and been acknowledged with 17. Once only, and never after a reprocess. The scheme words it as a reprocess; a part-paid claim is not rejected, so send it as the release Task, code release, and confirm with the scheme.
 
 | | |
 | :-- | :-- |
-| **API** | `/v1/task/submit` [`apis/13-other/v1-task-submit.bru`](../../apis/13-other/v1-task-submit.bru) |
-| **Callback** | `/v1/task/on_submit` [`apis/13-other/v1-task-on-submit.bru`](../../apis/13-other/v1-task-on-submit.bru) |
+| **API** | `/v1/task/submit` [`apis/14-other/v1-task-submit.bru`](../../apis/14-other/v1-task-submit.bru) |
+| **Callback** | `/v1/task/on_submit` [`apis/14-other/v1-task-on-submit.bru`](../../apis/14-other/v1-task-on-submit.bru) |
 | **Workflow** | 36 |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
@@ -519,7 +521,7 @@ The same Task with reason partialpayment and an amount capped at the difference,
 | `x-hcx-workflow_id` | `36` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -531,9 +533,10 @@ The same Task with reason partialpayment and an amount capped at the difference,
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `reprocess` |  |
+| `taskCode` | Task Code | Task | `code` | `1..1` | `Task.code.coding[0].code` | `release` |  |
 | `taskReason` | Reason Code | Task | `code` | `1..1` | `Task.reasonCode.coding[0].code` | `partialpayment` |  |
-| `claimNumber` | Partially Paid Claim ID | Task Input | `string` | `1..1` | `Task.input[0].valueString` | `CL26AA2600001` |  |
+| `claimNumber` | Partially Paid Claim ID | Task Input | `string` | `1..1` | `Task.input[type=claimNumber].valueString` | `EO26AA2700001` |  |
+| `balanceAmount` | Balance Sought | Task Input | `decimal` | `1..1` | `Task.input[type=amount].valueMoney.value` | `1650` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).
 
@@ -543,8 +546,8 @@ The answer to a reprocess, shortfall or cancel. A cancellation done is PC02 and 
 
 | | |
 | :-- | :-- |
-| **API** | `/v1/task/on_submit` [`apis/13-other/v1-task-on-submit.bru`](../../apis/13-other/v1-task-on-submit.bru) |
-| **Callback** | `/v1/task/submit` [`apis/13-other/v1-task-submit.bru`](../../apis/13-other/v1-task-submit.bru) |
+| **API** | `/v1/task/on_submit` [`apis/14-other/v1-task-on-submit.bru`](../../apis/14-other/v1-task-on-submit.bru) |
+| **Callback** | `/v1/task/submit` [`apis/14-other/v1-task-submit.bru`](../../apis/14-other/v1-task-submit.bru) |
 | **Workflow** | 251 acknowledged, 252 approved, 253 rejected, 254 queried, PC02 cancelled, 37 arbitration acknowledged |
 | **Carries JWE** | yes |
 | **Focal resource** | `Task` |
@@ -557,11 +560,11 @@ The answer to a reprocess, shortfall or cancel. A cancellation done is PC02 and 
 | `x-hcx-recipient_code` | `1000004446@hcx` |
 | `x-hcx-api_call_id` | `{{$guid}}` |
 | `x-hcx-request_id` | `{{$guid}}` |
-| `x-hcx-correlation_id` | `{{$guid}}` |
+| `x-hcx-correlation_id` | `{{correlationId}}` |
 | `x-hcx-workflow_id` | `252` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `response.complete` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -578,7 +581,7 @@ The answer to a reprocess, shortfall or cancel. A cancellation done is PC02 and 
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `taskStatus` | Task Status | Task | `code` | `1..1` | `Task.status` | `completed` |  |
-| `outputDecision` | Decision Reference | Task Output | `reference` | `0..1` | `Task.output[0].valueReference.reference` | `ClaimResponse/cr-reprocess-approved` |  |
+| `taskStatus` | Task Status | Task | `code` | `1..1` | `Task.status` | `accepted` |  |
+| `outputDecision` | Decision Reference | Task Output | `reference` | `0..1` | `Task.output[0].valueReference.reference` | `https://payer.nha.gov.in/v1/task/on_submit/claimresponse/NM-26-0SF00002U` |  |
 
 NRCeS profiles: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html).

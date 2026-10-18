@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "PaymentReconciliation"
     fhir_path: "PaymentReconciliation.paymentIdentifier.value"
-    example_value: "CMS2602260081728"
+    example_value: "UTR1789064619092"
   - key: "paymentDate"
     label: "Remittance Date"
     group: "Payment"
@@ -38,7 +38,7 @@ fields:
     required: true
     fhir_resource: "PaymentReconciliation"
     fhir_path: "PaymentReconciliation.paymentDate"
-    example_value: "2026-03-05"
+    example_value: "2026-09-10"
   - key: "settledAmount"
     label: "Net Bank Remittance Amount"
     group: "Payment"
@@ -47,7 +47,7 @@ fields:
     required: true
     fhir_resource: "PaymentReconciliation"
     fhir_path: "PaymentReconciliation.paymentAmount.value"
-    example_value: "14850.00"
+    example_value: "135000"
   - key: "tdsDeduction"
     label: "Tax Deducted at Source (TDS)"
     group: "Payment Detail"
@@ -55,5 +55,5 @@ fields:
     cardinality: "0..1"
     required: false
     fhir_resource: "PaymentReconciliation"
-    fhir_path: "PaymentReconciliation.detail[type=tds].amount.value"
-    example_value: "650.00"
+    fhir_path: "PaymentReconciliation.detail[type=TDS].amount.value"
+    example_value: "15000"

@@ -19,7 +19,7 @@ headers {
   x-hcx-workflow_id: 11
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: request.initiated
-  x-hcx-ben-abha-id: 91711234567890
+  x-hcx-ben-abha-id: 91-7112-3456-7890
 }
 
 body:json {
@@ -43,7 +43,15 @@ docs {
 
   ## When to use
 
-  Call it at registration or admission, before /v1/preauth/submit. The CoverageEligibilityRequest.purpose field (1..*) decides what the payer computes: discovery is the fallback when /participant/get/policies does not yield a policy code; validation retrieves used amount, available balance and wallet liability; auth-requirements checks whether a chosen procedure is covered at this hospital and returns the STG questionnaires and MAND document codes the preauth must carry; benefits is also listed. Send x-hcx-status request.initiated. No eligibility-specific workflow code is published in the workflow tables; the workbook sample shows x-hcx-workflow_id 11 (PATIENT_ADMITTED). For PMJAY an unspecified procedure still requires an auth-requirements check.
+  - Call it at registration or admission, before you submit a pre-authorisation on `/v1/preauth/submit`.
+  - Set `purpose` to say what you want back. It takes one or more values:
+    - `discovery` finds the beneficiary's policies. Use it only when `/participant/get/policies` gives no policy code.
+    - `validation` says whether the policy is in force, with the used amount, available balance and wallet liability.
+    - `benefits` says whether a package is covered for this beneficiary.
+    - `auth-requirements` says whether a chosen procedure is covered at this hospital, and returns the STG questionnaires and `MAND` document codes the pre-authorisation must carry.
+  - Send `x-hcx-status` `request.initiated`.
+  - No workflow code is specific to eligibility. The sample exchange uses `x-hcx-workflow_id` `11` (PATIENT_ADMITTED).
+  - Under PMJAY, run an `auth-requirements` check even for an unspecified procedure.
 
   ## Preconditions
 
@@ -72,7 +80,7 @@ docs {
   - Persist the correlation ID against the patient episode before posting; it is the only key for matching the callback.
   - Refresh the token automatically before the 1200-second expiry and treat a 401 as refresh-and-retry-once.
   - Run discovery first only when get/policies gives no policy code, then validation, then auth-requirements for the chosen package; store the returned MAND codes and STG questionnaire references and attach them to the preauth.
-  - Do not assume the response echoes your request codes: items come back in the payer's numeric master codes (for example 100478 against your MG003B).
+  - Match response items to your request by `productOrService` code: the payer answers in the package codes you sent, for example `MG004A`, as NHA's published PMJAY bundles show. The numbers in the handbook's response table (100005, 100478, 100063, 100012) are not item codes; in the published bundles they are questionnaire, document-requirement and question identifiers.
   - Use IST timestamps with the +05:30 offset in the protected header.
   - Log the 202 body (protocol_status, api_call_id) so a missing callback can be traced with /v1/status.
 

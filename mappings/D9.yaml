@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D9: Submit claim - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/claim/submit
 # Callback API: /v1/claim/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D9"
 title: "Submit claim"
-side: "provider"
+side: "pmjay"
 api: "/v1/claim/submit"
 callback: "/v1/claim/on_submit"
 workflow: "15 (Claim submitted)"
@@ -32,7 +32,7 @@ fields:
     required: true
     fhir_resource: "Claim"
     fhir_path: "Claim.identifier[0].value"
-    example_value: "CL26AA2600001"
+    example_value: "NM-26-0SF000030"
   - key: "dischargeSummary"
     label: "Hospital Discharge Summary (HDS)"
     group: "Documents"
@@ -50,7 +50,7 @@ fields:
     required: true
     fhir_resource: "Patient"
     fhir_path: "Patient.name[0].text"
-    example_value: "Ramesh Chandra Sharma"
+    example_value: "E2E Nano VZ4Q2"
   - key: "memberId"
     label: "Scheme / Insurer Member ID"
     group: "Beneficiary"
@@ -61,7 +61,7 @@ fields:
     fhir_path: "Patient.identifier[type=PMJAY].value"
     also_at:
       - "Coverage.subscriberId"
-    example_value: "PMJAY-HP-2024-998811"
+    example_value: "PMJAY0000X"
   - key: "abhaNumber"
     label: "ABHA Number"
     group: "Beneficiary"
@@ -70,7 +70,7 @@ fields:
     required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.identifier[type=ABHA].value"
-    example_value: "91234567890123"
+    example_value: "91-0000-0000-0000"
   - key: "gender"
     label: "Gender"
     group: "Beneficiary"
@@ -89,7 +89,7 @@ fields:
     required: true
     fhir_resource: "Patient"
     fhir_path: "Patient.birthDate"
-    example_value: "1982-06-15"
+    example_value: "2002-01-01"
   - key: "patientPhone"
     label: "Mobile Phone"
     group: "Beneficiary"
@@ -106,7 +106,7 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Organization"
-    fhir_path: "Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value"
+    fhir_path: "Organization[type=prov].identifier[type=NPI].value"
     example_value: "IN1910000151"
   - key: "providerName"
     label: "Hospital Name"
@@ -116,7 +116,7 @@ fields:
     required: true
     fhir_resource: "Organization"
     fhir_path: "Organization[type=prov].name"
-    example_value: "Apex Multispeciality Hospital"
+    example_value: "KyroCare Multispeciality Hospital"
   - key: "payerId"
     label: "Payer Identifier (NIIP)"
     group: "Payer"
@@ -124,8 +124,8 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Organization"
-    fhir_path: "Organization[type=pay].identifier[system=https://irdai.gov.in].value"
-    example_value: "1000003538"
+    fhir_path: "Organization[type=pay].identifier[type=NIIP].value"
+    example_value: "1518"
   - key: "payerName"
     label: "Payer Name"
     group: "Payer"
@@ -134,7 +134,7 @@ fields:
     required: true
     fhir_resource: "Organization"
     fhir_path: "Organization[type=pay].name"
-    example_value: "National Health Authority - PMJAY"
+    example_value: "PMJAY / Ayushman Bharat"
   - key: "practitionerId"
     label: "Practitioner ID (HPID/HPIN)"
     group: "Practitioner"
@@ -143,7 +143,7 @@ fields:
     required: true
     fhir_resource: "Practitioner"
     fhir_path: "Practitioner.identifier[system=https://hpr.abdm.gov.in].value"
-    example_value: "21-8899-4455-6677"
+    example_value: "71-8422-5818-7201"
   - key: "practitionerName"
     label: "Doctor Name"
     group: "Practitioner"
@@ -152,4 +152,4 @@ fields:
     required: true
     fhir_resource: "Practitioner"
     fhir_path: "Practitioner.name[0].text"
-    example_value: "Dr. Arvind Kumar"
+    example_value: "Dr. Ananya Rao"

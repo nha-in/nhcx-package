@@ -15,8 +15,8 @@ headers {
   x-hcx-recipient_code: 1000004446@hcx
   x-hcx-api_call_id: {{$guid}}
   x-hcx-request_id: {{$guid}}
-  x-hcx-correlation_id: {{$guid}}
-  x-hcx-workflow_id: 
+  x-hcx-correlation_id: {{correlationId}}
+  x-hcx-workflow_id: 1
   x-hcx-timestamp: {{$isoTimestamp}}
   x-hcx-status: response.complete
   x-hcx-ben-abha-id: 
@@ -43,7 +43,7 @@ docs {
 
   ## When to use
 
-  The payer calls it after receiving a /v1/insuranceplan/request Task (code poll), acknowledging it with 202 and assembling the plan for the policyNumber and/or providerId supplied. The bundle is of type collection and follows one of two structures: plan, specificCost, category, benefit, cost, qualifiers (the PMJAY package-master shape) or coverage, benefit, limit. Carry the same x-hcx-correlation_id as the request and a responder x-hcx-status (response.complete, or response.error with x-hcx-error_details when no plan can be produced). The plan may legitimately be empty when no coverage matches.
+  The payer calls it after receiving a /v1/insuranceplan/request Task (code poll), acknowledging it with 202 and assembling the plan for the policyNumber and providerId supplied. The bundle is of type collection and follows one of two structures: plan, specificCost, category, benefit, cost, qualifiers (the PMJAY package-master shape) or coverage, benefit, limit. Carry the same x-hcx-correlation_id as the request, its x-hcx-workflow_id echoed (1), and a responder x-hcx-status (response.complete, or response.error with x-hcx-error_details when no plan can be produced). The plan may legitimately be empty when no coverage matches.
 
   ## Preconditions
 
@@ -61,7 +61,7 @@ docs {
   - Returning the plan in the synchronous 202 to the request, or before acknowledging the inbound Task within 30 seconds.
   - Minting a new correlation id rather than echoing the request's (NHCX-1010).
   - Encoding cost.value as the package rate; the IG defines it as the extra amount paid over and above the procedure cost.
-  - Synthesising codes for claim conditions listed as NA (rules_yn, los, ip_op_flag, incentive_applicable, gst_applicable, gst_percentage).
+  - Synthesising codes for claim conditions listed as NA (RulesApplicable, LengthOfStay, IpOpFlag, IncentiveApplicable, GstApplicable, GstPercentage).
   - Shipping the full package master unfiltered; the response must be provider-specific and contextually filtered per the MoU.
   - Provider side: treating an empty plan as a transport failure, or failing to parse both structuring approaches.
 

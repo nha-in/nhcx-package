@@ -1,0 +1,8 @@
+# Callbacks
+
+Every message NHCX delivers to the application, in one list. Each row links to its full spec in [../callbacks/](../callbacks/INDEX.md). NHCX posts to the application's public route (`/in/<path>` or `/v1/<path>`); [G8. Receive](../gateway/G8-receive.md) decrypts it and calls C1 in-process, then records the message and C1's outcome in [G9. Ledger](../gateway/G9-ledger.md). Every handler answers `settled`, `unmatched`, `ignored`, `rejected` or `error`; only `error` makes NHCX redeliver.
+
+| # | Callback | NHCX route | What it does | Matched by | Writes | Answers | Screens |
+|---|---|---|---|---|---|---|---|
+| [C1](../callbacks/C1-callback-door.md) | Callback Door | every route | Takes each decrypted message, archives it beside its case, and routes it by type to C2 to C10. Holds the shared rules: redelivery, refusals (ProtocolResponse), reopening a failed send. | type from the path | [D9](../database/D9-claim.md), [D10](../database/D10-claim-plan.md), [D13](../database/D13-claim-auth.md) | [A2](../apis/A2-coverage-eligibility-check.md), [A10](../apis/A10-txn-related.md), [A13](../apis/A13-txn-list.md) | [S6](../screens/S6-claim-detail.md) |
+| [C2](../callbacks/C2-coverage-eligibility-on-check.md) | Coverage Eligibility Verdict | `v1/coverageeligibility/on_check` | Applies the payer's eligibility verdict: in force or not, wallet (sum insured, used, balance), whether pre-authorisation is needed. | correlation id on the case | [D9](../database/D9-claim.md) | [A2](../apis/A2-coverage-eligibility-check.md) | [S2](../screens/S2-select-policy.md), [S3](../screens/S3-policy-discovery.md), [S17](../screens/S17-beneficiary-discovery.md) |

@@ -38,31 +38,31 @@ fields:
     label: "Provider Reference"
     group: "Case"
     data_type: "string"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "CoverageEligibilityRequest"
     fhir_path: "CoverageEligibilityRequest.identifier[0].value"
     also_at:
       - "Bundle.id"
-    example_value: "PA0000000001"
+    example_value: null
   - key: "servicedDate"
     label: "Date of Service"
     group: "Case"
     data_type: "date"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "CoverageEligibilityRequest"
     fhir_path: "CoverageEligibilityRequest.servicedDate"
-    example_value: "2026-02-26"
+    example_value: null
   - key: "patientName"
     label: "Patient Full Name"
     group: "Beneficiary"
     data_type: "string"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.name[0].text"
-    example_value: "Ramesh Chandra Sharma"
+    example_value: null
   - key: "memberId"
     label: "Scheme / Insurer Member ID"
     group: "Beneficiary"
@@ -73,7 +73,7 @@ fields:
     fhir_path: "Patient.identifier[type=PMJAY].value"
     also_at:
       - "Coverage.subscriberId"
-    example_value: "PMJAY-HP-2024-998811"
+    example_value: "MRAV1985001"
   - key: "abhaNumber"
     label: "ABHA Number"
     group: "Beneficiary"
@@ -82,26 +82,26 @@ fields:
     required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.identifier[type=ABHA].value"
-    example_value: "91234567890123"
+    example_value: null
   - key: "gender"
     label: "Gender"
     group: "Beneficiary"
     data_type: "code"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.gender"
     code_system: "http://hl7.org/fhir/administrative-gender"
-    example_value: "male"
+    example_value: null
   - key: "birthDate"
     label: "Date of Birth"
     group: "Beneficiary"
     data_type: "date"
-    cardinality: "1..1"
-    required: true
+    cardinality: "0..1"
+    required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.birthDate"
-    example_value: "1982-06-15"
+    example_value: null
   - key: "patientPhone"
     label: "Mobile Phone"
     group: "Beneficiary"
@@ -110,7 +110,7 @@ fields:
     required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.telecom[system=phone].value"
-    example_value: "9876543210"
+    example_value: null
   - key: "policyNumber"
     label: "Policy Number"
     group: "Coverage"
@@ -119,7 +119,7 @@ fields:
     required: true
     fhir_resource: "Coverage"
     fhir_path: "Coverage.identifier[0].value"
-    example_value: "PMJAY/HP/S/G"
+    example_value: "POL7UMU001"
   - key: "facilityId"
     label: "Hospital Facility ID (HFR/NPI)"
     group: "Provider"
@@ -127,7 +127,7 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Organization"
-    fhir_path: "Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value"
+    fhir_path: "Organization[type=prov].identifier[type=NPI].value"
     example_value: "IN1910000151"
   - key: "providerName"
     label: "Hospital Name"
@@ -137,7 +137,7 @@ fields:
     required: true
     fhir_resource: "Organization"
     fhir_path: "Organization[type=prov].name"
-    example_value: "Apex Multispeciality Hospital"
+    example_value: "KyroCare Multispeciality Hospital"
   - key: "payerId"
     label: "Payer Identifier (NIIP)"
     group: "Payer"
@@ -145,8 +145,8 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Organization"
-    fhir_path: "Organization[type=pay].identifier[system=https://irdai.gov.in].value"
-    example_value: "1000003538"
+    fhir_path: "Organization[type=pay].identifier[type=NIIP].value"
+    example_value: "1000004805"
   - key: "payerName"
     label: "Payer Name"
     group: "Payer"
@@ -155,7 +155,7 @@ fields:
     required: true
     fhir_resource: "Organization"
     fhir_path: "Organization[type=pay].name"
-    example_value: "National Health Authority - PMJAY"
+    example_value: "Sandbox Payer"
   - key: "productOrService"
     label: "Package Code"
     group: "Item"
@@ -164,4 +164,4 @@ fields:
     required: false
     fhir_resource: "CoverageEligibilityRequest.item"
     fhir_path: "CoverageEligibilityRequest.item[].productOrService.coding[0].code"
-    example_value: "MG004A"
+    example_value: "PROC-KNEE-01"

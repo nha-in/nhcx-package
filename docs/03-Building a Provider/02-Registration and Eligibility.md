@@ -11,9 +11,9 @@ The first screen decides whether the rest of the journey can happen. A patient w
 **Beneficiary Verification & KYC.**
 Before checking eligibility, the patient's identity is established:
 - **Commercial / Private Insurance**: Uses the **Aadhaar Digital eKYC API**. The desk triggers an Aadhaar OTP or demographic validation, retrieving the beneficiary's verified ABHA profile (Name, DOB, Gender, Address, Photo) and unhyphenated ABHA ID for the envelope (`x-hcx-ben-abha-id`).
-- **PMJAY Scheme**: Gated by **Mandatory Biometric Authentication**. The patient performs a live biometric verification (Fingerprint, Iris, or FaceAuth) via the ABDM biometric gateway (see Biometric Authentication), returning a user auth token (valid 1,800s). If the patient cannot be biometrically authenticated due to physical trauma, burns, or amputation, the hospital executes the signed **Aadhaar Exemption Consent Form** and submits the Authentication Consent Questionnaire.
+- **PMJAY Scheme**: Proof of presence by **Mandatory Biometric Authentication**. The patient performs a live biometric verification (Fingerprint, Iris, or FaceAuth) via the ABDM biometric gateway (see Biometric Authentication), returning a user auth token (valid 1,800s). It is captured on the pre-authorisation step, stage `Preauth`, and again on the claim, stage `Discharge`, not as a gate on the eligibility check; it may be done before admission. If the patient cannot be biometrically authenticated due to physical trauma, burns, or amputation, the hospital executes the signed **Aadhaar Exemption Consent Form** and submits the Authentication Consent Questionnaire.
 
-**Confirm cover.** The screen calls eligibility with purpose validation and shows the result in words the desk can act on: policy in force or not, and what remains against the sum insured. Register the patient only once this comes back positive. If the limit is exhausted or the policy is not in force, say so and stop; do not let a registration proceed on a promise.
+**Confirm cover.** The screen calls eligibility with purpose validation and shows the result in words the desk can act on: policy in force or not, and what remains against the sum insured. Register the patient only once this comes back positive. If the limit is exhausted or the policy is not in force, say so and stop; do not let a registration proceed on a promise. Keep the case provisional, hidden from the lists, until the validation answers in force. Once it does, fetch the insurance plan for the policy without being asked, unless one is already held for that policy, HFR id and payer; Insurance Plan has the rule. A benefits check still in flight, or one whose send failed, does not withdraw the in-force answer.
 
 
 **Capture the rest.** Communication address, attendant details, and whatever the payer's plan lists as required at registration.
@@ -71,7 +71,7 @@ One `CoverageEligibilityRequest` carries four different questions, and `purpose`
 
 ## What goes in the bundle
 
-A `CoverageEligibilityRequest` in a collection bundle, alongside the `Patient`, the provider and insurer `Organization`s, the `Coverage`, and the `Practitioner` who made the check.
+A `CoverageEligibilityRequest` in a collection bundle, alongside the `Patient`, the provider and insurer `Organization`s, the `Coverage`, and the `PractitionerRole` of the desk user who made the check.
 
 | Element | Set it to |
 | :---- | :---- |
@@ -80,7 +80,7 @@ A `CoverageEligibilityRequest` in a collection bundle, alongside the `Patient`, 
 | `insurer`, `provider` | References to the two Organizations |
 | `insurance.coverage` | Reference to the Coverage carrying the policy code |
 | `servicedDate` | Today |
-| `enterer` | The desk user. The samples send a `Practitioner`; the handbook asks for a `PractitionerRole`. FHIR allows either and the published bundles use `Practitioner`, so send that |
+| `enterer` | The desk user, as a `PractitionerRole` entry, which is what the handbook asks for and what the reference bundles carry. NHA's older sample bundles reference a bare `Practitioner`; FHIR allows either, but send the `PractitionerRole` so every page of this documentation agrees |
 
 Element tables and a worked example are in the FHIR Reference. Two details from the samples save a day each. The `Patient` carries a `PI` identifier that is the hospital's own MRN, and a hospital with none yet sends the literal string `NA`. And `servicedDate` is the date of service, not the date of asking.
 
@@ -100,6 +100,8 @@ The response comes back on `/v1/coverageeligibility/on_check`. It is not a small
 Three traps in that bundle, all of them real in the published sample.
 
 **Index by `fullUrl`, not by resource type.** Entries 8 to 11 are the payer's own `Patient`, `Coverage` and `Organization`s, and they duplicate the resource types in your echoed request. A parser that finds the first `Patient` reads your own data back and reports it as the payer's answer.
+
+**A family card answers with several people.** PMJAY, and any family floater, returns one `Patient` and one `Coverage` per member on the card, three or more on a family card, each `Coverage.beneficiary` pointing at its own `Patient` and `relationship` saying how that member relates to the subscriber. The response's own `patient` names only one of them. Read every member, each through its Coverage's `beneficiary`, into a list with name, gender, birth date, member id and relationship, and mark the one the response names. Then let the desk say which member is in the bed. Taking the first, the last, or the one the response names as the patient attaches a child's admission to the parent's record or the reverse. The member id is whatever the payer typed as one, `MB` first and else any identifier that is not the ABHA, the mobile or an Aadhaar; on a family card it is the member's own id, not the card's subscriber id. A build reviewed in October 2026 took the first Patient silently; see Field Corrections, 4 and 5.
 
 **Do not match on the request id.** The payer splits `CoverageEligibilityRequest.id` on the last slash and returns only the tail, so an id you sent as `PMJAY/HP/S/G` comes back as `G`. Match on `request.reference`, which is intact.
 

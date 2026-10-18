@@ -11,7 +11,6 @@ Under the `endpoint_url` you registered, the exchange will POST to a path per us
 /v1/insuranceplan/on_request
 /v1/preauth/on_submit
 /v1/claim/on_submit
-/v1/predetermination/on_submit
 /v1/search/on_submit
 /v1/communication/request
 /v1/paymentnotice/request
@@ -130,7 +129,7 @@ Make the handler idempotent. The exchange retries on a missed receipt, so the sa
 
 Send the empty bundle from the previous chapter to the dummy payer, then trigger its answer:
 
-<!-- build-docs:api 12-adjudicator/dummy-payer-process-request.bru -->
+<!-- build-docs:api 13-adjudicator/dummy-payer-process-request.bru -->
 ```bash
 curl --location --request POST 'https://apisbx.abdm.gov.in/pmjay/sbxhcx/dummyhcxpayer/process/request' \
   --header 'Accept: application/json' \

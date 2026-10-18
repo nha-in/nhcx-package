@@ -1,7 +1,7 @@
 # Gap register
 
 > [!NOTE]
-> **Status, 13 September 2026.** Every item below was re-checked against the chapter text and the NHA sources, and the ones found unresolved were fixed then. The Status section at the end gives each item's standing and where the fix is. What no source settles is in Part E, and in the onboarding list in Governance and Audit.
+> **Status, 13 September 2026.** Every item below was re-checked against the chapter text and the NHA sources, and the ones found unresolved were fixed then. The Status section at the end gives each item's standing and where the fix is. Two items were overtaken on 18 October 2026, A1 for two exchanges and B4 in full, and three open questions in Part E narrowed or closed; the last section, Status, 18 October 2026, says how. What no source settles is in Part E, and in the onboarding list in Governance and Audit.
 
 What the handbook does not say, and what in the source corpus says it.
 
@@ -106,12 +106,13 @@ declaration, and the chapter does not know about it.
 
 Add the field to the envelope table, and add a line to the enhancement chapter.
 
-### A5. `x-hcx-ben-abha-id` is mandatory
+### A5. `x-hcx-ben-abha-id` is optional
 
 The workbook marks it Mandatory on every request and every response on every
 sheet, including exchanges with no beneficiary in the payload such as the
-insurance plan poll. The handbook lists the field without ever saying whether
-it is required.
+insurance plan poll. That is wrong: the field is optional. The handbook marks
+it Optional, and the sandbox accepts messages that leave it out. Send it when
+the beneficiary has an ABHA number.
 
 ### A6. `x-hcx-debug_flag` has a documented value
 
@@ -308,7 +309,7 @@ it, and is a fault in the mirror rather than in the handbook.
 
 ## Part C: thin coverage inside existing chapters
 
-**The live API specifications.** `reference/nhcx-site/README.md` lists twelve
+**The sandbox API specifications.** `reference/nhcx-site/README.md` lists twelve
 Swagger endpoints, one per service, including the three the handbook calls
 unobserved: status, search and notifications. No chapter mentions that a live
 specification exists for any exchange. That is the authoritative API surface
@@ -325,9 +326,9 @@ calculation for each.
 
 | Item | Where it appears now |
 | :---- | :---- |
-| `gst_applicable`, `gst_percentage` | One row of the flags table in PMJAY Provider |
-| `incentive_applicable`, and the `incentive` adjudication total | One row, and one word in a totals list |
-| `los`, the maximum length of stay | One row, though it bounds the `LM100` day count |
+| `GstApplicable`, `GstPercentage` | One row of the flags table in PMJAY Provider |
+| `IncentiveApplicable`, and the `incentive` adjudication total | One row, and one word in a totals list |
+| `LengthOfStay`, the maximum length of stay | One row, though it bounds the `LM100` day count |
 | `nullify`, `suspend`, `release` Task codes | Listed, with the admission that the sources say no more |
 | The eligibility forward instruction | Two sentences, no fields, no flow |
 | `request.stopped` | In the status list and the glossary, never explained |
@@ -362,12 +363,14 @@ than rediscovered per chapter.
   header it arrives in. Until it is supplied, every callback endpoint built
   from these documents accepts unauthenticated patient data.
 - **The `/v1/error` body schema.** Field names are unpublished.
-- **The production base addresses.** Only the participant service's and the
-  ABDM gateway's are published. The use-case base is shared after sandbox
-  exit; the rest are to be confirmed at onboarding. Base URLs lists them all.
-- **`currency` on money fields.** The samples omit it on `Claim.total` and
-  carry it on `PaymentNotice`, and no source states a rule.
-- **The coverage-based insurance plan**, unsampled in both directions.
+- **The production base addresses.** The participant service's, the ABDM
+  gateway's, the use-case base `https://apisprod.nha.gov.in/hcx` and the portal
+  `https://nhcx.abdm.gov.in` are published; the ABDM proxy, the PMJAY payer
+  service and the dummy payer have none, and are confirmed at onboarding. Base
+  URLs lists them all.
+- **`currency` on money fields.** Every sample now carries `INR` on
+  `Claim.total` and on `PaymentNotice`, but no source states that it is
+  required.
 - **Payment notices 31 and 33.** Only the initiation is sampled, so the settled
   notice that carries a real bank reference has never been observed.
 - **Timestamp format and zone**, which remains genuinely contested between the
@@ -382,7 +385,7 @@ than rediscovered per chapter.
   to the payer; the policy's own-case form is `/claim/search`.
 - **`suspend`** appears only as a code, with a one-line gloss in the value sets.
 
-*(Note: Prior concerns regarding missing negative/rejection samples have been closed. Gold-standard rejection bundles were captured and verified in `fixtures/reference/payer/preauth/rejected/bundle.json` for workflow 23 and `fixtures/reference/payer/claim/rejected/bundle.json` for workflow 291, fully documented in FHIR Reference 09 and 13).*
+*(Note: the earlier concern about missing rejection samples is closed. The package carries a rejected preauthorisation on workflow 23, `fhir/C5/C5-rejected-wf23.json` and `fhir/C5/C5-rejected-wf23-pmjay.json`, and a rejected claim on workflow 291, `fhir/C7/C7-rejected-wf291.json` and `fhir/C7/C7-rejected-wf291-pmjay.json`, rendered in FHIR Reference 09 and 13.)*
 
 
 ---
@@ -425,7 +428,7 @@ in Part E and in the onboarding list in Governance and Audit.
 | B1, biometric authentication | Resolved, with the face scope on `auth/init` and the headers given per call | Biometric Authentication |
 | B2, the error directory | Resolved: eighteen collisions, not twenty; `ERR-PYR-CLM-007` as a code met live; live messages that contradict the sheet noted; ClaimError and PreauthError listed | Error Codes; FHIR Reference, Codes and Value Sets |
 | B3, troubleshooting | Resolved | Troubleshooting |
-| B4, the status exchange | Resolved: the payload is an empty string, and there is no status Task | Status and Search; FHIR Reference, Predetermination, Status and Search |
+| B4, the status exchange | Resolved: the payload is an empty string, and there is no status Task | Status and Search; FHIR Reference, Status and Search |
 | B5, search | Resolved, stated once and alike everywhere; which endpoint the sandbox accepts from a provider is open | Status and Search; Access Control and Roles; Provider Checklist; NHCX Use Cases |
 | B6, notifications | Resolved; the request goes to the portal host with `Authorization` | Notifications and Patient Apps |
 | B7, access control | Resolved | Access Control and Roles |
@@ -433,10 +436,10 @@ in Part E and in the onboarding list in Governance and Audit.
 | B9, registry attributes | Resolved | Access Control and Roles |
 | B10, cross-gateway relay | Resolved, trimmed to the source's three scenarios | JWE, Status and Errors |
 | B11, the payer service guide | Resolved, with the guide named as the source | PMJAY Adjudication APIs |
-| Live API specifications | Resolved, twelve rows | Environments and Addresses; Introduction; Status and Search; Notifications and Patient Apps |
+| Sandbox API specifications | Resolved, twelve rows | Environments and Addresses; Introduction; Status and Search; Notifications and Patient Apps |
 | The HMIS test matrix | Resolved: the eight test cases and the nineteen scenarios | Provider Checklist |
 | GST and incentive | Resolved with the sourced description and the worked totals; no rate is published | PMJAY Provider |
-| `los` | Resolved | PMJAY Scheme Rules; PMJAY Provider |
+| `LengthOfStay` | Resolved | PMJAY Scheme Rules; PMJAY Provider |
 | `release`, `nullify`, `suspend` | Resolved for `release` and `nullify`; `suspend` is open | FHIR Reference, Cancel, Reprocess and Shortfall; Preauthorisation |
 | The forward instruction | Open; the routing patterns that no source gave were removed | Registration and Eligibility; Eligibility Response |
 | `request.stopped` | Resolved | JWE, Status and Errors; Envelope Fields; Status and Search |
@@ -446,3 +449,20 @@ in Part E and in the onboarding list in Governance and Audit.
 | Cross-references | Resolved: chapters are named rather than numbered, and generated links are relative inside the package | Throughout |
 | The payer service guide's extraction | Resolved in the source mirror | `knowledge/sources` |
 | Found on the re-check | Two PMJAY rules cite codes the sheets read differently: `PAYR-1322` for one request at a time, which is the live message rather than the sheet's, and `PAYR-1018` and `PAYR-1008` for a refused Task. Left as the live readings and flagged here | FHIR Reference, Preauthorisation Enhancement; Cancel, Reprocess and Shortfall |
+
+---
+
+## Status, 18 October 2026
+
+Two resolutions above no longer hold as written. Building a Provider, Field
+Corrections, records the runs against the sandbox payer that changed them.
+
+| Item | Status now | Where |
+| :---- | :---- | :---- |
+| A1, the workflow code is optional | Overtaken for two exchanges. The insurance plan request and the status enquiry travel under `x-hcx-workflow_id` `1`, always: no NHCX workflow code names either, and a build that sent the leg's correlation ID there got an empty workflow id back. The insurance plan request never carries the case number. Elsewhere the step code is sent where the sheet gives one; the eligibility sample carries `11`, Patient Admitted | Field Corrections; Status and Search; Envelope Fields |
+| B4, the status exchange | Overtaken. The sandbox refuses `/v1/status` with `NHCX-1012`, whatever correlation ID it carries, so "the payload is an empty string, and there is no status Task" is no longer the build. The status enquiry is a `Task` coded `status`, with the input `claimNumber` alone, on `/v1/task/submit`, answered on `/v1/task/on_submit`, on a fresh correlation ID. A2's third row, the status correlation pointing at another message's call ID, applies only to the `/v1/status` form the sandbox refuses | Status and Search; Field Corrections |
+| Query answers on a submit path | New, not in the register before. An answer to a preauthorisation or claim query (workflow 19, 131, 151, or 161 under PMJAY) on `/v1/preauth/submit` or `/v1/claim/submit` travels as `x-hcx-status` `request.initiated`. The workflow sheet pairs those codes with `response.complete`, which NHCX refuses on a submit path with `NHCX-1011` | Field Corrections; Workflow Codes; Payer Flexibility |
+| Production base addresses (Part E) | Narrowed. NHA's environments page publishes the production use-case base, `https://apisprod.nha.gov.in/hcx`, and the production portal, `https://nhcx.abdm.gov.in`. `baseurl.yaml` still leaves the exchange's production address blank, so the generated address tables do too | Base URLs; Environments and Addresses |
+| `currency`, and the coverage-based plan (Part E) | `currency`: narrowed, every Claim and PaymentNotice sample carries `INR`, and no source says it is required. The coverage-based plan: closed, `fhir/C4/C4-response-generic.json` is a live capture of it, rendered in FHIR Reference 07 | Governance and Audit; FHIR Reference, Insurance Plan Response, Coverage-Based |
+| Reprocess and claim resubmission | New. A decided claim is never sent again. A rejected claim goes back as a reprocess `Task` on workflow 36, reason `claimrejected` or `rejectiondisputed`, offered only for a rejected claim; a part-paid claim's balance is asked for as a `release` Task | Field Corrections; Discharge and Claim; FHIR Reference, Cancel, Reprocess and Shortfall |
+

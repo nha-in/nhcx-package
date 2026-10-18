@@ -9,6 +9,10 @@ Standard Error Codes workbook, last updated 11 August 2026. They are not one
 list. They are three, and the first thing to get right is which one you are
 reading.
 
+The Error codes reference on the docs site, and the errors page under each
+API, are generated from the Catalogue's error atoms and are the canonical list.
+Where a message here differs from that list, the list wins.
+
 ## The code spaces
 
 <!-- build-docs:errors spaces -->
@@ -17,7 +21,7 @@ reading.
 | Gateway | `NHCX-` | 19 | The exchange | Synchronously on your own call, or on `/v1/error` |
 | Standard payer | `PAYR-1001 to PAYR-1020` | 20 | A payer implementing the published standard | Inside the sealed response |
 | Reference payer | `PAYR-1001 to PAYR-1520` | 290 | The PMJAY reference implementation | Inside the sealed response |
-| Observed live | `ERR-PYR-` | 1 | The PMJAY reference implementation, on none of its published sheets | Inside the sealed response |
+| Observed live | `ERR-PYR-, NHCX-1062` | 2 | The PMJAY reference implementation and the sandbox participant registry, on none of the published sheets | Inside the sealed response, or on the registry call itself |
 <!-- build-docs:end -->
 
 The fourth row is not a sheet. It is the one code the reference payer sent on
@@ -127,6 +131,14 @@ the decision later on the same thread.
 `NHCX-1006`, duplicate correlation ID, is what a retry earns if you reuse a
 correlation ID after a failure. Mint a fresh one.
 
+`NHCX-1015` and `NHCX-1017` share one message on the sheet, "Invalid
+response received from receiver". They are not one condition. `NHCX-1017` is
+the invalid receipt: a delivery answered with the wrong status or body.
+`NHCX-1015` is what the participant registry sends, as "You are not authorized
+to update/modify details", when a client id that did not create a participant
+tries to change its endpoint or certificate. Send the change with the creator's
+credentials, or through the NHCX portal or support.
+
 ## Standard payer codes
 
 The twenty codes a payer implementing the published standard sends. These are
@@ -217,12 +229,12 @@ by id, sequence or type is missing its handle. None of them is a code lookup.
 | `PAYR-1052` | No references found in composition section. Hence request will not be processed further. |
 | `PAYR-1053` | Invalid reference found in child sections of composition section. Hence request will not be processed further. |
 | `PAYR-1054` | No section content found for composition component. Hence request will not be processed further. |
-| `PAYR-1055` | Invalid subject type found for composition component. This should be of type Patient. Hence request will not be processed further. Please try again with valid subject type for the composition. |
+| `PAYR-1055` | No subject found for composition component. Hence request will not be processed further. |
 | `PAYR-1056` | Invalid contact organization found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please try again with valid data. |
 | `PAYR-1057` | Invalid general practioner type found for subject in composition component. This should be of type Organization/Practitioner/PractitionerRole. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html |
 | `PAYR-1058` | Invalid managing organization type found for subject in composition component. This should be of type Organization. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html |
 | `PAYR-1059` | Invalid encounter type found for composition/observation component. This should be of type Encounter. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-DiagnosticReportRecord.html |
-| `PAYR-1060` | No subject found for encounter in composition component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html |
+| `PAYR-1060` | No encounter found for composition/observation component. Hence request will not be processed further. |
 | `PAYR-1061` | Invalid subject type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html |
 | `PAYR-1062` | No episode of care found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html |
 | `PAYR-1063` | Invalid episode of care type found for encounter in composition/observation component. Hence request will not be processed further. Please refer to https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-Encounter.html |
@@ -263,6 +275,38 @@ by id, sequence or type is missing its handle. None of them is a code lookup.
 | `PAYR-1098` | Value type received as %s for category - OTH and code - EDT for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - OTH and code - EDT combination is used to get the registration date. So the registration date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - OTH and code - EDT. |
 | `PAYR-1099` | Value type received as %s for category - ONS and code - DSDE for item with sequence %s in supporting info in claim resource. In supporting info list, item with category - ONS and code - DSDE combination is used to get the discharge date. So the discharge date should be sent as timing (date or period) or as a string value, adhering to the NRCES standards, with the category - ONS and code - DSDE. |
 <!-- build-docs:end -->
+
+### The fifteen texts the sheet prints without a code
+
+Directly under `PAYR-1008`, the Bridge Error sheet lists fifteen more messages
+with an empty code cell. The PMJAY payer sends every one of them as
+`PAYR-1008`, so the message is the only way to tell them apart. The sandbox run
+met the content type and the code-and-reason texts this way.
+
+| Arrives as | Message |
+| :---- | :---- |
+| `PAYR-1008` | Invalid input, code and reason code received. Please try again with valid combination. To get the valid combination for task request, please refer to the document. |
+| `PAYR-1008` | Invalid case number received. Please try again with valid case number. |
+| `PAYR-1008` | Invalid Base64 value received in attachment. Please try again with valid Base64 value. Please refer to https://hl7.org/fhir/R4/datatypes.html#Attachment |
+| `PAYR-1008` | Invalid attachment name received in attachment. Please try again with valid name. |
+| `PAYR-1008` | Invalid content type received in attachment. Please try again with valid name. Applicable content types are - application/pdf, application/jpg, application/jpeg, application/png, application/fhir+json. For further information please refer to NHCX Integration Handbook document. |
+| `PAYR-1008` | No user role found/associated for sender code %s in NHCX system. Please try again with valid sender details. |
+| `PAYR-1008` | Invalid HFR Id received. Please try again with valid HFR details. |
+| `PAYR-1008` | HFR Id in the request does not match with the associated registry id in NHCX. Please try again with valid HFR details. Please ensure the HFR id sent in the FHIR request must match with the registry id specified in NHCX for the sender. |
+| `PAYR-1008` | Invalid Base64 value received in attachment for item <item code>. Please try again with valid Base64 value. Please refer to https://hl7.org/fhir/R4/datatypes.html#Attachment |
+| `PAYR-1008` | Invalid attachment name received in attachment for item %s. Please try again with valid name. |
+| `PAYR-1008` | Invalid content type received in attachment for item %s. Please try again with valid content type. Applicable content types are - application/pdf, application/jpg, application/jpeg, application/png, application/fhir+json. For further information please refer to NHCX Integration Handbook document. |
+| `PAYR-1008` | Invalid Base64 value received in attachment for date of birth for new born beneficiary. Please try again with valid Base64 value. Please refer to https://hl7.org/fhir/R4/datatypes.html#Attachment |
+| `PAYR-1008` | Invalid attachment name received in attachment for date of birth for new born beneficiary. Please try again with valid name. |
+| `PAYR-1008` | Invalid content type received in attachment for date of birth for new born beneficiary. Please try again with valid content type. Applicable content types are - application/pdf, application/jpg, application/jpeg, application/png, application/fhir+json. For further information please refer to NHCX Integration Handbook document. |
+| `PAYR-1008` | Invalid hospital id received. Please try again with valid hospital details. |
+
+`PAYR-1055` and `PAYR-1060` each have two rows on the sheet as well. The
+tables above keep the first row of each; the second texts are "Invalid subject
+type found for composition component. This should be of type Patient." and "No
+subject found for encounter in composition component." Both arrive under the
+same code.
+
 
 ## Reference payer: coverage eligibility, `PAYR-11xx`
 <!-- build-docs:errors reference:11 -->

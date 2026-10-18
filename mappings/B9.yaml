@@ -49,7 +49,7 @@ fields:
     required: true
     fhir_resource: "Patient"
     fhir_path: "Patient.name[0].text"
-    example_value: "Ramesh Chandra Sharma"
+    example_value: "Patient Name"
   - key: "memberId"
     label: "Scheme / Insurer Member ID"
     group: "Beneficiary"
@@ -60,7 +60,7 @@ fields:
     fhir_path: "Patient.identifier[type=PMJAY].value"
     also_at:
       - "Coverage.subscriberId"
-    example_value: "PMJAY-HP-2024-998811"
+    example_value: "MD5SLS4X5"
   - key: "abhaNumber"
     label: "ABHA Number"
     group: "Beneficiary"
@@ -69,7 +69,7 @@ fields:
     required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.identifier[type=ABHA].value"
-    example_value: "91234567890123"
+    example_value: "91718280654077"
   - key: "gender"
     label: "Gender"
     group: "Beneficiary"
@@ -88,7 +88,7 @@ fields:
     required: true
     fhir_resource: "Patient"
     fhir_path: "Patient.birthDate"
-    example_value: "1982-06-15"
+    example_value: "2004-09-18"
   - key: "patientPhone"
     label: "Mobile Phone"
     group: "Beneficiary"
@@ -97,7 +97,7 @@ fields:
     required: false
     fhir_resource: "Patient"
     fhir_path: "Patient.telecom[system=phone].value"
-    example_value: "9876543210"
+    example_value: "9999999999"
   - key: "policyNumber"
     label: "Policy Number"
     group: "Coverage"
@@ -116,13 +116,14 @@ fields:
     fhir_resource: "Claim.diagnosis"
     fhir_path: "Claim.diagnosis[0].diagnosisCodeableConcept.coding[0].code"
     code_system: "http://hl7.org/fhir/sid/icd-10"
-    example_value: "A97.0"
+    example_value: "A97"
   - key: "procedureCode"
     label: "Package / Procedure Code"
     group: "Clinical"
     data_type: "string"
     cardinality: "1..1"
     required: true
-    fhir_resource: "Claim.procedure"
-    fhir_path: "Claim.procedure[0].procedureCodeableConcept.coding[0].code"
-    example_value: "MG004A"
+    fhir_resource: "Claim.item"
+    fhir_path: "Claim.item[0].productOrService.coding[0].code"
+    code_system: "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code"
+    example_value: "MG0111A"

@@ -4,8 +4,8 @@
 # Primary API: /v1/paymentnotice/on_request
 # Callback API: /v1/paymentnotice/request
 # Carries JWE: true
-# Focal Resource: PaymentReconciliation / Task
-# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation
+# Focal Resource: Task
+# NRCeS Profile: https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task
 # ==============================================================================
 
 code: "B7"
@@ -15,28 +15,48 @@ api: "/v1/paymentnotice/on_request"
 callback: "/v1/paymentnotice/request"
 workflow: "17 (or echoes payer notice wf30)"
 carries_jwe: true
-focal_resource: "PaymentReconciliation / Task"
-nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
+focal_resource: "Task"
+nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 profiles:
   PaymentReconciliation: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/PaymentReconciliation"
   Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 description: "Acknowledge receipt of settlement advice and bank remittance notification."
 fields:
-  - key: "settlementNumber"
-    label: "Payment Reference"
-    group: "Settlement"
-    data_type: "string"
-    cardinality: "1..1"
-    required: true
-    fhir_resource: "PaymentReconciliation"
-    fhir_path: "PaymentReconciliation.identifier[0].value"
-    example_value: "SETTLE-2026-001"
-  - key: "status"
-    label: "Acknowledgment Status"
-    group: "Settlement"
+  - key: "taskCode"
+    label: "Task Code"
+    group: "Task"
     data_type: "code"
     cardinality: "1..1"
     required: true
-    fhir_resource: "PaymentReconciliation"
-    fhir_path: "PaymentReconciliation.status"
-    example_value: "active"
+    fhir_resource: "Task"
+    fhir_path: "Task.code.coding[0].code"
+    code_system: "http://terminology.hl7.org/CodeSystem/financialtaskcode"
+    example_value: "status"
+  - key: "status"
+    label: "Acknowledgment Status"
+    group: "Task"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.status"
+    example_value: "completed"
+  - key: "ackValue"
+    label: "Acknowledgment"
+    group: "Task Output"
+    data_type: "code"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.output[type=status].valueCodeableConcept.coding[0].code"
+    code_system: "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value"
+    example_value: "paymentack"
+  - key: "claimNumber"
+    label: "Claim Number paid"
+    group: "Task Output"
+    data_type: "string"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.output[type=claimNumber].valueString"
+    example_value: "NM-26-0SE00002L"

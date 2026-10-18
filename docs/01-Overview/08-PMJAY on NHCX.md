@@ -49,7 +49,7 @@ Once NHCX integration is complete, an integrator can send claims to any private 
 Set against the flows in the NHCX Use Cases chapter, the picture is:
 
 - **Get Insurance Plan, Get Policy, Coverage Eligibility Check, Claim Submission, Payment Notice and Status Check** behave the same as on any NHCX integration.
-- **Preauthorisation** behaves the same, except that mandatory biometric authentication of the beneficiary must be completed before it is submitted.
+- **Preauthorisation** behaves the same, except that the beneficiary's biometric authentication must be completed before it is submitted, or, where no capture is possible, the plan's Authentication Consent questionnaire answered instead (`PAYR-1256` when neither is sent).
 - **Communication Request** is not used for document queries, which travel on the preauthorisation and claim endpoints instead. It is used for turnaround-time alerts, grievances, wallet and policy updates, and arbitration acknowledgements. A private insurer does the opposite: its query is the Communication Request itself. Payer flexibility, later in this section, sets the two query modes side by side.
 
 ## The integrator journey
@@ -72,4 +72,4 @@ This chapter and the next are drawn from four documents:
 - The PMJAY Hospital Migration to HMIS via NHCX guide.
 - The NHCX-PMJAY-HMIS Integration Overview.
 - The Functional Requirement Document for NHCX-PMJAY-HMIS Integration, version 1.0, dated March 2026, prepared by the NHCX team at NHA.
-- The NHCX Integration Handbook, version 1.0, which is the source for the workflow codes, the supporting info category and code combinations, and the gateway validation behaviour. Where the Handbook's gateway validation messages contradict the FRD, the next chapter follows the validation messages and says so. The FRD carries a disclaimer that it is work in progress and subject to revision, and the integrator journey above is marked tentative and not final. Nothing here has been verified against a running sandbox.
+- The NHCX Integration Handbook, version 1.0, which is the source for the workflow codes, the supporting info category and code combinations, and the gateway validation behaviour. Where the Handbook's gateway validation messages contradict the FRD, the next chapter follows the validation messages and says so. The FRD carries a disclaimer that it is work in progress and subject to revision, and the integrator journey above is marked tentative and not final. What the PMJAY sandbox actually did when these documents were tested against it is recorded in PMJAY Sandbox Run, in Building a Provider.

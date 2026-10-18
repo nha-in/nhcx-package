@@ -1,6 +1,6 @@
 # ==============================================================================
 # Use Case D12: Claim a shortfall - Data Element Definition & FHIR Mapping
-# Side / Role: PROVIDER
+# Side / Role: PMJAY
 # Primary API: /v1/task/submit
 # Callback API: /v1/task/on_submit
 # Carries JWE: true
@@ -10,7 +10,7 @@
 
 code: "D12"
 title: "Claim a shortfall"
-side: "provider"
+side: "pmjay"
 api: "/v1/task/submit"
 callback: "/v1/task/on_submit"
 workflow: "36 (Shortfall arbitration)"
@@ -19,7 +19,7 @@ focal_resource: "Task"
 nrces_profile: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
 profiles:
   Task: "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Task"
-description: "Claim payment balance when claim was partially approved or unjustified deductions were made."
+description: "Claim payment balance when claim was partially approved or unjustified deductions were made. Reason partialpayment belongs to the release Task (Task.code release), never to a reprocess."
 fields:
   - key: "taskCode"
     label: "Task Code"
@@ -29,7 +29,7 @@ fields:
     required: true
     fhir_resource: "Task"
     fhir_path: "Task.code.coding[0].code"
-    example_value: "reprocess"
+    example_value: "release"
   - key: "taskReason"
     label: "Reason Code"
     group: "Task"
@@ -46,5 +46,14 @@ fields:
     cardinality: "1..1"
     required: true
     fhir_resource: "Task"
-    fhir_path: "Task.input[0].valueString"
-    example_value: "CL26AA2600001"
+    fhir_path: "Task.input[type=claimNumber].valueString"
+    example_value: "EO26AA2700001"
+  - key: "balanceAmount"
+    label: "Balance Sought"
+    group: "Task Input"
+    data_type: "decimal"
+    cardinality: "1..1"
+    required: true
+    fhir_resource: "Task"
+    fhir_path: "Task.input[type=amount].valueMoney.value"
+    example_value: "1650"

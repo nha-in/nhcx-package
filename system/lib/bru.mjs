@@ -23,7 +23,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-const TEXT_BLOCKS = /^(body:(json|text|xml|sparql|graphql|multipart-form|form-urlencoded)|docs|script:pre-request|script:post-response|tests)$/;
+const TEXT_BLOCKS = /^(body:(json|text|xml|sparql|graphql)|docs|script:pre-request|script:post-response|tests)$/;
 
 // ---------------------------------------------------------------------------
 // Writing
@@ -129,7 +129,13 @@ export function readRequest(file) {
   const method = METHODS.find((m) => blocks[m]);
   if (!method) return null;
   const call = blocks[method];
-  const body = blocks['body:json'] ?? blocks['body:text'] ?? '';
+  // A form body (body:form-urlencoded) is kept as its fields under `form`, and
+  // as the encoded string under `body` for a reader that only knows raw bodies.
+  const form = blocks['body:form-urlencoded'] ?? null;
+  const body =
+    blocks['body:json'] ??
+    blocks['body:text'] ??
+    (form ? Object.entries(form).map(([k, v]) => `${k}=${v}`).join('&') : '');
   return {
     file,
     name: blocks.meta?.name ?? '',
@@ -139,6 +145,7 @@ export function readRequest(file) {
     bodyType: call.body ?? 'none',
     auth: call.auth ?? 'inherit',
     body,
+    form,
     headers: blocks.headers ?? {},
     query: blocks['params:query'] ?? {},
     docs: blocks.docs ?? '',

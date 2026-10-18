@@ -124,7 +124,7 @@ One builder, with `purpose` switched. The purposes differ in what they send and 
 
 ### 2. Items make a question answerable
 
-`item[]` is what makes `benefits` and `auth-requirements` answerable. `validation` does not need it. `discovery` omits `item[]` and `Coverage`.
+`item[]` is what makes `benefits` and `auth-requirements` answerable. `validation` and `discovery` do not need it, though the live PMJAY provider sends it on every purpose. `discovery` still carries a `Coverage` stub, as the sample and the live PMJAY request do.
 
 ### 3. Date of service
 
@@ -187,7 +187,7 @@ Is the policy in force, what is left in the wallet, and what must be attached. O
 | `x-hcx-workflow_id` | `11` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
 
 **Workflow codes**
 
@@ -201,20 +201,20 @@ Is the policy in force, what is left in the wallet, and what must be attached. O
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
 | `purpose` | Eligibility Purpose | Case | `code` | `1..1` | `CoverageEligibilityRequest.purpose[0]` | `auth-requirements` | code system `http://hl7.org/fhir/eligibilityrequest-purpose` |
-| `caseNumber` | Provider Reference | Case | `string` | `1..1` | `CoverageEligibilityRequest.identifier[0].value` | `PA0000000001` | also at `Bundle.id` |
-| `servicedDate` | Date of Service | Case | `date` | `1..1` | `CoverageEligibilityRequest.servicedDate` | `2026-02-26` |  |
-| `patientName` | Patient Full Name | Beneficiary | `string` | `1..1` | `Patient.name[0].text` | `Ramesh Chandra Sharma` |  |
-| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` | also at `Coverage.subscriberId` |
-| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` | `91234567890123` |  |
-| `gender` | Gender | Beneficiary | `code` | `1..1` | `Patient.gender` | `male` | code system `http://hl7.org/fhir/administrative-gender` |
-| `birthDate` | Date of Birth | Beneficiary | `date` | `1..1` | `Patient.birthDate` | `1982-06-15` |  |
-| `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` | `9876543210` |  |
-| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `PMJAY/HP/S/G` |  |
-| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[system=https://facility.abdm.gov.in].value` | `IN1910000151` |  |
-| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `Apex Multispeciality Hospital` |  |
-| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[system=https://irdai.gov.in].value` | `1000003538` |  |
-| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `National Health Authority - PMJAY` |  |
-| `productOrService` | Package Code | Item | `string` | `0..*` | `CoverageEligibilityRequest.item[].productOrService.coding[0].code` | `MG004A` |  |
+| `caseNumber` | Provider Reference | Case | `string` | `0..1` | `CoverageEligibilityRequest.identifier[0].value` |  | also at `Bundle.id` |
+| `servicedDate` | Date of Service | Case | `date` | `0..1` | `CoverageEligibilityRequest.servicedDate` |  |  |
+| `patientName` | Patient Full Name | Beneficiary | `string` | `0..1` | `Patient.name[0].text` |  |  |
+| `memberId` | Scheme / Insurer Member ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `MRAV1985001` | also at `Coverage.subscriberId` |
+| `abhaNumber` | ABHA Number | Beneficiary | `string` | `0..1` | `Patient.identifier[type=ABHA].value` |  |  |
+| `gender` | Gender | Beneficiary | `code` | `0..1` | `Patient.gender` |  | code system `http://hl7.org/fhir/administrative-gender` |
+| `birthDate` | Date of Birth | Beneficiary | `date` | `0..1` | `Patient.birthDate` |  |  |
+| `patientPhone` | Mobile Phone | Beneficiary | `string` | `0..1` | `Patient.telecom[system=phone].value` |  |  |
+| `policyNumber` | Policy Number | Coverage | `string` | `1..1` | `Coverage.identifier[0].value` | `POL7UMU001` |  |
+| `facilityId` | Hospital Facility ID (HFR/NPI) | Provider | `string` | `1..1` | `Organization[type=prov].identifier[type=NPI].value` | `IN1910000151` |  |
+| `providerName` | Hospital Name | Provider | `string` | `1..1` | `Organization[type=prov].name` | `KyroCare Multispeciality Hospital` |  |
+| `payerId` | Payer Identifier (NIIP) | Payer | `string` | `1..1` | `Organization[type=pay].identifier[type=NIIP].value` | `1000004805` |  |
+| `payerName` | Payer Name | Payer | `string` | `1..1` | `Organization[type=pay].name` | `Sandbox Payer` |  |
+| `productOrService` | Package Code | Item | `string` | `0..*` | `CoverageEligibilityRequest.item[].productOrService.coding[0].code` | `PROC-KNEE-01` |  |
 
 NRCeS profiles: [CoverageEligibilityRequest](https://nrces.in/ndhm/fhir/r4/StructureDefinition-CoverageEligibilityRequest.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html), [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html), [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html).
 
@@ -226,7 +226,7 @@ Validation after registration returns the wallet, one benefit entry per wallet w
 | :-- | :-- |
 | **API** | `/v1/coverageeligibility/check` [`apis/02-eligibility/v1-coverageeligibility-check.bru`](../../apis/02-eligibility/v1-coverageeligibility-check.bru) |
 | **Callback** | `/v1/coverageeligibility/on_check` [`apis/02-eligibility/v1-coverageeligibility-on-check.bru`](../../apis/02-eligibility/v1-coverageeligibility-on-check.bru) |
-| **Workflow** | none (or 5 under PMJAY) |
+| **Workflow** | none NHA publishes for the request; the PMJAY payer answers on 5, a code not on NHA's Workflow Status Sheet |
 | **Carries JWE** | yes |
 | **Focal resource** | `CoverageEligibilityRequest` |
 
@@ -242,13 +242,19 @@ Validation after registration returns the wallet, one benefit entry per wallet w
 | `x-hcx-workflow_id` | `11` |
 | `x-hcx-timestamp` | `{{$isoTimestamp}}` |
 | `x-hcx-status` | `request.initiated` |
-| `x-hcx-ben-abha-id` | `91711234567890` |
+| `x-hcx-ben-abha-id` | `91-7112-3456-7890` |
+
+**Workflow codes**
+
+| Code | Name | Authored by | `x-hcx-status` | Means |
+| :-- | :-- | :-- | :-- | :-- |
+| `5` | PMJAY eligibility and plan answer | payer |  | Seen, not sent: the PMJAY payer answered a coverage eligibility check and an insurance plan request under 5 on the 17 Oct 2026 sandbox run, with x-hcx-error_details 100. Accept it on those callbacks; never send it. The status it came with was not archived. |
 
 **Data elements**
 
 | Element | Label | Group | Type | Card. | FHIR path | Example | Notes |
 | :-- | :-- | :-- | :-- | :--: | :-- | :-- | :-- |
-| `memberId` | PMJAY Family ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY-HP-2024-998811` |  |
-| `purpose` | Purpose | Case | `code` | `1..1` | `CoverageEligibilityRequest.purpose[0]` | `validation` |  |
+| `memberId` | PMJAY Family ID | Beneficiary | `string` | `1..1` | `Patient.identifier[type=PMJAY].value` | `PMJAY0000X` |  |
+| `purpose` | Purpose | Case | `code` | `1..1` | `CoverageEligibilityRequest.purpose[0]` | `auth-requirements` |  |
 
 NRCeS profiles: [CoverageEligibilityRequest](https://nrces.in/ndhm/fhir/r4/StructureDefinition-CoverageEligibilityRequest.html), [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html).

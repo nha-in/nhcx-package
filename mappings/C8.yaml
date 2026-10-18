@@ -38,4 +38,4 @@ fields:
     required: false
     fhir_resource: "Task"
     fhir_path: "Task.output[].valueReference.reference"
-    example_value: "ClaimResponse/cr-approved-1"
+    example_value: "urn:uuid:e0000001-0000-0000-0000-000000000011"

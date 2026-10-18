@@ -61,7 +61,6 @@ docs {
 
   - Treating init as the complete link and never calling /v2/participant/link/abha/policy/validate, then reporting that get/policies returns nothing.
   - Using a token from a client_id other than the one used at participant creation for the payer or TPA (common mistake 10 in the NHA list); linking is refused for unauthorised parties.
-  - Mixing the case of the path: init and validate live under lower-case /v2/, while the direct V2 link uses /V2/.
   - Swapping payerid and processingid, or omitting required fields such as requestid, memberid or the policies array.
 
   ## Best practices
@@ -74,7 +73,7 @@ docs {
 
   ## Related scenario
 
-  An insurer's policy administration team is required by its NHCX instance to confirm member links by passcode. When a new policy is issued, the system posts the ParticipantLinkAbhaRequest to /v2/participant/link/abha/policy/init and records the transaction identifier. The authorised operator receives the passcode and the system calls GET /v2/participant/link/abha/policy/validate with passcode and transactionId to complete the link. The team then checks /V2/participant/get/policies for the member's ABHA number and, satisfied, closes the case; the hospital will discover the policy on the beneficiary's next admission.
+  An insurer's policy administration team is required by its NHCX instance to confirm member links by passcode. When a new policy is issued, the system posts the ParticipantLinkAbhaRequest to /v2/participant/link/abha/policy/init and records the transaction identifier. The authorised operator receives the passcode and the system calls GET /v2/participant/link/abha/policy/validate with passcode and transactionId to complete the link. The team then checks /v2/participant/get/policies for the member's ABHA number and, satisfied, closes the case; the hospital will discover the policy on the beneficiary's next admission.
 
   ## Specification
 

@@ -6,6 +6,10 @@ This section assumes the base framework from Getting Started is working: you hav
 
 Registration and Eligibility, Insurance Plan, Preauthorisation, Discharge and Claim, and Payment and Communication describe the flow as NHCX defines it for any payer. PMJAY runs the same endpoints with different rules around them; those rules are collected in PMJAY Provider so the generic flow stays readable and the scheme's additions are in one place, and Biometric Authentication covers the scheme's proof that the beneficiary was present. UI Guide turns all of it into screens, for whoever is designing the hospital's interface rather than its integration. Provider Checklist is the checklist you have to demonstrate to leave the sandbox.
 
+## What to reuse
+
+Look for an ABDM module in the HMIS before building anything. When it already creates, links and verifies ABHA numbers, holds the ABHA on the patient, keeps the facility's HFR id and holds an ABDM session token, the NHCX code reads and writes the ABHA through that module, takes the HFR id from it and shares its session token. Build the ABHA flows only when no such module exists. The ABHA number is the patient's key across the exchange: records and admissions for a case are found by it. See Field Corrections, 2 and 3.
+
 ## What the hospital sees
 
 The user-facing shape is a handful of screens that map one-to-one onto exchange calls. The mapping is worth fixing early, because it decides where each API is called from.
@@ -14,15 +18,15 @@ The user-facing shape is a handful of screens that map one-to-one onto exchange 
 | :---- | :---- | :---- |
 | Patient search | Finds the beneficiary by ABHA, member ID or mobile; picks the payer | Participant list, policy lookup |
 | Registration | Confirms cover and sees the remaining limit | Coverage eligibility, purpose validation |
-| Treatment plan | Picks the service or package, sees what is covered and what documents are required | Insurance plan (cached), eligibility with purpose benefits and auth-requirements |
-| Preauthorisation | Fills clinical and financial sections, attaches documents, submits | Preauthorisation submit |
-| Enhancement | Adds procedures or days against an approved case | Preauthorisation submit, enhancement code |
+| Treatment plan | Quotes each line from the plan, sees what is covered and what documents are required; part of the preauthorisation step | Insurance plan (fetched once the policy is in force), eligibility with purpose benefits and auth-requirements |
+| Preauthorisation | Fills clinical and financial sections, attaches documents, submits, before admission if need be | Preauthorisation submit |
+| Enhancement | Adds procedures or days against an approved case, until the claim is submitted | Preauthorisation submit, enhancement code |
 | Query inbox | Reads a payer request for more, attaches what was asked, replies | Communication request and response |
 | Discharge | Records discharge and sends a provisional claim before the patient leaves | Claim submit, discharge code |
-| Claim | Confirms the final bill, submits | Claim submit |
-| Reprocess | Appeals a rejection or a reduced approval | Task submit |
+| Claim | Links the IPD admission, confirms the final bill, submits once | Claim submit |
+| Reprocess | Appeals a rejection; asks for the balance of a short payment | Task submit, reprocess or release |
 | Payments | Sees notices, UTR and deductions; acknowledges | Payment notice callback, acknowledgement |
-| Case status | One line per case with its current state | Driven by callbacks and status check |
+| Case status | One line per case with its current state | Driven by callbacks and the status enquiry |
 
 ```mermaid
 flowchart LR
@@ -37,7 +41,7 @@ flowchart LR
   D --> C[Claim]
   C --> Q
   C --> M[Payments]
-  C -. rejected or short .-> X[Reprocess]
+  C -. rejected .-> X[Reprocess]
 ```
 
 ## What the system calls
@@ -49,8 +53,8 @@ From the Overview's use-case catalogue, a provider calls the B-series and the sh
 3. `/v1/coverageeligibility/check`, at registration and again before each submission.
 4. `/v1/preauth/submit`, for the first request and every follow-up on it.
 5. `/v1/claim/submit`, for the provisional discharge submission, the final claim, and query answers.
-6. `/v1/task/submit`, to cancel a preauthorisation or appeal a claim.
-7. `/v1/status`, whenever a case has gone quiet.
+6. `/v1/task/submit`, to cancel a preauthorisation, appeal a rejected claim, ask for a short payment's balance, or ask where a case stands (a `Task` coded `status`, workflow id `1`).
+7. `/v1/status`, as NHA lists it; the sandbox refuses it, so the status enquiry goes as the Task above.
 
 And hosts `on_check`, `on_request`, `on_submit` for each of those, plus `/v1/communication/request`, `/v1/paymentnotice/request`, `/v1/on_status` and `/v1/error`.
 

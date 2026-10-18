@@ -401,6 +401,10 @@ for (const module of modules) {
   for (const request of module.folder.requests) {
     const ref = `${module.folder.dir}/${request.file.split("/").pop()}`;
     const where = locate(request);
+    // The /internal/ twins are the NHCX adapter's own endpoints. They stay in the
+    // collection, where the adapter's users send them, and are not published: the
+    // site documents the exchange, and an integrator has no /internal/ to call.
+    if (/^\/internal\//.test(where.path)) continue;
     const key = `${request.method} ${where.base}${where.path}`;
     if (byKey.has(key)) {
       byKey.get(key).also.push(request);

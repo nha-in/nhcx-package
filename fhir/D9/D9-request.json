@@ -49,7 +49,7 @@
         },
         "billablePeriod": {
           "start": "2026-09-10T00:00:00+05:30",
-          "end": "2026-09-10T00:00:00+05:30"
+          "end": "2026-09-10T18:54:00+05:30"
         },
         "created": "2026-09-11T00:25:00+05:30",
         "insurer": {
@@ -230,7 +230,7 @@
                 {
                   "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
                   "code": "DTM",
-                  "display": "DischargetoMortuary"
+                  "display": "DischargetoMortuary(death disposition)"
                 }
               ]
             },
@@ -253,7 +253,7 @@
                 {
                   "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code",
                   "code": "DTM",
-                  "display": "Death"
+                  "display": "DischargetoMortuary(death disposition)"
                 }
               ]
             },

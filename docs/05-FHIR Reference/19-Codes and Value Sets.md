@@ -10,12 +10,6 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | :-- | :-- | :-- | :-- |
 | `approve` | Activate/approve the focal resource | `Task.code.coding` | both |
 
-### `http://hl7.org/fhir/resource-types`
-
-| Code | Display | Where | Used by |
-| :-- | :-- | :-- | :-- |
-| `ClaimResponse` |  | `Task.output.type.coding` | generic |
-
 ### `http://hl7.org/fhir/sid/icd-10`
 
 | Code | Display | Where | Used by |
@@ -72,7 +66,7 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | `60689008` | Home care of patient | `InsurancePlan.plan.specificCost.category.coding`, `InsurancePlan.plan.specificCost.benefit.type.coding` | generic |
 | `710967003` | Management of health status after discharge from hospital (procedure) | `InsurancePlan.coverage.type.coding`, `InsurancePlan.coverage.benefit.type.coding` | generic |
 | `71388002` | Procedure (procedure) | `Procedure.code.coding` | both |
-| `737481003` | Inpatient care management (procedure) | `Claim.type.coding`, `CoverageEligibilityResponse.insurance.item.productOrService.coding` | both |
+| `737481003` | Inpatient care management (procedure) | `Claim.type.coding`, `ClaimResponse.type.coding` | both |
 | `737850002` | Day care case management (procedure) | `InsurancePlan.coverage.type.coding`, `InsurancePlan.coverage.benefit.type.coding` | generic |
 | `77343006` | Angiography | `Claim.procedure.procedureCodeableConcept.coding`, `Claim.item.productOrService.coding` | generic |
 | `86077009` | Operation for glaucoma | `InsurancePlan.extension.extension.valueCodeableConcept.coding` | generic |
@@ -99,6 +93,12 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | Code | Display | Where | Used by |
 | :-- | :-- | :-- | :-- |
 | `benefit` | Benefit | `CoverageEligibilityResponse.insurance.item.benefit.type.coding` | both |
+
+### `http://terminology.hl7.org/CodeSystem/claim-type`
+
+| Code | Display | Where | Used by |
+| :-- | :-- | :-- | :-- |
+| `institutional` | Institutional | `ClaimResponse.type.coding` | generic |
 
 ### `http://terminology.hl7.org/CodeSystem/claimcareteamrole`
 
@@ -347,7 +347,6 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | :-- | :-- | :-- | :-- |
 | `ABHA` | Ayushman Bharat Health Account (ABHA) ID | `Patient.identifier.type.coding` | both |
 | `ADN` | Adhaar number | `Patient.identifier.type.coding` | both |
-| `ClaimNumber` | Claim Number | `Task.input.type.coding` | generic |
 | `CLN` | Claim number | `Claim.identifier.type.coding`, `Task.basedOn.identifier.type.coding` | both |
 | `HPID` | Healthcare Professional ID (HPID) | `Practitioner.identifier.type.coding` | both |
 | `HPIN` | Health Practitioner ID issued by NDHM | `Practitioner.identifier.type.coding` | both |
@@ -425,7 +424,7 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | `CQD` | Claim query detail | `Claim.supportingInfo.code.coding` | both |
 | `DSDE` | Discharge start-discharge end time | `Claim.supportingInfo.code.coding` | both |
 | `DTH` | DischargeToHome (Discharge disposition status) | `Claim.supportingInfo.code.coding` | both |
-| `DTM` | DischargetoMortuary | `Claim.supportingInfo.code.coding` | PMJAY |
+| `DTM` | DischargetoMortuary(death disposition) | `Claim.supportingInfo.code.coding` | PMJAY |
 | `EDT` | EncounterDateTime | `Claim.supportingInfo.code.coding` | both |
 | `ODN` | Other document | `Claim.supportingInfo.code.coding` | both |
 | `PSP` | PatientSurgeryPerformed(startdatetime-enddatetime) | `Claim.supportingInfo.code.coding` | both |
@@ -443,6 +442,7 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 | :-- | :-- | :-- | :-- |
 | `claimNumber` | ClaimNumber | `Task.input.type.coding`, `Task.output.type.coding` | both |
 | `document` | Document | `Task.input.type.coding` | both |
+| `initimationNumber` | InitimationNumber | `Task.input.type.coding` | PMJAY |
 | `intimationNumber` | Intimation Number | `Task.input.type.coding` | both |
 | `policyNumber` |  | `Task.input.type.coding` | both |
 | `providerId` |  | `Task.input.type.coding` | both |
@@ -451,6 +451,7 @@ Every code the bundles carry, grouped by the system it is bound to, then the val
 
 | Code | Display | Where | Used by |
 | :-- | :-- | :-- | :-- |
+| `include` | Include | `Task.output.type.coding` | generic |
 | `status` | Status | `Task.output.type.coding` | both |
 
 ### `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-value`

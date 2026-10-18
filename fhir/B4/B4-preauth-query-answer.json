@@ -91,12 +91,6 @@
             "display": "CommunicationRequest"
           }
         ],
-        "inResponseTo": [
-          {
-            "reference": "urn:uuid:4b35a6eb-3f99-5d0c-b0c8-5b2f049fdbde",
-            "display": "CommunicationRequest"
-          }
-        ],
         "about": [
           {
             "reference": "https://nhcx.abdm.gov.in/preauth/request",

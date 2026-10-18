@@ -103,7 +103,6 @@ NRCeS profile: [Communication](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 | :-- | :-- |
 | `identifier[]` | value `NM-26-0SE00002K` |
 | `basedOn[]` | reference `urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2`, display `CommunicationRequest` |
-| `inResponseTo[]` | reference `urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2`, display `CommunicationRequest` |
 | `about[]` | reference `https://nhcx.abdm.gov.in/claim/request`, display `Claim urn:uuid:5c997608-ee6c-5496-9fdb-f8415e3eb8d5` |
 | `status` | `completed` |
 | `category[].coding[]` | `notification` in `http://terminology.hl7.org/CodeSystem/communication-category` |

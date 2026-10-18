@@ -70,7 +70,7 @@ NRCeS profile: [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.h
 | `insurance[]` | sequence `1`, focal `true` |
 | `insurance[].coverage` | reference `https://nhcx.abdm.gov.in/coverage` |
 | `item[]` | id `Item/1`, sequence `1`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `1`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
-|  | id `Item/2`, sequence `2`, factor `0.5`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `2`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
+|  | id `Item/2`, sequence `2`, factor `1`, careTeamSequence `1`, diagnosisSequence `1`, procedureSequence `2`, informationSequence `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11` |
 | `item[].productOrService.coding[]` | `PROC-KNEE-01` Total Knee Replacement (Unilateral) in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
 |  | `PROC-APP-02` Acute Appendectomy (Laparoscopic) in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code` |
 | `item[].servicedPeriod` | start `2026-09-10`, end `2026-09-10` |

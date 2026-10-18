@@ -9,10 +9,10 @@
   "type": "collection",
   "entry": [
     {
-      "fullUrl": "https://nhcx.abdm.gov.in/preauth/request",
+      "fullUrl": "https://nhcx.abdm.gov.in/predetermination/request",
       "resource": {
         "resourceType": "Claim",
-        "id": "VB26AA2600001",
+        "id": "PD0000000001",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
@@ -385,7 +385,7 @@
               "value": 3300,
               "currency": "INR"
             },
-            "factor": 0.5,
+            "factor": 1,
             "net": {
               "value": 3300,
               "currency": "INR"

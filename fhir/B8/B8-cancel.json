@@ -40,7 +40,7 @@
             {
               "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code",
               "code": "treatmentplanchanged",
-              "display": "Treatment plan changed during hospitalization"
+              "display": "Treatment plan changed during hospitalization."
             }
           ]
         },

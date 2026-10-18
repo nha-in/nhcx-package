@@ -3,7 +3,7 @@
     {
       "fullUrl": "urn:uuid:0c2f7b1e-5d4a-4c7e-9b3a-2f6d8e1a4c50",
       "resource": {
-        "authoredOn": "2026-03-08T11:01:00+05:30",
+        "authoredOn": "2025-03-08T11:01:00+05:30",
         "code": {
           "coding": [
             {
@@ -36,8 +36,8 @@
           ]
         },
         "owner": {
-          "display": "Organization",
-          "reference": "https://nhcx.abdm.gov.in/payer"
+          "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
+          "display": "Organization"
         },
         "reasonCode": {
           "coding": [
@@ -49,8 +49,8 @@
           ]
         },
         "requester": {
-          "display": "Organization",
-          "reference": "https://nhcx.abdm.gov.in/provider"
+          "reference": "urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e",
+          "display": "Organization"
         },
         "resourceType": "Task",
         "status": "completed"
@@ -61,8 +61,8 @@
       "resource": {
         "about": [
           {
-            "display": "Claim VB26AA2600001",
-            "reference": "https://nhcx.abdm.gov.in/preauth/request"
+            "reference": "urn:uuid:5638dd69-795d-4c30-a916-71467877be0c",
+            "display": "Claim 98765432"
           }
         ],
         "basedOn": [
@@ -113,22 +113,23 @@
         "priority": "routine",
         "recipient": [
           {
-            "display": "Organization",
-            "reference": "https://nhcx.abdm.gov.in/payer"
+            "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
+            "display": "Organization"
           }
         ],
         "resourceType": "Communication",
         "sender": {
-          "display": "Organization",
-          "reference": "https://nhcx.abdm.gov.in/provider"
+          "reference": "urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e",
+          "display": "Organization"
         },
-        "status": "completed"
+        "status": "completed",
+        "sent": "2025-03-08T11:01:00+05:30"
       }
     },
     {
       "fullUrl": "urn:uuid:08f1bb6f-c3f5-4578-b5e8-c042764e2477",
       "resource": {
-        "authoredOn": "2025-03-07T08:25:05+10:00",
+        "authoredOn": "2025-03-08T08:25:05+05:30",
         "basedOn": [
           {
             "display": "Claim-preauth",
@@ -158,7 +159,7 @@
         },
         "payload": [
           {
-            "contentString": "Please provide the Angeography report to support your Claim# 98765432."
+            "contentString": "Please provide the Angiography report to support your Claim# 98765432."
           }
         ],
         "priority": "routine",
@@ -179,682 +180,505 @@
         },
         "status": "active",
         "text": {
-          "div": "\u003cdiv xmlns=\"http://www.w3.org/1999/xhtml\"\u003e\u003ca name=\"CommunicationRequest_08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003cp class=\"res-header-id\"\u003e\u003cb\u003eGenerated Narrative: CommunicationRequest 08f1bb6f-c3f5-4578-b5e8-c042764e2477\u003c/b\u003e\u003c/p\u003e\u003ca name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003ca name=\"hc08f1bb6f-c3f5-4578-b5e8-c042764e2477\"\u003e \u003c/a\u003e\u003ca name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477-hi-IN\"\u003e \u003c/a\u003e\u003cp\u003e\u003cb\u003eidentifier\u003c/b\u003e: 4524657454\u003c/p\u003e\u003cp\u003e\u003cb\u003ebasedOn\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5638dd69-795d-4c30-a916-71467877be0c\"\u003eClaim-preauth\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003estatus\u003c/b\u003e: Active\u003c/p\u003e\u003cp\u003e\u003cb\u003ecategory\u003c/b\u003e: \u003cspan title=\"Codes:{http://terminology.hl7.org/CodeSystem/communication-category alert}\"\u003eAlert\u003c/span\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003epriority\u003c/b\u003e: Routine\u003c/p\u003e\u003ch3\u003ePayloads\u003c/h3\u003e\u003ctable class=\"grid\"\u003e\u003ctr\u003e\u003ctd style=\"display: none\"\u003e-\u003c/td\u003e\u003ctd\u003e\u003cb\u003eContent[x]\u003c/b\u003e\u003c/td\u003e\u003c/tr\u003e\u003ctr\u003e\u003ctd style=\"display: none\"\u003e*\u003c/td\u003e\u003ctd\u003ePlease provide the Angeography report to support your Claim# 98765432.\u003c/td\u003e\u003c/tr\u003e\u003c/table\u003e\u003cp\u003e\u003cb\u003eauthoredOn\u003c/b\u003e: 2025-03-07 08:25:05+1000\u003c/p\u003e\u003cp\u003e\u003cb\u003erequester\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003erecipient\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-9cba8230-b666-438b-811c-f70c5df8990e\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003cp\u003e\u003cb\u003esender\u003c/b\u003e: \u003ca href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"\u003eOrganization\u003c/a\u003e\u003c/p\u003e\u003c/div\u003e",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"CommunicationRequest_08f1bb6f-c3f5-4578-b5e8-c042764e2477\"> </a><p class=\"res-header-id\"><b>Generated Narrative: CommunicationRequest 08f1bb6f-c3f5-4578-b5e8-c042764e2477</b></p><a name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477\"> </a><a name=\"hc08f1bb6f-c3f5-4578-b5e8-c042764e2477\"> </a><a name=\"08f1bb6f-c3f5-4578-b5e8-c042764e2477-hi-IN\"> </a><p><b>identifier</b>: 4524657454</p><p><b>basedOn</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5638dd69-795d-4c30-a916-71467877be0c\">Claim-preauth</a></p><p><b>status</b>: Active</p><p><b>category</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/communication-category alert}\">Alert</span></p><p><b>priority</b>: Routine</p><h3>Payloads</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Content[x]</b></td></tr><tr><td style=\"display: none\">*</td><td>Please provide the Angiography report to support your Claim# 98765432.</td></tr></table><p><b>authoredOn</b>: 2025-03-08 08:25:05+0530</p><p><b>requester</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\">Organization</a></p><p><b>recipient</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-9cba8230-b666-438b-811c-f70c5df8990e\">Organization</a></p><p><b>sender</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\">Organization</a></p></div>",
           "status": "generated"
         }
       }
     },
     {
-      "fullUrl": "https://nhcx.abdm.gov.in/preauth/request",
+      "fullUrl": "urn:uuid:5638dd69-795d-4c30-a916-71467877be0c",
       "resource": {
-        "billablePeriod": {
-          "end": "2026-02-27T11:00:00+05:30",
-          "start": "2026-02-22T10:00:00+05:30"
-        },
-        "careTeam": [
-          {
-            "provider": {
-              "reference": "https://nhcx.abdm.gov.in/practitioner"
-            },
-            "qualification": {
-              "coding": [
-                {
-                  "code": "394802001",
-                  "display": "General medicine",
-                  "system": "http://snomed.info/sct"
-                }
-              ]
-            },
-            "role": {
-              "coding": [
-                {
-                  "code": "primary",
-                  "display": "Primary provider",
-                  "system": "http://terminology.hl7.org/CodeSystem/claimcareteamrole"
-                }
-              ]
-            },
-            "sequence": 1
-          }
-        ],
-        "created": "2026-02-22T15:49:36+05:30",
-        "diagnosis": [
-          {
-            "diagnosisCodeableConcept": {
-              "coding": [
-                {
-                  "code": "A97",
-                  "display": "Dengue",
-                  "system": "http://hl7.org/fhir/sid/icd-10"
-                }
-              ]
-            },
-            "onAdmission": {
-              "coding": [
-                {
-                  "code": "yes",
-                  "display": "Yes",
-                  "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosis-on-admission"
-                }
-              ]
-            },
-            "sequence": 1,
-            "type": [
-              {
-                "coding": [
-                  {
-                    "code": "admitting",
-                    "display": "Admitting Diagnosis",
-                    "system": "http://terminology.hl7.org/CodeSystem/ex-diagnosistype"
-                  }
-                ]
-              }
-            ]
-          }
-        ],
-        "id": "VB26AA2600001",
-        "identifier": [
-          {
-            "system": "https://nhcx.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "CLN",
-                  "display": "Claim number",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
-                }
-              ]
-            },
-            "value": "VB26AA2600001"
-          }
-        ],
-        "insurance": [
-          {
-            "coverage": {
-              "reference": "https://nhcx.abdm.gov.in/coverage"
-            },
-            "focal": true,
-            "sequence": 1
-          }
-        ],
-        "insurer": {
-          "reference": "https://nhcx.abdm.gov.in/payer"
-        },
-        "item": [
-          {
-            "careTeamSequence": [
-              1
-            ],
-            "category": {
-              "coding": [
-                {
-                  "code": "MG",
-                  "display": "General Medicine",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-benefit-category"
-                }
-              ]
-            },
-            "diagnosisSequence": [
-              1
-            ],
-            "factor": 0.5,
-            "id": "Item/1",
-            "informationSequence": [
-              1,
-              2,
-              3,
-              4,
-              5,
-              6
-            ],
-            "modifier": [
-              {
-                "coding": [
-                  {
-                    "code": "STRAT006b",
-                    "display": "HDU"
-                  }
-                ]
-              }
-            ],
-            "net": {
-              "currency": "INR",
-              "value": 3300
-            },
-            "procedureSequence": [
-              1
-            ],
-            "productOrService": {
-              "coding": [
-                {
-                  "code": "MG0111A",
-                  "display": "Pleural Effusion",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-procedure-code"
-                }
-              ]
-            },
-            "programCode": [
-              {
-                "coding": [
-                  {
-                    "code": "AB-PMJAY",
-                    "display": "Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
-                    "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-program-code"
-                  }
-                ]
-              }
-            ],
-            "quantity": {
-              "value": 1
-            },
-            "sequence": 1,
-            "servicedPeriod": {
-              "end": "2026-02-27",
-              "start": "2026-02-22"
-            },
-            "unitPrice": {
-              "currency": "INR",
-              "value": 3300
-            }
-          }
-        ],
+        "resourceType": "Claim",
+        "id": "5638dd69-795d-4c30-a916-71467877be0c",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Claim"
           ]
         },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Claim_5638dd69-795d-4c30-a916-71467877be0c\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Claim 5638dd69-795d-4c30-a916-71467877be0c</b></p><a name=\"5638dd69-795d-4c30-a916-71467877be0c\"> </a><a name=\"hc5638dd69-795d-4c30-a916-71467877be0c\"> </a><a name=\"5638dd69-795d-4c30-a916-71467877be0c-hi-IN\"> </a><p><b>identifier</b>: 7612345, 98765432</p><p><b>status</b>: Active</p><p><b>type</b>: <span title=\"Codes:{http://snomed.info/sct 737481003}\">Inpatient care management (procedure)</span></p><p><b>use</b>: Preauthorization</p><p><b>patient</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5b80f8c0-45b1-4df5-a770-27eb36b21573\">Patient</a></p><p><b>billablePeriod</b>: 2025-03-07 11:01:00+0530 --&gt; 2025-04-07 11:01:00+0530</p><p><b>created</b>: 2025-03-07 11:01:00+0530</p><p><b>insurer</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\">Organization</a></p><p><b>provider</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-9cba8230-b666-438b-811c-f70c5df8990e\">Organization</a></p><p><b>priority</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/processpriority normal}\">Normal</span></p><h3>CareTeams</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Sequence</b></td><td><b>Provider</b></td><td><b>Role</b></td><td><b>Qualification</b></td></tr><tr><td style=\"display: none\">*</td><td>1</td><td><a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-f35c3aa2-f39e-46b4-a277-1445445fb535\">Practitioner</a></td><td><span title=\"Codes:{http://snomed.info/sct 223366009}\">Healthcare professional (occupation)</span></td><td><span title=\"Codes:{http://snomed.info/sct 394658006}\">Clinical specialty (qualifier value)</span></td></tr></table><h3>Diagnoses</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Sequence</b></td><td><b>Diagnosis[x]</b></td><td><b>Type</b></td></tr><tr><td style=\"display: none\">*</td><td>1</td><td><span title=\"Codes:{http://hl7.org/fhir/sid/icd-10 I46.9}\">Cardiac arrest, unspecified</span></td><td><span title=\"Codes:{http://snomed.info/sct 89100005}\">Final diagnosis (discharge) (contextual qualifier) (qualifier value)</span></td></tr></table><blockquote><p><b>procedure</b></p><p><b>sequence</b>: 1</p><p><b>procedure</b>: <span title=\"Codes:{http://snomed.info/sct 77343006}\">Angiography</span></p></blockquote><blockquote><p><b>procedure</b></p><p><b>sequence</b>: 2</p><p><b>procedure</b>: <span title=\"Codes:{http://snomed.info/sct 418285008}\">Angioplasty of blood vessel</span></p></blockquote><h3>Insurances</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Sequence</b></td><td><b>Focal</b></td><td><b>Coverage</b></td></tr><tr><td style=\"display: none\">*</td><td>1</td><td>true</td><td><a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-889c648a-230f-4c50-bd19-cf72511147ec\">Coverage</a></td></tr></table><blockquote><p><b>item</b></p><p><b>sequence</b>: 1</p><p><b>careTeamSequence</b>: 1</p><p><b>productOrService</b>: <span title=\"Codes:{http://snomed.info/sct 77343006}\">Angiography</span></p><h3>UnitPrices</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>10000</td><td>Indian rupee</td></tr></table><h3>Nets</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>10000</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>item</b></p><p><b>sequence</b>: 2</p><p><b>careTeamSequence</b>: 1</p><p><b>productOrService</b>: <span title=\"Codes:{http://snomed.info/sct 418285008}\">Angioplasty of blood vessel</span></p><h3>UnitPrices</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>40000</td><td>Indian rupee</td></tr></table><h3>Nets</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>40000</td><td>Indian rupee</td></tr></table></blockquote><blockquote><p><b>item</b></p><p><b>sequence</b>: 3</p><p><b>careTeamSequence</b>: 1</p><p><b>productOrService</b>: <span title=\"Codes:{http://snomed.info/sct 309904001}\">Intensive care unit</span></p><h3>UnitPrices</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>2000</td><td>Indian rupee</td></tr></table><h3>Nets</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>20000</td><td>Indian rupee</td></tr></table></blockquote><h3>Totals</h3><table class=\"grid\"><tr><td style=\"display: none\">-</td><td><b>Value</b></td><td><b>Currency</b></td></tr><tr><td style=\"display: none\">*</td><td>70000</td><td>Indian rupee</td></tr></table></div>"
+        },
+        "identifier": [
+          {
+            "value": "7612345"
+          },
+          {
+            "value": "98765432"
+          }
+        ],
+        "status": "active",
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "737481003",
+              "display": "Inpatient care management (procedure)"
+            }
+          ]
+        },
+        "use": "preauthorization",
         "patient": {
-          "reference": "https://nhcx.abdm.gov.in/patient"
+          "reference": "urn:uuid:5b80f8c0-45b1-4df5-a770-27eb36b21573",
+          "display": "Patient"
+        },
+        "billablePeriod": {
+          "start": "2025-03-07T11:01:00+05:30",
+          "end": "2025-04-07T11:01:00+05:30"
+        },
+        "created": "2025-03-07T11:01:00+05:30",
+        "insurer": {
+          "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
+          "display": "Organization"
+        },
+        "provider": {
+          "reference": "urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e",
+          "display": "Organization"
         },
         "priority": {
           "coding": [
             {
-              "code": "normal",
-              "display": "Normal",
-              "system": "http://terminology.hl7.org/CodeSystem/processpriority"
+              "system": "http://terminology.hl7.org/CodeSystem/processpriority",
+              "code": "normal"
             }
           ]
         },
-        "procedure": [
+        "careTeam": [
           {
-            "date": "2026-02-24T09:30:00+05:30",
-            "id": "Procedure/1",
-            "procedureReference": {
-              "display": "Pleural Effusion",
-              "reference": "https://nhcx.abdm.gov.in/procedure/1"
-            },
             "sequence": 1,
+            "provider": {
+              "reference": "urn:uuid:f35c3aa2-f39e-46b4-a277-1445445fb535",
+              "display": "Practitioner"
+            },
+            "role": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "223366009",
+                  "display": "Healthcare professional (occupation)"
+                }
+              ]
+            },
+            "qualification": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "394658006",
+                  "display": "Clinical specialty (qualifier value)"
+                }
+              ]
+            }
+          }
+        ],
+        "diagnosis": [
+          {
+            "sequence": 1,
+            "diagnosisCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/fhir/sid/icd-10",
+                  "code": "I46.9",
+                  "display": "Cardiac arrest, unspecified"
+                }
+              ]
+            },
             "type": [
               {
                 "coding": [
                   {
-                    "code": "conservative",
-                    "display": "Conservative",
-                    "system": "https://nhcx.abdm.gov.in/procedure-type"
+                    "system": "http://snomed.info/sct",
+                    "code": "89100005",
+                    "display": "Final diagnosis (discharge) (contextual qualifier) (qualifier value)"
                   }
                 ]
               }
             ]
           }
         ],
-        "provider": {
-          "reference": "https://nhcx.abdm.gov.in/provider"
-        },
-        "resourceType": "Claim",
-        "status": "active",
-        "supportingInfo": [
+        "procedure": [
           {
-            "category": {
-              "coding": [
-                {
-                  "code": "INV",
-                  "display": "Document Type - Investigation",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "code": "MAND0408",
-                  "display": "Clinical notes detailing history and Admission notes showing vitals and examination findings",
-                  "system": "https://nhcx.abdm.gov.in/document-code"
-                }
-              ]
-            },
-            "id": "SupportingInformation/1",
             "sequence": 1,
-            "valueAttachment": {
-              "contentType": "application/pdf",
-              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
-              "title": "Clinical notes detailing history and Admission notes showing vitals and examination findings"
+            "procedureCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "77343006",
+                  "display": "Angiography"
+                }
+              ]
             }
           },
           {
-            "category": {
-              "coding": [
-                {
-                  "code": "INV",
-                  "display": "Document Type - Investigation",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "code": "MAND0455",
-                  "display": "CXR PA view or CECT chest abdomen and pelvis",
-                  "system": "https://nhcx.abdm.gov.in/document-code"
-                }
-              ]
-            },
-            "id": "SupportingInformation/2",
             "sequence": 2,
-            "valueAttachment": {
-              "contentType": "application/pdf",
-              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
-              "title": "CXR PA view or CECT chest abdomen and pelvis"
+            "procedureCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "418285008",
+                  "display": "Angioplasty of blood vessel"
+                }
+              ]
+            }
+          }
+        ],
+        "insurance": [
+          {
+            "sequence": 1,
+            "focal": true,
+            "coverage": {
+              "reference": "urn:uuid:889c648a-230f-4c50-bd19-cf72511147ec",
+              "display": "Coverage"
+            }
+          }
+        ],
+        "item": [
+          {
+            "sequence": 1,
+            "careTeamSequence": [
+              1
+            ],
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "77343006",
+                  "display": "Angiography"
+                }
+              ]
+            },
+            "unitPrice": {
+              "value": 10000,
+              "currency": "INR"
+            },
+            "net": {
+              "value": 10000,
+              "currency": "INR"
+            },
+            "quantity": {
+              "value": 1
             }
           },
           {
-            "category": {
+            "sequence": 2,
+            "careTeamSequence": [
+              1
+            ],
+            "productOrService": {
               "coding": [
                 {
-                  "code": "INV",
-                  "display": "Document Type - Investigation",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
+                  "system": "http://snomed.info/sct",
+                  "code": "418285008",
+                  "display": "Angioplasty of blood vessel"
                 }
               ]
             },
-            "code": {
-              "coding": [
-                {
-                  "code": "MAND0409",
-                  "display": "Any investigations done",
-                  "system": "https://nhcx.abdm.gov.in/document-code"
-                }
-              ]
+            "unitPrice": {
+              "value": 40000,
+              "currency": "INR"
             },
-            "id": "SupportingInformation/3",
+            "net": {
+              "value": 40000,
+              "currency": "INR"
+            },
+            "quantity": {
+              "value": 1
+            }
+          },
+          {
             "sequence": 3,
-            "valueAttachment": {
-              "contentType": "application/pdf",
-              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
-              "title": "Any investigations done"
+            "careTeamSequence": [
+              1
+            ],
+            "productOrService": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "309904001",
+                  "display": "Intensive care unit"
+                }
+              ]
+            },
+            "unitPrice": {
+              "value": 2000,
+              "currency": "INR"
+            },
+            "net": {
+              "value": 20000,
+              "currency": "INR"
+            },
+            "quantity": {
+              "value": 10
             }
-          },
-          {
-            "category": {
-              "coding": [
-                {
-                  "code": "INV",
-                  "display": "Document Type - Investigation",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "code": "MAND0570",
-                  "display": "Planned line of management",
-                  "system": "https://nhcx.abdm.gov.in/document-code"
-                }
-              ]
-            },
-            "id": "SupportingInformation/4",
-            "sequence": 4,
-            "valueAttachment": {
-              "contentType": "application/pdf",
-              "data": "JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iagozIDAgb2JqPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgMjAwIDEwMF0vQ29udGVudHMgNCAwIFIvUmVzb3VyY2VzPDwvRm9udDw8L0YxIDUgMCBSPj4+Pj4+ZW5kb2JqCjQgMCBvYmo8PC9MZW5ndGggNDQ+PnN0cmVhbQpCVCAvRjEgMTIgVGYgMjAgNTAgVGQgKFNhbXBsZSBkb2N1bWVudCkgVGogRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj5lbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAp0cmFpbGVyPDwvU2l6ZSA2L1Jvb3QgMSAwIFI+PgpzdGFydHhyZWYKMAolJUVPRgo=",
-              "title": "Planned line of management"
-            }
-          },
-          {
-            "category": {
-              "coding": [
-                {
-                  "code": "ONS",
-                  "display": "Period, start or end dates of aspects of the Condition. (e.g. admission, discharge etc)",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "code": "ADDD",
-                  "display": "Admission date -Discharge date",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code"
-                }
-              ]
-            },
-            "id": "SupportingInformation/5",
-            "sequence": 5,
-            "valueString": "2026-02-22T10:00:00+05:30"
-          },
-          {
-            "category": {
-              "coding": [
-                {
-                  "code": "OTH",
-                  "display": "Other",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-category"
-                }
-              ]
-            },
-            "code": {
-              "coding": [
-                {
-                  "code": "EDT",
-                  "display": "EncounterDateTime",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-supportinginfo-code"
-                }
-              ]
-            },
-            "id": "SupportingInformation/6",
-            "sequence": 6,
-            "valueString": "2026-02-22T10:00:00+05:30"
           }
         ],
         "total": {
-          "currency": "INR",
-          "value": 3300
-        },
-        "type": {
-          "coding": [
-            {
-              "code": "737481003",
-              "display": "Inpatient care management (procedure)",
-              "system": "http://snomed.info/sct"
-            }
-          ]
-        },
-        "use": "preauthorization"
+          "value": 70000,
+          "currency": "INR"
+        }
       }
     },
     {
-      "fullUrl": "https://nhcx.abdm.gov.in/patient",
+      "fullUrl": "urn:uuid:5b80f8c0-45b1-4df5-a770-27eb36b21573",
       "resource": {
-        "birthDate": "2004-09-18",
-        "gender": "male",
-        "id": "1",
-        "identifier": [
-          {
-            "type": {
-              "coding": [
-                {
-                  "code": "PMJAY",
-                  "display": "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
-                }
-              ]
-            },
-            "value": "MD5SLS4X5"
-          },
-          {
-            "type": {
-              "coding": [
-                {
-                  "code": "ABHA",
-                  "display": "Ayushman Bharat Health Account (ABHA) ID",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
-                }
-              ]
-            },
-            "value": "91718280654077"
-          },
-          {
-            "type": {
-              "coding": [
-                {
-                  "code": "MB",
-                  "display": "Member Number",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
-                }
-              ]
-            },
-            "value": "MD5SLS4X5"
-          }
-        ],
+        "resourceType": "Patient",
+        "id": "5b80f8c0-45b1-4df5-a770-27eb36b21573",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient"
           ]
         },
-        "name": [
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Patient_5b80f8c0-45b1-4df5-a770-27eb36b21573\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Patient 5b80f8c0-45b1-4df5-a770-27eb36b21573</b></p><a name=\"5b80f8c0-45b1-4df5-a770-27eb36b21573\"> </a><a name=\"hc5b80f8c0-45b1-4df5-a770-27eb36b21573\"> </a><a name=\"5b80f8c0-45b1-4df5-a770-27eb36b21573-hi-IN\"> </a><p style=\"border: 1px #661aff solid; background-color: #e6e6ff; padding: 10px;\">Beneficiary Placeholder Male, DoB: 1980-01-01 ( Adhaar number: 0000-0000-0000)</p><hr/><table class=\"grid\"><tr><td style=\"background-color: #f3f5da\" title=\"Ways to contact the Patient\">Contact Detail</td><td colspan=\"3\"><a href=\"tel:+919999999999\">+919999999999</a></td></tr></table></div>"
+        },
+        "identifier": [
           {
-            "text": "Patient Name"
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "ADN",
+                  "display": "Adhaar number"
+                }
+              ]
+            },
+            "system": "https://uidai.gov.in/",
+            "value": "0000-0000-0000"
           }
         ],
-        "resourceType": "Patient",
+        "name": [
+          {
+            "text": "Beneficiary Placeholder"
+          }
+        ],
         "telecom": [
           {
             "system": "phone",
-            "value": "9999999999"
+            "value": "+919999999999",
+            "use": "home"
           }
-        ]
+        ],
+        "gender": "male",
+        "birthDate": "1980-01-01"
       }
     },
     {
-      "fullUrl": "https://nhcx.abdm.gov.in/provider",
+      "fullUrl": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
       "resource": {
-        "id": "1",
-        "identifier": [
-          {
-            "system": "https://nhcx.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "NPI",
-                  "display": "National provider identifier",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
-                }
-              ]
-            },
-            "value": "IN1910000151"
-          }
-        ],
+        "resourceType": "Organization",
+        "id": "0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
           ]
         },
-        "name": "Facility Name",
-        "resourceType": "Organization",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Organization_0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Organization 0f312cc8-5d6c-4f6d-8d95-0f99df062d70</b></p><a name=\"0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"> </a><a name=\"hc0f312cc8-5d6c-4f6d-8d95-0f99df062d70\"> </a><a name=\"0f312cc8-5d6c-4f6d-8d95-0f99df062d70-hi-IN\"> </a><p><b>identifier</b>: Registry of Hospitals in Network of Insurance (ROHINI) ID/4567878</p><p><b>type</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/organization-type ins}\">Insurance Company</span></p><p><b>name</b>: XYZ Insurance Co. Ltd.</p><p><b>telecom</b>: <a href=\"tel:+9124326341234\">+91 243 2634 1234</a>, <a href=\"mailto:contact@xyz.org\">contact@xyz.org</a></p></div>"
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
+                  "code": "ROHINI",
+                  "display": "Registry of Hospitals in Network of Insurance (ROHINI) ID"
+                }
+              ]
+            },
+            "system": "https://rohini.iib.gov.in/",
+            "value": "4567878"
+          }
+        ],
         "type": [
           {
             "coding": [
               {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                "code": "ins",
+                "display": "Insurance Company"
+              }
+            ]
+          }
+        ],
+        "name": "XYZ Insurance Co. Ltd.",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+91 243 2634 1234",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "contact@xyz.org",
+            "use": "work"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9cba8230-b666-438b-811c-f70c5df8990e",
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Organization_9cba8230-b666-438b-811c-f70c5df8990e\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Organization 9cba8230-b666-438b-811c-f70c5df8990e</b></p><a name=\"9cba8230-b666-438b-811c-f70c5df8990e\"> </a><a name=\"hc9cba8230-b666-438b-811c-f70c5df8990e\"> </a><a name=\"9cba8230-b666-438b-811c-f70c5df8990e-hi-IN\"> </a><p><b>identifier</b>: Provider number/45675454</p><p><b>type</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/organization-type prov}\">Healthcare Provider</span></p><p><b>name</b>: XYZ Hospital Co. Ltd.</p><p><b>telecom</b>: <a href=\"tel:+9124326341278\">+91 243 2634 1278</a>, <a href=\"mailto:contact@xyz.org\">contact@xyz.org</a></p></div>"
+        },
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "PRN",
+                  "display": "Provider number"
+                }
+              ]
+            },
+            "system": "https://facility.ndhm.gov.in",
+            "value": "45675454"
+          }
+        ],
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
                 "code": "prov",
-                "display": "Healthcare Provider",
-                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
+                "display": "Healthcare Provider"
               }
             ]
+          }
+        ],
+        "name": "XYZ Hospital Co. Ltd.",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+91 243 2634 1278",
+            "use": "work"
+          },
+          {
+            "system": "email",
+            "value": "contact@xyz.org",
+            "use": "work"
           }
         ]
       }
     },
     {
-      "fullUrl": "https://nhcx.abdm.gov.in/payer",
+      "fullUrl": "urn:uuid:f35c3aa2-f39e-46b4-a277-1445445fb535",
       "resource": {
-        "id": "2",
-        "identifier": [
-          {
-            "system": "https://nhcx.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "NIIP",
-                  "display": "National Insurance Payor Identifier (Payor)",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
-                }
-              ]
-            },
-            "value": "1518"
-          }
-        ],
-        "meta": {
-          "profile": [
-            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
-          ]
-        },
-        "name": "Insurance Company",
-        "resourceType": "Organization",
-        "type": [
-          {
-            "coding": [
-              {
-                "code": "pay",
-                "display": "Payer",
-                "system": "http://terminology.hl7.org/CodeSystem/organization-type"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "fullUrl": "https://nhcx.abdm.gov.in/practitioner",
-      "resource": {
-        "id": "1",
-        "identifier": [
-          {
-            "system": "https://nhcx.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "HPID",
-                  "display": "Healthcare Professional ID (HPID)",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
-                }
-              ]
-            },
-            "value": "982374978-2343"
-          },
-          {
-            "system": "https://nhcx.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "MD",
-                  "display": "Medical License number",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
-                }
-              ]
-            },
-            "value": "MCI-12345"
-          },
-          {
-            "system": "https://hpr.abdm.gov.in",
-            "type": {
-              "coding": [
-                {
-                  "code": "HPIN",
-                  "display": "Health Practitioner ID issued by NDHM",
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code"
-                }
-              ]
-            },
-            "value": "982374978-2343"
-          }
-        ],
+        "resourceType": "Practitioner",
+        "id": "f35c3aa2-f39e-46b4-a277-1445445fb535",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner"
           ]
         },
-        "name": [
-          {
-            "text": "Practitioner Name"
-          }
-        ],
-        "qualification": [
-          {
-            "code": {
-              "coding": [
-                {
-                  "code": "MD",
-                  "display": "Doctor of Medicine",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0360"
-                }
-              ]
-            }
-          }
-        ],
-        "resourceType": "Practitioner"
-      }
-    },
-    {
-      "fullUrl": "https://nhcx.abdm.gov.in/coverage",
-      "resource": {
-        "beneficiary": {
-          "reference": "https://nhcx.abdm.gov.in/patient"
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Practitioner_f35c3aa2-f39e-46b4-a277-1445445fb535\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Practitioner f35c3aa2-f39e-46b4-a277-1445445fb535</b></p><a name=\"f35c3aa2-f39e-46b4-a277-1445445fb535\"> </a><a name=\"hcf35c3aa2-f39e-46b4-a277-1445445fb535\"> </a><a name=\"f35c3aa2-f39e-46b4-a277-1445445fb535-hi-IN\"> </a><p><b>identifier</b>: Medical License number/21-1521-3828-3227</p><p><b>name</b>: Dr. Aayush Agrawal</p></div>"
         },
-        "id": "1",
         "identifier": [
           {
             "type": {
               "coding": [
                 {
-                  "code": "NH",
-                  "display": "National Health Plan Identifier",
-                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MD",
+                  "display": "Medical License number"
                 }
               ]
             },
-            "value": "PMJAY/HP/S/G"
+            "system": "https://doctor.ndhm.gov.in",
+            "value": "21-1521-3828-3227"
           }
         ],
+        "name": [
+          {
+            "text": "Dr. Aayush Agrawal"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:889c648a-230f-4c50-bd19-cf72511147ec",
+      "resource": {
+        "resourceType": "Coverage",
+        "id": "889c648a-230f-4c50-bd19-cf72511147ec",
         "meta": {
           "profile": [
             "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Coverage"
           ]
         },
-        "payor": [
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\"><a name=\"Coverage_889c648a-230f-4c50-bd19-cf72511147ec\"> </a><p class=\"res-header-id\"><b>Generated Narrative: Coverage 889c648a-230f-4c50-bd19-cf72511147ec</b></p><a name=\"889c648a-230f-4c50-bd19-cf72511147ec\"> </a><a name=\"hc889c648a-230f-4c50-bd19-cf72511147ec\"> </a><a name=\"889c648a-230f-4c50-bd19-cf72511147ec-hi-IN\"> </a><p><b>identifier</b>: <code>https://xyzinsurance.in/policynumber/</code>/235037120</p><p><b>status</b>: Active</p><p><b>type</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/v3-ActCode HIP}\">health insurance plan policy</span></p><p><b>subscriber</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5b80f8c0-45b1-4df5-a770-27eb36b21573\">Patient</a></p><p><b>subscriberId</b>: ABC123456BI007</p><p><b>beneficiary</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-5b80f8c0-45b1-4df5-a770-27eb36b21573\">Patient</a></p><p><b>relationship</b>: <span title=\"Codes:{http://terminology.hl7.org/CodeSystem/subscriber-relationship self}\">Self</span></p><p><b>period</b>: ?? --&gt; 2026-03-17</p><p><b>payor</b>: <a href=\"Bundle-TaskBundleForCommunicationRequest-example-01.html#urn-uuid-0f312cc8-5d6c-4f6d-8d95-0f99df062d70\">Organization</a></p></div>"
+        },
+        "identifier": [
           {
-            "reference": "https://nhcx.abdm.gov.in/payer"
+            "system": "https://xyzinsurance.in/policynumber/",
+            "value": "235037120"
           }
         ],
-        "relationship": {
-          "coding": [
-            {
-              "code": "self",
-              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship"
-            }
-          ]
-        },
-        "resourceType": "Coverage",
         "status": "active",
-        "subscriber": {
-          "reference": "https://nhcx.abdm.gov.in/patient"
-        },
-        "subscriberId": "MD5SLS4X5",
         "type": {
           "coding": [
             {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
               "code": "HIP",
-              "display": "health insurance plan policy",
-              "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+              "display": "health insurance plan policy"
             }
           ]
-        }
+        },
+        "subscriber": {
+          "reference": "urn:uuid:5b80f8c0-45b1-4df5-a770-27eb36b21573",
+          "display": "Patient"
+        },
+        "subscriberId": "ABC123456BI007",
+        "beneficiary": {
+          "reference": "urn:uuid:5b80f8c0-45b1-4df5-a770-27eb36b21573",
+          "display": "Patient"
+        },
+        "relationship": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/subscriber-relationship",
+              "code": "self"
+            }
+          ]
+        },
+        "period": {
+          "end": "2026-03-17"
+        },
+        "payor": [
+          {
+            "reference": "urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70",
+            "display": "Organization"
+          }
+        ]
       }
     }
   ],
   "id": "communication-response-generic",
   "identifier": {
-    "system": "https://payer.pmjay.nha.gov.in",
-    "value": "VB26AA2600001-R1"
+    "system": "https://nhcx.abdm.gov.in",
+    "value": "98765432-R1"
   },
   "meta": {
-    "lastUpdated": "2026-03-08T11:01:00+05:30",
+    "lastUpdated": "2025-03-08T11:01:00+05:30",
     "profile": [
       "https://nrces.in/ndhm/fhir/r4/StructureDefinition/TaskBundle"
     ]
   },
   "resourceType": "Bundle",
-  "timestamp": "2026-03-08T11:01:00+05:30",
+  "timestamp": "2025-03-08T11:01:00+05:30",
   "type": "collection"
 }

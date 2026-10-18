@@ -114,8 +114,8 @@ Sent on `/v1/communication/on_request`.
 | 3 | `CommunicationRequest` | [CommunicationRequest](https://nrces.in/ndhm/fhir/r4/StructureDefinition-CommunicationRequest.html) |
 | 4 | `Claim` | [Claim](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Claim.html) |
 | 5 | `Patient` | [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html) |
-| 6 | `Organization (prov)` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
-| 7 | `Organization (pay)` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
+| 6 | `Organization (ins)` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
+| 7 | `Organization (prov)` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
 | 8 | `Practitioner` | [Practitioner](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Practitioner.html) |
 | 9 | `Coverage` | [Coverage](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Coverage.html) |
 
@@ -127,14 +127,14 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 
 | Element | Example |
 | :-- | :-- |
-| `authoredOn` | `2026-03-08T11:01:00+05:30` |
+| `authoredOn` | `2025-03-08T11:01:00+05:30` |
 | `code.coding[]` | `deliver` in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes` |
 | `input[].type.coding[]` | `include` in `http://terminology.hl7.org/CodeSystem/financialtaskinputtype` |
 | `input[].valueReference` | display `Communication`, reference `urn:uuid:7d9e2a64-3b1f-4f0c-8a5e-6c4b2d9f1e37` |
 | `intent` | `order` |
-| `owner` | display `Organization`, reference `https://nhcx.abdm.gov.in/payer` |
+| `owner` | reference `urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70`, display `Organization` |
 | `reasonCode.coding[]` | `additionalinfo` Additional information request in `https://nhcx.abdm.gov.in/communication-reason` |
-| `requester` | display `Organization`, reference `https://nhcx.abdm.gov.in/provider` |
+| `requester` | reference `urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e`, display `Organization` |
 | `status` | `completed` |
 
 #### 2. Communication
@@ -143,7 +143,7 @@ NRCeS profile: [Communication](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 
 | Element | Example |
 | :-- | :-- |
-| `about[]` | display `Claim VB26AA2600001`, reference `https://nhcx.abdm.gov.in/preauth/request` |
+| `about[]` | reference `urn:uuid:5638dd69-795d-4c30-a916-71467877be0c`, display `Claim 98765432` |
 | `basedOn[]` | display `CommunicationRequest`, reference `urn:uuid:08f1bb6f-c3f5-4578-b5e8-c042764e2477` |
 | `category[].coding[]` | `notification` in `http://terminology.hl7.org/CodeSystem/communication-category` |
 | `identifier[]` | value `4524657454` |
@@ -151,9 +151,10 @@ NRCeS profile: [Communication](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 | `payload[].contentAttachment` | contentType `application/pdf`, title `Angiography report` |
 | `payload[].extension[]` | url `<participant-defined>`, valueString `DIA` |
 | `priority` | `routine` |
-| `recipient[]` | display `Organization`, reference `https://nhcx.abdm.gov.in/payer` |
-| `sender` | display `Organization`, reference `https://nhcx.abdm.gov.in/provider` |
+| `recipient[]` | reference `urn:uuid:0f312cc8-5d6c-4f6d-8d95-0f99df062d70`, display `Organization` |
+| `sender` | reference `urn:uuid:9cba8230-b666-438b-811c-f70c5df8990e`, display `Organization` |
 | `status` | `completed` |
+| `sent` | `2025-03-08T11:01:00+05:30` |
 
 The `CommunicationRequest`, `Claim`, `Patient`, `Organization`, `Practitioner`, `Coverage` entries are shaped as in the chapters that introduce them.
 

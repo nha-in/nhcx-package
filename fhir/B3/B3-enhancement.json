@@ -565,7 +565,7 @@
                 }
               ]
             },
-            "factor": 0.5,
+            "factor": 1,
             "careTeamSequence": [
               1
             ],

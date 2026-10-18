@@ -21,7 +21,7 @@
         },
         "identifier": [
           {
-            "system": "https://nhcx.gov.in/task",
+            "system": "https://nhcx.abdm.gov.in",
             "value": "SR0000000001"
           }
         ],
@@ -49,9 +49,9 @@
             "type": {
               "coding": [
                 {
-                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code",
-                  "code": "ClaimNumber",
-                  "display": "Claim Number"
+                  "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
+                  "code": "claimNumber",
+                  "display": "ClaimNumber"
                 }
               ]
             },
@@ -68,10 +68,24 @@
         "name": "Provider Hospital",
         "identifier": [
           {
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NPI",
+                  "display": "National provider identifier"
+                }
+              ]
+            },
             "system": "https://facility.abdm.gov.in",
             "value": "IN0000000001"
           }
-        ]
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        }
       }
     },
     {
@@ -82,10 +96,24 @@
         "name": "Payer Insurance Co",
         "identifier": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "NIIP",
+                  "display": "National Insurance Payor Identifier (Payor)"
+                }
+              ]
+            },
+            "system": "https://nhcx.abdm.gov.in",
             "value": "1000"
           }
-        ]
+        ],
+        "meta": {
+          "profile": [
+            "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Organization"
+          ]
+        }
       }
     }
   ]

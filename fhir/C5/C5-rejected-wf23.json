@@ -136,8 +136,8 @@
                 "reason": {
                   "coding": [
                     {
-                      "code": "Requested",
-                      "display": "Requested"
+                      "code": "Rejected",
+                      "display": "Rejected"
                     }
                   ]
                 }

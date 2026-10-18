@@ -91,12 +91,6 @@
             "display": "CommunicationRequest"
           }
         ],
-        "inResponseTo": [
-          {
-            "reference": "urn:uuid:e6c95fe2-3bd5-5c9f-bf78-47959029cfe2",
-            "display": "CommunicationRequest"
-          }
-        ],
         "about": [
           {
             "reference": "https://nhcx.abdm.gov.in/claim/request",

@@ -17,8 +17,8 @@ Sent on `/v1/search/submit`.
 | # | Resource | Profile |
 | :-- | :-- | :-- |
 | 1 | `Task` | [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html) |
-| 2 | `Organization` | none declared; NRCeS [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
-| 3 | `Organization` | none declared; NRCeS [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
+| 2 | `Organization` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
+| 3 | `Organization` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
 
 ### Elements
 
@@ -28,7 +28,7 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 
 | Element | Example |
 | :-- | :-- |
-| `identifier[]` | system `https://nhcx.gov.in/task`, value `SR0000000001` |
+| `identifier[]` | system `https://nhcx.abdm.gov.in`, value `SR0000000001` |
 | `status` | `requested` |
 | `intent` | `order` |
 | `code.coding[]` | `search` Search in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes` |
@@ -37,7 +37,7 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 | `requester` | reference `urn:uuid:e0000001-0000-0000-0000-000000000002` |
 | `owner` | reference `urn:uuid:e0000001-0000-0000-0000-000000000003` |
 | `input[]` | valueString `CL0000000001` |
-| `input[].type.coding[]` | `ClaimNumber` Claim Number in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code` |
+| `input[].type.coding[]` | `claimNumber` ClaimNumber in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code` |
 
 The `Organization` entries are shaped as in the chapters that introduce them.
 
@@ -50,9 +50,9 @@ Sent on `/v1/search/on_submit`.
 | # | Resource | Profile |
 | :-- | :-- | :-- |
 | 1 | `Task` | [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.html) |
-| 2 | `ClaimResponse` | none declared; NRCeS [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition-ClaimResponse.html) |
-| 3 | `Patient` | none declared; NRCeS [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html) |
-| 4 | `Organization` | none declared; NRCeS [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
+| 2 | `ClaimResponse` | [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition-ClaimResponse.html) |
+| 3 | `Patient` | [Patient](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Patient.html) |
+| 4 | `Organization` | [Organization](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Organization.html) |
 
 ### Elements
 
@@ -65,8 +65,12 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 | `status` | `completed` |
 | `intent` | `order` |
 | `code.coding[]` | `search` Search in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes` |
-| `output[].type.coding[]` | `ClaimResponse` in `http://hl7.org/fhir/resource-types` |
-| `output[].valueReference` | reference `urn:uuid:e0000001-0000-0000-0000-000000000011` |
+| `output[].type.coding[]` | `include` Include in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-output-type` |
+| `output[].valueReference` | reference `urn:uuid:e0000001-0000-0000-0000-000000000011`, display `ClaimResponse` |
+| `identifier[]` | system `https://nhcx.abdm.gov.in`, value `SR0000000001` |
+| `authoredOn` | `2026-02-26T12:05:00+05:30` |
+| `input[]` | valueString `CL0000000001` |
+| `input[].type.coding[]` | `claimNumber` ClaimNumber in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code` |
 
 #### 2. ClaimResponse
 
@@ -74,11 +78,14 @@ NRCeS profile: [ClaimResponse](https://nrces.in/ndhm/fhir/r4/StructureDefinition
 
 | Element | Example |
 | :-- | :-- |
+| `identifier[]` | system `https://nhcx.abdm.gov.in`, value `CL0000000001` |
+| `identifier[].type.coding[]` | `CLN` Claim number in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code` |
 | `status` | `active` |
-| `type.coding[]` | `institutional` |
+| `type.coding[]` | `institutional` Institutional in `http://terminology.hl7.org/CodeSystem/claim-type` |
 | `use` | `claim` |
-| `patient` | reference `Patient/1` |
-| `insurer` | reference `Organization/2` |
+| `patient` | reference `urn:uuid:e0000001-0000-0000-0000-000000000012` |
+| `created` | `2026-02-26T12:05:00+05:30` |
+| `insurer` | reference `urn:uuid:e0000001-0000-0000-0000-000000000013` |
 | `outcome` | `complete` |
 
 The `Patient`, `Organization` entries are shaped as in the chapters that introduce them.

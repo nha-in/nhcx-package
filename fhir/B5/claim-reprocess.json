@@ -27,7 +27,7 @@
             }
           ]
         },
-        "description": "Reprocess the claim EO26AA2700001 - rejection disputed, additional evidence attached",
+        "description": "Reprocess the rejected claim EO26AA2700002: rejection disputed, additional evidence attached",
         "authoredOn": "2026-03-05T11:20:00+05:30",
         "requester": {
           "reference": "https://nhcx.abdm.gov.in/provider"
@@ -57,9 +57,9 @@
                 ]
               },
               "system": "https://nhcx.abdm.gov.in",
-              "value": "EO26AA2700001"
+              "value": "EO26AA2700002"
             },
-            "display": "Claim EO26AA2700001"
+            "display": "Claim EO26AA2700002"
           }
         ],
         "input": [
@@ -73,7 +73,7 @@
                 }
               ]
             },
-            "valueString": "EO26AA2700001"
+            "valueString": "EO26AA2700002"
           },
           {
             "type": {
@@ -85,7 +85,7 @@
                 }
               ]
             },
-            "valueString": "EO26AA2700001"
+            "valueString": "EO26AA2700002"
           },
           {
             "type": {

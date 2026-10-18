@@ -409,7 +409,7 @@
               "value": 3300,
               "currency": "INR"
             },
-            "factor": 0.5,
+            "factor": 1,
             "net": {
               "value": 3300,
               "currency": "INR"

@@ -29,7 +29,7 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 | `requester` | reference `https://nhcx.abdm.gov.in/provider` |
 | `owner` | reference `https://nhcx.abdm.gov.in/payer` |
 | `description` | `Treatment plan changed; withdrawn.` |
-| `reasonCode.coding[]` | `treatmentplanchanged` Treatment plan changed during hospitalization in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code` |
+| `reasonCode.coding[]` | `treatmentplanchanged` Treatment plan changed during hospitalization. in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-reason-code` |
 | `input[]` | valueString `NM-26-0SE00002I` |
 | `input[].type.coding[]` | `claimNumber` ClaimNumber in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code` |
 |  | `intimationNumber` Intimation Number in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code` |
@@ -149,7 +149,7 @@ NRCeS profile: [Task](https://nrces.in/ndhm/fhir/r4/StructureDefinition-Task.htm
 | `input[]` | valueString `EO26AA2700001` |
 | `input[].type.coding[]` | `claimNumber` ClaimNumber in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code` |
 |  | `amount` Amount in `https://nhcx.abdm.gov.in/task-input-type` |
-| `input[].valueMoney` | value `1650`, currency `INR` |
+| `input[].valueMoney` | value `270`, currency `INR` |
 
 #### 2. Organization (prov)
 

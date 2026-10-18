@@ -122,7 +122,7 @@ use_cases:
         direction: request
         side: provider
         scheme: generic
-        workflow: null
+        workflow: "1"
         focal: Task
         api: /v1/insuranceplan/request
         builder: insurance/request
@@ -310,7 +310,7 @@ use_cases:
         resource_type: Bundle
         entries: 7
         label: Claim query reply
-        summary: The claim resubmitted with the reply to a query as an NMI supportingInfo entry.
+        summary: "A queried claim answered on the claim endpoint, with the reply as an NMI supportingInfo entry. PMJAY takes this on 161; a generic payer's query is answered on the communication API (B4). A decided claim is never sent again."
         direction: request
         side: provider
         scheme: generic
@@ -323,7 +323,7 @@ use_cases:
         resource_type: Bundle
         entries: 3
         label: Release request
-        summary: "Asking for a balance amount to be released after a partial payment: a release Task with the claim number and the amount as inputs."
+        summary: "Asking for the balance after a partial payment: a release Task, reason partialpayment, with the claim number and the amount cut by the adjudication as inputs."
         direction: request
         side: provider
         scheme: generic
@@ -336,7 +336,7 @@ use_cases:
         resource_type: Bundle
         entries: 3
         label: Reprocess request
-        summary: "Disputing an adjudication: a reprocess Task naming the claim and intimation numbers, with the fresh evidence as document inputs."
+        summary: "Disputing a rejection: a reprocess Task, reason claimrejected, for a claim the payer rejected, naming the claim and intimation numbers, with the fresh evidence as document inputs."
         direction: request
         side: provider
         scheme: generic
@@ -429,7 +429,7 @@ use_cases:
         resource_type: Bundle
         entries: 3
         label: Reprocess request
-        summary: "A decided claim sent back for another look: a reprocess Task with the claim and intimation numbers."
+        summary: "A rejected claim sent back for another look: a reprocess Task, reason claimrejected, with the claim and intimation numbers."
         direction: request
         side: provider
         scheme: generic
@@ -454,8 +454,8 @@ use_cases:
         workflow: null
         focal: Claim
         api: /v1/predetermination/submit
-        builder: preauth/predetermination
         origin: example
+        note: Not in the provider flow the package builds; there is no predetermination builder case. Kept as the reference shape.
   C3:
     title: Respond to coverage eligibility
     folder: package/fhir/C3
@@ -487,6 +487,7 @@ use_cases:
         focal: CoverageEligibilityResponse
         api: /v1/coverageeligibility/on_check
         origin: wire
+        note: "Captured on 10 Sep 2026. Its last authorizationSupporting entry names the package's STG form, which today's payer no longer publishes; it now names the procedure's own form as fullUrl: <url>, and quotes the package rate as a Procedure benefit, not as benefit."
       - file: C3-response-pmjay.json
         resource_type: Bundle
         entries: 12
@@ -569,6 +570,7 @@ use_cases:
         focal: InsurancePlan
         api: /v1/insuranceplan/on_request
         origin: wire
+        note: "Captured on 10 Sep 2026, before the payer dropped the STG questionnaire. It still names one STG form per package as a flat Claim-SupportingInfoRequirement and carries no policy form. Today's payer points a procedure's forms from its plan.specificCost benefit and the policy's forms from coverage[0].extension, each as INF / ODN with a documentationUrl."
       - file: C4-response-pmjay.json
         resource_type: Bundle
         entries: 7
@@ -986,14 +988,15 @@ use_cases:
         resource_type: Bundle
         entries: 5
         label: Predetermination response
-        summary: "The verdict on a predetermination: a ClaimResponse with use predetermination and outcome complete. Nothing is authorised by it."
+        summary: "The verdict on the B9 predetermination PD0000000001: a ClaimResponse with use predetermination, outcome complete and no preAuthRef. Nothing is authorised by it."
         direction: response
         side: payer
         scheme: generic
         workflow: null
         focal: ClaimResponse
         api: /v1/predetermination/on_submit
-        origin: wire
+        origin: example
+        note: Not in the provider flow the package builds. Kept as the reference shape.
   D1:
     title: Fetch the insurance plan
     folder: package/fhir/D1
@@ -1007,7 +1010,7 @@ use_cases:
         direction: request
         side: provider
         scheme: pmjay
-        workflow: null
+        workflow: "1"
         focal: Task
         api: /v1/insuranceplan/request
         builder: insurance/request

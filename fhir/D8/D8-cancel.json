@@ -62,8 +62,8 @@
               "coding": [
                 {
                   "system": "https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-input-type-code",
-                  "code": "intimationNumber",
-                  "display": "Intimation Number"
+                  "code": "initimationNumber",
+                  "display": "InitimationNumber"
                 }
               ]
             },

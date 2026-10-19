@@ -115,7 +115,7 @@ Data: [D9. claim](../database/D9-claim.md)
 
 Data: D10. claim_plan (in nhcx-coverage)
 
-Data: D13. claim_auth (in nhcx-coverage)
+Data: [D13. claim_auth](../database/D13-claim-auth.md)
 
 Data: D18. claim_preauth (in nhcx-preauth)
 

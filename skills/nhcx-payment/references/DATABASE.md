@@ -18,6 +18,12 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 |---|---|---|---|---|---|---|
 | [D9](../database/D9-claim.md) | claim | Claim episode (case) around one selected policy, from eligibility to payment. | [S5](../screens/S5-claim-master.md), [S6](../screens/S6-claim-detail.md), [S12](../screens/S12-payments.md) | [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md), [C10](../callbacks/C10-paymentnotice-request.md) | [F3](../fhir/F3-coverage-eligibility-response.md), [F13](../fhir/F13-paymentnotice.md), [F14](../fhir/F14-payment-acknowledgement.md), [F15](../fhir/F15-patient.md), [F17](../fhir/F17-organization.md), [F18](../fhir/F18-coverage.md) |
 
+## Package master and ruling
+
+| # | Table | What one row is | Screens | APIs | Callbacks | FHIR |
+|---|---|---|---|---|---|---|
+| [D13](../database/D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [S6](../screens/S6-claim-detail.md), [S19](../screens/S19-nhcx-settings.md) | [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) | [F3](../fhir/F3-coverage-eligibility-response.md) |
+
 ## Legs and verdicts
 
 | # | Table | What one row is | Screens | APIs | Callbacks | FHIR |

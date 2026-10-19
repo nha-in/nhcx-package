@@ -6,7 +6,7 @@ Every call the application makes for NHCX, in one list. Each row links to its fu
 
 | # | API | Call | What it does | Replies | Screens |
 |---|---|---|---|---|---|
-| [A8](../apis/A8-paymentnotice-on-request.md) | Payment Notice Acknowledgement | `gateway.send("v1/paymentnotice/on_request")` | Tells the payer a payment notice was received. Sent automatically when a notice is recorded; re-sent by hand when that failed. | [C10](../callbacks/C10-paymentnotice-request.md) | [S12](../screens/S12-payments.md) |
+| [A8](../apis/A8-paymentnotice-on-request.md) | Payment Notice Acknowledgement | `gateway.send("v1/paymentnotice/on_request")` | Tells the payer a payment notice was received. Sent automatically when a notice is recorded; re-sent by hand when that failed. | [C10](../callbacks/C10-paymentnotice-request.md) | [S12](../screens/S12-payments.md), [S19](../screens/S19-nhcx-settings.md) |
 
 ## Ledger queries (polling)
 
@@ -23,4 +23,4 @@ Polling is the fallback when a callback is missed. Opening a claim runs these fo
 
 | # | API | Call | What it does | Replies | Screens |
 |---|---|---|---|---|---|
-| [A17](../apis/A17-claim-state.md) | Claim State | `GET claims/view/:caseid/state` | Runs the same polls as opening the claim, then returns everything the claim's tabs show as one JSON document, for scripted drivers and tests. | none | [S6](../screens/S6-claim-detail.md) |
+| [A17](../apis/A17-claim-state.md) | Claim State | `GET claims/view/:caseid/state` | Runs the same polls as opening the claim, then returns everything the claim's tabs show as one JSON document, for scripted drivers and tests. | none | [S6](../screens/S6-claim-detail.md), [S12](../screens/S12-payments.md) |

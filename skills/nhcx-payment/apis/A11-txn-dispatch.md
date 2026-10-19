@@ -59,7 +59,7 @@ A leg whose dispatch is not failed keeps waiting. Any other failure of this call
 
 #### A11P. PSEUDOCODE
 
-When: inside the A10 poll, after A10 found no reply. The whole loop is in A10P; the parts that call this endpoint are below. Rows written: `claim` ([D9](../database/D9-claim.md)), `claim_plan` (D10 (in nhcx-coverage)), `claim_auth` (D13 (in nhcx-coverage)), `claim_preauth` (D18 (in nhcx-preauth)), `claim_predetermination` (D19 (in nhcx-preauth)), `claim_submission` ([D20](../database/D20-claim-submission.md)), `claim_enquiry` (D29 (in nhcx-preauth)).
+When: inside the A10 poll, after A10 found no reply. The whole loop is in A10P; the parts that call this endpoint are below. Rows written: `claim` ([D9](../database/D9-claim.md)), `claim_plan` (D10 (in nhcx-coverage)), `claim_auth` ([D13](../database/D13-claim-auth.md)), `claim_preauth` (D18 (in nhcx-preauth)), `claim_predetermination` (D19 (in nhcx-preauth)), `claim_submission` ([D20](../database/D20-claim-submission.md)), `claim_enquiry` (D29 (in nhcx-preauth)).
 
 ```text
 POLL(leg, row):                                   # outline, full version in A10P

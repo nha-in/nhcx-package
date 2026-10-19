@@ -1,7 +1,7 @@
 # D15. claim_auth_requirement
 
 #### D15T. TABLE
-One row is one document or form the payer's ruling says the procedure set must be accompanied by; primary key `id`; parent table D13. claim_auth (in nhcx-coverage).
+One row is one document or form the payer's ruling says the procedure set must be accompanied by; primary key `id`; parent table [D13. claim_auth](D13-claim-auth.md).
 
 #### D15D. DESCRIPTION
 Read from each `authorizationSupporting` entry of every item in the payer's `auth-requirements` reply. The payer packs the deciding facts into the entry's free-text `text`, and the payer adapter reads them [PAYER](../references/PAYERS.md#markers):
@@ -28,7 +28,7 @@ Lifecycle:
 | column | type | null/default | meaning (and allowed values) |
 |---|---|---|---|
 | id | INTEGER | primary key | row id |
-| auth_id | INTEGER | NOT NULL | the ruling (D13 (in nhcx-coverage)) |
+| auth_id | INTEGER | NOT NULL | the ruling ([D13](D13-claim-auth.md)) |
 | seq | INTEGER | NOT NULL, default `1` | order in the reply after de-duplication |
 | kind | TEXT | NOT NULL | `document` or `form` |
 | code | TEXT | null | document type code from the entry's coding |
@@ -40,7 +40,7 @@ Lifecycle:
 
 #### D15K. KEYS AND INDEXES
 - Primary key `id` (integer).
-- `auth_id` references D13. claim_auth (in nhcx-coverage) `id`, `ON DELETE CASCADE`.
+- `auth_id` references [D13. claim_auth](D13-claim-auth.md) `id`, `ON DELETE CASCADE`.
 - No unique constraint (de-duplication is done by the parser).
 - Index: `ix_claim_auth_req (auth_id, seq)`.
 - `form_url` names a [D12. claim_plan_form](D12-claim-plan-form.md) `url`, and `for_code` a [D16. claim_line](D16-claim-line.md) `code` (no foreign keys). Uploaded files are matched to a document requirement by `code` in [D28. claim_document](D28-claim-document.md).
@@ -49,4 +49,4 @@ Lifecycle:
 - Screens: [S11. Claim Submission](../screens/S11-claim-submission.md)
 - APIs: [A17. Claim State](../apis/A17-claim-state.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md)
-- Database: [D11. claim_plan_benefit](D11-claim-plan-benefit.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D28. claim_document](D28-claim-document.md)
+- Database: [D11. claim_plan_benefit](D11-claim-plan-benefit.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D13. claim_auth](D13-claim-auth.md), [D28. claim_document](D28-claim-document.md)

@@ -8,7 +8,7 @@ One row is one diagnosis quoted on a claim's pre-authorisation draft, held in IC
 
 Where the diagnoses come from: the ICD-10 diagnoses the desk picks on the form, each a `diagnosis` term (D8); a code that is not a term is skipped, and one picked twice is kept once. When an admission is linked and the form has never been saved, the form is pre-filled from the admission's unresolved conditions (D5, category `diagnosis`) that carry an ICD-10 code; the desk may change them, and only what is saved counts.
 
-For a term: `icd10_code` and `icd10_display` are the term's code and display; `snomed_code` and `snomed_display` are its mapped SNOMED CT concept (the terminology's mapping, else the term's `alt_code`, `alt_display`), empty when there is none. The desk picks ICD-10 ([S4. Pre-authorisation Details and Admission Link](../screens/S4-claim-creation-form.md)); the SNOMED CT is mapped, never typed, and its absence never refuses a save. At least one diagnosis is required ("Pick at least one ICD-10 diagnosis - the payer needs it.").
+For a term: `icd10_code` and `icd10_display` are the term's code and display; `snomed_code` and `snomed_display` are its mapped SNOMED CT concept (the terminology's mapping, else the term's `alt_code`, `alt_display`), empty when there is none. The desk picks ICD-10 ([S4. Pre-authorisation Details and Admission Link](../screens/S4-claim-creation-form.md)); the SNOMED CT is mapped, never typed, and its absence never refuses a save. At least one diagnosis is required ("Pick at least one ICD-10 diagnosis - the payer needs it."). Each diagnosis is sent to the save as its ICD-10 code (taken as `provisional`) or as `{code, type}` with `type` `provisional` or `final`; any other type is refused "Mark each diagnosis provisional or final." and is stored as `dx_type`.
 
 **Read.** Every pre-authorisation, enhancement and claim bundle requires at least one row ("Quote at least one ICD-10 diagnosis.") and sends each row as one Claim diagnosis in `seq` order, with the ICD-10 coding first and the SNOMED CT coding second when the row has one ([F8. Claim](../fhir/F8-claim.md)).
 
@@ -24,6 +24,7 @@ For a term: `icd10_code` and `icd10_display` are the term's code and display; `s
 | snomed_display | TEXT | null | SNOMED CT display |
 | icd10_code | TEXT | NOT NULL | ICD-10 code the desk picked; the payer adjudicates on it; sent as the first coding |
 | icd10_display | TEXT | null | ICD-10 display |
+| dx_type | TEXT | NOT NULL, default `provisional` | `provisional` or `final`, as the desk marks the row on [S4. Pre-authorisation Details and Admission Link](../screens/S4-claim-creation-form.md); sent as the diagnosis type ([F8. Claim](../fhir/F8-claim.md): SNOMED CT 148006 Preliminary diagnosis, or 89100005 Final diagnosis) |
 
 #### D25K. KEYS AND INDEXES
 - Primary key `id` (integer).

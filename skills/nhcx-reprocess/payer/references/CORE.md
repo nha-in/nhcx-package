@@ -125,7 +125,7 @@ Plain JSON with the session token: no JWE, no protocol headers, no ledger row.
 | Exchange | NHA | Our API | Send route | Bundle sent | Workflow id | `x-hcx-status` | Reply arrives on | Bundle back | Callback |
 |---|---|---|---|---|---|---|---|---|---|
 | Query the hospital | nha:C6 | A5 (in nhcx-communication/payer) | `v1/communication/request` | [F11](../fhir/F11-communicationrequest.md) | 24 pre-authorisation, 241 enhancement, 27 claim | `request.initiated` | `v1/communication/on_request` | [F12](../fhir/F12-communication.md) | C9 (in nhcx-communication/payer) |
-| Payment notice (raised, then completed with the UTR) | nha:C9 | A6 (in nhcx-payment/payer) | `v1/paymentnotice/request` | F13 (in nhcx-payment/payer) with F14 (in nhcx-payment/payer) | 30 | `request.initiated` | `v1/paymentnotice/on_request` | [F10](../fhir/F10-task-claim-actions.md) (`paymentack`) | C11 (in nhcx-payment/payer) |
+| Payment notice (raised, then completed with the UTR) | nha:C9 | A6 (in nhcx-payment/payer) | `v1/paymentnotice/request` | F13 (in nhcx-payment/payer) with F14 (in nhcx-payment/payer) | 30 initiated (`paid`, no UTR), 31 completed (`cleared`, UTR) | `request.initiated` | `v1/paymentnotice/on_request` | [F10](../fhir/F10-task-claim-actions.md) (`paymentack`) | C11 (in nhcx-payment/payer) |
 
 ### Payment enquiry, started by the hospital
 

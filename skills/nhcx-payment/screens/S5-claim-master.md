@@ -85,8 +85,8 @@ Sub-stages (what was last done with that leg):
 | `resubmitted` | Resubmitted | info |
 | `answered` | Query answered | info |
 | `queried` | Queried | warning |
-| `approved` | Approved | success |
-| `partial` | Partially approved | warning |
+| `approved` | Approved; at stage Claim, Final approval | success |
+| `partial` | Partially approved (warning); at stage Claim, Final approval (success) | warning |
 | `rejected` | Rejected | danger |
 | `cancelling` | Withdrawing | warning |
 | `cancelled` | Withdrawn | danger |

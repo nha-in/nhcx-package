@@ -19,7 +19,7 @@ Always read, whatever the task: [CORE.md](CORE.md) (addresses and the exchange t
 | [S15](../screens/S15-patient-detail.md) | Patient Detail | [D3](../database/D3-patient.md), [D4](../database/D4-encounter.md), [D5](../database/D5-condition.md), [D6](../database/D6-observation.md), [D7](../database/D7-allergy.md), [D8](../database/D8-terminology.md) |
 | [S16](../screens/S16-practitioner-master.md) | Practitioner Master | [F16](../fhir/F16-practitioner.md), [D2](../database/D2-practitioner.md), [D8](../database/D8-terminology.md), [D26](../database/D26-claim-care-team.md) |
 | [S18](../screens/S18-beneficiary-verification.md) | Beneficiary Verification | [D3](../database/D3-patient.md), [D31](../database/D31-biometric-auth.md) |
-| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | [D1](../database/D1-organization.md), [D32](../database/D32-participant.md), [G2](../gateway/G2-configuration.md), [G4](../gateway/G4-registry.md), [G6](../gateway/G6-encryption.md), [G8](../gateway/G8-receive.md), [G11](../gateway/G11-startup-checks.md) |
+| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | [D1](../database/D1-organization.md), [D13](../database/D13-claim-auth.md), [D32](../database/D32-participant.md), [G2](../gateway/G2-configuration.md), [G4](../gateway/G4-registry.md), [G6](../gateway/G6-encryption.md), [G8](../gateway/G8-receive.md), [G11](../gateway/G11-startup-checks.md) |
 
 ## APIs
 

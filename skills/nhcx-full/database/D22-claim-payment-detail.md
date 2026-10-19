@@ -12,6 +12,8 @@ One row is one line of a payment notice's reconciliation breakdown: an amount pa
 
 Rows are never edited. There is no status column.
 
+**Read.** The S12 Shortfall ([S12. Payments](../screens/S12-payments.md), [A17. Claim State](../apis/A17-claim-state.md) `payment_accounted`): per notice, the sum of its lines (the payment, the TDS and every other deduction) is what that notice accounts for against the claim's approved amount; a notice with no lines counts its D21 `amount`.
+
 #### D22C. COLUMNS
 | Column | Type | Null / default | Meaning |
 |---|---|---|---|

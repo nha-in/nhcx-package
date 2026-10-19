@@ -32,11 +32,11 @@ The form is an accordion of three sections, all open, several open at once:
 
 | Field | Control | Rule |
 |---|---|---|
-| Planned admission date (required marker) | date picker | Pre-filled, on a form never saved, from the linked admission's start when there is one |
+| Planned admission date (required marker) | date picker, earliest today | Pre-filled, on a form never saved, from the linked admission's start when there is one. The picker offers no day before today (the facility's local date): a pre-authorisation is never raised back-dated. Once the payer holds the pre-authorisation (`submitting`, `queried`, `approved`, `partial`, `cancelling`), the date it was sent with may stay as it is |
 | Provisional discharge date | date picker, optional | Must not be before the admission date |
 
 2. **Diagnoses (ICD-10)**, with the muted hint "The ICD-10 diagnoses for this pre-authorisation." The payer adjudicates on ICD-10 (`Claim.diagnosis` is bound to `http://hl7.org/fhir/sid/icd-10`, [F8. Claim](../fhir/F8-claim.md)), so the desk picks the **ICD-10** term and only that, here, never on the admission. The application maps it to SNOMED CT through the diagnosis terminology ([D8. terminology](../database/D8-terminology.md) `alt_code`), holds both on the pre-authorisation ([D25. claim_diagnosis](../database/D25-claim-diagnosis.md)) and sends both on the wire, ICD-10 as the first coding and SNOMED CT as the second, so a payer can tie the claim to the ABDM records of the same stay. The desk never types a code and is never asked for a SNOMED code; a term with no SNOMED mapping goes out as ICD-10 alone.
-   - Repeating rows. Each row has one select, "Diagnosis (ICD-10)", blank "Select diagnosis", over the HMIS's own ICD-10 diagnosis list when it has one (the mapping names it), else the local D8 `diagnosis` list. Each option reads `<ICD-10 code> - <ICD-10 display> · SNOMED <code>`, or `<ICD-10 code> - <ICD-10 display> · no SNOMED mapping`.
+   - Repeating rows. Each row has two selects: "Diagnosis (ICD-10)", blank "Select diagnosis", over the HMIS's own ICD-10 diagnosis list when it has one (the mapping names it), else the local D8 `diagnosis` list. Each option reads `<ICD-10 code> - <ICD-10 display> · SNOMED <code>`, or `<ICD-10 code> - <ICD-10 display> · no SNOMED mapping`; and "Type", options `diagnosis_types` Provisional (`provisional`, the default) and Final (`final`). The type is saved with the row ([D25. claim_diagnosis](../database/D25-claim-diagnosis.md) `dx_type`) and sent as the diagnosis type ([F8. Claim](../fhir/F8-claim.md)); a pre-authorisation usually carries provisional diagnoses, and the desk marks a diagnosis final once it is confirmed.
    - On a form never saved, the rows are pre-filled with the linked admission's unresolved diagnoses that carry an ICD-10 code. Otherwise they are the saved ones, else one empty row.
    - Each row has a red trash button; "Add diagnosis" (plus icon) adds a row.
 
@@ -59,7 +59,9 @@ Footer: primary "Save details" (save icon).
 **Save rules** (checked on the server in this order, each message shown verbatim as a red flash):
 
 - Admission date empty: "Enter the admission date."
+- Admission date before today, unless it is the date already sent to the payer: "The admission date cannot be before today; a pre-authorisation is not raised back-dated."
 - Discharge before admission: "The provisional discharge date cannot be before the admission date."
+- A diagnosis type other than provisional or final: "Mark each diagnosis provisional or final."
 - No usable diagnosis: "Pick at least one ICD-10 diagnosis - the payer needs it."
 - Unknown role: "Choose a valid care team role."
 - No active doctor: "Add the treating doctor - the payer needs one."

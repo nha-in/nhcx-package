@@ -62,7 +62,7 @@ Errors: a G9 error from this call means "no rejection found", never a poll failu
 
 When: inside the A10 poll, after no reply was found (and, on the pre-authorisation, predetermination, claim and enquiry legs, after the peer dispatch check found nothing); on the cancellation leg only when no Task reply is on the thread. The loop is in A10P.
 
-Data: the leg's row supplies `correlation_id` and the send time: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), D13. claim_auth (in nhcx-coverage), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), D29. claim_enquiry (in nhcx-preauth).
+Data: the leg's row supplies `correlation_id` and the send time: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), [D13. claim_auth](../database/D13-claim-auth.md), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), D29. claim_enquiry (in nhcx-preauth).
 
 ```text
 PROTOCOL_REJECTION(correlation_id, since, kind):   # kind and since per leg, table in A13D

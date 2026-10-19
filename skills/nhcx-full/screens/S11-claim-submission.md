@@ -61,7 +61,7 @@ Money shows as `₹12,345`; a missing value as `-`. No card shows a correlation 
 |---|---|---|
 | Discharge type (required) | select, blank "Select": `normal` Normal discharge, `lama` LAMA, `dama` DAMA, `death` Death | "Normal discharge, LAMA, DAMA or death in hospital." |
 | Stage (required) | select, blank "Select": Before Surgery, During Surgery, After Surgery | "Whether that was before, during or after surgery." |
-| Discharge date (required) | date picker | |
+| Discharge date (required) | date picker, latest today | No day after today (the facility's local date) is offered: a discharge has happened before the claim goes |
 | Surgery date | date picker | "Leave blank for a conservative case." |
 | Date and time of death | date and time picker | "Required when the discharge type is death." |
 
@@ -72,6 +72,7 @@ Money shows as `₹12,345`; a missing value as `-`. No card shows a correlation 
 - "Choose how the patient was discharged."
 - "Choose whether that was before, during or after surgery."
 - "Enter the discharge date."
+- "The discharge date cannot be after today."
 - "The discharge date cannot be before the admission date."
 - "The surgery date cannot be before the admission date."
 - "The discharge date cannot be before the surgery date."
@@ -110,11 +111,13 @@ API: [A5. Claim Submit](../apis/A5-claim-submit.md) (answered forms)
 |---|---|---|
 | `draft` | Draft | warning |
 | `submitting` | Awaiting payer | info |
-| `approved` | Approved | success |
-| `partial` | Partially approved | warning |
+| `approved` | Final approval | success |
+| `partial` | Final approval | success |
 | `queried` | Query raised | warning |
 | `rejected` | Rejected | danger |
 | `error` | Error | danger |
+
+The payer's decision on the claim is final: approved in full or in part, the claim reads "Final approval", and the approved amount beside it says how much. Only the pre-authorisation ([S9. Pre-authorisation](S9-preauthorisation.md)) keeps "Approved" and "Partially approved".
 
 Header actions: "Ask where it stands" (help icon, secondary) once the claim is `submitting` or decided (`approved`, `partial`, `rejected`, `queried`), only for a payer that answers a status Task; and the send button when the claim has a send left (none while `submitting` or `queried`).
 

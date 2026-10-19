@@ -70,7 +70,7 @@ Errors:
 
 When: once per leg on every load of S6 Claim Detail (and its Refresh) and on every A17 read. No timer. One pass, no retry inside a poll.
 
-Rows: `claim` ([D9](../database/D9-claim.md)), `claim_plan` (D10 (in nhcx-coverage)), `claim_auth` (D13 (in nhcx-coverage)), `claim_preauth` ([D18](../database/D18-claim-preauth.md)), `claim_predetermination` (D19 (in nhcx-preauth)), `claim_submission` ([D20](../database/D20-claim-submission.md)), `claim_enquiry` ([D29](../database/D29-claim-enquiry.md)).
+Rows: `claim` ([D9](../database/D9-claim.md)), `claim_plan` (D10 (in nhcx-coverage)), `claim_auth` ([D13](../database/D13-claim-auth.md)), `claim_preauth` ([D18](../database/D18-claim-preauth.md)), `claim_predetermination` (D19 (in nhcx-preauth)), `claim_submission` ([D20](../database/D20-claim-submission.md)), `claim_enquiry` ([D29](../database/D29-claim-enquiry.md)).
 
 ```text
 LEGS (row, waiting status, reply resource, applied as, protocol-scan type, send time):

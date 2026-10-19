@@ -22,16 +22,18 @@ Below the text are four stat tiles, in this order:
 | Tile | Value | Tone |
 |---|---|---|
 | Notices | Count of notices on the claim | default |
-| Shortfall | Claimed minus paid so far (never below zero), once something is paid and a claim is filed; else `-` | warning when above zero |
+| Shortfall | The claim's approved amount minus what the notices account for (see below), never below zero; `-` until the claim has an approved amount and a notice has arrived | warning when above zero |
 | Paid so far | Paid total (see below) | success when above zero |
-| Claimed | The claim's requested amount, `-` before a claim is filed | default |
+| Approved | The claim's approved amount (the claim leg's `approved_amount`), `-` before the payer has approved the claim | default |
+
+**Shortfall.** It is measured against the claim's approved amount, never the claimed amount. What the notices account for: per notice (the newest row of each PaymentNotice id, else each row), the sum of its reference lines ([D22. claim_payment_detail](../database/D22-claim-payment-detail.md): the payment, the TDS and every other deduction line), else its `amount` when it has no lines; summed over the notices. When that adds up to the approved amount there is no shortfall (0); otherwise the shortfall is the approved amount minus what is accounted for, never below 0. A notice whose payment and deductions together make up the approved amount therefore shows no shortfall, even though the payment alone is less. The claim detail carries the three figures as `payment_approved`, `payment_accounted` and `payment_shortfall` ([A17. Claim State](../apis/A17-claim-state.md)).
 
 **Empty state.** When no notice has arrived, a centred placeholder with an inbox icon reads: "No payment notice yet. One arrives from NHCX when the payer moves money for this claim."
 
 **One card per notice.**
 - **Title:** the notice's disposition. When there is none, the title is "Payment notice".
 - **Chips:**
-  - **Payment status chip.** When the notice only announces an initiated payment (no UTR yet and a disposition containing "initiat" [REF](../references/PAYERS.md#markers)), the chip reads "Initiated, UTR awaited" in the warning tone. Otherwise it shows the payer's payment status code, coloured as follows:
+  - **Payment status chip.** When the notice only announces an initiated payment (no UTR and a status other than `cleared`: a `paid` notice without a UTR is the workflow-30 initiation [PAYER](../references/PAYERS.md#markers)), the chip reads "Initiated, UTR awaited" in the warning tone; its amounts, TDS and date are shown all the same. Otherwise it shows the payer's payment status code, coloured as follows:
 
     | Payment status | Tone |
     |---|---|
@@ -78,7 +80,7 @@ A failed acknowledgement never rejects the notice:
 
 **Manual acknowledgement.** Refusals, verbatim as an error flash: "Payment notice not found." (also when the notice does not belong to this claim) and "Set the facility's HFR ID and NHCX participant code under Settings first." On success it flashes "Payment acknowledged to the payer." and re-reads the tab. A send failure flashes the error from [G7. Send](../gateway/G7-send.md) ("The acknowledgement was not accepted." when the gateway gave no words). The acknowledgement is an `on_` send, so it travels as `response.complete` ([A8. Payment Notice Acknowledgement](../apis/A8-paymentnotice-on-request.md)).
 
-**Posting to the HMIS's bill.** Every notice that reports money that moved (status `paid`, `cleared`, `complete` or `completed`, or an amount with a UTR whose status is not initiated, pending or queued) is posted to the stay's bill the moment it lands ([D21. claim_payment](../database/D21-claim-payment.md)): an insurer receipt for the amount under the UTR, on the billing account of the linked admission, else the patient's open account at the facility. The posting goes through the one billing hook the integration bound to the HMIS's receipt records; the hospital's own billing screens then show the bill settled or part-settled, without re-keying. A failed posting never rejects the notice: it is recorded as `failed` with its reason. Posting twice (a redelivered notice, a second click) updates the same receipt and never doubles the money. "Post to bill" / "Post to bill again" re-runs it. Refusals, verbatim:
+**Posting to the HMIS's bill.** Every notice that reports money that moved (status `cleared`; status `paid`, `complete` or `completed` with a UTR; or an amount with a UTR whose status is not initiated, pending or queued; never a `paid` notice without a UTR) is posted to the stay's bill the moment it lands ([D21. claim_payment](../database/D21-claim-payment.md)): an insurer receipt for the amount under the UTR, on the billing account of the linked admission, else the patient's open account at the facility. The posting goes through the one billing hook the integration bound to the HMIS's receipt records; the hospital's own billing screens then show the bill settled or part-settled, without re-keying. A failed posting never rejects the notice: it is recorded as `failed` with its reason. Posting twice (a redelivered notice, a second click) updates the same receipt and never doubles the money. "Post to bill" / "Post to bill again" re-runs it. Refusals, verbatim:
 - "Nothing has been paid on this notice yet; there is no payment to post."
 - "The case is not on an encounter with a billing account; open the account first."
 - "The payment could not be posted to the bill: <reason>"
@@ -86,10 +88,10 @@ A failed acknowledgement never rejects the notice:
 Success flash: "Posted to the hospital bill (account <account name>)."
 
 **Paid total.** "Paid so far", the S6 header chip "Paid ₹X", the balance on the S11 release form and the "paid in full" checks all use the same sum. The rules are:
-- Only notices whose status is `paid` or `cleared` count.
-- A notice that only announces an initiated payment does not count.
-- Each UTR is counted once, and the newest notice for that UTR wins. PMJAY sends one notice on initiation and another on clearing, both stamped `paid` for the full amount [PAYER](../references/PAYERS.md#markers). Adding them up would double the total.
-- A notice with no UTR counts under its own id.
+- Only notices whose status is `cleared`, or `paid` with a UTR, count.
+- A notice that only announces an initiated payment (`paid` with no UTR, workflow `30`) does not count.
+- Each UTR is counted once, and the newest notice for that UTR wins. A payer sends one notice on initiation (workflow `30`, `paid`, no UTR) and another on completion (workflow `31`, `cleared`, with the UTR) for the same amount, under one PaymentNotice id [PAYER](../references/PAYERS.md#markers); the second updates the first, so the money is never counted twice.
+- A `cleared` notice with no UTR counts under its own id.
 
 The result is rounded to 2 decimals.
 
@@ -123,7 +125,7 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 |------------------------------------------------------------------|
 | [Card] Payments                                                  |
 |  The payer starts this leg: it posts a payment notice ...        |
-|  [Notices 2] [Shortfall ₹10,000] [Paid so far ₹40,000] [Claimed ₹50,000] |
+|  [Notices 2] [Shortfall ₹0] [Paid so far ₹45,000] [Approved ₹50,000] |
 |------------------------------------------------------------------|
 | [Card] Payment cleared          [Post to bill] [(v) Acknowledge] |
 |  [paid] [Not acknowledged] [posted to the bill]                  |

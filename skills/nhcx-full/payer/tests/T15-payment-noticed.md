@@ -2,7 +2,7 @@
 
 #### T15D. DESCRIPTION
 
-Money moving is told twice: when finance raises a payment through [A14. Disburse](../apis/A14-disburse.md), [A6. Payment Notice](../apis/A6-payment-notice.md) sends a PaymentNotice with the reconciliation (workflow 30) on a fresh thread; when the UTR is recorded, the same notice goes again with the UTR. The hospital's acknowledgement Task arrives on [C11. Payment Acknowledgement](../callbacks/C11-payment-acknowledgement.md) and the payment is marked acknowledged. A one-step disbursement with a UTR sends one notice.
+Money moving is told twice: when finance raises a payment through [A14. Disburse](../apis/A14-disburse.md), [A6. Payment Notice](../apis/A6-payment-notice.md) sends a PaymentNotice with the reconciliation (workflow 30, `paid`, every amount but no UTR) on a fresh thread; when the UTR is recorded, the same notice goes again (workflow 31, `cleared`) with the UTR. The hospital's acknowledgement Task arrives on [C11. Payment Acknowledgement](../callbacks/C11-payment-acknowledgement.md) and the payment is marked acknowledged. A one-step disbursement with a UTR sends both notices, 30 then 31.
 
 #### T15S. SETUP
 
@@ -28,8 +28,8 @@ One member under the [T1. Test Configuration](T1-test-configuration.md) prefix e
 
 #### T15X. EXPECT
 
-- Raising the payment sends one notice on `v1/paymentnotice/request` to the hospital, workflow 30, `x-hcx-status` `request.initiated`, on a correlation id the gateway minted; its amount is the net payable; the bundle is PaymentNotice, PaymentReconciliation and the parties ([F13. PaymentNotice](../fhir/F13-paymentnotice.md), [F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)); [D30. payment](../database/D30-payment.md) records the notice transaction.
-- Completing with the UTR sends the same notice (same PaymentNotice `fullUrl`) again, now carrying the UTR as its identifier; the payment is `completed` and the case `settled` when nothing approved is left.
+- Raising the payment sends one notice on `v1/paymentnotice/request` to the hospital, workflow 30, `paymentStatus` `paid`, `x-hcx-status` `request.initiated`, on a correlation id the gateway minted; its amount is the net payable, with the TDS and payment lines and the initiated date, and no `paymentIdentifier`; the bundle is PaymentNotice, PaymentReconciliation and the parties ([F13. PaymentNotice](../fhir/F13-paymentnotice.md), [F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)); [D30. payment](../database/D30-payment.md) records the notice transaction.
+- Completing with the UTR sends the same notice (same PaymentNotice `fullUrl`) again on workflow 31, `paymentStatus` `cleared`, now carrying the UTR as its identifier; the payment is `completed` and the case `settled` when nothing approved is left.
 - The hospital's acknowledgement (a Task with output `paymentack`) is filed on the right case; the payment's `nhcx_acknowledged_at` is set; the delivery is answered `acknowledged`.
-- The one-step disbursement sends one notice with the UTR.
+- The one-step disbursement sends two notices: 30 (`paid`, no UTR), then 31 (`cleared`, with the UTR).
 - With notices switched off, completing a payment records no notice transaction and nothing goes out.

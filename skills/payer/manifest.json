@@ -1,12 +1,12 @@
 {
-  "version": "1.2.0",
-  "built_at": "2026-10-18T07:02:25.845Z",
+  "version": "1.2.1",
+  "built_at": "2026-10-19T11:13:34.202Z",
   "source": "../src/payer",
   "skills": [
     {
       "name": "nhcx-payer-full",
       "files": 155,
-      "words": 155598,
+      "words": 156445,
       "ids": [
         "S1",
         "S2",
@@ -138,7 +138,7 @@
     {
       "name": "nhcx-payer-coverage",
       "files": 108,
-      "words": 107048,
+      "words": 107519,
       "ids": [
         "S1",
         "S2",
@@ -231,7 +231,7 @@
     {
       "name": "nhcx-payer-preauth",
       "files": 116,
-      "words": 113169,
+      "words": 113674,
       "ids": [
         "S1",
         "S2",
@@ -348,7 +348,7 @@
     {
       "name": "nhcx-payer-claim",
       "files": 107,
-      "words": 104413,
+      "words": 104947,
       "ids": [
         "S1",
         "S2",
@@ -457,7 +457,7 @@
     {
       "name": "nhcx-payer-communication",
       "files": 76,
-      "words": 79671,
+      "words": 80164,
       "ids": [
         "S1",
         "S2",
@@ -514,7 +514,7 @@
     {
       "name": "nhcx-payer-payment",
       "files": 94,
-      "words": 91304,
+      "words": 92088,
       "ids": [
         "S1",
         "S2",
@@ -606,7 +606,7 @@
   ],
   "plugin": {
     "name": "nhcx-payer",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "dir": "plugins/nhcx-payer",
     "skills": [
       "nhcx-payer:full",

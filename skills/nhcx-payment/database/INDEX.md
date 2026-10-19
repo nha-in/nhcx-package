@@ -18,6 +18,12 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 |---|---|---|---|
 | [D9](D9-claim.md) | claim | Claim episode (case) around one selected policy, from eligibility to payment. | [D9-claim.md](D9-claim.md) |
 
+## Package master and ruling
+
+| # | Table | What one row is | File |
+|---|---|---|---|
+| [D13](D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [D13-claim-auth.md](D13-claim-auth.md) |
+
 ## Legs and verdicts
 
 | # | Table | What one row is | File |

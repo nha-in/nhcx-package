@@ -3,10 +3,10 @@ name: nhcx-payment
 description: >-
   Build NHCX (India's National Health Claims Exchange) payment notices into an existing HMIS: receiving the payer's payment notice and reconciliation breakdown, matching it to the claim, and acknowledging it, with the embedded NHCX gateway it needs. Use when a hospital system must record insurer or PMJAY payments arriving over NHCX.
 metadata:
-  version: "1.9.0"
+  version: "1.9.2"
 ---
 
-**Version 1.9.0**, built 2026-10-18, checked against NHA's NHCX package 1.0.0.
+**Version 1.9.2**, built 2026-10-19, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route, bundle, workflow id and callback.
@@ -27,7 +27,7 @@ At the start of every task, before the questions and L1, and at the start of eve
 **Independent of the MCP and of the knowledge source.** The check always reads the package on GitHub, whichever knowledge source L1.0 chose: a connected nhcx-docs MCP neither answers it nor skips it, and the MCP's `catalogue_info` version is never compared with the skill's. The skill's version is its own: it is not the package's release tag, nor the catalogue's version, nor `1.0.0`; only the version in `skills/manifest.json` is compared with it.
 
 1. **Read the package's skills manifest.** The package (github.com/nha-in/nhcx-package) keeps a copy of the built skills under `skills/`, with `skills/manifest.json` naming their version (`version` for the provider skills, `companion.version` for the payer skills under `skills/payer/`) and `skills/CHECKSUMS.sha256` the hash of every file. Read it from `https://raw.githubusercontent.com/nha-in/nhcx-package/main/skills/manifest.json`; else from the latest release zip (`nhcx-package/skills/manifest.json`) (the zip of `https://api.github.com/repos/nha-in/nhcx-package/releases/latest`). A package already downloaded as the knowledge source is not read for this: it may be older than `main`.
-2. **Compare** its `version` with this build's `1.9.0`, part by part as numbers (1.10.0 is newer than 1.9.2).
+2. **Compare** its `version` with this build's `1.9.2`, part by part as numbers (1.10.0 is newer than 1.9.2).
 3. **Newer in the package: pull and install it.** Download the package (the release zip whose skills manifest carries that version, else the `main` archive `https://codeload.github.com/nha-in/nhcx-package/zip/refs/heads/main`) into a new empty folder outside the target repository, and check every file under `skills/` against `CHECKSUMS.sha256`. Then replace the folder this SKILL.md was loaded from, and every sibling NHCX skill folder installed beside it (`nhcx-full`, `nhcx-coverage`, `nhcx-preauth`, `nhcx-claim`, `nhcx-communication`, `nhcx-payment`, `nhcx-reprocess`, and the nested `payer/`), with the package's copy of the same name, whole: no file of the old build is left behind. A skill installed by a plugin manager is updated through it when it offers that version, else its skills folder is replaced the same way. Nothing in the target repository or `nhcx-plan/` is touched by the install. Tell the user in one line ("Updated the NHCX skills from 1.8.0 to 1.9.0 from the NHCX package."), log it, then re-read this SKILL.md and CORE.md from the installed copy and carry on from them; VERSION then re-checks the finished steps against what changed.
 4. **Same or older:** carry on with this build.
 5. **Not reachable, or a checksum fails:** carry on with this build, say so to the user in one line, and log the reason. A copy that fails its checksums is never installed, not even in part.
@@ -97,7 +97,7 @@ The specs this skill holds:
 - **APIs** (6): [A8](apis/A8-paymentnotice-on-request.md), [A10](apis/A10-txn-related.md), [A11](apis/A11-txn-dispatch.md), [A12](apis/A12-txn-fhir.md), [A13](apis/A13-txn-list.md), [A17](apis/A17-claim-state.md)
 - **Callbacks** (2): [C1](callbacks/C1-callback-door.md), [C10](callbacks/C10-paymentnotice-request.md)
 - **FHIR** (8): [F1](fhir/F1-bundle.md), [F3](fhir/F3-coverage-eligibility-response.md), [F13](fhir/F13-paymentnotice.md), [F14](fhir/F14-payment-acknowledgement.md), [F15](fhir/F15-patient.md), [F16](fhir/F16-practitioner.md), [F17](fhir/F17-organization.md), [F18](fhir/F18-coverage.md)
-- **Database** (10): [D1](database/D1-organization.md), [D2](database/D2-practitioner.md), [D3](database/D3-patient.md), [D8](database/D8-terminology.md), [D9](database/D9-claim.md), [D20](database/D20-claim-submission.md), [D21](database/D21-claim-payment.md), [D22](database/D22-claim-payment-detail.md), [D30](database/D30-counter.md), [D32](database/D32-participant.md)
+- **Database** (11): [D1](database/D1-organization.md), [D2](database/D2-practitioner.md), [D3](database/D3-patient.md), [D8](database/D8-terminology.md), [D9](database/D9-claim.md), [D13](database/D13-claim-auth.md), [D20](database/D20-claim-submission.md), [D21](database/D21-claim-payment.md), [D22](database/D22-claim-payment-detail.md), [D30](database/D30-counter.md), [D32](database/D32-participant.md)
 - **Gateway** (11): [G1](gateway/G1-embedding.md), [G2](gateway/G2-configuration.md), [G3](gateway/G3-session-token.md), [G4](gateway/G4-registry.md), [G5](gateway/G5-protocol-headers.md), [G6](gateway/G6-encryption.md), [G7](gateway/G7-send.md), [G8](gateway/G8-receive.md), [G9](gateway/G9-ledger.md), [G10](gateway/G10-beneficiary-registry.md), [G11](gateway/G11-startup-checks.md)
 - **Tests** (4): [T1](tests/T1-test-configuration.md), [T2](tests/T2-test-runners.md), [T11](tests/T11-irdai-payment.md), [T18](tests/T18-pmjay-payment-status-cancel.md)
 
@@ -111,12 +111,24 @@ Other skills built from the same source:
 - **nhcx-reprocess**: reprocess and balance release on a decided or partly paid claim.
 
 # VERSION
-This is nhcx-payment version 1.9.0, built on 2026-10-18. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-payment version 1.9.2, built on 2026-10-19. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.
 - If a later prompt runs with a different version of this skill than the one recorded, say so to the user before continuing, log it as a `corrected` entry naming both versions, and re-check the steps already done against the specs that changed.
 - A knowledge source newer than 1.0.0 wins on the protocol, as KNOWLEDGE SOURCE says; note the difference in `knowledge.json`.
+
+Changes in 1.9.2, to re-check against when an earlier build is continued:
+- S17 "In network": only a policy of the payer whose validation answered eligible counts; one green-ticked line "In network: this hospital holds <n> policy(s) of <name> with valid cover." when there is one, nothing at all otherwise.
+- No back-dated pre-authorisation: the S4 admission date picker starts at today, and saving or sending a new pre-authorisation with an earlier date is refused "The admission date cannot be before today; a pre-authorisation is not raised back-dated." (D9, A4, S9). A date the payer already holds may stay.
+- Each S4 diagnosis is marked Provisional or Final (D25 `dx_type`), sent as F8 `diagnosis.type` SNOMED CT 148006 or 89100005, as PMJAY sends it.
+- The S11 discharge date picker ends at today; a later date is refused "The discharge date cannot be after today." (D20).
+- The claim's decision reads "Final approval", approved in full or in part (S11, S5 at stage Claim); the pre-authorisation keeps its labels.
+- Payments: initiation comes on workflow 30 as `paid` with every amount but no UTR, completion on 31 as `cleared` with the UTR, under one PaymentNotice id. Paid means `cleared`, or `paid` with a UTR; a `paid` notice without one is initiated and is never posted to the bill (F13, D21, A17, C10, S12, A8). The old "disposition contains initiat" rule is gone; S12's "Initiated, UTR awaited" chip means no UTR and a status other than `cleared`.
+- S12 Shortfall is measured against the claim's approved amount, never the claimed amount: what the notices account for (per notice, its payment, TDS and deduction lines, else its amount) equal to the approved amount is no shortfall, else approved minus accounted, never below 0 (D21, D22, A17 `payment_approved`, `payment_accounted`, `payment_shortfall`). The fourth tile is "Approved" (the claim's approved amount), not "Claimed".
+
+Changes in 1.9.1, to re-check against when an earlier build is continued:
+- The NHCX settings page (S19) is a plan phase of its own (L3 phase 3, with D1, the participant master D32 and its daily refresh), always built, under the HMIS's facility settings with its own "NHCX" entry; a build that has no S19 or no participant master adds them. S19 now matches the reference: the participant code falls back to the gateway's default, the registry card registers the endpoint ("Update the registry"), the key card runs stage, register certificate, activate, retire, and a card links to the doctors and staff master. S17 and S18 are placed in phases 4 and 6. L3 checks every screen the skill lists is delivered or dropped with a reason; L8 opens S19 before any claim test.
 
 Changes in 1.9.0, to re-check against when an earlier build is continued:
 - UPDATE FIRST: every prompt starts by reading the NHCX package's skills manifest (`skills/manifest.json`) and installs the package's build when it is newer, checked against `skills/CHECKSUMS.sha256`.

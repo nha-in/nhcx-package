@@ -172,17 +172,23 @@ STATE(caseid):
     submission:         claim_submission row or null,
     submission_items:   claim_submission.items_json as a list, else [],
     payments:           claim_payment rows,
-    paid_total:         claim_payment rows in id order whose payment_status is "paid" or
-                        "cleared" (case ignored), leaving out rows with no utr whose
-                        disposition contains "initiat" [PAYER](../references/PAYERS.md#markers); the last amount per utr (row id when
-                        no utr) wins; summed and rounded to 2 places,
+    paid_total:         claim_payment rows in id order whose payment_status is "cleared", or
+                        "paid" with a utr (case ignored); a "paid" row with no utr is the
+                        workflow-30 initiation and is left out [PAYER](../references/PAYERS.md#markers); the last amount per utr
+                        (row id when no utr) wins; summed and rounded to 2 places,
+    payment_approved:   the claim leg's approved_amount, or null before the claim is approved,
+    payment_accounted:  per notice (newest row of each notice_id, else each row) the sum of
+                        its claim_payment_detail amounts (payment, TDS, every deduction), else its
+                        amount when it has no lines; summed; null before any notice,
+    payment_shortfall:  null while either of the two is null; 0 when accounted equals
+                        approved; else max(approved - accounted, 0); rounded to 2 places,
     enquiries:          claim_enquiry rows,
     poll_notes:         poll_notes
   }
 ```
 
 #### A17U. USED BY
-- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md), [S7. Insurance Plan](../screens/S7-insurance-plan.md)
+- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md), [S7. Insurance Plan](../screens/S7-insurance-plan.md), [S12. Payments](../screens/S12-payments.md)
 - APIs: [A4. Pre-auth Submit](A4-preauth-submit.md), [A5. Claim Submit](A5-claim-submit.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A12. Transaction FHIR](A12-txn-fhir.md)
 - FHIR: [F6. Questionnaire](../fhir/F6-questionnaire.md)
-- Database: [D9. claim](../database/D9-claim.md), [D11. claim_plan_benefit](../database/D11-claim-plan-benefit.md)
+- Database: [D9. claim](../database/D9-claim.md), [D11. claim_plan_benefit](../database/D11-claim-plan-benefit.md), [D22. claim_payment_detail](../database/D22-claim-payment-detail.md)

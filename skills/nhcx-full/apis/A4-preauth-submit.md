@@ -64,12 +64,13 @@ A per-environment override (a JSON object of kind to workflow id, per adapter or
 1. "Claim not found."
 2. the policy not in force (A2 `in_force`): "Submit a preauth only after the payer has confirmed the policy is eligible."
 3. The send-kind refusals above, the read-only refusal first.
-4. On a query-answering kind with no reply text: "Write the reply to the payer's query before answering it."
-5. "Set the facility's HFR ID and NHCX participant code under Settings before submitting."
-6. "Enter the planned admission date on the pre-authorisation."
-7. "Quote at least one ICD-10 diagnosis."
-8. "Add at least one doctor to the care team."
-9. "Add at least one line, the procedure being done."
+4. A new pre-authorisation (send kind `preauth`) whose admission date is before today in the facility's local date: "The admission date cannot be before today; a pre-authorisation is not raised back-dated." A pre-authorisation is never raised back-dated; a query answer or an enhancement carries the date the payer already holds and is not refused.
+5. On a query-answering kind with no reply text: "Write the reply to the payer's query before answering it."
+6. "Set the facility's HFR ID and NHCX participant code under Settings before submitting."
+7. "Enter the planned admission date on the pre-authorisation."
+8. "Quote at least one ICD-10 diagnosis."
+9. "Add at least one doctor to the care team."
+10. "Add at least one line, the procedure being done."
 
 Success flash: "Pre-authorisation submitted to the payer."
 
@@ -147,6 +148,8 @@ function submit_preauth(case_id, reply):
         refuse "Submit a preauth only after the payer has confirmed the policy is eligible."
     existing = claim_preauth for the case
     kind     = preauth_send_kind(case_id)                 // may refuse
+    if kind == preauth and case.admission_date before today (the facility's local date):
+        refuse "The admission date cannot be before today; a pre-authorisation is not raised back-dated."
     adapter  = payer adapter for case.payer_id (generic when the master and the rows name none)
     answer = null
     if kind in {preauth_query_response, enhancement_resubmit}:
@@ -157,7 +160,7 @@ function submit_preauth(case_id, reply):
     token = biometric_headers(case, case.payer_id, Preauth)   // A18: {} when none is held
     holds_token = token is not empty
 
-    dossier = gather(case, kind, leg = preauth, reply = answer, holds_token)   // refusals 5 to 9
+    dossier = gather(case, kind, leg = preauth, reply = answer, holds_token)   // refusals 6 to 10
     bundle  = F1 Bundle for leg preauth, carrying F8 Claim (use preauthorization,
               claim number, planned admission to expected discharge, diagnoses, care team, items,
               documents, reply text as the query detail when answering, total),
@@ -261,7 +264,7 @@ function requires_proof(case):
 ```
 
 #### A4U. USED BY
-- Screens: [S9. Pre-authorisation](../screens/S9-preauthorisation.md), [S14. Patient Registration Form](../screens/S14-patient-registration-form.md), [S15. Patient Detail](../screens/S15-patient-detail.md), [S16. Practitioner Master](../screens/S16-practitioner-master.md), [S18. Beneficiary Verification](../screens/S18-beneficiary-verification.md)
+- Screens: [S9. Pre-authorisation](../screens/S9-preauthorisation.md), [S14. Patient Registration Form](../screens/S14-patient-registration-form.md), [S15. Patient Detail](../screens/S15-patient-detail.md), [S16. Practitioner Master](../screens/S16-practitioner-master.md), [S18. Beneficiary Verification](../screens/S18-beneficiary-verification.md), [S19. NHCX Settings](../screens/S19-nhcx-settings.md)
 - APIs: [A2. Coverage Eligibility Check](A2-coverage-eligibility-check.md), [A5. Claim Submit](A5-claim-submit.md), [A7. Communication Reply](A7-communication-on-request.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A13. Transaction List](A13-txn-list.md), [A17. Claim State](A17-claim-state.md), [A18. Biometric Authentication](A18-biometric-authentication.md)
 - Callbacks: [C5. Pre-auth Reply](../callbacks/C5-preauth-on-submit.md)
 - FHIR: [F8. Claim](../fhir/F8-claim.md), [F9. ClaimResponse](../fhir/F9-claimresponse.md), [F12. Communication](../fhir/F12-communication.md), [F15. Patient](../fhir/F15-patient.md), [F17. Organization](../fhir/F17-organization.md), [F18. Coverage](../fhir/F18-coverage.md)

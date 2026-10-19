@@ -26,7 +26,7 @@ A bundle with neither a PaymentNotice nor a PaymentReconciliation is refused: "T
 
 Every recorded notice is acknowledged at once (F14); a failed acknowledgement is kept on the row and the notice stays recorded.
 
-**What counts as paid.** A row counts toward the paid total when `payment_status` is `paid` or `cleared` and it is not "initiated only" (no UTR and the disposition contains `initiat`). Rows sharing a UTR count once.
+**What counts as paid.** A payment is initiated on workflow `30` as a PaymentNotice with `paymentStatus` `paid`, every amount, date and TDS line, and no UTR; it is completed on workflow `31` as `cleared` with the UTR. Both carry the same PaymentNotice id, each on its own thread [PAYER](../references/PAYERS.md#markers). A row counts toward the paid total when `payment_status` is `cleared`, or `paid` with a UTR. A `paid` row without a UTR is a payment initiated, whatever its disposition says, and does not count. Rows sharing a UTR count once.
 
 #### F13F. FIELDS
 Read and stored (`D21 claim_payment` unless stated):

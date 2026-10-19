@@ -22,6 +22,7 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 
 | # | Table | What one row is | File |
 |---|---|---|---|
+| [D13](D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [D13-claim-auth.md](D13-claim-auth.md) |
 | [D15](D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | [D15-claim-auth-requirement.md](D15-claim-auth-requirement.md) |
 
 ## Payer messages and payments

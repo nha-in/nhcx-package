@@ -8,7 +8,7 @@ Answers to a hospital's message travel on its correlation id; a query and a paym
 
 | # | API | Call | What it does | Answers | Screens |
 |---|---|---|---|---|---|
-| [A6](../apis/A6-payment-notice.md) | Payment Notice | `gateway.send("v1/paymentnotice/request")` | Tells the hospital the money moved: a PaymentNotice with the reconciliation when a payment is raised, and again with the UTR when it completes; a new thread each time, workflow 30. | [C1](../callbacks/C1-callback-door.md), [C10](../callbacks/C10-payment-enquiry.md), [C11](../callbacks/C11-payment-acknowledgement.md) | [S10](../screens/S10-payments.md) |
+| [A6](../apis/A6-payment-notice.md) | Payment Notice | `gateway.send("v1/paymentnotice/request")` | Tells the hospital the money moved: a PaymentNotice with the reconciliation when a payment is raised, and again with the UTR when it completes; a new thread each time: workflow 30 (paid, no UTR) on initiation, 31 (cleared, with the UTR) on completion. | [C1](../callbacks/C1-callback-door.md), [C10](../callbacks/C10-payment-enquiry.md), [C11](../callbacks/C11-payment-acknowledgement.md) | [S10](../screens/S10-payments.md) |
 | [A7](../apis/A7-payment-enquiry-answer.md) | Payment Enquiry Answer | `gateway.send("v1/paymentnotice/on_request")` | Answers a hospital's own PaymentNotice asking where the money is: the case's payments reconciled, or an OperationOutcome when the claim is unknown or unpaid. | [C10](../callbacks/C10-payment-enquiry.md) | none |
 
 ## Ledger queries (polling)

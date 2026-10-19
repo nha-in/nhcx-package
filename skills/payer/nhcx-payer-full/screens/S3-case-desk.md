@@ -43,11 +43,11 @@ The one screen where a person decides. A case arrives filed by [C4. Pre-auth Sub
 
 ##### S3.1 Line items
 
-The itemised bill, and the only place an approved rupee is decided ([D25. case_line_item](../database/D25-case-line-item.md)). Columns: Item Description (with the billed code underneath when the line came off the exchange), Ward / tier (the `Claim.item.modifier` a ward or ICU tier rode in on, shown as its display and code, `-` when none; its rate is already inside the claimed amount), Qty, Unit Cost, Claimed (₹), Approved (₹) as a number input, Decision as a select, and Line Item Remarks / Query as a text input.
+The itemised bill, and the only place an approved rupee is decided ([D25. case_line_item](../database/D25-case-line-item.md)). Columns: Item Description (with the billed code underneath when the line came off the exchange), Ward / tier (the `Claim.item.modifier` a ward or ICU tier rode in on, shown as its display and code, `-` when none; its rate is already inside the claimed amount), Qty, Unit Cost, Claimed (₹) (with "Pre-auth ₹X" under it on a claim line that carries what the pre-authorisation approved, [D25. case_line_item](../database/D25-case-line-item.md) `preauth_approved_amount`), Approved (₹) as a number input (its maximum that pre-auth figure when there is one), Decision as a select, and Line Item Remarks / Query as a text input.
 
 Above the table: "Every line starts approved for the full claim, lower the approved figure to make it a partial approval, or switch the line to Query or Reject", and on the right "Approved vs Claimed" with the effective approved total over the claimed total.
 
-**A line nobody has decided reads as approved in full** [REF](../references/PAYERS.md#markers): a `pending` line shows Approve with the claimed amount, so the desk opens with the bill allowed as claimed and the adjudicator works down. Approving the case is what records those lines (S3.2).
+**A line nobody has decided reads as approved in full** [REF](../references/PAYERS.md#markers): a `pending` line shows Approve with the claimed amount, or, on a claim line the pre-authorisation decided, with the lesser of the claim and the pre-auth figure (Reject at 0 when the pre-authorisation rejected it), so the desk opens with the bill allowed as claimed and the adjudicator works down. Approving the case is what records those lines (S3.2).
 
 Decision select options: Approve, Query, Reject; "Partially Approved" appears, disabled, only on a line that is one. Partial is never picked: it is what an amount below the claim means.
 
@@ -58,7 +58,7 @@ Decision select options: Approve, Query, Reject; "Partially Approved" appears, d
 | equal to the claimed amount | `approved`, amount = claimed |
 | 0 | `rejected`, amount 0 |
 | between | `partially_approved`, that amount |
-| above the claim or below 0 | clamped into range first |
+| above the claim (or above the pre-auth figure) or below 0 | clamped into range first |
 
 The server reconciles the pair again ([A13. Adjudicate](../apis/A13-adjudicate.md)): `approved` always means the full claimed amount, `rejected` and `queried` mean zero, a partial at or above the claim becomes `approved` and at or below zero becomes `rejected`. Choosing Query with empty remarks is refused on the screen with "Enter what is being queried in the remarks column first." and on the server with "Say what is being queried, so the hospital knows what to send". Remarks alone are committed when they change. A refused commit puts the input back to what the line held.
 

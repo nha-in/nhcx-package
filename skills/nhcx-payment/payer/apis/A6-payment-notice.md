@@ -8,15 +8,15 @@ On the hospital's side it arrives as a payment notice, is matched to the claim b
 #### A6D. DESCRIPTION
 Sent by [A14. Disburse](A14-disburse.md) when money moves on a case that came off the exchange, and only when the deployment says so (`push_payment_notice` on, [REF](../references/PAYERS.md#markers)). A payment raised on a desk-only case has nobody to tell.
 
-**Twice per payment.** The same notice goes out once when the payment is raised as `initiated` ("Payment initiated; the transfer has not completed yet.", no UTR) and once more when the UTR is recorded and the payment completes. A one-step disbursement (raised with a UTR) sends the completed notice only. The `PaymentNotice.id` is the same on both, the claim number, so the hospital reads the second as the first moving on rather than as a second payment; the provider skill's callback updates its row on a repeat and acknowledges it again [PAYER](../references/PAYERS.md#markers). A failed payment sends nothing.
+**Twice per payment.** The notice goes out once when the payment is raised as `initiated`, on workflow `30` with `paymentStatus` `paid` and every detail of the payment (the net amount, the TDS and payment lines, the initiated date, the payee) except the UTR, and once more when the UTR is recorded and the payment completes, on workflow `31` with `paymentStatus` `cleared` and the UTR. A one-step disbursement (raised with a UTR) sends both, the initiation (30) first and the completion (31) after it. The `PaymentNotice.id` is the same on both, the claim number, so the hospital reads the second as the first moving on rather than as a second payment; the provider skill's callback updates its row on a repeat and acknowledges it again [PAYER](../references/PAYERS.md#markers). A failed payment sends nothing.
 
-**What it says** ([F13. PaymentNotice](../fhir/F13-paymentnotice.md) with [F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)): a Task saying so in prose, the PaymentNotice with the amount paid and its status, the PaymentReconciliation with one line per completed movement (the net payment, and the TDS withheld when any) dated the completion date, the UTR as the payment identifier, and the two Organizations. The bundle is about this one payment, not the whole case. Status and disposition:
+**What it says** ([F13. PaymentNotice](../fhir/F13-paymentnotice.md) with [F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)): a Task saying so in prose, the PaymentNotice with the amount paid and its status, the PaymentReconciliation with one line per movement (the net payment, and the TDS withheld when any) dated the completion date, else the initiated date, the UTR as the payment identifier on the completed notice only (the initiation carries no `paymentIdentifier`), and the two Organizations. The bundle is about this one payment, not the whole case. Status and disposition:
 
 | The payment | `paymentStatus` | Disposition |
 |---|---|---|
 | completed and the case settled | `cleared` | "Settled in full: `<INR paid>` paid against `<INR approved>` approved." |
-| completed, money still owed | `paid` | "`<INR paid>` paid so far against `<INR approved>` approved; `<INR outstanding>` outstanding." |
-| initiated | `paid` | "Payment initiated; the transfer has not completed yet." |
+| completed, money still owed | `cleared` | "`<INR paid>` paid so far against `<INR approved>` approved; `<INR outstanding>` outstanding." |
+| initiated | `paid` | "Payment of `<INR net>` initiated against `<INR approved>` approved; the UTR follows when the transfer completes." |
 
 **Headers set by the application.**
 
@@ -32,9 +32,10 @@ Workflow ids, per scheme dialect (see [PAYERS.md](../references/PAYERS.md)) [PAY
 
 | Send | `pmjay` | `kyrocare` (Sandbox Payer) | `generic` | `x-hcx-status` |
 |---|---|---|---|---|
-| Payment notice, initiated and completed alike | 30 | 30 | 30 | `request.initiated` |
+| Payment notice, initiated (`paid`, no UTR) | 30 | 30 | 30 | `request.initiated` |
+| Payment notice, completed (`cleared`, with the UTR) | 31 | 31 | 31 | `request.initiated` |
 
-The reference sends 30 on both notices; NHA also publishes 31 (payment processed) and 33 (payment settled), which a deployment may prefer on the completed notice [REF](../references/PAYERS.md#markers). A hospital under the `pmjay` adapter acknowledges under 17, others echo 30 [PAYER](../references/PAYERS.md#markers).
+Each notice is on a thread of its own and both carry the same `PaymentNotice.id`; a provider counts the money once, on `cleared` (or `paid` with a UTR), and never posts the initiation to its books [PAYER](../references/PAYERS.md#markers). A hospital under the `pmjay` adapter acknowledges under 17, others echo the notice's workflow id (30 or 31) [PAYER](../references/PAYERS.md#markers).
 
 **Checks before sending.** The payment must be `initiated` or `completed`; the case must have `nhcx_sender_code`; the gateway must be configured. None of these refuses the disbursement: the payment is recorded whatever the gateway does, and a notice that did not leave is logged.
 
@@ -57,9 +58,9 @@ Envelope, a completed payment:
 {
   "jwe_headers": {"x-hcx-sender_code": "<payer code>",
                   "x-hcx-recipient_code": "<facility code>",
-                  "x-hcx-workflow_id": "30",
+                  "x-hcx-workflow_id": "31",
                   "x-hcx-status": "request.initiated"},
-  "fhir": <F1 Bundle: F10 Task (deliver, requested, description the disposition, input the notice), F13 PaymentNotice (identifier CLN <claim number>, amount the net paid, paymentStatus paid or cleared), F14 PaymentReconciliation (paymentDate, paymentAmount, paymentIdentifier UTR, detail lines TDS and Payment), F17 provider and payer Organizations>
+  "fhir": <F1 Bundle: F10 Task (deliver, requested, description the disposition, input the notice), F13 PaymentNotice (identifier CLN <claim number>, amount the net paid, paymentStatus cleared; paid with no UTR on the 30 initiation), F14 PaymentReconciliation (paymentDate, paymentAmount, paymentIdentifier UTR (completed only), detail lines TDS and Payment), F17 provider and payer Organizations>
 }
 ```
 
@@ -69,7 +70,7 @@ Envelope, a completed payment:
 
 Recorded:
 - [D30. payment](../database/D30-payment.md) `nhcx_notice_txn_id` = `txn_id` (the last notice sent for the payment).
-- [D27. case_exchange_message](../database/D27-case-exchange-message.md) exchange message, direction `out`, kind `paymentnotice`, the minted correlation id, the transaction, summary "Payment notice: `<INR net>` paid, UTR `<utr>`" (the UTR blank on the initiated notice).
+- [D27. case_exchange_message](../database/D27-case-exchange-message.md) exchange message, direction `out`, kind `paymentnotice`, the minted correlation id, the transaction, summary "Payment notice (31, cleared): `<INR net>` paid, UTR `<utr>`", or "Payment notice (30, paid): `<INR net>` initiated" on the initiation.
 - [D31. audit_log](../database/D31-audit-log.md) audit `payment.notified` on the payment: "`<hospital>` told, txn `<id>`".
 
 **Failed send.** Logged ("could not queue the payment notice for `<payment>` on case `<id>`: `<message>`"), nothing recorded; the payment stands. There is no resend in the reference: recording the UTR on an initiated payment sends the completed notice, which carries everything the first did [REF](../references/PAYERS.md#markers).
@@ -83,7 +84,8 @@ Reply: [C11. Payment Acknowledgement](../callbacks/C11-payment-acknowledgement.m
 #### A6P. PSEUDOCODE
 
 ```
-// called by A14 after a payment is raised, completed in one step, or completed with a UTR
+// called by A14 after a payment is raised, completed with a UTR, or (one step) twice:
+// first with the payment as initiated (UTR and completed date left out), then as completed
 function push_payment_notice(payment):
     if push_payment_notice setting off or gateway not configured: return payment
     if payment.status not in {initiated, completed}: return payment
@@ -94,13 +96,15 @@ function push_payment_notice(payment):
     bundle = F13 notice bundle(payer, payer code, case, payments = [payment], claim_ref,
                                recipient = case.nhcx_sender_code, about = payment)
     headers = {x-hcx-sender_code: payer code, x-hcx-recipient_code: case.nhcx_sender_code,
-               x-hcx-workflow_id: "30", x-hcx-status: "request.initiated"}     // [PAYER](../references/PAYERS.md#markers)
+               x-hcx-workflow_id: "31" when payment.status == completed else "30",
+               x-hcx-status: "request.initiated"}     // [PAYER](../references/PAYERS.md#markers)
     ack = SEND("v1/paymentnotice/request", {jwe_headers: headers, fhir: bundle}, case)   // A1: SEND
         on any failure f: log "could not queue the payment notice for <payment> on case <id>: <f>"; return payment
     UPDATE D30[payment.id] SET nhcx_notice_txn_id = ack.txn_id
     INSERT D27 {case_id: case.id, direction: out, kind: paymentnotice, correlation_id: ack.correlation_id,
                 txn_id: ack.txn_id, counterparty: case.nhcx_sender_code,
-                summary: "Payment notice: <INR payment.net_payable> paid, UTR <payment.utr_no>", payload: bundle}
+                summary: completed ? "Payment notice (31, cleared): <INR net> paid, UTR <utr>"
+                                   : "Payment notice (30, paid): <INR net> initiated", payload: bundle}
     INSERT D31 audit {action: "payment.notified", entity_type: payment, entity_id: payment.id,
                       detail: "<hospital> told, txn " + ack.txn_id}
     return payment with nhcx_notice_txn_id set

@@ -26,7 +26,7 @@ Every screen of the claim, patient and practitioner flows, in one list. Each row
 
 | # | Screen | Route | What it does | APIs | Callbacks |
 |---|---|---|---|---|---|
-| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | The facility's NHCX setup, kept by the desk's administrator: HFR id (shown from the ABDM module when it has one), participant code, how a claim starts (registration required, member id captured), the registered endpoint checked against the public URL, the certificate check, the participant master and its refresh, key rotation, and the startup checks run on demand. | none | none |
+| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | The facility's NHCX setup, kept by the desk's administrator under the HMIS's facility settings: the facility profile (HFR id, from the ABDM module when it has one; participant code, the gateway's default when blank; how a claim starts), the participant registry record with the endpoint and certificate verdicts and an Update the registry action, key rotation (stage, register certificate, activate, retire), the participant master with its counts and Refresh now, and a link to the doctors and staff master. | none | none |
 
 ## Component kit
 

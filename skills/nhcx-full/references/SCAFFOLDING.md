@@ -161,7 +161,7 @@ C1 archives every inbound envelope, and services archive every outbound one, bes
 |---|---|---|
 | Patient | S13, S14, S15, D3 | ABHA number and address fields on the form, the ABHA search in the list, the ABHA chip on the chart. The ABHA number is what links a claim to an admission. |
 | Practitioner | S16, D2 | HPR id, registration number and qualification; retired practitioners drop out of pickers. The care team on the pre-auth comes from here. |
-| Facility settings | D1, S19 | The NHCX settings screen: HFR id (read from the HMIS's ABDM module when it has one), participant code, the registered endpoint checked against the public URL, the certificate check, and key rotation. |
+| Facility settings | D1, D32, S19 | The NHCX page under the facility settings, always built: HFR id (read from the HMIS's ABDM module when it has one), participant code (the gateway's default when blank), how a claim starts, the registry record with its endpoint and certificate verdicts and Update the registry, key rotation (stage, register certificate, activate, retire), the participant master with Refresh now, and a link to the doctors and staff master. |
 | Patient (ABHA) | D3, A19 | "Register with ABHA" on the list and "Verify or create an ABHA" on the form and the chart, filling the file from the ABHA service's profile. **Built only when the HMIS has no ABDM module that already does this** (section 4a). |
 | Billing | D21, S12 | A payment notice in which money moved is posted to the HMIS's own billing or accounts module as a payer receipt, against the admission's account (else the patient's open account), before it is acknowledged; a second posting updates the first; the posting status is empty, `posted` or `failed`; S12 shows it. |
 | Admission (encounter) | D4 | Nothing new if the HMIS already marks the current admission and its dates; the Claim tab links a case to it, found by the case's ABHA number. A pre-authorisation needs no admission. |
@@ -300,11 +300,12 @@ Matches the plan phases in [L3](../steps/L3-integration-planning.md). Each phase
 |---|---|
 | 1 Foundation | `gateway/`, settings, the inbound route wired to a stub receive that answers `unmatched` (202) |
 | 2 Data | `models/` and migrations for D9, D30 and every leg table C1 matches on (D10, D13, D18, D19, D20, D21, D23, D24, D29); D1 to D3 field changes; then `callbacks/dispatch` (C1) and `archive`, which read those tables (`claim_for_correlation`, `claim_named_in`) and cannot be written before them |
-| 3 Policy and eligibility | `services/policy`, `services/eligibility`, `callbacks/eligibility` (C2), F2, F3, F15 to F18, S1, S2, S3, S5, S6 shell |
-| 4 Plan and line items | `services/plan`, auth-requirements, `callbacks/plan`, C3, F4 to F6, D10 to D16, S7, S8 |
-| 5 Pre-authorisation | `services/preauth`, `callbacks/preauth`, `callbacks/enquiry`, F7 to F10, F19, D17 to D19, D25 to D29, S4, S9 |
-| 6 Payer communication | `services/communication`, `callbacks/communication`, F11, F12, D23, S10 |
-| 7 Claim | `services/claim`, `callbacks/claim`, D20, S11 |
-| 8 Payment | `services/payment`, `callbacks/payment`, F13, F14, D21, D22, S12 |
-| 9 Patient and practitioner | S13 to S16 field changes |
-| 10 Navigation | the "Claims" entry |
+| 3 Facility settings and participant master | the NHCX page under the facility settings (S19, its five cards), D1 field changes, D32 and its daily refresh (section 7), the gateway's key slots and rotation, the registry fetch and update. Always built: the payer picker reads D32 |
+| 4 Policy and eligibility | `services/policy`, `services/eligibility`, `callbacks/eligibility` (C2), F2, F3, F15 to F18, S1, S2, S3, S5, S6 shell, S17 |
+| 5 Plan and line items | `services/plan`, auth-requirements, `callbacks/plan`, C3, F4 to F6, D10 to D16, S7, S8 |
+| 6 Pre-authorisation | `services/preauth`, `callbacks/preauth`, `callbacks/enquiry`, F7 to F10, F19, D17 to D19, D25 to D29, S4, S9, S18 |
+| 7 Payer communication | `services/communication`, `callbacks/communication`, F11, F12, D23, S10 |
+| 8 Claim | `services/claim`, `callbacks/claim`, D20, S11 |
+| 9 Payment | `services/payment`, `callbacks/payment`, F13, F14, D21, D22, S12 |
+| 10 Patient and practitioner | S13 to S16 field changes |
+| 11 Navigation | the "Claims" entry, and the "NHCX" entry in the facility settings |

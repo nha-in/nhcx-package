@@ -48,7 +48,7 @@ GET /claims/42/state
 
 `200` with a JSON object. An unknown claim returns `404` `{"error": "No such claim"}`.
 
-Row objects are the stored rows with every column, or `null` when the row does not exist. Data: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), D11. claim_plan_benefit (in nhcx-coverage), D4. encounter (in nhcx-coverage), D16. claim_line (in nhcx-preauth), D13. claim_auth (in nhcx-coverage), D15. claim_auth_requirement (in nhcx-coverage), D12. claim_plan_form (in nhcx-coverage), D28. claim_document (in nhcx-coverage), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), D23. claim_query (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), [D21. claim_payment](../database/D21-claim-payment.md), D29. claim_enquiry (in nhcx-preauth).
+Row objects are the stored rows with every column, or `null` when the row does not exist. Data: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), D11. claim_plan_benefit (in nhcx-coverage), D4. encounter (in nhcx-coverage), D16. claim_line (in nhcx-preauth), [D13. claim_auth](../database/D13-claim-auth.md), D15. claim_auth_requirement (in nhcx-coverage), D12. claim_plan_form (in nhcx-coverage), D28. claim_document (in nhcx-coverage), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), D23. claim_query (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), [D21. claim_payment](../database/D21-claim-payment.md), D29. claim_enquiry (in nhcx-preauth).
 
 | Key | Type | Content |
 |---|---|---|
@@ -172,16 +172,22 @@ STATE(caseid):
     submission:         claim_submission row or null,
     submission_items:   claim_submission.items_json as a list, else [],
     payments:           claim_payment rows,
-    paid_total:         claim_payment rows in id order whose payment_status is "paid" or
-                        "cleared" (case ignored), leaving out rows with no utr whose
-                        disposition contains "initiat" [PAYER](../references/PAYERS.md#markers); the last amount per utr (row id when
-                        no utr) wins; summed and rounded to 2 places,
+    paid_total:         claim_payment rows in id order whose payment_status is "cleared", or
+                        "paid" with a utr (case ignored); a "paid" row with no utr is the
+                        workflow-30 initiation and is left out [PAYER](../references/PAYERS.md#markers); the last amount per utr
+                        (row id when no utr) wins; summed and rounded to 2 places,
+    payment_approved:   the claim leg's approved_amount, or null before the claim is approved,
+    payment_accounted:  per notice (newest row of each notice_id, else each row) the sum of
+                        its claim_payment_detail amounts (payment, TDS, every deduction), else its
+                        amount when it has no lines; summed; null before any notice,
+    payment_shortfall:  null while either of the two is null; 0 when accounted equals
+                        approved; else max(approved - accounted, 0); rounded to 2 places,
     enquiries:          claim_enquiry rows,
     poll_notes:         poll_notes
   }
 ```
 
 #### A17U. USED BY
-- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md)
+- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md), [S12. Payments](../screens/S12-payments.md)
 - APIs: [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A12. Transaction FHIR](A12-txn-fhir.md)
-- Database: [D9. claim](../database/D9-claim.md)
+- Database: [D9. claim](../database/D9-claim.md), [D22. claim_payment_detail](../database/D22-claim-payment-detail.md)

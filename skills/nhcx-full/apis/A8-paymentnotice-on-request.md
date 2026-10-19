@@ -25,7 +25,7 @@ Per adapter (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAY
 | Adapter | `payment_ack` | Workflow id sent |
 |---|---|---|
 | `gov` | 17 (PAYMENT_RECEIVED) | `17` |
-| `generic` | none (echo) | the notice's own workflow id echoed back (for example `30`) |
+| `generic` | none (echo) | the notice's own workflow id echoed back (`30` on the initiation, `31` on the completion) |
 
 A per-environment override (a JSON object of kind to workflow id) can set `payment_ack` too; an empty value there means "echo the notice's own".
 
@@ -59,7 +59,7 @@ Envelope, a real acknowledgement (a government payer):
 }
 ```
 
-The same notice from a `generic` payer is acknowledged with `"x-hcx-recipient_code": "<payer code>"` and `"x-hcx-workflow_id": "30"` (the notice's own) [SANDBOX](../references/PAYERS.md#markers).
+The same notice from a `generic` payer is acknowledged with `"x-hcx-recipient_code": "<payer code>"` and `"x-hcx-workflow_id": "30"` on the initiation, `"31"` on the completion (the notice's own) [SANDBOX](../references/PAYERS.md#markers).
 
 #### A8S. RESPONSE
 
@@ -115,7 +115,7 @@ function acknowledge_payment(payment_id, case_id = none):
 ```
 
 #### A8U. USED BY
-- Screens: [S12. Payments](../screens/S12-payments.md)
+- Screens: [S12. Payments](../screens/S12-payments.md), [S19. NHCX Settings](../screens/S19-nhcx-settings.md)
 - APIs: [A4. Pre-auth Submit](A4-preauth-submit.md), [A6. Task Submit (cancel, status, reprocess, release)](A6-task-submit.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C10. Payment Notice](../callbacks/C10-paymentnotice-request.md)
 - FHIR: [F1. Bundle](../fhir/F1-bundle.md), [F13. PaymentNotice](../fhir/F13-paymentnotice.md), [F14. Payment acknowledgement](../fhir/F14-payment-acknowledgement.md)

@@ -8,13 +8,13 @@ Every screen of the claim, patient and practitioner flows, in one list. Each row
 |---|---|---|---|---|---|
 | [S5](../screens/S5-claim-master.md) | Claim Master | `claims`, `claims/list` | One module, two screens: the Claim dashboard (counts by stage, leg and payment for a period and a payer) and Claim management (the claim list with quick tabs, a debounced search and payer filter, the entry to the stepper S1, to discovery S17 and to S6). | none | none |
 | [S6](../screens/S6-claim-detail.md) | Claim Detail | `claims/view/:caseid` | The case shell: header chips, next-action buttons, the six tabs in episode order with a dot where the payer has something new, and the Logs tab. Polls every waiting leg on load. | [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) |
-| [S12](../screens/S12-payments.md) | Payments | `claims/view/:caseid/payments` | Shows each payment notice with its breakdown and acknowledgement, and re-sends a failed acknowledgement. | [A8](../apis/A8-paymentnotice-on-request.md) | [C10](../callbacks/C10-paymentnotice-request.md) |
+| [S12](../screens/S12-payments.md) | Payments | `claims/view/:caseid/payments` | Shows each payment notice with its breakdown and acknowledgement, and re-sends a failed acknowledgement. | [A8](../apis/A8-paymentnotice-on-request.md), [A17](../apis/A17-claim-state.md) | [C10](../callbacks/C10-paymentnotice-request.md) |
 
 ## Facility
 
 | # | Screen | Route | What it does | APIs | Callbacks |
 |---|---|---|---|---|---|
-| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | The facility's NHCX setup, kept by the desk's administrator: HFR id (shown from the ABDM module when it has one), participant code, how a claim starts (registration required, member id captured), the registered endpoint checked against the public URL, the certificate check, the participant master and its refresh, key rotation, and the startup checks run on demand. | none | none |
+| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | The facility's NHCX setup, kept by the desk's administrator under the HMIS's facility settings: the facility profile (HFR id, from the ABDM module when it has one; participant code, the gateway's default when blank; how a claim starts), the participant registry record with the endpoint and certificate verdicts and an Update the registry action, key rotation (stage, register certificate, activate, retire), the participant master with its counts and Refresh now, and a link to the doctors and staff master. | [A8](../apis/A8-paymentnotice-on-request.md) | none |
 
 ## Component kit
 

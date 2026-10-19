@@ -8,13 +8,13 @@ It answers [C10. Payment Enquiry](../callbacks/C10-payment-enquiry.md). This is 
 #### A7D. DESCRIPTION
 Sent at once, inside the callback, when a hospital's PaymentNotice ([F13. PaymentNotice](../fhir/F13-paymentnotice.md), received) asks about a claim. The case is found by the claim number the notice carries (typed `CLN`, else the first identifier on the notice, the reconciliation or the Task) among the cases from that sender ([D19. case](../database/D19-case.md) `nhcx_claim_submission_ref` or `nhcx_claim_ref`, and the case's own `claim_no`).
 
-**Found:** the whole case's payments ([D30. payment](../database/D30-payment.md)) are reconciled ([F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)): every completed payment as lines, the totals paid and withheld, the last UTR and date, the status and disposition of the standing:
+**Found:** the whole case's payments ([D30. payment](../database/D30-payment.md)) are reconciled ([F14. PaymentReconciliation](../fhir/F14-paymentreconciliation.md)): every completed payment as lines (or, when none has completed, every initiated one, without a UTR), the totals paid and withheld, the last UTR and date, the status and disposition of the standing:
 
 | Standing | `paymentStatus` | Disposition |
 |---|---|---|
 | settled | `cleared` | "Settled in full: `<INR paid>` paid against `<INR approved>` approved." |
-| paid in part | `paid` | "`<INR paid>` paid so far against `<INR approved>` approved; `<INR outstanding>` outstanding." |
-| a payment initiated, none completed | `paid` | "Payment initiated; the transfer has not completed yet." |
+| paid in part | `cleared` | "`<INR paid>` paid so far against `<INR approved>` approved; `<INR outstanding>` outstanding." |
+| a payment initiated, none completed | `paid` (with its amounts, no UTR) | "Payment of `<INR net>` initiated against `<INR approved>` approved; the UTR follows when the transfer completes." |
 | approved, nothing initiated (stage `payment`) | `paid` | "Claim approved for `<INR approved>`; disbursement has not been initiated." |
 | rejected or withdrawn | `paid` | "Nothing is payable: the claim was `<stage>`." |
 | not decided | `paid` | "The claim has not been decided; nothing has been paid." |

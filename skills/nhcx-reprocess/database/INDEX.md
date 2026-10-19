@@ -24,6 +24,7 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 |---|---|---|---|
 | [D11](D11-claim-plan-benefit.md) | claim_plan_benefit | Package (or covered benefit) in a claim's package master. | [D11-claim-plan-benefit.md](D11-claim-plan-benefit.md) |
 | [D12](D12-claim-plan-form.md) | claim_plan_form | Payer questionnaire (dynamic form) shipped with a claim's package master. | [D12-claim-plan-form.md](D12-claim-plan-form.md) |
+| [D13](D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [D13-claim-auth.md](D13-claim-auth.md) |
 | [D15](D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | [D15-claim-auth-requirement.md](D15-claim-auth-requirement.md) |
 
 ## Pre-authorisation draft

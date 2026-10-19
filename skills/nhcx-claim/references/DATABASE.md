@@ -24,6 +24,7 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 |---|---|---|---|---|---|---|
 | [D11](../database/D11-claim-plan-benefit.md) | claim_plan_benefit | Package (or covered benefit) in a claim's package master. | [S11](../screens/S11-claim-submission.md) | [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md), [F8](../fhir/F8-claim.md) |
 | [D12](../database/D12-claim-plan-form.md) | claim_plan_form | Payer questionnaire (dynamic form) shipped with a claim's package master. | [S11](../screens/S11-claim-submission.md) | [A17](../apis/A17-claim-state.md) | none | [F7](../fhir/F7-questionnaireresponse.md) |
+| [D13](../database/D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [S6](../screens/S6-claim-detail.md), [S19](../screens/S19-nhcx-settings.md) | [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) | [F3](../fhir/F3-coverage-eligibility-response.md) |
 | [D15](../database/D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | [S11](../screens/S11-claim-submission.md) | [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
 
 ## Pre-authorisation draft

@@ -60,7 +60,8 @@ The `x-hcx-workflow_id` each answer or send travels under, per profile, and the 
 | Reprocess or release acknowledged (`reprocess_ack`) | 37 | 37 | 37 | A9 | `response.complete` |
 | Reprocess approved (`reprocess_approved`) | 252 | 252 | 252 | A9 | `response.complete` |
 | Reprocess rejected (`reprocess_rejected`) | 253 | 253 | 253 | A9 | `response.complete` |
-| Payment notice, raised and completed (`payment_notice`) | 30 | 30 | 30 | A6 | `request.initiated` |
+| Payment notice, initiated (`paid`, no UTR) | 30 | 30 | 30 | A6 | `request.initiated` |
+| Payment notice, completed (`cleared`, with the UTR) | 31 | 31 | 31 | A6 | `request.initiated` |
 
 The reprocess or release acknowledgement on 37 is the one send where the reference departs from the sheet: it goes out as `response.partial`, because the exchange closes a thread on `response.complete` and the decision that follows on the same thread (252, 253) would then have nowhere to travel [REF](PAYERS.md#markers). NHA pairs 37 with `response.complete` only, as the table says; confirm the pairing with the scheme before going live.
 

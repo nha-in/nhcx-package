@@ -209,6 +209,7 @@ States of the card:
 **Submit checks**, on the server in this order, each a red flash:
 - "Submit a preauth only after the payer has confirmed the policy is eligible." (the case not in force)
 - The send-kind refusals above.
+- A new pre-authorisation whose admission date is before today: "The admission date cannot be before today; a pre-authorisation is not raised back-dated." (a query answer or an enhancement is not refused).
 - On a query answer with no reply text: "Write the reply to the payer's query before answering it."
 - "Set the facility's HFR ID and NHCX participant code under Settings before submitting."
 - "Enter the planned admission date on the pre-authorisation."

@@ -12,7 +12,7 @@ Always read, whatever the task: [CORE.md](CORE.md) (addresses and the exchange t
 | [S6](../screens/S6-claim-detail.md) | Claim Detail | nothing else |
 | [S11](../screens/S11-claim-submission.md) | Claim Submission | [D9](../database/D9-claim.md), [D11](../database/D11-claim-plan-benefit.md), [D12](../database/D12-claim-plan-form.md), [D15](../database/D15-claim-auth-requirement.md), [D16](../database/D16-claim-line.md), [D17](../database/D17-claim-form-answer.md), [D20](../database/D20-claim-submission.md), [D21](../database/D21-claim-payment.md), [D23](../database/D23-claim-query.md), [D28](../database/D28-claim-document.md), [D29](../database/D29-claim-enquiry.md) |
 | [S18](../screens/S18-beneficiary-verification.md) | Beneficiary Verification | [D3](../database/D3-patient.md), [D31](../database/D31-biometric-auth.md) |
-| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | [D1](../database/D1-organization.md), [D32](../database/D32-participant.md), [G2](../gateway/G2-configuration.md), [G4](../gateway/G4-registry.md), [G6](../gateway/G6-encryption.md), [G8](../gateway/G8-receive.md), [G11](../gateway/G11-startup-checks.md) |
+| [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | [D1](../database/D1-organization.md), [D13](../database/D13-claim-auth.md), [D32](../database/D32-participant.md), [G2](../gateway/G2-configuration.md), [G4](../gateway/G4-registry.md), [G6](../gateway/G6-encryption.md), [G8](../gateway/G8-receive.md), [G11](../gateway/G11-startup-checks.md) |
 
 ## APIs
 

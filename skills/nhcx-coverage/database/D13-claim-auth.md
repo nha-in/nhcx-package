@@ -54,7 +54,7 @@ Delete: never directly. The row goes with its claim (`ON DELETE CASCADE`) or wit
 - Index: `ix_claim_auth_corr (correlation_id)`.
 
 #### D13U. USED BY
-- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md)
+- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md), [S19. NHCX Settings](../screens/S19-nhcx-settings.md)
 - APIs: [A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A11. Transaction Dispatch](../apis/A11-txn-dispatch.md), [A13. Transaction List](../apis/A13-txn-list.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md)

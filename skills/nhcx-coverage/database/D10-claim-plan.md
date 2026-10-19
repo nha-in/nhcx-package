@@ -56,8 +56,8 @@ Delete: never directly. The row goes with its claim (`ON DELETE CASCADE`) or wit
 - Index: `ix_claim_plan_corr (correlation_id)`, used to match the reply.
 
 #### D10U. USED BY
-- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md)
+- Screens: [S6. Claim Detail](../screens/S6-claim-detail.md), [S17. Beneficiary Discovery](../screens/S17-beneficiary-discovery.md)
 - APIs: [A10. Transaction Related](../apis/A10-txn-related.md), [A11. Transaction Dispatch](../apis/A11-txn-dispatch.md), [A13. Transaction List](../apis/A13-txn-list.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md)
-- Database: [D8. terminology](D8-terminology.md), [D9. claim](D9-claim.md), [D11. claim_plan_benefit](D11-claim-plan-benefit.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D13. claim_auth](D13-claim-auth.md), [D31. biometric_auth](D31-biometric-auth.md)
+- Database: [D8. terminology](D8-terminology.md), [D9. claim](D9-claim.md), [D11. claim_plan_benefit](D11-claim-plan-benefit.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D13. claim_auth](D13-claim-auth.md), [D31. biometric_auth](D31-biometric-auth.md), [D32. participant](D32-participant.md)
 - Tests: [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

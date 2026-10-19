@@ -64,6 +64,9 @@ apply_plan(row, parsed, body):
         delete D11 and D12 rows of this plan
         insert D11 per benefit with seq 1..n
         insert D12 per form
+        if status == "ready":
+            D32 rows whose code's part before "@" equals that of the case's payer_id,
+                with plan_fetched_at null: set plan_fetched_at = now   // "In network", S17
 ```
 
 #### C4S. RESPONSE
@@ -76,11 +79,12 @@ State changes:
 | D10 claim_plan | `status` `ready` (at least one package), `empty` (none, including the no-InsurancePlan case, which also sets `error_message`), or `error` with `<code>: <message>`; plan identifier, title, type, sum insured, policy documents; `fetched_at`; `response_json` |
 | D11 claim_plan_benefit | replaced: one row per (speciality, package) |
 | D12 claim_plan_form | replaced: one row per Questionnaire |
+| D32 participant | on a `ready` plan, the case's payer gets `plan_fetched_at` = now when it had none (the payer is "In network" from then on) |
 
 #### C4U. USED BY
 - Screens: [S7. Insurance Plan](../screens/S7-insurance-plan.md)
 - APIs: [A3. Insurance Plan Request](../apis/A3-insurance-plan-request.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](C1-callback-door.md), [C3. Authorisation Requirements Ruling](C3-auth-requirements-on-check.md)
-- Database: [D10. claim_plan](../database/D10-claim-plan.md)
+- Database: [D10. claim_plan](../database/D10-claim-plan.md), [D32. participant](../database/D32-participant.md)
 - Gateway: [G8. Receive](../gateway/G8-receive.md)
 - Tests: [T1. Test Configuration](../tests/T1-test-configuration.md), [T4. IRDAI Insurance Plan and Authorisation Requirements](../tests/T4-irdai-plan-and-auth-requirements.md), [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

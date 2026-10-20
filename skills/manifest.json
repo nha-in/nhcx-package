@@ -1,18 +1,18 @@
 {
-  "version": "1.9.3",
-  "built_at": "2026-10-19T11:35:57.600Z",
+  "version": "1.9.4",
+  "built_at": "2026-10-20T18:07:25.983Z",
   "source": "src/nhcx",
   "companion": {
     "config": "skill.payer.config.mjs",
     "source": "src/payer",
     "dir": "payer",
-    "version": "1.2.1"
+    "version": "1.2.2"
   },
   "skills": [
     {
       "name": "nhcx-full",
       "files": 159,
-      "words": 210689,
+      "words": 211595,
       "ids": [
         "S1",
         "S2",
@@ -148,7 +148,7 @@
         "dir": "payer",
         "name": "nhcx-payer-full",
         "files": 155,
-        "words": 156536,
+        "words": 157452,
         "ids": [
           "S1",
           "S2",
@@ -280,7 +280,7 @@
     {
       "name": "nhcx-coverage",
       "files": 97,
-      "words": 129504,
+      "words": 130410,
       "ids": [
         "S1",
         "S2",
@@ -370,7 +370,7 @@
         "dir": "payer",
         "name": "nhcx-payer-coverage",
         "files": 108,
-        "words": 107610,
+        "words": 108526,
         "ids": [
           "S1",
           "S2",
@@ -455,7 +455,7 @@
     {
       "name": "nhcx-preauth",
       "files": 131,
-      "words": 174547,
+      "words": 175453,
       "ids": [
         "S4",
         "S5",
@@ -589,7 +589,7 @@
         "dir": "payer",
         "name": "nhcx-payer-preauth",
         "files": 116,
-        "words": 113765,
+        "words": 114681,
         "ids": [
           "S1",
           "S2",
@@ -682,7 +682,7 @@
     {
       "name": "nhcx-claim",
       "files": 97,
-      "words": 133067,
+      "words": 133973,
       "ids": [
         "S5",
         "S6",
@@ -773,7 +773,7 @@
         "dir": "payer",
         "name": "nhcx-payer-claim",
         "files": 107,
-        "words": 105038,
+        "words": 105954,
         "ids": [
           "S1",
           "S2",
@@ -857,7 +857,7 @@
     {
       "name": "nhcx-communication",
       "files": 78,
-      "words": 102157,
+      "words": 103063,
       "ids": [
         "S5",
         "S6",
@@ -922,7 +922,7 @@
         "dir": "payer",
         "name": "nhcx-payer-communication",
         "files": 76,
-        "words": 80255,
+        "words": 81171,
         "ids": [
           "S1",
           "S2",
@@ -975,7 +975,7 @@
     {
       "name": "nhcx-payment",
       "files": 77,
-      "words": 96222,
+      "words": 97128,
       "ids": [
         "S5",
         "S6",
@@ -1037,7 +1037,7 @@
         "dir": "payer",
         "name": "nhcx-payer-payment",
         "files": 94,
-        "words": 92179,
+        "words": 93095,
         "ids": [
           "S1",
           "S2",
@@ -1108,7 +1108,7 @@
     {
       "name": "nhcx-reprocess",
       "files": 83,
-      "words": 111893,
+      "words": 112799,
       "ids": [
         "S5",
         "S6",
@@ -1184,7 +1184,7 @@
         "dir": "payer",
         "name": "nhcx-payer-claim",
         "files": 107,
-        "words": 105038,
+        "words": 105954,
         "ids": [
           "S1",
           "S2",
@@ -1268,7 +1268,7 @@
   ],
   "plugin": {
     "name": "nhcx",
-    "version": "1.9.3",
+    "version": "1.9.4",
     "dir": "plugins/nhcx",
     "skills": [
       "nhcx:full",

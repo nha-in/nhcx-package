@@ -113,41 +113,126 @@ Rebuilt as the last action of every prompt, however the prompt ended: after a st
 | E2E | `e2e.json`: setup checks, then one row per test and runner (GUI, CLI) with result, cause and attempts; blocked tests with their reason. |
 | Log | Every `progress.json` entry, newest first: time, sub-step, action, item, summary, files. |
 
-Each tab renders its file's records as tables, with the fields that file's spec names as columns, and every step, sub-step, test and spec id written with its name (LOGN). Any structure the builder does not know is still shown, as pretty-printed JSON, so nothing in a plan file is invisible. Long text is not cut short.
+Each tab renders its file's records as tables, with the fields that file's spec names as columns, and every step, sub-step, test and spec id written with its name (LOGN). Any structure the builder does not know is still shown, written out as text (below), so nothing in a plan file is invisible; JSON itself never appears on the page. Long text is not cut short.
 
-**Minimal, self-contained HTML.** One file that opens from disk in any browser and needs nothing else: no external stylesheets, fonts, images or scripts, no framework. Plain semantic tags (`h1`, `h2`, `table`, `ul`, `pre`) with a few lines of inline CSS for the tab bar, table borders and a colour for the result words (pass, fail, blocked, skipped). A few lines of inline script, and no more: the tab bar shows one tab's section and hides the others (the current tab kept in the URL hash, so a reload stays on it), and a **Refresh** button at the top reloads the page (`location.reload()`), which shows whatever the last rebuild wrote. Without script the page still reads top to bottom, every section visible. No secrets: configuration values are shown as `set` or `missing`, as [T1. Test Configuration](../tests/T1-test-configuration.md) does.
+**Clean, self-contained, and written for a person: never a dump of the JSON.** One file that opens from disk in any browser and needs nothing else: no external stylesheets, fonts, images or scripts, no framework, the CSS and script below inline. It follows the viewer's light or dark theme. No secrets: configuration values are shown as `set` or `missing`, as [T1. Test Configuration](../tests/T1-test-configuration.md) does.
+
+- **Header:** the title "NHCX integration report", a **Refresh** button (`location.reload()`, showing whatever the last rebuild wrote), and one line: target, skill and version, when it was built, steps done out of 8, tests passing out of run, open errors.
+- **Tab bar** under it, sticky as the page scrolls, one pill per tab; Overview, Dry-run and E2E carry a red count of what is open. The current tab is kept in the URL hash, so a reload stays on it; each section's `id` is `tab-<name>`, so the hash never scrolls the header away.
+- **Overview:** four tiles (Steps `n / 8`; Dry-run tests and End-to-end tests as `passed / run` with a bar and the failed and blocked counts; Open errors, red when above zero); the eight steps side by side, each with its id and name, a tick when done, `!` when blocked, the active one outlined, `done / total sub-steps` and "exit ✓"; then **Open errors** as cards, newest first: a status pill, the source ("End-to-end · CLI · cause: sandbox"), the id with its name as the title, the detail, and the correlation and ledger ids only when there are any. "No open errors" in a green banner when there are none.
+- **Every id reads with its name**, field references too: `D1.name` is shown as "D1 Organization · name", `F17:provider.name` as "F17 Organization · provider.name", a table name like `claim_diagnosis` as "Claim diagnosis" (LOGN).
+- **Mapping** is grouped by table: one folding group per D spec titled with its id and name, its status counts as pills (mapped, new, missing) and what the plan does with the table, and inside it one row per field: field, where the HMIS keeps it (`table.column`), what it is sent as (the F spec element, named), status, how (the transform or resolution), the screens that show it, and the source file and line. Code systems follow as their own table.
+- **Every other tab:** a filter box that hides rows not containing the text typed; a record (a run, a configuration, a target) as a two-column field list, side by side when there are two; lists as tables with a sticky header, alternate row shading and a row count, failures first where the tab says so, ids in natural order (T3 before T13); result, status, state, action and cause words as coloured pills (green pass, done, ok; red fail, error, missing; amber blocked, partial, in progress; grey skipped, not started); paths, files, commands and ids monospaced; long text wrapped at word boundaries, never cut. A column empty in every row is left out. Plan phases are folding groups with a `done / total` pill.
+- **No JSON on the page.** Nested data is written out as text: a small record as `key value · key value`, a list of records as a list whose lines lead with the record's name in bold, then its result pill, then the rest in grey (a test's steps read "provider sends the validation check `fail` got AttributeError ..."); past six lines the rest folds behind "n more". progress.md's checklist sits in a folding block on the Progress tab.
+- Without script the page still reads top to bottom with every section shown; printed, every tab prints in turn.
+
+The page's CSS and script, used as they are (the class names are the contract the builder writes against):
+
+```css
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1d2330;--muted:#667085;--line:#e3e6eb;--head:#f0f2f5;--accent:#2457c5;
+--good:#127a3a;--good-bg:#e5f5ea;--bad:#b42318;--bad-bg:#fdecea;--warn:#a15c07;--warn-bg:#fdf3e1;--quiet:#596173;--quiet-bg:#eef0f3}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--card:#171b23;--fg:#e6e8ee;--muted:#98a1b3;--line:#2a303c;--head:#1e232d;--accent:#7aa2ff;
+--good:#5fd38a;--good-bg:#173323;--bad:#ff8a80;--bad-bg:#3a1a1a;--warn:#f3b55a;--warn-bg:#3a2a12;--quiet:#a9b0bf;--quiet-bg:#242a35}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header.top{background:var(--card);border-bottom:1px solid var(--line);padding:18px 28px}
+header.top h1{margin:0;font-size:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top .meta{color:var(--muted);margin-top:4px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 12px}
+button:hover{border-color:var(--accent);color:var(--accent)}
+main{padding:12px 28px 60px;max-width:1500px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tile .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.tile .value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;margin:2px 0 6px}
+.tile .value small{font-size:15px;color:var(--muted);font-weight:500}
+.tile .sub{color:var(--muted);font-size:12px}
+.tile.bad .value{color:var(--bad)}
+.meter{height:6px;background:var(--quiet-bg);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.meter span{display:block;height:100%;background:var(--accent)}.meter.good span{background:var(--good)}
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;column-gap:10px}
+.steps .dot{grid-row:span 2;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;background:var(--quiet-bg);color:var(--quiet)}
+.steps .done .dot{background:var(--good-bg);color:var(--good)}.steps .active .dot{background:var(--accent);color:#fff}.steps .active{border-color:var(--accent)}
+.steps .blocked .dot{background:var(--warn-bg);color:var(--warn)}
+.steps .sname{font-weight:600;font-size:13px}.steps .ssub{color:var(--muted);font-size:12px}
+nav.tabs{position:sticky;top:0;z-index:2;background:var(--bg);padding:10px 0;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+nav.tabs button{border-radius:999px}nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.tabs .badge{margin-left:6px;font-size:11px;background:var(--bad);color:#fff;border-radius:999px;padding:0 6px}
+section{display:none}section.on{display:block}
+section>h2{font-size:17px;margin:6px 0 10px}
+h3{font-size:14px;margin:22px 0 8px}
+.filter{width:min(420px,100%);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);margin-bottom:4px}
+.tablewrap{overflow:auto;max-height:75vh;background:var(--card);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%}
+th{position:sticky;top:0;background:var(--head);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;white-space:nowrap}
+td,th{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even){background:color-mix(in srgb,var(--head) 45%,transparent)}
+tbody tr:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+td{max-width:520px;overflow-wrap:break-word;word-break:normal}
+td.mono{word-break:break-all}
+td:first-child{min-width:120px}
+td ul.plain{min-width:260px}
+.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+pre{white-space:pre-wrap;margin:6px 0 0;background:var(--head);padding:8px;border-radius:6px;max-height:420px;overflow:auto}
+details>summary{cursor:pointer;color:var(--accent)}
+details.group{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0}
+details.group>summary{color:var(--fg);display:flex;gap:10px;align-items:center}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--quiet-bg);color:var(--quiet)}
+.pill.good{background:var(--good-bg);color:var(--good)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.count,.note,.empty{color:var(--muted);font-size:12px;margin:6px 2px}.empty{font-style:italic}
+dl.kv{display:grid;grid-template-columns:minmax(140px,max-content) 1fr;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0;overflow:hidden}
+dl.kv>div{display:contents}dl.kv dt,dl.kv dd{margin:0;padding:6px 12px;border-bottom:1px solid var(--line)}
+dl.kv dt{color:var(--muted);text-transform:capitalize}dl.kv dd{overflow-wrap:anywhere;min-width:0}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.errors{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px}
+.err{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--quiet);border-radius:10px;padding:10px 14px;min-width:0}
+.err.bad{border-left-color:var(--bad)}.err.warn{border-left-color:var(--warn)}
+.err header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.err .src{color:var(--muted);font-size:12px}
+.err h4{margin:6px 0 4px;font-size:14px}
+ul.plain{margin:0;padding-left:16px}ul.plain li{margin:2px 0}.muted{color:var(--muted)}
+details.group>summary .pill{margin-left:2px}.err p{margin:4px 0;overflow-wrap:anywhere}.err .ids{color:var(--muted)}
+.ok-banner{background:var(--good-bg);color:var(--good);border-radius:10px;padding:12px 16px;font-weight:600}
+@media (max-width:700px){header.top,main{padding-left:14px;padding-right:14px}.errors{grid-template-columns:1fr}}
+@media print{nav.tabs,.filter,button{display:none}section{display:block}.tablewrap{max-height:none}}
+```
+
+```html
+<script>
+const show=id=>{if(!document.getElementById('tab-'+id))id='overview';
+document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.dataset.tab===id));
+document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));history.replaceState(null,'','#'+id)};
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+document.querySelectorAll('section').forEach(s=>{if(s.dataset.tab==='overview'||!s.querySelector('tbody'))return;
+ const f=document.createElement('input');f.className='filter';f.placeholder='Filter the rows in this tab';
+ f.oninput=()=>{const q=f.value.toLowerCase();s.querySelectorAll('tbody tr').forEach(r=>r.hidden=!!q&&!r.textContent.toLowerCase().includes(q))};
+ s.querySelector('h2').after(f)});
+show(location.hash.slice(1)||'overview');
+</script>
+```
+
+The shape the builder writes, abbreviated:
 
 ```html
 <!doctype html>
-<meta charset="utf-8">
-<title>NHCX integration report</title>
-<style>
-body{font:14px system-ui;margin:2em;max-width:80em}
-nav button{margin:0 .3em .3em 0;padding:.3em .8em}nav button.on{font-weight:bold;text-decoration:underline}
-section{display:none}section.on{display:block}
-table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:.3em .6em;text-align:left;vertical-align:top}
-.pass{color:#080}.fail{color:#b00}.blocked{color:#b60}.skipped{color:#666}
-</style>
-<h1>NHCX integration report <button onclick="location.reload()">Refresh</button></h1>
-<p>acme-hmis &middot; nhcx-full 1.2.0 &middot; built 2026-09-30 10:14:05 &middot; 5 of 8 steps done &middot; 31 of 34 tests passing &middot; 2 open errors</p>
-<nav>
-<button data-tab="overview">Overview</button><button data-tab="progress">Progress</button><button data-tab="discovery">Discovery</button>
-<button data-tab="mapping">Mapping</button><button data-tab="plan">Plan</button><button data-tab="code-plan">Code plan</button>
-<button data-tab="code">Code</button><button data-tab="validation">Validation</button><button data-tab="dry-run">Dry-run</button>
-<button data-tab="e2e">E2E</button><button data-tab="log">Log</button>
-</nav>
-<section id="overview"><h2>Errors</h2><ul><li>L8 End-to-end Tests: T14 PMJAY Pre-authorisation Through the Payer Service (CLI) failed: no pre-auth decision within 120 s; correlation 5b1f0c1e, ledger 7UQ2P0AB</li></ul></section>
-<section id="progress"><table><tr><th>Step</th><th>State</th><th>Sub-steps</th><th>Exit checked</th></tr>
-<tr><td>L5 Write Code</td><td>in progress</td><td>3 / 5</td><td>no</td></tr></table></section>
-<section id="e2e"><table><tr><th>Test</th><th>Runner</th><th>Result</th><th>Cause</th><th>Attempts</th></tr>
-<tr><td>T14 PMJAY Pre-authorisation Through the Payer Service</td><td>CLI</td><td class="fail">fail</td><td>ours</td><td>2</td></tr></table></section>
-<section id="log"><table><tr><th>Time</th><th>Sub-step</th><th>Action</th><th>Summary</th></tr></table></section>
-<script>
-const show=id=>{document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===id));
-document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));location.hash=id};
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
-show(location.hash.slice(1)||'overview');
-</script>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NHCX integration report: acme-hmis</title><style>/* the CSS above */</style>
+<header class="top"><h1>NHCX integration report <button onclick="location.reload()">Refresh</button></h1>
+<div class="meta">acme-hmis &middot; nhcx-full 1.9.4 &middot; built 20 Oct 2026, 10:14:05 &middot; 7 of 8 steps done &middot; 584 of 596 tests passing &middot; 2 open errors</div></header>
+<main><nav class="tabs"><button data-tab="overview">Overview<span class="badge">2</span></button><button data-tab="mapping">Mapping</button>...</nav>
+<section id="tab-overview" data-tab="overview"><h2>Overview</h2>
+ <div class="tiles"><div class="tile"><div class="label">Steps</div><div class="value">7 <small>/ 8</small></div>
+  <div class="meter good"><span style="width:88%"></span></div><div class="sub">L1 Discovery to L8 End-to-end Tests</div></div>...</div>
+ <h3>Steps</h3><ol class="steps"><li class="done"><span class="dot">&#10003;</span><span class="sname">L1 Discovery</span><span class="ssub">10 / 10 sub-steps &middot; exit &#10003;</span></li>...</ol>
+ <h3>Open errors</h3><div class="errors"><article class="err bad"><header><span class="pill bad">fail</span><span class="src">End-to-end &middot; CLI &middot; cause: ours</span></header>
+  <h4>T14 PMJAY Pre-authorisation Through the Payer Service</h4><p>no pre-auth decision within 120 s</p><p class="mono ids">correlation 5b1f0c1e; ledger 7UQ2P0AB</p></article></div></section>
+<section id="tab-mapping" data-tab="mapping"><h2>Mapping</h2>
+ <details class="group"><summary><b>D1 Organization</b><span class="pill good">8 mapped</span><span class="pill bad">4 missing</span><span class="pill warn">8 new</span><span class="muted"> &middot; extend facility + nhcx_facility_profile</span></summary>
+ <div class="tablewrap"><table><thead><tr><th>field</th><th>stored in the HMIS</th><th>sent as (FHIR)</th><th>status</th><th>how</th>...</tr></thead>
+ <tbody><tr><td>name</td><td>facility.name</td><td>F17 Organization &middot; provider.name</td><td><span class="pill good">mapped</span></td>...</tr></tbody></table></div></details></section>
+<section id="tab-e2e" data-tab="e2e"><h2>E2E</h2>...<tbody><tr><td>T14 PMJAY Pre-authorisation Through the Payer Service</td><td>CLI</td><td><span class="pill bad">fail</span></td>...
+ <td><ul class="plain"><li><b>provider sends the validation check</b> <span class="pill bad">fail</span> <span class="muted">got AttributeError ...</span></li></ul></td></tr></tbody>...</section>
+</main><script>/* the script above */</script></html>
 ```
 
 ```sh

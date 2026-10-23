@@ -105,7 +105,7 @@ Every change goes through a write that also recomputes the claim's `stage` and `
 - Index `ix_claim_preauth_corr` on `(correlation_id)`. Inbound messages are also matched on `cancel_correlation_id` (no index) and, for payer-initiated messages, on `claim_ref`.
 
 #### D18U. USED BY
-- Screens: [S5. Claim Master](../screens/S5-claim-master.md), [S6. Claim Detail](../screens/S6-claim-detail.md)
+- Screens: [S5. Claim Master](../screens/S5-claim-master.md), [S6. Claim Detail](../screens/S6-claim-detail.md), [S11. Claim Submission](../screens/S11-claim-submission.md)
 - APIs: [A6. Task Submit (cancel, status, reprocess, release)](../apis/A6-task-submit.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A11. Transaction Dispatch](../apis/A11-txn-dispatch.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A13. Transaction List](../apis/A13-txn-list.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md)
 - FHIR: [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md)

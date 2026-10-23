@@ -1,7 +1,7 @@
 # L2. Mapping
 
 #### L2G. GOAL
-Map every field the specs need to where it lives in the target HMIS, and to the FHIR element it feeds. The result says, for each D column and each F element: take it from here, transform it like this, or it does not exist yet.
+Map the fields the specs need to where they live in the target HMIS, and to the FHIR elements they feed. The result says, for each column or element that resolves to something already in the target (or needs a transform, lookup, or conflict resolution): take it from here, transform it like this. A table the target does not have at all is recorded once in `tables[]` as `new`; its columns are **not** enumerated one by one in `fields[]`, because there is no target location to record and L5 reads those columns straight from the D spec. Enumerate a field only when the entry carries information a later step acts on: a real target source (`mapped`), or a `missing`/`conflict` with a resolution.
 
 #### L2I. INPUTS
 - `nhcx-plan/discovery.json` (entities, found tables and models).
@@ -15,10 +15,10 @@ For facility, practitioner, patient and code lists: pair each spec column with t
 Admission or encounter, dates, ward, treating doctor, diagnoses with ICD-10 codes (and the SNOMED CT mapping, when the target holds one). Note how the target marks an admission as current and how it stores diagnosis codes.
 
 ### L2.3 Map claim data (D9 to D30)
-Most claim tables are new in a target without NHCX. Mark each as `new`, or pair it with an existing insurance or TPA table when one exists. Record where the target keeps policy, payer and member id today.
+Most claim tables are new in a target without NHCX. A claim table with no existing counterpart is recorded **once** in `tables[]` as `new`; do not write a `fields[]` entry per column for it, because there is no target location to record and L5 takes those columns from the D spec. Only when a claim table pairs with an existing insurance or TPA table (`existing` or `extend`) do its columns that come from that table get a `fields[]` entry (status `mapped`, with the target column), plus any column that is `conflict`. Always record in `fields[]` where the target keeps policy, payer and member id today.
 
 ### L2.4 Map FHIR elements (F15 to F18 first, then F2, F8, F4, F7, F10, F12, F14)
-For each element in FnF that the application fills, name its source: a D column (spec side) and the target column it comes from, or a constant. For each element the application reads (F3, F5, F6, F9, F11, F13), name the D column it lands in.
+For each element in FnF that the application fills, name its source: a D column (spec side) and the target column it comes from, or a constant. An element whose source D column belongs to a wholly-`new` table (L2.3) needs **no** `fields[]` entry: it is fed from that table's new column, which L5 reads from the spec. Enumerate an element only when its source resolves to a real target column (`mapped`), or when it is `missing`/`conflict`. For each element the application reads (F3, F5, F6, F9, F11, F13), name the D column it lands in, under the same rule.
 
 ### L2.5 Map code systems
 ICD-10, SNOMED, the payer's package codes, document type codes, degree codes (F16), gender and relationship codes. For each, record whether the target stores the code, only a display text, or nothing, and what transform or lookup is needed.
@@ -40,7 +40,7 @@ A field the target does not hold is `missing` with the proposed fix (new column,
       "fhir": ["F15:identifier[1].value"],
       "target": {"table": "", "column": "", "file": "", "lines": ""},
       "transform": "digits only, 14 characters",
-      "status": "mapped | new | missing | conflict",
+      "status": "mapped | missing | conflict",
       "resolution": "",
       "screens": ["S14"]
     }
@@ -57,6 +57,7 @@ A field the target does not hold is `missing` with the proposed fix (new column,
   "tables": [
     {"spec": "D18", "status": "new | existing | extend", "target_table": ""}
   ],
+  "_note": "fields[] holds only columns/elements that resolve to a real target location (mapped) or are missing/conflict. A wholly-new table (tables[] status new) is NOT expanded column-by-column in fields[]; L5 reads its columns from the D spec.",
   "corrections": []
 }
 ```
@@ -65,8 +66,9 @@ A field the target does not hold is `missing` with the proposed fix (new column,
 Record in `nhcx-plan/progress.json` and regenerate `nhcx-plan/progress.md`, as [LOG.md](LOG.md) describes. One entry per sub-step, with the D and F ids it mapped. L2.6 logs the component pairs per screen. L2.7 logs each `missing` or `conflict` it recorded, and every write to `nhcx-plan/mapping.json`.
 
 #### L2X. EXIT
-- Every column in D1 to D30 and every application-filled element in the F specs has an entry.
+- Every D table (D1 to D30) has exactly one `tables[]` entry (`new`, `existing` or `extend`).
+- Every column that resolves to a real target location has a `mapped` `fields[]` entry; every `missing` and every `conflict` column has a `fields[]` entry with a resolution L3 can turn into work. A column of a wholly-`new` table is covered by that table's `tables[]` entry and is **not** listed in `fields[]`.
+- Every application-filled F element whose source resolves to a real target column has a `mapped` entry; an element fed from a `new`-table column is covered by that table and is not listed.
 - No entry is `mapped` without a target location.
-- Every `missing` and `conflict` has a resolution that L3 can turn into work.
 - Every component kind a screen in scope names is paired with a host component, or is `missing` because `technology.components` records it `none`.
 - Every sub-step of L2 has its `started` and closing entries in progress.json, and every file changed is named in one.

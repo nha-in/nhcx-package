@@ -3,10 +3,10 @@ name: nhcx-claim
 description: >-
   Build NHCX (India's National Health Claims Exchange) claim submission into an existing HMIS: discharge details, claim-stage documents and forms, the claim request and query answers, the payer's verdict and status enquiries, with the embedded NHCX gateway it needs. Use when a hospital system must file a cashless claim after discharge over NHCX.
 metadata:
-  version: "1.9.4"
+  version: "1.9.6"
 ---
 
-**Version 1.9.4**, built 2026-10-20, checked against NHA's NHCX package 1.0.0.
+**Version 1.9.6**, built 2026-10-23, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route, bundle, workflow id and callback.
@@ -27,7 +27,7 @@ At the start of every task, before the questions and L1, and at the start of eve
 **Independent of the MCP and of the knowledge source.** The check always reads the package on GitHub, whichever knowledge source L1.0 chose: a connected nhcx-docs MCP neither answers it nor skips it, and the MCP's `catalogue_info` version is never compared with the skill's. The skill's version is its own: it is not the package's release tag, nor the catalogue's version, nor `1.0.0`; only the version in `skills/manifest.json` is compared with it.
 
 1. **Read the package's skills manifest.** The package (github.com/nha-in/nhcx-package) keeps a copy of the built skills under `skills/`, with `skills/manifest.json` naming their version (`version` for the provider skills, `companion.version` for the payer skills under `skills/payer/`) and `skills/CHECKSUMS.sha256` the hash of every file. Read it from `https://raw.githubusercontent.com/nha-in/nhcx-package/main/skills/manifest.json`; else from the latest release zip (`nhcx-package/skills/manifest.json`) (the zip of `https://api.github.com/repos/nha-in/nhcx-package/releases/latest`). A package already downloaded as the knowledge source is not read for this: it may be older than `main`.
-2. **Compare** its `version` with this build's `1.9.4`, part by part as numbers (1.10.0 is newer than 1.9.2).
+2. **Compare** its `version` with this build's `1.9.6`, part by part as numbers (1.10.0 is newer than 1.9.2).
 3. **Newer in the package: pull and install it.** Download the package (the release zip whose skills manifest carries that version, else the `main` archive `https://codeload.github.com/nha-in/nhcx-package/zip/refs/heads/main`) into a new empty folder outside the target repository, and check every file under `skills/` against `CHECKSUMS.sha256`. Then replace the folder this SKILL.md was loaded from, and every sibling NHCX skill folder installed beside it (`nhcx-full`, `nhcx-coverage`, `nhcx-preauth`, `nhcx-claim`, `nhcx-communication`, `nhcx-payment`, `nhcx-reprocess`, and the nested `payer/`), with the package's copy of the same name, whole: no file of the old build is left behind. A skill installed by a plugin manager is updated through it when it offers that version, else its skills folder is replaced the same way. Nothing in the target repository or `nhcx-plan/` is touched by the install. Tell the user in one line ("Updated the NHCX skills from 1.8.0 to 1.9.0 from the NHCX package."), log it, then re-read this SKILL.md and CORE.md from the installed copy and carry on from them; VERSION then re-checks the finished steps against what changed.
 4. **Same or older:** carry on with this build.
 5. **Not reachable, or a checksum fails:** carry on with this build, say so to the user in one line, and log the reason. A copy that fails its checksums is never installed, not even in part.
@@ -111,12 +111,19 @@ Other skills built from the same source:
 - **nhcx-reprocess**: reprocess and balance release on a decided or partly paid claim.
 
 # VERSION
-This is nhcx-claim version 1.9.4, built on 2026-10-20. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-claim version 1.9.6, built on 2026-10-23. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.
 - If a later prompt runs with a different version of this skill than the one recorded, say so to the user before continuing, log it as a `corrected` entry naming both versions, and re-check the steps already done against the specs that changed.
 - A knowledge source newer than 1.0.0 wins on the protocol, as KNOWLEDGE SOURCE says; note the difference in `knowledge.json`.
+
+Changes in 1.9.6, to re-check against when an earlier build is continued:
+- L2 mapping no longer enumerates `fields[]` column by column for a wholly-`new` table: such a table is recorded once in `tables[]`, and L5 reads its columns from the D spec. `fields[]` now carries only entries a later step acts on (a `mapped` column or element with a real target location, or a `missing`/`conflict` with a resolution). L4 code planning stops pre-listing `functions[]` for files whose layout the specs already fix (F, A, C, D, screens) and the per-file test-rule list; both are re-derived in L5/L7. These cut the slowest writing in the plan steps without removing anything L3/L4/L5/L7 read.
+- The S11 discharge date picker, when its earliest and latest fall on the same day (the pre-authorisation was sent today), keeps that day selectable: the picker is never disabled or locked to read-only.
+
+Changes in 1.9.5, to re-check against when an earlier build is continued:
+- The S11 discharge date picker starts at the later of the admission date and the day the pre-authorisation was sent (D18 `submitted_at`, facility local date), and still ends at today; an earlier date is refused "The discharge date cannot be before the pre-authorisation date." (D20), checked after the admission rule.
 
 Changes in 1.9.4, to re-check against when an earlier build is continued:
 - report.html is laid out for a person (LOGH): a header with the one-line state and Refresh, a sticky tab bar with open counts, an Overview of four tiles, the eight steps side by side and the open errors as cards (ids with names, correlation and ledger ids only when present), Mapping grouped by table with every D and F reference named ("D1 Organization · name"), and on every other tab field lists, tables with pills, a filter box, empty columns left out and nested data written as text, never JSON; light and dark themes; still one self-contained file from the standard library. A report builder written by an earlier build is rewritten to this layout at the next prompt, from the CSS and script in LOGH, and run; the plan files are not touched.

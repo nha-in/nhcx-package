@@ -61,7 +61,7 @@ Money shows as `₹12,345`; a missing value as `-`. No card shows a correlation 
 |---|---|---|
 | Discharge type (required) | select, blank "Select": `normal` Normal discharge, `lama` LAMA, `dama` DAMA, `death` Death | "Normal discharge, LAMA, DAMA or death in hospital." |
 | Stage (required) | select, blank "Select": Before Surgery, During Surgery, After Surgery | "Whether that was before, during or after surgery." |
-| Discharge date (required) | date picker, latest today | No day after today (the facility's local date) is offered: a discharge has happened before the claim goes |
+| Discharge date (required) | date picker, earliest the later of the admission date and the pre-authorisation date, latest today | No day after today (the facility's local date) is offered: a discharge has happened before the claim goes. No day before the admission, or before the day the pre-authorisation was sent (D18 `submitted_at`), is offered either: the claim bills the stay the pre-authorisation approved. When the earliest and the latest fall on the **same day** (the pre-authorisation was sent today, or admission and discharge are the same day), that day stays selectable and the picker is **never disabled or read-only**: the single valid day is still chosen by the desk, not locked away |
 | Surgery date | date picker | "Leave blank for a conservative case." |
 | Date and time of death | date and time picker | "Required when the discharge type is death." |
 
@@ -74,6 +74,7 @@ Money shows as `₹12,345`; a missing value as `-`. No card shows a correlation 
 - "Enter the discharge date."
 - "The discharge date cannot be after today."
 - "The discharge date cannot be before the admission date."
+- "The discharge date cannot be before the pre-authorisation date."
 - "The surgery date cannot be before the admission date."
 - "The discharge date cannot be before the surgery date."
 - "Enter the date and time of death." (type Death with no time of death)

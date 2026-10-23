@@ -3,10 +3,10 @@ name: nhcx-communication
 description: >-
   Build NHCX (India's National Health Claims Exchange) payer communication into an existing HMIS: receiving payer queries, notifications and notes on a pre-authorisation or claim, replying with text and documents, and acknowledging notifications, with the embedded NHCX gateway it needs. Use when a hospital system must answer insurer or PMJAY queries over NHCX.
 metadata:
-  version: "1.9.6"
+  version: "1.10.0"
 ---
 
-**Version 1.9.6**, built 2026-10-23, checked against NHA's NHCX package 1.0.0.
+**Version 1.10.0**, built 2026-10-23, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route, bundle, workflow id and callback.
@@ -27,7 +27,7 @@ At the start of every task, before the questions and L1, and at the start of eve
 **Independent of the MCP and of the knowledge source.** The check always reads the package on GitHub, whichever knowledge source L1.0 chose: a connected nhcx-docs MCP neither answers it nor skips it, and the MCP's `catalogue_info` version is never compared with the skill's. The skill's version is its own: it is not the package's release tag, nor the catalogue's version, nor `1.0.0`; only the version in `skills/manifest.json` is compared with it.
 
 1. **Read the package's skills manifest.** The package (github.com/nha-in/nhcx-package) keeps a copy of the built skills under `skills/`, with `skills/manifest.json` naming their version (`version` for the provider skills, `companion.version` for the payer skills under `skills/payer/`) and `skills/CHECKSUMS.sha256` the hash of every file. Read it from `https://raw.githubusercontent.com/nha-in/nhcx-package/main/skills/manifest.json`; else from the latest release zip (`nhcx-package/skills/manifest.json`) (the zip of `https://api.github.com/repos/nha-in/nhcx-package/releases/latest`). A package already downloaded as the knowledge source is not read for this: it may be older than `main`.
-2. **Compare** its `version` with this build's `1.9.6`, part by part as numbers (1.10.0 is newer than 1.9.2).
+2. **Compare** its `version` with this build's `1.10.0`, part by part as numbers (1.10.0 is newer than 1.9.2).
 3. **Newer in the package: pull and install it.** Download the package (the release zip whose skills manifest carries that version, else the `main` archive `https://codeload.github.com/nha-in/nhcx-package/zip/refs/heads/main`) into a new empty folder outside the target repository, and check every file under `skills/` against `CHECKSUMS.sha256`. Then replace the folder this SKILL.md was loaded from, and every sibling NHCX skill folder installed beside it (`nhcx-full`, `nhcx-coverage`, `nhcx-preauth`, `nhcx-claim`, `nhcx-communication`, `nhcx-payment`, `nhcx-reprocess`, and the nested `payer/`), with the package's copy of the same name, whole: no file of the old build is left behind. A skill installed by a plugin manager is updated through it when it offers that version, else its skills folder is replaced the same way. Nothing in the target repository or `nhcx-plan/` is touched by the install. Tell the user in one line ("Updated the NHCX skills from 1.8.0 to 1.9.0 from the NHCX package."), log it, then re-read this SKILL.md and CORE.md from the installed copy and carry on from them; VERSION then re-checks the finished steps against what changed.
 4. **Same or older:** carry on with this build.
 5. **Not reachable, or a checksum fails:** carry on with this build, say so to the user in one line, and log the reason. A copy that fails its checksums is never installed, not even in part.
@@ -74,6 +74,21 @@ Follow [steps/INDEX.md](steps/INDEX.md) in order. Each step writes one file unde
 7. [L7 Dry-run Tests](steps/L7-dry-run-tests.md): no network; fakes for NHCX and the registry.
 8. [L8 End-to-end Tests](steps/L8-e2e-tests.md): against the NHCX sandbox, the T tests in [references/TESTS.md](references/TESTS.md), each run through the screens (GUI) and from the command line (CLI).
 
+# MILESTONES
+The steps above may be run in either of two modes, and the mode is chosen once at the start of L1 and recorded in `nhcx-plan/knowledge.json` under `mode` (`layered` or `milestone`):
+
+- **Layered** (the default): every spec through L1, then every spec through L2, and so on to L8. One set of plan files at `nhcx-plan/`.
+- **Milestone** (the experiment): the build is cut into the vertical slices of the claim lifecycle in [milestones/INDEX.md](milestones/INDEX.md) (N0 Foundation, then N1 Search Policy, N2 Coverage and Insurance, N3 Pre-authorisation and Biometric, N4 Communication, N5 Claim, N6 Payment). Each milestone is carried through **all** the steps (discovery, mapping, plan, code plan, code, validation, dry-run and its own sandbox done-when) before the next begins, over **only the spec ids it delivers**. A milestone declares the milestones it depends on and reuses what they built rather than rebuilding it; the build follows the dependency order and goes no further into a milestone until the one it depends on is done.
+
+In milestone mode:
+- A one-time **global bootstrap** runs before N0: L1.0 (the knowledge source), L1.1 (the NHCX scan), L1.2 (the target's technology and component kit) and L1.3 (the ABDM module). These are properties of the target, not of a slice, so they are found once, written to `nhcx-plan/knowledge.json` and the technology part of `nhcx-plan/discovery.json`, and read by every milestone.
+- Each milestone then runs the steps scoped to its delivered ids, writing its own plan files under `nhcx-plan/<Nx>/` (`discovery.json`, `mapping.json`, `plan.json`, `code-plan.json`, `code.json`, `validation.json`, `dry-run.json`, `e2e.json`).
+- A spec is delivered by exactly one milestone; a spec two milestones reach is built by the earlier and **reused** (not rebuilt) by the later, which records any extension it makes (for example N5 extends N3's [F8. Claim](fhir/F8-claim.md) builder for `use: claim`).
+- A milestone is **done** only when its done-when holds: a sandbox exchange run through the screens and from the command line. It is never half-built into the next.
+- `nhcx-plan/report.html` is organised by milestone: a row of milestones with each one's state and done-when, and per-milestone step tabs, errors first. The global bootstrap is one shared tab.
+
+The step files do not change between modes; the mode changes only the order the steps run in and the scope each run covers. The ASK FIRST questions, the knowledge source, the scaffolding and the specs are the same either way.
+
 # SCAFFOLDING
 [references/SCAFFOLDING.md](references/SCAFFOLDING.md) is the shape the code takes in the target HMIS. Read it before L3 and keep it open through L5.
 
@@ -111,12 +126,15 @@ Other skills built from the same source:
 - **nhcx-reprocess**: reprocess and balance release on a decided or partly paid claim.
 
 # VERSION
-This is nhcx-communication version 1.9.6, built on 2026-10-23. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-communication version 1.10.0, built on 2026-10-23. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.
 - If a later prompt runs with a different version of this skill than the one recorded, say so to the user before continuing, log it as a `corrected` entry naming both versions, and re-check the steps already done against the specs that changed.
 - A knowledge source newer than 1.0.0 wins on the protocol, as KNOWLEDGE SOURCE says; note the difference in `knowledge.json`.
+
+Changes in 1.10.0, to re-check against when an earlier build is continued:
+- A second way to run the build: **milestone mode** ([milestones/INDEX.md](milestones/INDEX.md)), beside the default layered mode. The build is cut into vertical slices of the claim lifecycle (N0 Foundation, N1 Search Policy, N2 Coverage and Insurance, N3 Pre-authorisation and Biometric, N4 Communication, N5 Claim, N6 Payment), each carried through every step over only the spec ids it delivers, in dependency order, reusing not rebuilding, with its own sandbox done-when and its own plan files under `nhcx-plan/<Nx>/`. The mode is chosen at the start of L1 and recorded in `knowledge.json` as `mode`. The step files are unchanged; only the order and scope change. A build already under way in layered mode stays layered.
 
 Changes in 1.9.6, to re-check against when an earlier build is continued:
 - L2 mapping no longer enumerates `fields[]` column by column for a wholly-`new` table: such a table is recorded once in `tables[]`, and L5 reads its columns from the D spec. `fields[]` now carries only entries a later step acts on (a `mapped` column or element with a real target location, or a `missing`/`conflict` with a resolution). L4 code planning stops pre-listing `functions[]` for files whose layout the specs already fix (F, A, C, D, screens) and the per-file test-rule list; both are re-derived in L5/L7. These cut the slowest writing in the plan steps without removing anything L3/L4/L5/L7 read.

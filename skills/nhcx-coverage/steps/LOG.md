@@ -6,7 +6,7 @@ Every step and sub-step leaves a record of what it did and which files it change
 - When a sub-step starts (`started`) and when it ends (`done`, `blocked` or `skipped`).
 - Every time a file is created, modified or deleted, in the target source or under `nhcx-plan/`, as part of that sub-step.
 - When an earlier step's plan file is corrected (`corrected`), naming the file and what was wrong.
-- When a step finishes and its exit condition is checked.
+- When a step finishes and its exit condition is checked (`exit_checked`).
 
 Entries are appended, never rewritten. A mistake in an entry is fixed by a new `corrected` entry that points at the old one.
 
@@ -14,58 +14,62 @@ Entries are appended, never rewritten. A mistake in an entry is fixed by a new `
 
 ```json
 {
-  "target": {"repo": "", "started_at": "<ISO time>", "skill": "", "skill_version": "", "mode": "milestone"},
+  "target": "acme-hmis",
+  "skill_version": "1.10.0",
+  "started_at": "<ISO time>",
+  "updated_at": "<ISO time>",
+  "current": {"milestone": "N3", "step": "L5", "sub_step": "L5.2"},
   "status": {
+    "overall": "not_started | in_progress | done | blocked",
     "bootstrap": {
       "state": "not_started | in_progress | done | blocked",
-      "substeps": {"L1.0": "done", "L1.1": "done", "L1.2": "done", "L1.3": "in_progress"}
+      "sub_steps": {"L1.0": "done", "L1.1": "done", "L1.2": "done", "L1.3": "in_progress"}
     },
     "milestones": {
       "N3": {
         "state": "not_started | in_progress | done | blocked",
-        "done_when": "not_run | pass | fail",
+        "steps_done": 4,
+        "steps_total": 7,
+        "done_when": "not_started | not_run | pass | fail",
         "depends_on": ["N0", "N2"],
         "steps": {
           "L5": {
             "state": "not_started | in_progress | done | blocked",
-            "exit_checked": false,
-            "substeps": {"L5.1": "done", "L5.2": "in_progress"}
+            "sub_steps_done": 3,
+            "sub_steps_total": 5,
+            "output_written": false
           }
         }
       }
     },
-    "e2e": "not_run | pass | fail"
+    "e2e": {"state": "not_started | in_progress | done | fail", "runs": []}
   },
   "entries": [
     {
       "id": "LOG-0042",
-      "time": "<ISO time>",
+      "at": "<ISO time>",
       "milestone": "N3",
       "step": "L5",
-      "substep": "L5.2",
-      "action": "started | done | blocked | skipped | corrected | exit_checked",
-      "item": "the file, spec id or exchange the sub-step is working on",
-      "summary": "what was done, in one or two sentences",
-      "files": [
-        {"path": "", "change": "created | modified | deleted", "lines": "", "why": ""}
-      ],
-      "plan_files": ["nhcx-plan/N3/code.json"],
-      "specs": ["A4", "F8", "D18"],
+      "sub_step": "L5.2",
+      "event": "started | done | blocked | skipped | corrected | exit_checked",
+      "title": "what the sub-step is working on, in a few words",
+      "detail": "what was done, in one or two sentences",
+      "files": ["src/claims/preauth.py", "nhcx-plan/N3/code.json"],
       "commit": "",
-      "corrects": "",
-      "blocked_reason": ""
+      "corrects": ""
     }
   ]
 }
 ```
 
 - `id` counts up from `LOG-0001` and is never reused.
-- `milestone` is the slice the entry belongs to (`N0` to `N6`), or `bootstrap` for the one-time global bootstrap (L1.0 to L1.3); every entry carries one.
-- `files` lists target source files; `plan_files` lists the `nhcx-plan/` files touched, under the milestone's own folder (`nhcx-plan/N3/...`), except the bootstrap's `knowledge.json` and the technology part of `discovery.json`, which sit at the plan root.
-- `lines` is the changed range after the change.
+- `milestone` is the slice the entry belongs to (`N0` to `N6`), or `bootstrap` for the one-time global bootstrap (L0 skill-update and L1.0 to L1.3); every entry carries one.
+- `files` is a flat list of paths touched (target source and `nhcx-plan/`), the plan files under the milestone's own folder (`nhcx-plan/N3/...`), except the bootstrap's `knowledge.json` and the root `discovery.json`, `plan.json`, which sit at the plan root.
 - `commit` is filled when the change is committed (L5.5 commits per batch).
-- `status` is recomputed from `entries` after each append: `bootstrap`, then one entry per milestone with its own per-step state. Each milestone runs L1 to L7 only; `done_when` is the milestone's **dry-run** done-when, and its `state` is `done` only when `done_when` is `pass`. The final L8 end-to-end is not a milestone step; it is tracked once at the root (`status.e2e`: `not_run | pass | fail`), run after every milestone is `done`.
+- `status` is recomputed from `entries` after each append: `overall`, then `bootstrap`, then one block per milestone, then `e2e`. Each milestone runs L1 to L7 only; `steps_done` counts its steps in state `done` out of `steps_total` (7); `done_when` is the milestone's **dry-run** done-when; the milestone's `state` is `done` only when `done_when` is `pass`. The root `e2e` block is the single final end-to-end run across the whole lifecycle, run after every milestone is `done`.
 - Ids in the JSON stay bare (`"milestone": "N3"`, `"step": "L5"`); the name is added wherever a person reads them (LOGN).
+
+A small `log_helper.py` (or the target language's equivalent) may be written beside the plan files to append an entry, recompute `status` from `entries` and rewrite `progress.md`, so every log write is one call and the derived state is never hand-maintained. It is written in the bootstrap and logged like any other file.
 
 #### LOGM. progress.md
 
@@ -85,7 +89,7 @@ Regenerated from progress.json:
 (Bootstrap: knowledge source and technology, done. End-to-end: the final sandbox run across N1 to N6, not run until every milestone is done.)
 
 ## N3 Pre-authorisation and Biometric
-| Step | State | Sub-steps done | Exit checked |
+| Step | State | Sub-steps done | Output written |
 |---|---|---|---|
 | L1 Discovery | done | 6 / 6 | yes |
 | L5 Write Code | in progress | 3 / 5 | no |
@@ -94,210 +98,254 @@ Regenerated from progress.json:
 - [ ] L5.2 Write it (in progress: `src/claims/preauth.py`)
 
 ## Changes
-| Id | Time | Milestone | Sub-step | Action | Summary | Files |
+| Id | Timestamp | Milestone | Sub-step | Event | Title | Files |
 |---|---|---|---|---|---|---|
-| LOG-0042 | 2026-09-22 10:14 | N3 | L5.2 Write it | done | Pre-auth send service (A4) | `src/claims/preauth.py` created 1-188; `nhcx-plan/N3/code.json` |
+| LOG-0042 | 2026-09-22 10:14 | N3 | L5.2 Write it | done | Pre-auth send service (A4) | `src/claims/preauth.py`, `nhcx-plan/N3/code.json` |
 ```
 
 First a milestone table (state, steps done out of 7, dry-run done-when), with the one-line bootstrap state and the final end-to-end state beneath it; then one section per milestone that has been started, in dependency order, each holding its own step table (L1 to L7) and the sub-step checklist of its active step; then the changes table, every entry newest last, with a Milestone column.
 
 #### LOGN. EVERY ID WITH ITS NAME
-A person reading the log, the report or a message must not have to look an id up. Every step, sub-step, test and spec id shown to a person is written with its name beside it, taken from the skill's own indexes and spec titles, never made up:
+A person reading the log, the report or a message must not have to look an id up. Every milestone, step, sub-step, test and spec id shown to a person is written with its name beside it, taken from the skill's own indexes and spec titles, never made up:
+- a milestone: `N3 Pre-authorisation and Biometric`, never `N3` alone;
 - a step: `L3 Integration Planning`, never `L3` alone;
 - a sub-step: `L5.2 Write it`;
 - a test: `T3 IRDAI Policy Search and Eligibility`, never `T3` alone; a result is the id, the name, the runner and the result: `T3 IRDAI Policy Search and Eligibility (CLI): pass`;
-- a spec: `A4 Pre-auth Submit`; an NHA use case: `nha:B3 Pre-authorisation`.
+- a spec: `A4 Pre-auth Submit`; a field reference: `D1 Organization . name`; an NHA use case: `nha:B3 Pre-authorisation`.
 
-This holds in `progress.md`, in every table of `report.html` (an id column shows the name in the same cell, or has a Name column beside it), and in every message to the user that reports progress, a step, a test run or an error ("L8 End-to-end Tests: T14 PMJAY Pre-authorisation Through the Payer Service (GUI) failed", not "L8: T14 failed"). Pass and fail stay one word; the name is what is added.
+This holds in `progress.md`, in every table of `report.html`, and in every message to the user that reports progress, a step, a test run or an error ("L8 End-to-end Tests: T14 PMJAY Pre-authorisation Through the Payer Service (GUI) failed", not "L8: T14 failed"). Pass and fail stay one word; the name is what is added.
 
-The names come from `nhcx-plan/names.json`, written in the bootstrap with the report builder from the skill's indexes (`steps/INDEX.md`, `milestones/INDEX.md`, `tests/INDEX.md` and each spec's `title`): `{"N3": "Pre-authorisation and Biometric", "L3": "Integration Planning", "L5.2": "Write it", "T3": "...", "A4": "..."}`, every milestone and every id in SCOPE. The report builder and the agent both read it, so the page and the messages use the same words. An id missing from it is shown as `<id> (unnamed)` and logged as an error to fix, never left bare. A milestone is written with its id and name too: `N3 Pre-authorisation and Biometric`, never `N3` alone.
+The names come from `nhcx-plan/names.json`, written in the bootstrap with the report builder from the skill's indexes (`milestones/INDEX.md`, `steps/INDEX.md`, `tests/INDEX.md` and each spec's `title`), grouped so one lookup serves the whole page:
+
+```json
+{
+  "milestones": {"N0": "Foundation", "N3": "Pre-authorisation and Biometric"},
+  "steps": {"L1": "Discovery", "L5": "Write Code", "L8": "End-to-end Tests", "L0": "Skill Update Check"},
+  "sub_steps": {"L1.A": "Ask the integrator first", "L5.2": "Write it"},
+  "tests": {"T3": "IRDAI Policy Search and Eligibility"},
+  "specs": {"A4": "Pre-auth Submit", "D1": "Organization"}
+}
+```
+
+Every milestone and every id in SCOPE is present. The report builder and the agent both read it, so the page and the messages use the same words. An id missing from it is shown as its bare code (and logged as an error to fix), never guessed.
 
 #### LOGH. report.html
 
 Rebuilt as the last action of every prompt, however the prompt ended: after a step, part of a step, a fix, a test run, or a question answered without any change. It is written from the plan files only, never from memory of the conversation, so it says what the records say. It is never edited by hand.
 
-**Built by a script, not by hand.** The page is produced by a report builder the skill writes into the target at L1, in the target's own language and kept beside the plan files: `nhcx-plan/report.py` for a Python target, `nhcx-plan/report.mjs` for Node, `nhcx-plan/report.php` for PHP, `nhcx-plan/Report.java` (or a Gradle/Maven task) for Java, and so on, with no dependency beyond the language's standard library. It reads `nhcx-plan/*.json` and writes `nhcx-plan/report.html`. Rebuilding the report means running that script; the agent runs it at the end of every prompt, and a person can run it at any time.
+**Built by a script, not by hand.** The page is produced by a report builder the skill writes into the target at L1, in the target's own language and kept beside the plan files: `nhcx-plan/report.py` for a Python target, `nhcx-plan/report.mjs` for Node, `nhcx-plan/report.php` for PHP, `nhcx-plan/Report.java` (or a Gradle/Maven task) for Java, and so on, with no dependency beyond the language's standard library. It reads the plan JSON and writes `nhcx-plan/report.html`. Rebuilding the report means running that script; the agent runs it at the end of every prompt, and a person can run it at any time.
 
-**Wrapper scripts, one per platform.** Beside it, `nhcx-plan/make-report.sh` (POSIX shell, executable) and `nhcx-plan/make-report.bat` (Windows), both doing the same thing: run the report builder, wait 10 seconds, run it again, and keep doing so until stopped (Ctrl-C). One line of output per rebuild, with the time. So a person opens `report.html` once, leaves `make-report.sh` running, and the page is at most 10 seconds behind the plan files; its refresh button (below) shows the latest build. Both scripts resolve the builder relative to their own location, so they work from any working directory, and they exit with the builder's status when a single run is asked for (`make-report.sh once`).
+**Wrapper scripts, one per platform.** Beside it, `nhcx-plan/make-report.sh` (POSIX shell, executable) and `nhcx-plan/make-report.bat` (Windows). `make-report.sh once` (the default) rebuilds the page one time and exits with the builder's status; `make-report.sh watch [seconds]` rebuilds it every few seconds (default 2) until stopped (Ctrl-C), by running the builder in its own watch mode. Both resolve the builder relative to their own location, so they work from any working directory, and both find `python3` or `python`.
 
-**Reads:** every file under `nhcx-plan/`. At the root: `names.json` (the name beside every milestone and id, LOGN), `progress.json`, `progress.md`, `knowledge.json` (with `mode` and the bootstrap), the technology part of `discovery.json`, and `e2e.json` (the one final end-to-end run across the whole lifecycle). Then, per milestone, the files under `nhcx-plan/<Nx>/`: `discovery.json`, `mapping.json`, `plan.json`, `code-plan.json`, `code.json`, `validation.json`, `dry-run.json` (L1 to L7 only; there is no per-milestone `e2e.json`). The builder discovers the milestone folders present (`N0` to `N6`) rather than assuming all exist. A file that does not exist yet is shown as "not yet written", never as a pass. A file that does not parse is shown with its parse error, and the rest of the page still builds.
+**Reads:** every file under `nhcx-plan/`. At the root: `names.json` (the grouped names, LOGN), `progress.json`, `knowledge.json` (with `mode`, the package and the skill-update check), `discovery.json` (the bootstrap's technology, component kit, domain entities, ABDM and billing), `plan.json` (the L1.A integrator decisions) and `e2e.json` (the one final end-to-end run). Then, per milestone, the files under `nhcx-plan/<Nx>/`: `discovery.json`, `mapping.json`, `plan.json`, `code-plan.json`, `code.json`, `validation.json`, `dry-run.json` (L1 to L7 only; there is no per-milestone `e2e.json`). The builder discovers the milestone folders present (`N0` to `N6`) rather than assuming all exist; every read tolerates a missing file (shown as "Not yet run") and a missing key (rendered empty), and a file that does not parse is skipped without failing the rest of the page.
 
-**One page, tabs: Overview, then one tab per milestone, then End-to-end.** The page is organised by milestone, not by source file. The tab bar is: Overview, Bootstrap, then one tab per milestone present (N0 to N6), then End-to-end, then Log.
+**One page, tabs: Overview, Bootstrap, N0 to N6, End-to-end, Log.** The page is organised by milestone, not by source file. Each state word renders as a coloured pill through one `pill_tone` map: green for done, pass, matched, found, reused, valid, current; amber-gold for in progress, started, partial, new, pending; orange for blocked, skipped, gap; red for failed, conflict; grey for anything else.
 
 | Tab | Shows |
 |---|---|
-| Overview | The target repository, the skill and its version, the mode (`milestone`), when the page was built, and one line of overall state: milestones done out of total, tests passing out of run, open errors. Then the **milestone strip** (below) and **Errors**: everything open across all milestones and the final end-to-end run, newest first, each tagged with its source: `blocked` entries and their reasons, failed validation items, failed dry-run tests, failed or blocked end-to-end legs with their detail, correlation ids and ledger ids, and failed setup checks. An error a later entry resolves is left out. "No open errors" when there are none. |
-| Bootstrap | The one-time global bootstrap: the knowledge source (`knowledge.json`, with `mode`) and the target's technology and component kit (the technology part of `discovery.json`): languages, framework, database, migrations, tests, the host components and the ABDM module. Shared by every milestone. |
-| N0 to N6 (one each) | That milestone's own work: a header line of its state, its dry-run done-when and the milestones it depends on; its **seven steps** (L1 to L7) with sub-steps done out of total and exit checked, and the active step's sub-step checklist; then its records from `nhcx-plan/<Nx>/` as folding sections in step order: Discovery (the ids it delivers, found/partial/missing), Mapping, Plan (its phase), Code plan, Code, Validation (failures first), Dry-run (its done-when, per runner). A milestone not yet started shows "not started" and its dependencies. |
-| End-to-end | The single final run across the whole lifecycle N1 to N6, from the root `e2e.json`: its overall state (not run until every milestone is done), then the T tests of [references/TESTS.md](../references/TESTS.md) per runner (GUI and CLI), failures first, each with its steps, detail, correlation and ledger ids. Not shown per milestone. |
-| Log | Every `progress.json` entry across all milestones, newest first: time, milestone, sub-step, action, item, summary, files. |
+| Overview | A KPI row (Milestones done out of 7, Files written, Files validated, Dry-run checks passed out of run, End-to-end tests passed out of run); the **Milestone Stepper**: N0 to N6 and a final L8 card side by side, each with its id, name, `done / 7 steps` (L8 shows passed / run), dry-run done-when and a progress bar, each clicking through to its tab; the **Milestones by Steps** matrix: one row per milestone with a pill per step L1 to L7 and a dry-run done-when pill; and **Recent Log Entries** (the last 20, newest first). |
+| Bootstrap | The one-time global bootstrap: L0 skill-update and L1.0 knowledge source (mode, source, package path and version, installed vs remote version); the L1.A integrator decisions as a key and chosen-value table; L1.2 technology and the host component kit (language, runtime, framework, database, migration tool, HTTP client, crypto, test runner, then one row per component kind with its host component, file and status); and L1.3 domain entities, ABDM module and billing module. Shared by every milestone. |
+| N0 to N6 (one each) | A header card (the milestone with its name, what it depends on, its state and dry-run done-when), a filter box, its **seven steps** (L1 to L7) as a stepper, then one section per step in order reading `nhcx-plan/<Nx>/`: L1 Discovery (the ids it delivers, grouped screens/apis/callbacks/fhir/database/gateway, each found/partial/missing with existing files and notes), L2 Mapping (a spec-table-to-target-table table and a spec-field-to-target table), L3 Plan (its phases, specs, steps and done-when), L4 Code plan (order, path, action, specs, test file), L5 and L6 together (one row per file: path, action, specs, build, validation status and SHA-256), L7 Dry-run (the runner command and dry-run done-when, then one row per check), and the milestone's own log. A section whose file is absent shows "Not yet run". |
+| End-to-end | The single final run from the root `e2e.json`: one row per test (test, runner, case id, status, notes). Before it runs, an empty state saying L8 runs once across N1 to N6 after every milestone's dry-run done-when passes. Not shown per milestone. |
+| Log | The full append-only log, newest first: id, timestamp, milestone, step, event, title, detail with its files, and commit. |
 
-Within a milestone tab, each step's records render as tables, with the fields that file's spec names as columns, and every milestone, step, sub-step, test and spec id written with its name (LOGN). Any structure the builder does not know is still shown, written out as text (below), so nothing in a plan file is invisible; JSON itself never appears on the page. Long text is not cut short.
+Every tab but Overview has a filter box that hides rows not containing the text typed. Every id reads with its name (LOGN). Paths, ids, commands and hashes are monospaced. The current tab is kept in the URL hash, so a reload stays on it.
 
-**Clean, self-contained, and written for a person: never a dump of the JSON.** One file that opens from disk in any browser and needs nothing else: no external stylesheets, fonts, images or scripts, no framework, the CSS and script below inline. It follows the viewer's light or dark theme. No secrets: configuration values are shown as `set` or `missing`, as [T1. Test Configuration](../tests/T1-test-configuration.md) does.
+**Clean, self-contained, and written for a person: never a dump of the JSON.** One file that opens from disk in any browser and needs nothing else: the CSS and script below inline, and the only external reference is the Google Fonts link (the page still reads with its fallback fonts offline). No secrets: configuration values are shown as `set` or `missing`, as [T1. Test Configuration](../tests/T1-test-configuration.md) does.
 
-- **Header:** the title "NHCX integration report", a **Refresh** button (`location.reload()`, showing whatever the last rebuild wrote), and one line: target, skill and version, mode, when it was built, milestones done out of total, tests passing out of run, open errors.
-- **Tab bar** under it, sticky as the page scrolls, one pill per tab (Overview, Bootstrap, N0 to N6, End-to-end, Log); a milestone pill carries a red count of its open errors, and a tick, `!` or a dim style for done, blocked or not-started; the End-to-end pill carries its own error count and state. The current tab is kept in the URL hash, so a reload stays on it; each section's `id` is `tab-<name>` (`tab-overview`, `tab-bootstrap`, `tab-N3`, `tab-e2e`, `tab-log`), so the hash never scrolls the header away.
-- **Overview:** three tiles (Milestones `n / total`; Dry-run tests as `passed / run` across all milestones and End-to-end tests as `passed / run` from the final run, each with a bar and the failed and blocked counts; Open errors, red when above zero); then the **milestone strip**: the milestones side by side in dependency order, each a card with its id and name, a tick when done, `!` when blocked, the active one outlined, a dim style when not started, its `done / 7 steps`, its dry-run done-when as a pill (pass, fail, not run), and the milestones it depends on; then **Open errors** as cards, newest first: a status pill, the source tagged with its origin ("N3 · Dry-run · CLI · cause: ours", or "End-to-end · N3 leg · CLI · cause: sandbox" for the final run), the id with its name as the title, the detail, and the correlation and ledger ids only when there are any. "No open errors" in a green banner when there are none. Clicking a milestone card opens its tab.
-- **Each milestone tab:** a header line (state pill, dry-run done-when pill, "depends on N0, N2"); then the milestone's seven steps (L1 to L7) side by side, each with its id and name, a tick when done, `!` when blocked, the active one outlined, `done / total sub-steps` and "exit ✓"; then its records as folding sections in step order (Discovery, Mapping, Plan, Code plan, Code, Validation, Dry-run), each reading from `nhcx-plan/<Nx>/`.
-- **End-to-end tab:** the one final run from the root `e2e.json`: a header line with its state (not run until every milestone is done), then the T tests per runner (GUI, CLI) as folding groups, failures first, each test written out with its steps, detail and ids (LOGN). It reads nothing per milestone.
-- **Every id reads with its name**, milestones and field references too: `N3` as "N3 Pre-authorisation and Biometric", `D1.name` as "D1 Organization · name", `F17:provider.name` as "F17 Organization · provider.name", a table name like `claim_diagnosis` as "Claim diagnosis" (LOGN).
-- **Mapping** is grouped by table: one folding group per D spec titled with its id and name, its status counts as pills (mapped, new, missing) and what the plan does with the table, and inside it one row per field: field, where the HMIS keeps it (`table.column`), what it is sent as (the F spec element, named), status, how (the transform or resolution), the screens that show it, and the source file and line. Code systems follow as their own table.
-- **Every other tab:** a filter box that hides rows not containing the text typed; a record (a run, a configuration, a target) as a two-column field list, side by side when there are two; lists as tables with a sticky header, alternate row shading and a row count, failures first where the tab says so, ids in natural order (T3 before T13); result, status, state, action and cause words as coloured pills (green pass, done, ok; red fail, error, missing; amber blocked, partial, in progress; grey skipped, not started); paths, files, commands and ids monospaced; long text wrapped at word boundaries, never cut. A column empty in every row is left out. Plan phases are folding groups with a `done / total` pill.
-- **No JSON on the page.** Nested data is written out as text: a small record as `key value · key value`, a list of records as a list whose lines lead with the record's name in bold, then its result pill, then the rest in grey (a test's steps read "provider sends the validation check `fail` got AttributeError ..."); past six lines the rest folds behind "n more". progress.md's checklist sits in a folding block on the Progress tab.
-- Without script the page still reads top to bottom with every section shown; printed, every tab prints in turn.
-
-The page's CSS and script, used as they are (the class names are the contract the builder writes against):
+The page's CSS, used as it is (the class names are the contract the builder writes against):
 
 ```css
-:root{--bg:#f6f7f9;--card:#fff;--fg:#1d2330;--muted:#667085;--line:#e3e6eb;--head:#f0f2f5;--accent:#2457c5;
---good:#127a3a;--good-bg:#e5f5ea;--bad:#b42318;--bad-bg:#fdecea;--warn:#a15c07;--warn-bg:#fdf3e1;--quiet:#596173;--quiet-bg:#eef0f3}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1218;--card:#171b23;--fg:#e6e8ee;--muted:#98a1b3;--line:#2a303c;--head:#1e232d;--accent:#7aa2ff;
---good:#5fd38a;--good-bg:#173323;--bad:#ff8a80;--bad-bg:#3a1a1a;--warn:#f3b55a;--warn-bg:#3a2a12;--quiet:#a9b0bf;--quiet-bg:#242a35}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-header.top{background:var(--card);border-bottom:1px solid var(--line);padding:18px 28px}
-header.top h1{margin:0;font-size:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-header.top .meta{color:var(--muted);margin-top:4px}
-button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:6px;padding:4px 12px}
-button:hover{border-color:var(--accent);color:var(--accent)}
-main{padding:12px 28px 60px;max-width:1500px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.tile .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-.tile .value{font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;margin:2px 0 6px}
-.tile .value small{font-size:15px;color:var(--muted);font-weight:500}
-.tile .sub{color:var(--muted);font-size:12px}
-.tile.bad .value{color:var(--bad)}
-.meter{height:6px;background:var(--quiet-bg);border-radius:3px;overflow:hidden;margin-bottom:6px}
-.meter span{display:block;height:100%;background:var(--accent)}.meter.good span{background:var(--good)}
-.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
-.steps li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;column-gap:10px}
-.steps .dot{grid-row:span 2;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;background:var(--quiet-bg);color:var(--quiet)}
-.steps .done .dot{background:var(--good-bg);color:var(--good)}.steps .active .dot{background:var(--accent);color:#fff}.steps .active{border-color:var(--accent)}
-.steps .blocked .dot{background:var(--warn-bg);color:var(--warn)}
-.steps .sname{font-weight:600;font-size:13px}.steps .ssub{color:var(--muted);font-size:12px}
-nav.tabs{position:sticky;top:0;z-index:2;background:var(--bg);padding:10px 0;margin-bottom:8px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
-nav.tabs button{border-radius:999px}nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-nav.tabs .badge{margin-left:6px;font-size:11px;background:var(--bad);color:#fff;border-radius:999px;padding:0 6px}
-section{display:none}section.on{display:block}
-section>h2{font-size:17px;margin:6px 0 10px}
-h3{font-size:14px;margin:22px 0 8px}
-.filter{width:min(420px,100%);padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--fg);margin-bottom:4px}
-.tablewrap{overflow:auto;max-height:75vh;background:var(--card);border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%}
-th{position:sticky;top:0;background:var(--head);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;white-space:nowrap}
-td,th{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-tbody tr:nth-child(even){background:color-mix(in srgb,var(--head) 45%,transparent)}
-tbody tr:hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
-td{max-width:520px;overflow-wrap:break-word;word-break:normal}
-td.mono{word-break:break-all}
-td:first-child{min-width:120px}
-td ul.plain{min-width:260px}
-.mono,code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
-pre{white-space:pre-wrap;margin:6px 0 0;background:var(--head);padding:8px;border-radius:6px;max-height:420px;overflow:auto}
-details>summary{cursor:pointer;color:var(--accent)}
-details.group{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0}
-details.group>summary{color:var(--fg);display:flex;gap:10px;align-items:center}
-.pill{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--quiet-bg);color:var(--quiet)}
-.pill.good{background:var(--good-bg);color:var(--good)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.warn{background:var(--warn-bg);color:var(--warn)}
-.count,.note,.empty{color:var(--muted);font-size:12px;margin:6px 2px}.empty{font-style:italic}
-dl.kv{display:grid;grid-template-columns:minmax(140px,max-content) 1fr;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0;overflow:hidden}
-dl.kv>div{display:contents}dl.kv dt,dl.kv dd{margin:0;padding:6px 12px;border-bottom:1px solid var(--line)}
-dl.kv dt{color:var(--muted);text-transform:capitalize}dl.kv dd{overflow-wrap:anywhere;min-width:0}
-.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
-.errors{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:10px}
-.err{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--quiet);border-radius:10px;padding:10px 14px;min-width:0}
-.err.bad{border-left-color:var(--bad)}.err.warn{border-left-color:var(--warn)}
-.err header{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.err .src{color:var(--muted);font-size:12px}
-.err h4{margin:6px 0 4px;font-size:14px}
-ul.plain{margin:0;padding-left:16px}ul.plain li{margin:2px 0}.muted{color:var(--muted)}
-details.group>summary .pill{margin-left:2px}.err p{margin:4px 0;overflow-wrap:anywhere}.err .ids{color:var(--muted)}
-.ok-banner{background:var(--good-bg);color:var(--good);border-radius:10px;padding:12px 16px;font-weight:600}
-@media (max-width:700px){header.top,main{padding-left:14px;padding-right:14px}.errors{grid-template-columns:1fr}}
-@media print{nav.tabs,.filter,button{display:none}section{display:block}.tablewrap{max-height:none}}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
+:root {
+  --bg:        #f6f4ef;
+  --paper:     #ffffff;
+  --subtle:    #efece4;
+  --ink:       #14181f;
+  --muted:     #5b616e;
+  --faint:     #8a909e;
+  --rule:      #dedad0;
+  --accent:    #0f4c5c;
+  --ok-fg:     #0f5338; --ok-bg:   #dff3ea; --ok-bd:   #9dd4bc;
+  --run-fg:    #7a4b00; --run-bg:  #fff1cf; --run-bd:  #f0c96b;
+  --warn-fg:   #7a2e0e; --warn-bg: #ffe4d6; --warn-bd: #f3ae8b;
+  --bad-fg:    #8a1c1c; --bad-bg:  #fde2e2; --bad-bd:  #eda3a3;
+  --idle-fg:   #4b5260; --idle-bg: #eceae3; --idle-bd: #cfcac0;
+  --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --head: 'Space Grotesk', var(--sans);
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.55 var(--sans); }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 28px 32px 72px; }
+header.top {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end;
+  gap: 16px; padding-bottom: 18px; border-bottom: 2px solid var(--ink);
+}
+header.top h1 { font: 700 24px/1.15 var(--head); letter-spacing: -0.02em; margin: 0; }
+header.top .sub { color: var(--muted); font: 12px/1.4 var(--mono); margin-top: 4px; }
+nav.tabs {
+  position: sticky; top: 0; z-index: 10; background: var(--bg);
+  display: flex; flex-wrap: wrap; gap: 4px; padding: 12px 0; border-bottom: 1px solid var(--rule);
+}
+nav.tabs button {
+  font: 500 13px/1 var(--sans); color: var(--muted); background: transparent;
+  border: 1px solid transparent; border-radius: 6px; padding: 8px 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+nav.tabs button:hover { color: var(--ink); background: var(--subtle); }
+nav.tabs button.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+nav.tabs button .cnt { font: 500 11px/1 var(--mono); opacity: .75; }
+section.pane { display: none; padding-top: 22px; }
+section.pane.on { display: block; }
+h2 { font: 600 16px/1.25 var(--head); margin: 26px 0 10px; letter-spacing: -0.01em; }
+h2:first-child { margin-top: 0; }
+h3 { font: 600 13px/1.3 var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 20px 0 8px; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.kpi { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; }
+.kpi .num { font: 700 26px/1.1 var(--head); }
+.kpi .lbl { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.stepper { display: grid; grid-template-columns: repeat(8, minmax(120px, 1fr)); gap: 8px; margin-top: 12px; overflow-x: auto; }
+.step {
+  background: var(--paper); border: 1px solid var(--rule); border-top: 3px solid var(--idle-bd);
+  border-radius: 6px; padding: 10px 12px;
+}
+.step.done        { border-top-color: var(--ok-fg); }
+.step.in_progress { border-top-color: var(--run-fg); background: #fffdf6; }
+.step.blocked     { border-top-color: var(--warn-fg); }
+.step.failed      { border-top-color: var(--bad-fg); }
+.step .id   { font: 600 11px/1 var(--mono); color: var(--muted); }
+.step .name { font: 600 13px/1.25 var(--sans); margin: 4px 0 6px; }
+.step .meta { font: 11px/1.3 var(--mono); color: var(--muted); }
+.bar { height: 5px; background: var(--subtle); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+.step.done .bar > i { background: var(--ok-fg); }
+.card { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th, table.t td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+table.t th { font: 600 11px/1.2 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); background: var(--subtle); }
+table.t tr:last-child td { border-bottom: 0; }
+table.t tbody tr:hover td { background: #faf8f3; }
+.pill {
+  display: inline-block; font: 500 11px/1 var(--mono); padding: 4px 7px; border-radius: 4px;
+  border: 1px solid var(--idle-bd); color: var(--idle-fg); background: var(--idle-bg); white-space: nowrap;
+}
+.pill.ok   { color: var(--ok-fg);   background: var(--ok-bg);   border-color: var(--ok-bd); }
+.pill.run  { color: var(--run-fg);  background: var(--run-bg);  border-color: var(--run-bd); }
+.pill.warn { color: var(--warn-fg); background: var(--warn-bg); border-color: var(--warn-bd); }
+.pill.bad  { color: var(--bad-fg);  background: var(--bad-bg);  border-color: var(--bad-bd); }
+code, .mono { font: 12px/1.45 var(--mono); }
+code { background: var(--subtle); padding: 1px 5px; border-radius: 3px; }
+.muted { color: var(--muted); }
+.empty {
+  background: var(--paper); border: 1px dashed var(--rule); border-radius: 8px;
+  padding: 28px; text-align: center; color: var(--muted);
+}
+.filter { margin-bottom: 10px; display: flex; gap: 8px; align-items: center; }
+.filter input {
+  font: 13px/1.4 var(--sans); padding: 7px 11px; border: 1px solid var(--rule);
+  border-radius: 6px; background: var(--paper); min-width: 260px;
+}
+details.row { background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; margin-bottom: 8px; }
+details.row > summary { padding: 10px 14px; cursor: pointer; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+details.row > .body { padding: 4px 14px 14px; border-top: 1px solid var(--rule); }
+dl.kv { display: grid; grid-template-columns: 200px 1fr; gap: 6px 14px; margin: 8px 0; font-size: 13px; }
+dl.kv dt { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+dl.kv dd { margin: 0; }
 ```
 
-```html
-<script>
-const show=id=>{if(!document.getElementById('tab-'+id))id='overview';
-document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.dataset.tab===id));
-document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));history.replaceState(null,'','#'+id)};
-document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
-document.querySelectorAll('section').forEach(s=>{if(s.dataset.tab==='overview'||!s.querySelector('tbody'))return;
- const f=document.createElement('input');f.className='filter';f.placeholder='Filter the rows in this tab';
- f.oninput=()=>{const q=f.value.toLowerCase();s.querySelectorAll('tbody tr').forEach(r=>r.hidden=!!q&&!r.textContent.toLowerCase().includes(q))};
- s.querySelector('h2').after(f)});
-show(location.hash.slice(1)||'overview');
-</script>
+The page's script, used as it is:
+
+```js
+function switchTab(id) {
+  document.querySelectorAll('nav.tabs button').forEach(b => {
+    b.classList.toggle('on', b.getAttribute('data-tab') === id);
+  });
+  document.querySelectorAll('section.pane').forEach(p => {
+    p.classList.toggle('on', p.id === 'pane-' + id);
+  });
+  if (history.replaceState) { history.replaceState(null, '', '#' + id); }
+}
+function filterPane(input, paneId) {
+  const q = (input.value || '').toLowerCase();
+  const pane = document.getElementById(paneId);
+  if (!pane) return;
+  pane.querySelectorAll('table.t tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const h = (location.hash || '').replace('#', '');
+  if (h && document.getElementById('pane-' + h)) { switchTab(h); }
+});
 ```
 
 The shape the builder writes, abbreviated:
 
 ```html
-<!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NHCX integration report: acme-hmis</title><style>/* the CSS above */</style>
-<header class="top"><h1>NHCX integration report <button onclick="location.reload()">Refresh</button></h1>
-<div class="meta">acme-hmis &middot; nhcx-full 1.10.0 &middot; milestone mode &middot; built 20 Oct 2026, 10:14:05 &middot; 3 of 7 milestones done &middot; end-to-end not run &middot; 2 open errors</div></header>
-<main><nav class="tabs"><button data-tab="overview">Overview<span class="badge">2</span></button><button data-tab="bootstrap">Bootstrap</button>
- <button data-tab="N0">N0 Foundation</button><button data-tab="N3">N3 Pre-authorisation and Biometric<span class="badge">2</span></button>...<button data-tab="e2e">End-to-end</button><button data-tab="log">Log</button></nav>
-<section id="tab-overview" data-tab="overview"><h2>Overview</h2>
- <div class="tiles"><div class="tile"><div class="label">Milestones</div><div class="value">3 <small>/ 7</small></div>
-  <div class="meter good"><span style="width:43%"></span></div><div class="sub">N0 Foundation to N6 Payment</div></div>...</div>
- <h3>Milestones</h3><ol class="steps"><li class="done"><span class="dot">&#10003;</span><span class="sname">N0 Foundation</span><span class="ssub">7 / 7 steps &middot; <span class="pill good">pass</span></span></li>
-  <li class="active"><span class="dot">3</span><span class="sname">N3 Pre-authorisation and Biometric</span><span class="ssub">4 / 7 steps &middot; <span class="pill">not run</span> &middot; depends on N0, N2</span></li>...</ol>
- <h3>Open errors</h3><div class="errors"><article class="err bad"><header><span class="pill bad">fail</span><span class="src">N3 &middot; Dry-run &middot; CLI &middot; cause: ours</span></header>
-  <h4>T14 PMJAY Pre-authorisation Through the Payer Service</h4><p>built claim bundle rejected by the F8 validator</p><p class="mono ids">correlation 5b1f0c1e</p></article></div></section>
-<section id="tab-N3" data-tab="N3"><h2>N3 Pre-authorisation and Biometric</h2>
- <p class="meta"><span class="pill warn">in progress</span> <span class="pill">dry-run done-when: not run</span> &middot; depends on N0, N2</p>
- <ol class="steps"><li class="done"><span class="dot">&#10003;</span><span class="sname">L1 Discovery</span><span class="ssub">6 / 6 sub-steps &middot; exit &#10003;</span></li>
-  <li class="active"><span class="dot">5</span><span class="sname">L5 Write Code</span><span class="ssub">3 / 5 sub-steps</span></li>...</ol>
- <details class="group"><summary><b>Mapping</b><span class="pill good">22 mapped</span><span class="pill bad">3 missing</span></summary>
- <div class="tablewrap"><table><thead><tr><th>field</th><th>stored in the HMIS</th><th>sent as (FHIR)</th><th>status</th><th>how</th>...</tr></thead>
- <tbody><tr><td>diagnosis</td><td>claim_diagnosis.icd10</td><td>F8 Claim &middot; diagnosis[].coding</td><td><span class="pill good">mapped</span></td>...</tr></tbody></table></div></details>
- <details class="group"><summary><b>Dry-run</b><span class="pill good">8 pass</span></summary>...</details></section>
-<section id="tab-e2e" data-tab="e2e"><h2>End-to-end</h2>
- <p class="meta"><span class="pill">not run</span> &middot; the final sandbox run across N1 to N6, after every milestone is done</p>
- <details class="group"><summary><b>CLI</b><span class="pill bad">1 fail</span></summary>...<tbody><tr><td>T14 PMJAY Pre-authorisation Through the Payer Service</td><td>CLI</td><td><span class="pill bad">fail</span></td>...
- <td><ul class="plain"><li><b>provider sends the validation check</b> <span class="pill bad">fail</span> <span class="muted">got AttributeError ...</span></li></ul></td></tr></tbody>...</details></section>
-</main><script>/* the script above */</script></html>
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NHCX Integration Report &mdash; acme-hmis</title><style>/* the CSS above */</style></head>
+<body><div class="wrap">
+ <header class="top"><div><h1>NHCX Integration Report &mdash; acme-hmis</h1>
+  <div class="sub">Skill: nhcx-full v1.10.0 &middot; Knowledge: package v1.0.0 &middot; Mode: milestone &middot; Updated: 2026-10-24 11:38:36</div></div>
+  <div><span class="pill run">in_progress</span></div></header>
+ <nav class="tabs"><button class="on" data-tab="overview" onclick="switchTab('overview')">Overview <span class="cnt">(3/7)</span></button>
+  <button data-tab="bootstrap" onclick="switchTab('bootstrap')">Bootstrap <span class="cnt">(done)</span></button>
+  <button data-tab="n0" onclick="switchTab('n0')">N0 Foundation <span class="cnt">(done)</span></button>
+  ... <button data-tab="e2e" onclick="switchTab('e2e')">End-to-end <span class="cnt">(not_started)</span></button>
+  <button data-tab="log" onclick="switchTab('log')">Log <span class="cnt">(142)</span></button></nav>
+ <section class="pane on" id="pane-overview"><div class="kpis"><div class="kpi"><div class="num">3 / 7</div><div class="lbl">Milestones Done</div></div>...</div>
+  <h2>Milestone Stepper</h2><div class="stepper"><div class="step done" onclick="switchTab('n0')"><div class="id">N0</div>
+   <div class="name">Foundation</div><div class="meta">7 / 7 steps &middot; dry-run: pass</div><div class="bar"><i style="width:100%"></i></div></div>...</div>
+  <h2>Milestones &times; Steps (L1 Discovery &ndash; L7 Dry-run Tests)</h2><div class="card"><table class="t">...</table></div>
+  <h2>Recent Log Entries (Last 20)</h2><div class="card"><table class="t">...</table></div></section>
+ <section class="pane" id="pane-bootstrap">...</section>
+ <section class="pane" id="pane-n0">...</section>
+ ...
+ <section class="pane" id="pane-e2e">...</section>
+ <section class="pane" id="pane-log">...</section>
+</div><script>/* the script above */</script></body></html>
 ```
 
 ```sh
 #!/bin/sh
-# nhcx-plan/make-report.sh: rebuild report.html every 10 seconds until stopped.
-# "make-report.sh once" rebuilds it one time and exits with the builder's status.
-cd "$(dirname "$0")" || exit 1
-build() { python3 report.py; }          # the target's builder: node report.mjs, php report.php, ...
-if [ "$1" = once ]; then build; exit $?; fi
-while :; do
-  build && echo "$(date '+%H:%M:%S') report.html rebuilt" || echo "$(date '+%H:%M:%S') report build failed"
-  sleep 10
-done
+# nhcx-plan/make-report.sh: rebuild report.html once, or watch and rebuild every few seconds.
+set -eu
+DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PY=$(command -v python3 || command -v python)   # the target's runtime: node, php, java ...
+case "${1:-once}" in
+  once)  exec "$PY" "$DIR/report.py" ;;
+  watch) exec "$PY" "$DIR/report.py" --watch "${2:-2}" ;;
+  *)     echo "usage: $0 [once|watch [seconds]]" >&2; exit 2 ;;
+esac
 ```
 
 ```bat
 @echo off
-rem nhcx-plan\make-report.bat: rebuild report.html every 10 seconds until stopped (Ctrl-C).
-rem "make-report.bat once" rebuilds it one time.
-cd /d "%~dp0"
-if "%1"=="once" ( python report.py & exit /b %errorlevel% )
-:loop
-python report.py && echo %time% report.html rebuilt || echo %time% report build failed
-timeout /t 10 /nobreak >nul
-goto loop
+rem nhcx-plan\make-report.bat: rebuild report.html once, or watch (Ctrl-C to stop).
+setlocal
+set "DIR=%~dp0"
+where python3 >nul 2>nul && (set "PY=python3") || (set "PY=python")
+if /I "%~1"=="watch" (
+  if "%~2"=="" ( "%PY%" "%DIR%report.py" --watch 2 ) else ( "%PY%" "%DIR%report.py" --watch %~2 )
+  exit /b %ERRORLEVEL%
+)
+if "%~1"=="" ( "%PY%" "%DIR%report.py" & exit /b %ERRORLEVEL% )
+if /I "%~1"=="once" ( "%PY%" "%DIR%report.py" & exit /b %ERRORLEVEL% )
+echo usage: %~nx0 [once^|watch [seconds]] 1>&2
+exit /b 2
 ```
 
-The builder and the two wrapper scripts are written in L1 (before any other plan file, so every later step can rebuild the page) and logged like any other file. The build of the page is itself logged: one entry, action `done`, item `nhcx-plan/report.html`, in the sub-step that was running (or the last one, when the prompt ran none).
+The builder (and the optional log helper) and the two wrapper scripts are written in L1 (before any other plan file, so every later step can rebuild the page) and logged like any other file. The build of the page is itself logged: one entry, event `done`, title `report.html`, in the sub-step that was running (or the last one, when the prompt ran none).
 
 #### LOGX. EXIT
 - Every entry carries a `milestone` (`N0` to `N6`, or `bootstrap`).
 - Every sub-step of a finished step of a milestone has a `started` and a closing entry under that milestone.
 - Every file named in a milestone's `code.json`, and every file changed in the target, appears in at least one entry's `files`.
-- progress.md matches progress.json: the milestone table, the per-milestone step tables and the changes table.
-- No milestone, step, sub-step, test or spec id appears in progress.md, report.html or a progress message without its name; `names.json` holds every milestone and every id in SCOPE.
+- progress.md matches progress.json: the milestone table (steps done out of 7), the per-milestone step tables and the changes table.
+- No milestone, step, sub-step, test or spec id appears in progress.md, report.html or a progress message without its name; `names.json` holds every milestone and every id in SCOPE, grouped.
 - report.html was rebuilt at the end of the last prompt by the report builder, is organised by milestone (Overview, Bootstrap, one tab per milestone present, End-to-end, Log), and its counts match the plan files.
 - A milestone shows `done` only when its dry-run done-when is `pass`; a milestone runs L1 to L7 only; a milestone is never started before every milestone it depends on is `done`.
-- The final L8 end-to-end is not run until every milestone is `done`; it writes one `nhcx-plan/e2e.json` at the root and `status.e2e`, never a per-milestone `e2e.json`.
+- The final L8 end-to-end is not run until every milestone is `done`; it writes one `nhcx-plan/e2e.json` at the root and the root `status.e2e`, never a per-milestone `e2e.json`.
 - `nhcx-plan/make-report.sh once` and `make-report.bat once` rebuild it and exit 0.

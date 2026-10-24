@@ -65,7 +65,7 @@ On the protocol the knowledge source wins over these specs; on what the applicat
 # STEPS
 This skill builds **in milestone mode only**. The build is cut into the vertical slices of the claim lifecycle in [milestones/INDEX.md](milestones/INDEX.md), and each slice is carried through every step before the next begins. There is no layered mode: never run L1 across every spec, then L2 across every spec; that is the old shape and is not used. Record `"mode": "milestone"` in `nhcx-plan/knowledge.json`.
 
-Each step writes one file per milestone under `nhcx-plan/<Nx>/` in the target repository, and every sub-step and file change is logged in `nhcx-plan/progress.json` and `nhcx-plan/progress.md` ([steps/LOG.md](steps/LOG.md)). At the end of every prompt, whatever it did, rebuild `nhcx-plan/report.html` ([steps/LOG.md](steps/LOG.md#logh-reporthtml)): the milestones as a row with each one's state and done-when, each opening to its own steps and their sub-steps, errors first, with a refresh button; `nhcx-plan/make-report.sh` and `make-report.bat` rebuild it every 10 seconds.
+Each step writes one file per milestone under `nhcx-plan/<Nx>/` in the target repository, and every sub-step and file change is logged in `nhcx-plan/progress.json` and `nhcx-plan/progress.md` ([steps/LOG.md](steps/LOG.md)). At the end of every prompt, whatever it did, rebuild `nhcx-plan/report.html` ([steps/LOG.md](steps/LOG.md#logh-reporthtml)): an Overview (KPIs, a milestone stepper and a milestones-by-steps matrix), a Bootstrap tab, one tab per milestone (its L1 to L7 steps and their records), an End-to-end tab and a Log tab; `nhcx-plan/make-report.sh once` rebuilds it, `make-report.sh watch` keeps it current.
 
 The seven steps each milestone is carried through (discovery to dry-run):
 

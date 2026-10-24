@@ -16,7 +16,7 @@ N0 (gateway, case shell, billing) and N5 (the claim a payment is matched to).
 From N0: [F1. Bundle](../fhir/F1-bundle.md), [S6. Claim Detail](../screens/S6-claim-detail.md), the billing or accounts module discovery found, the gateway and [C1. Callback Door](../callbacks/C1-callback-door.md). From N5: the claim and its approved amount the payment is reconciled against.
 
 #### STEPS
-Run the ordinary steps scoped to the ids above, writing `nhcx-plan/N6/`: discovery, mapping, plan (the Payment phase), code plan, code, validation, dry-run, end-to-end.
+Run the ordinary steps scoped to the ids above, writing `nhcx-plan/N6/`: discovery, mapping, plan (the Payment phase), code plan, code, validation and dry-run. A milestone stops at dry-run; the live sandbox exchange (L8) runs once at the end across the whole lifecycle.
 
 #### DONE WHEN
-On the sandbox: a payment notice is received on [S12. Payments](../screens/S12-payments.md) through [C10. Payment Notice](../callbacks/C10-paymentnotice-request.md), matched to its claim with the reconciliation breakdown and any shortfall shown, posted to billing and acknowledged through [A8. Payment Notice Acknowledgement](../apis/A8-paymentnotice-on-request.md). Proven through the screens and from the command line. With N6 done, the whole lifecycle N1 to N6 runs end to end on the sandbox.
+In dry-run (gateway mocked, callbacks stubbed): a payment notice replayed through a stubbed [C10. Payment Notice](../callbacks/C10-paymentnotice-request.md) is received on [S12. Payments](../screens/S12-payments.md), matched to its claim with the reconciliation breakdown and any shortfall shown, posted to billing and acknowledged through [A8. Payment Notice Acknowledgement](../apis/A8-paymentnotice-on-request.md). The live sandbox proof is deferred to the final end-to-end step. Once every milestone's dry-run is green, the final end-to-end step proves the whole lifecycle N1 to N6 against the sandbox.

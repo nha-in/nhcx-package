@@ -16,7 +16,7 @@ N0 (gateway, case shell) and N3 (the pre-authorisation the communication is abou
 From N0: [F1. Bundle](../fhir/F1-bundle.md), [F15. Patient](../fhir/F15-patient.md) to [F18. Coverage](../fhir/F18-coverage.md), [S6. Claim Detail](../screens/S6-claim-detail.md), the gateway and [C1. Callback Door](../callbacks/C1-callback-door.md). From N3: the pre-authorisation thread a communication is matched to.
 
 #### STEPS
-Run the ordinary steps scoped to the ids above, writing `nhcx-plan/N4/`: discovery, mapping, plan (the Payer-communication phase), code plan, code, validation, dry-run, end-to-end.
+Run the ordinary steps scoped to the ids above, writing `nhcx-plan/N4/`: discovery, mapping, plan (the Payer-communication phase), code plan, code, validation and dry-run. A milestone stops at dry-run; the live sandbox exchange (L8) runs once at the end across the whole lifecycle.
 
 #### DONE WHEN
-On the sandbox: a payer communication request is received on S10. Communication (in nhcx-communication) through C9. Payer Communication (in nhcx-communication), and the desk answers it with A7. Communication Reply (in nhcx-communication) carrying text and a document; a notification is acknowledged. Proven through the screens and from the command line. N4 and N5 both sit on N3 and may be built in either order.
+In dry-run (gateway mocked, callbacks stubbed): a payer communication request replayed through a stubbed C9. Payer Communication (in nhcx-communication) is received on S10. Communication (in nhcx-communication), and the desk answers it with A7. Communication Reply (in nhcx-communication) carrying text and a document; a notification is acknowledged. The live sandbox proof is deferred to the final end-to-end step. N4 and N5 both sit on N3 and may be built in either order.

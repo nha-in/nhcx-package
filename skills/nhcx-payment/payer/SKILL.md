@@ -6,7 +6,7 @@ metadata:
   version: "1.2.2"
 ---
 
-**Version 1.2.2**, built 2026-10-23, checked against NHA's NHCX package 1.0.0.
+**Version 1.2.2**, built 2026-10-24, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route it arrives on, the bundle, the callback that takes it in, the answer and the workflow id the answer travels under.
@@ -90,7 +90,7 @@ Other skills built from the same source:
 - **nhcx-communication/payer**: queries to the hospital and the replies to them.
 
 # VERSION
-This is nhcx-payer-payment version 1.2.2, built on 2026-10-23. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-payer-payment version 1.2.2, built on 2026-10-24. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.

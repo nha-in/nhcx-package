@@ -1,6 +1,6 @@
 # Milestones
 
-An alternative way to run the build (an experiment). Instead of taking every spec through discovery, then every spec through mapping, then planning the whole integration at once, the work is cut into **milestones**: one vertical slice of the claim lifecycle at a time, each carried end to end (discovery, mapping, plan, code, validation, dry-run and its own sandbox proof) before the next begins.
+How this skill runs the build. The work is cut into **milestones**: one vertical slice of the claim lifecycle at a time, each carried from discovery through dry-run (discovery, mapping, plan, code, validation and dry-run) before the next begins. This is the only mode; the whole integration is never discovered, then mapped, then planned in one layered pass. A milestone stops at dry-run; the live sandbox exchange (L8 end-to-end) is **not** run per milestone but once at the very end, across the whole lifecycle, after every milestone's dry-run is green.
 
 The milestones are the phases of [references/SCAFFOLDING.md](../references/SCAFFOLDING.md) section 12 and the phases L3 already names, promoted to be the outer loop of the build. A milestone owns a set of spec ids, declares the milestones it depends on, and reuses what they built rather than rebuilding it.
 
@@ -48,7 +48,7 @@ Each milestone file names two sets:
 
 A one-time **global bootstrap** runs before N0: the knowledge source (L1.0), the NHCX scan (L1.1), the target's technology and component kit (L1.2) and the ABDM module (L1.3). These are properties of the target, not of a slice, so they are found once and read by every milestone.
 
-Then, for each milestone in dependency order, the ordinary steps run **scoped to the specs that milestone delivers**:
+Then, for each milestone in dependency order, the ordinary steps run **scoped to the specs that milestone delivers**, from discovery through dry-run only:
 
 | Within a milestone | The step, scoped | Writes |
 |---|---|---|
@@ -59,18 +59,23 @@ Then, for each milestone in dependency order, the ordinary steps run **scoped to
 | code | [L5](../steps/L5-write-code.md) | source files, `nhcx-plan/<Nx>/code.json` |
 | validation | [L6](../steps/L6-validate-code.md) | `nhcx-plan/<Nx>/validation.json` |
 | dry-run | [L7](../steps/L7-dry-run-tests.md) | test files, `nhcx-plan/<Nx>/dry-run.json` |
-| end-to-end | [L8](../steps/L8-e2e-tests.md), the milestone's done-when against the sandbox | test files, `nhcx-plan/<Nx>/e2e.json` |
+
+[L8 end-to-end](../steps/L8-e2e-tests.md) does **not** run inside a milestone. It runs once, after the last milestone's dry-run is green, across the whole lifecycle (see "The final end-to-end step" below).
 
 The global bootstrap writes `nhcx-plan/knowledge.json` and the technology part of `nhcx-plan/discovery.json` once, at the root, not per milestone.
 
 ## Done when
 
-A milestone is **done** only when its done-when holds: a sandbox exchange, run through the screens and from the command line, that proves the slice works end to end (the phase `done_when` L3.4 already defines). Until then it is `in progress`, whatever its code status. A milestone is never half-built into the next: N3 is not started until N2's done-when passes, because N3 quotes line items from the plan N2 fetched.
+A milestone is **done** only when its done-when holds **in dry-run**: the slice's code is written, validated, and its dry-run tests pass with the gateway mocked and the payer callbacks stubbed, so the slice's behaviour (the phase `done_when` L3.4 defines) is proven without a live exchange. Until then it is `in progress`, whatever its code status. A milestone is never half-built into the next: N3 is not started until N2's dry-run done-when passes, because N3 quotes line items from the plan N2 fetched. The live sandbox proof is deferred to the final end-to-end step.
+
+## The final end-to-end step
+
+After the last milestone's dry-run is green, [L8](../steps/L8-e2e-tests.md) runs **once**, against the sandbox, across the whole lifecycle N1 to N6: a single exchange driven through the screens and from the command line, reusing each milestone's dry-run scenario but now with the real gateway and the hosted payer. It reads each `nhcx-plan/<Nx>/dry-run.json` and writes one `nhcx-plan/e2e.json` at the root (not per milestone). A milestone whose live leg fails here is reopened and its dry-run revisited; the final step is green only when the whole chain N1 to N6 completes against the sandbox.
 
 ## The report
 
-`nhcx-plan/report.html` is organised by milestone: the header shows the milestones as a row with each one's state (done, in progress, blocked, not started) and its done-when; opening a milestone shows its own discovery, mapping, plan, code, validation, dry-run and end-to-end tabs, errors first. The global bootstrap (knowledge source and technology) is one shared tab. The builder and its wrappers are written in the bootstrap, as [LOG.md](../steps/LOG.md) describes, and rebuilt at the end of every prompt.
+`nhcx-plan/report.html` is organised by milestone: the header shows the milestones as a row with each one's state (done, in progress, blocked, not started) and its dry-run done-when; opening a milestone shows its own discovery, mapping, plan, code, validation and dry-run tabs, errors first. The global bootstrap (knowledge source and technology) is one shared tab, and the final end-to-end run (once the milestones are green) is one shared tab after the milestones, reading the root `nhcx-plan/e2e.json`. The builder and its wrappers are written in the bootstrap, as [LOG.md](../steps/LOG.md) describes, and rebuilt at the end of every prompt.
 
-## Relation to the layered steps
+## Relation to the steps
 
-The step files ([steps/INDEX.md](../steps/INDEX.md)) are unchanged: they define what each step does. Milestones change only the **order** they run in, from "every spec through one step, then the next step" to "one milestone through every step, then the next milestone", and the **scope** each run covers. A build may use either mode; this folder is the milestone mode.
+The step files ([steps/INDEX.md](../steps/INDEX.md)) define what each step does and are read unchanged. The milestone is the outer loop: one milestone runs through every step over the ids it delivers, then the next milestone does the same. A step is never run across the whole integration at once.

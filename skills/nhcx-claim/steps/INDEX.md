@@ -1,6 +1,8 @@
 # Steps
 
-How to build NHCX claims into an existing HMIS (the target system), from first look to end-to-end tests. Each step reads the specs, works on the target's source, and writes one JSON file under `nhcx-plan/` at the root of the target repository. The next step starts from that file, so a step is done only when its file is written and its exit condition holds.
+How to build NHCX claims into an existing HMIS (the target system), from first look to end-to-end tests. Each step reads the specs, works on the target's source, and writes one JSON file. The next step starts from that file, so a step is done only when its file is written and its exit condition holds.
+
+The build runs **in milestone mode** ([milestones/INDEX.md](../milestones/INDEX.md)): the steps below are not run once across the whole integration but **once per milestone**, over only the spec ids that milestone delivers, in dependency order. Each milestone runs L1 to L7 only (discovery through dry-run); so each of those steps writes its file under that milestone's folder, `nhcx-plan/<Nx>/` (the `nhcx-plan/` paths in the table below are read as `nhcx-plan/<Nx>/` for the milestone being built). Two things are not per milestone: the one-time global bootstrap (L1.0 to L1.3), which writes `nhcx-plan/knowledge.json` and the technology part of `nhcx-plan/discovery.json` once at the root; and **L8 end-to-end**, which runs once after every milestone's dry-run is green, across the whole lifecycle, writing one `nhcx-plan/e2e.json` at the root (not `nhcx-plan/<Nx>/e2e.json`).
 
 | # | Step | Reads | Writes |
 |---|---|---|---|

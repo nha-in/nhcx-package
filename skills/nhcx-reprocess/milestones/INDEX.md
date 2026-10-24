@@ -64,6 +64,8 @@ Then, for each milestone in dependency order, the ordinary steps run **scoped to
 
 The global bootstrap writes `nhcx-plan/knowledge.json` and the technology part of `nhcx-plan/discovery.json` once, at the root, not per milestone.
 
+**Keep going; do not pause between milestones.** A milestone needs no sandbox credentials and no network: it stops at dry-run, which runs fully offline against the mocked gateway and stubbed callbacks. So the build runs milestone after milestone on its own: once a milestone's dry-run done-when is green, go straight on to the next milestone (and its discovery, mapping, plan, code, validation and dry-run) without stopping to ask for anything. Sandbox credentials, a reachable public endpoint and test beneficiaries are asked for **once, at the final end-to-end step**, never after N0 or between any two milestones. The only questions asked before then are the one-time ASK FIRST set at the very start of the build.
+
 ## Done when
 
 A milestone is **done** only when its done-when holds **in dry-run**: the slice's code is written, validated, and its dry-run tests pass with the gateway mocked and the payer callbacks stubbed, so the slice's behaviour (the phase `done_when` L3.4 defines) is proven without a live exchange. Until then it is `in progress`, whatever its code status. A milestone is never half-built into the next: N3 is not started until N2's dry-run done-when passes, because N3 quotes line items from the plan N2 fetched. The live sandbox proof is deferred to the final end-to-end step.

@@ -1,6 +1,4 @@
-b632ac8ebb18286329aa84038aff17939281c4a8b156b900236bab5331012685  ./README.md
-3f6198b00bc05a8f877ec8fbeb6a3021f61cb5889b23680bb9cd40c32af47677  ./manifest.json
-4dca32db47bca34e6354afee818e0becb747946fac9f51e81805cc140bfb04bd  ./nhcx-claim/SKILL.md
+4f580eaf57d652fec26a901cd5893a35e3cd90ebdf4dbce720ac28ea796fc276  ./manifest.json
 bce5617411429f2bd241eff32da24bae20f7149281e40238e5d88bdaf02cbb97  ./nhcx-claim/apis/A10-txn-related.md
 d8a32fb43e7215b87363e3718a83c43baccb4f2946935db65e1886d3d292f024  ./nhcx-claim/apis/A11-txn-dispatch.md
 9cb07ca43c2ec58197141716778f8aa05a4b3535d482fd04bb246e676f6b719c  ./nhcx-claim/apis/A12-txn-fhir.md
@@ -63,15 +61,14 @@ d3234a054f1f0e3031dd4a5fa0608466451fdde68731ff6b73eaa07aa7a218d3  ./nhcx-claim/f
 c35879c4b35dfb03acbbb9299e50cabbdd5d618a3d3e05dad22f3fda0e9414a6  ./nhcx-claim/gateway/G8-receive.md
 20387e4a7b195bd2febe2e1174707dd39b380ff065e0f0ee0115b1be30936485  ./nhcx-claim/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-claim/gateway/INDEX.md
-4bc650d92a9f39d50d7c9132d6ef16aec3eee11df8dedc55862a89a9ef3cdde3  ./nhcx-claim/milestones/INDEX.md
+e5f3bff4be08ae05ade65092092ba373a223b42d0097d07e4f9167f672334aa1  ./nhcx-claim/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-claim/milestones/N0-foundation.md
 c4f0a89d6e90f1f0fc14de5e00dbd8afb18d97062fa8e5ed832b8705eed9e407  ./nhcx-claim/milestones/N1-search-policy.md
 cb452c72dd1b0bff0c927d8e1a97fd28e7091bb1b27095b4938206910feeaa7f  ./nhcx-claim/milestones/N2-coverage-insurance.md
-6ad4472d6691a82e054527b9badb987ec45c5b5db600042c8c341c4a46aeace0  ./nhcx-claim/milestones/N3-preauth-biometric.md
+3ee8aeaf1e872163991d805da5eb1f35a3e2bcc4a5757da39580c43ad577f7d1  ./nhcx-claim/milestones/N3-preauth-biometric.md
 5b1662032c33c3de1a35036e6d64bc4a0d050c2897205df345a153f0d1cd3444  ./nhcx-claim/milestones/N4-communication.md
 1faa635553fccca27f16a24c7146e3fc0c81483d26264115eb55f2c506778071  ./nhcx-claim/milestones/N5-claim.md
 16f5cc5d9cb295c356842cb19ce04c78727004a412ccebc6033bb7432caaa0aa  ./nhcx-claim/milestones/N6-payment.md
-bafdd58de6c04732afaacb72dc76996e9cf96863c155dc9ff351e4376cb5838f  ./nhcx-claim/payer/SKILL.md
 65054b2aba53b005df27150ca65e2fca73ef5cf5ed3770804c292360f33cd3af  ./nhcx-claim/payer/apis/A11-txn-related.md
 10f0c46f86c7fbc6d2df1d4ccd581974dbd5bf6fd32736a3014456012c024f6a  ./nhcx-claim/payer/apis/A12-txn-fhir.md
 6489c732eb53b4572ce2d042f3f1ddd9979599f0f5d1a19ec40443767102699d  ./nhcx-claim/payer/apis/A13-adjudicate.md
@@ -162,6 +159,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./nhcx-claim/p
 337e9812552e5514769f0940e95e9dc4a592b191f25f9b374e8a7a7335bfa749  ./nhcx-claim/payer/screens/S1-overview.md
 ff694be249b308bc3022d2cd3f0018422ac64e81c944262cfad46a5cd9f2c2f8  ./nhcx-claim/payer/screens/S2-cases.md
 ad9ad2cae418d8894d861ddb47523c65a6d7923597ba54589e7538b1634dfd02  ./nhcx-claim/payer/screens/S3-case-desk.md
+bafdd58de6c04732afaacb72dc76996e9cf96863c155dc9ff351e4376cb5838f  ./nhcx-claim/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-claim/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-claim/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-claim/payer/steps/L2-mapping.md
@@ -197,6 +195,7 @@ cb8bb639a9709aebcb73b66f6258be8314a4225d1e3d4f8978feb54240c42c61  ./nhcx-claim/s
 7fb291995001053f48cbd9a02e5957dfe1e90bdc7c33b355b57d47f86478852b  ./nhcx-claim/screens/S19-nhcx-settings.md
 71aac34c840d64fff52bee204429788b8387ad56d9b8230c80a6f27586634bd9  ./nhcx-claim/screens/S5-claim-master.md
 c510df92aa31bbee4a22d145dd37582965fea57cf081e1eadc379e4a03f3092e  ./nhcx-claim/screens/S6-claim-detail.md
+20e5df074af116d4de8d9dab8f4f4bd5a17ef4e2b09dfbac190711d2ef309e0d  ./nhcx-claim/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-claim/steps/INDEX.md
 11393886fe0279237320d6a46cc457e52ae1acfb368b6531e14febd033d26596  ./nhcx-claim/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-claim/steps/L2-mapping.md
@@ -212,7 +211,6 @@ bb58b4c61dcac1da70c9a34dea7f1d7d3064056aafd83f32b076c80fb214b801  ./nhcx-claim/s
 089648ff4a6b4657483db113b89bd980f956ee769957afb792978e61faba843a  ./nhcx-claim/tests/T10-irdai-claim.md
 a9b9b6acca2be7cfc2af19a77d880bb8e6eb91dfc3597f1ec2130e7e2727478a  ./nhcx-claim/tests/T17-pmjay-claim-adjudicated.md
 cb62c8c883560320901b5dcd3cd517c23c19b7dd29e5da31dfbea962f1b4ab2e  ./nhcx-claim/tests/T2-test-runners.md
-7496b8949e2848051e5221965b7d7da3062994ac55e0fb059d77798d59e5b414  ./nhcx-communication/SKILL.md
 3bef87ddbb03d95ff916f4bb21316b8355e22c3d374115e22bc26b490d57e54b  ./nhcx-communication/apis/A10-txn-related.md
 94184d7784b19e678f382e11c9ec9feac7682ddd5344e472a7be6a8db39969b4  ./nhcx-communication/apis/A11-txn-dispatch.md
 93ab893e76bd8d4a43b203fc816fc6555e34a074b81a3c3a7ccf0ea72696dc1e  ./nhcx-communication/apis/A12-txn-fhir.md
@@ -258,15 +256,14 @@ a5c1e36732d6c6a744fe448deb4666d1b70952367c1806cbbdfb740d8078334f  ./nhcx-communi
 037074038ea7d8b86152e4cc11da4f136a900096a498d121bedc3738bd07c581  ./nhcx-communication/gateway/G8-receive.md
 89769e009703ccbf7ad595dc37413e7cb0eb6456bb87c3857fa94eced892be18  ./nhcx-communication/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-communication/gateway/INDEX.md
-bd134b7844c361ceaae6f408332d92ff05be0b79d432c7cd34703cda95b92d7f  ./nhcx-communication/milestones/INDEX.md
+51e1ad3f7e087548b8ac01bb8416ed6caaa5dfa36cc529bbb52a2b14ad21dd57  ./nhcx-communication/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-communication/milestones/N0-foundation.md
 c4f0a89d6e90f1f0fc14de5e00dbd8afb18d97062fa8e5ed832b8705eed9e407  ./nhcx-communication/milestones/N1-search-policy.md
 92d0c3ad75c530fb092706e47de4776e17d789bd019cbaa42f4515caf61ea058  ./nhcx-communication/milestones/N2-coverage-insurance.md
-3e3971016eccae86383d18de53c96947083b896ce8d2ca793a276bab4ae72c04  ./nhcx-communication/milestones/N3-preauth-biometric.md
+857966492d773d6110225084a252cc85d9bcda295730a69d914ffb37a53d64d2  ./nhcx-communication/milestones/N3-preauth-biometric.md
 628096c2643ee64c16ad76596a3adb50dfaa5b0c34ccc106f682c7bd80a5de15  ./nhcx-communication/milestones/N4-communication.md
 74218a01cf26c98d91a166c3147a44bd03e2a1233ac77740c87c69ea211fbc77  ./nhcx-communication/milestones/N5-claim.md
 16f5cc5d9cb295c356842cb19ce04c78727004a412ccebc6033bb7432caaa0aa  ./nhcx-communication/milestones/N6-payment.md
-87be9a99585fa34df84f0ce9cfe4c8d03e80711a90e0090bf3d01015fd5c9897  ./nhcx-communication/payer/SKILL.md
 d42e8bb2f7796ecd0537b6a5e714674be1b8b32712fe4ccc38c026b93b0bed7b  ./nhcx-communication/payer/apis/A11-txn-related.md
 a1b6058d144f7efa8b368e8d79a649433aefdd964f3c356b72a97085d9d3c089  ./nhcx-communication/payer/apis/A12-txn-fhir.md
 b4725ce0a555eeab82e81f78f494b9490555bd0d793d4f69a26fbae9524318f1  ./nhcx-communication/payer/apis/A13-adjudicate.md
@@ -328,6 +325,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./nhcx-communi
 16d55d1b56882a933aa2139dfa3a9bd1e89a394d6743fdfbd674ad2f516a397a  ./nhcx-communication/payer/screens/S1-overview.md
 018465a9177326da705e416a554567a81d0641f44d2f7773a653b3141592f715  ./nhcx-communication/payer/screens/S2-cases.md
 ccdde4650cdd1adfab19ddcee3acab91cc58777abd333cb8405f7d023f6e5e80  ./nhcx-communication/payer/screens/S3-case-desk.md
+87be9a99585fa34df84f0ce9cfe4c8d03e80711a90e0090bf3d01015fd5c9897  ./nhcx-communication/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-communication/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-communication/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-communication/payer/steps/L2-mapping.md
@@ -360,6 +358,7 @@ a53a429427047bf48e35d35250d516fbbcf013b3f3ad22c04cf6e4008390b597  ./nhcx-communi
 44476417146ca02409e6d1a0886bf3cf04dc964ce8851d59d061e201568b3138  ./nhcx-communication/screens/S19-nhcx-settings.md
 a1b69bdb99138f4cbcfe24eb3eba7011ed02ae117bd49cc9d82177d75f0a0af0  ./nhcx-communication/screens/S5-claim-master.md
 3999d04ddef2cd67fd59902385d84105867669b6f02132e1bb0b304ab21c499e  ./nhcx-communication/screens/S6-claim-detail.md
+7e0f6d8ca3531976485f8edf5714912d0eed9cd3ed9b68256b9c00c99ae149c5  ./nhcx-communication/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-communication/steps/INDEX.md
 17c9ff0ecd35e527322bf300e8d65cd35e02132da9bbfcd6585ac064607cbd6e  ./nhcx-communication/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-communication/steps/L2-mapping.md
@@ -374,7 +373,6 @@ e10a6cf39b5f90ece891728c4748064b765a73bcb924099564b603ec79623608  ./nhcx-communi
 70b97ce61aee389deca0ef364d556dd22d8a7e1d8f2d1252678db316fb734d16  ./nhcx-communication/tests/T1-test-configuration.md
 2ecd868bc4c37b6917445fa49bd1734ef91f8108e3b44bc01111b0ab3560ca91  ./nhcx-communication/tests/T2-test-runners.md
 eca53f58bdf9a661cc95503734c9b62137061dfa4c40662725f6ef31c24a7a1d  ./nhcx-communication/tests/T7-irdai-query-answered.md
-770db4aa9dab19797fee21e331bbd6c834ad00a13132141361e4877204b99909  ./nhcx-coverage/SKILL.md
 5b1c3de15ee55a9e7c5e9e269eb2b371f2799d7506a9aa5d326f3fe7c9680b8d  ./nhcx-coverage/apis/A1-policy-search.md
 92f5c0d2685039351fd080f959346f5f2c692dfe6e67469d2b785b6d6acccf95  ./nhcx-coverage/apis/A10-txn-related.md
 9b8131cce685252693d81356060f232e22882f20a5c1111d134b38980ad55733  ./nhcx-coverage/apis/A11-txn-dispatch.md
@@ -430,15 +428,14 @@ cd62bb24f00ceb0a7b26df0390910fc1458310f4fbe945c7c5e6965d4b4008e1  ./nhcx-coverag
 7af209ef569a9a203516a370660e8347350a25e80f7220b22ae2cdf7d419deaa  ./nhcx-coverage/gateway/G8-receive.md
 e29867ee325e11d6678161e51a0d338755c00e441819d10e1308293f90442356  ./nhcx-coverage/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-coverage/gateway/INDEX.md
-3e8acc9bbf8e1da7e8b6cba98d3886043ec71c0989a8774b1543be3cebbdb571  ./nhcx-coverage/milestones/INDEX.md
+1e4078eaa1c4e5053df111033a2ec06ec91a25d279e3185b58e58b2ddcc2d936  ./nhcx-coverage/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-coverage/milestones/N0-foundation.md
 0f58f7d4036ae2df21fdb47840c000dd0f5935641ceecd29c12256959a156ace  ./nhcx-coverage/milestones/N1-search-policy.md
 8df53ad14d4531457852af49aa8b6d171ba1769dab86f39830ad100a1c8d581a  ./nhcx-coverage/milestones/N2-coverage-insurance.md
-76c9a3887640348329c1aa8042712476f98c5252816440179706dfca40dd7b3b  ./nhcx-coverage/milestones/N3-preauth-biometric.md
+26d4a13efd93315010d8ff9039a0fd2deaa2700cf69253ea76c7d016ec3fbe22  ./nhcx-coverage/milestones/N3-preauth-biometric.md
 5b1662032c33c3de1a35036e6d64bc4a0d050c2897205df345a153f0d1cd3444  ./nhcx-coverage/milestones/N4-communication.md
 3532b7f7d0f27608baa0b23057ec25ea9d11ac5a3b6b55821011575e8a11634e  ./nhcx-coverage/milestones/N5-claim.md
 16f5cc5d9cb295c356842cb19ce04c78727004a412ccebc6033bb7432caaa0aa  ./nhcx-coverage/milestones/N6-payment.md
-c951f63768355aa9117e8cbdfb7c3bd229728ed7ffe3a172190e90e6e943efaf  ./nhcx-coverage/payer/SKILL.md
 12137dafde1a5ab43cd3d1729fe6b65a90126ce5de8acfc10f8e5b985158275e  ./nhcx-coverage/payer/apis/A1-eligibility-answer.md
 65054b2aba53b005df27150ca65e2fca73ef5cf5ed3770804c292360f33cd3af  ./nhcx-coverage/payer/apis/A11-txn-related.md
 7a01539c42f5587850820b1b574e3a59e39fba5328d1d58d8197857b0ba00b9f  ./nhcx-coverage/payer/apis/A12-txn-fhir.md
@@ -530,6 +527,7 @@ a2521c746d42e14060743f186b9bc50b4416b503d2dea168f5437991177adac9  ./nhcx-coverag
 a631166647af8b9abe480ef611730ed9e614722e8c9453c1ceaf9cf3918a4d97  ./nhcx-coverage/payer/screens/S7-policy-configurator.md
 f733bf1d8c6d96cd038605d3888df12aa06f1a0be15cdf219ebb6fb7c1888ffe  ./nhcx-coverage/payer/screens/S8-procedures.md
 612529a3da79c58b5a82b6482ce94bbbcda1efec1a25c079fa7c7d38d88c4bd0  ./nhcx-coverage/payer/screens/S9-procedure-configurator.md
+c951f63768355aa9117e8cbdfb7c3bd229728ed7ffe3a172190e90e6e943efaf  ./nhcx-coverage/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-coverage/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-coverage/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-coverage/payer/steps/L2-mapping.md
@@ -571,6 +569,7 @@ f8250574b7f04f3b0a027ddf1644b3a67b5d071619b421d3d179a9141e6e6789  ./nhcx-coverag
 701665b20b988ca9036e2c75ed6e8eb7d54d6e38bbf1b2db48a6d5d1e633bbb3  ./nhcx-coverage/screens/S3-policy-discovery.md
 721d9aa92d32aeff0a0700e050fe1ac9141555bb66846afe0c037a01987a515a  ./nhcx-coverage/screens/S5-claim-master.md
 d2a5607efe92d90fbf884e021bce10c0b8f5610f97df7287aef0c8a07a8fafdf  ./nhcx-coverage/screens/S6-claim-detail.md
+e68281890a5dee1d63b4416a700e847bc7f6e0e6c3106c41d6fdef6146cfca0e  ./nhcx-coverage/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-coverage/steps/INDEX.md
 a0209c1e35a814a20723ba826d4ce3d06df2196dc3b1363ae237ab35671539cb  ./nhcx-coverage/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-coverage/steps/L2-mapping.md
@@ -587,7 +586,6 @@ b0bcb4a146c1a32fc5277e0ef1a2b38be2c05022912c380821d638302adf277b  ./nhcx-coverag
 369bc658f5fc50318d57fe671cef1de838f744edefdfd9dc4484b0628822a1ad  ./nhcx-coverage/tests/T19-pmjay-biometric-and-abha.md
 70f38892b108624e705d1f2960e25f61f7a7ebfb4eb397e9278057769534ae4b  ./nhcx-coverage/tests/T2-test-runners.md
 3018804d69cdd62e3208a2f72cb58efb0ec27f95c6ddb5b955650a698c696eb2  ./nhcx-coverage/tests/T3-irdai-policy-and-eligibility.md
-0b760bf014eb483b9a626a658b4b7297911326a3786b74af53a95cb6c090c533  ./nhcx-full/SKILL.md
 5b1c3de15ee55a9e7c5e9e269eb2b371f2799d7506a9aa5d326f3fe7c9680b8d  ./nhcx-full/apis/A1-policy-search.md
 c14b6e885838507955e9dc4319ae8191bcc509fc515f418ca6f292e0702de75b  ./nhcx-full/apis/A10-txn-related.md
 fb38a4f62ed1395ae783e561624042fe92771a97ff3eb9bb7bbdbd7e8b5afe5d  ./nhcx-full/apis/A11-txn-dispatch.md
@@ -683,15 +681,14 @@ ee9d87c64c3799e99232b6435bfbcb18c6193e1e354cc4a78b445ec5d5a1d6b8  ./nhcx-full/fh
 c753bdb4a61abf431a8942a3bf31d1b459e0705167c1dfa8394d567e8b0680ca  ./nhcx-full/gateway/G8-receive.md
 b205cd85566fbc91acc7c54c8b6153636a4cfecad2db8113e5e4f19bb2c8f98b  ./nhcx-full/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-full/gateway/INDEX.md
-6ce29549b901b7ccff2df38f83551295559baeb200255554b4955b76a84d812f  ./nhcx-full/milestones/INDEX.md
+7b0a1839f87df8047218afbddf0a1dec639b70abd0a330af193b9032e9f40bde  ./nhcx-full/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-full/milestones/N0-foundation.md
 0f58f7d4036ae2df21fdb47840c000dd0f5935641ceecd29c12256959a156ace  ./nhcx-full/milestones/N1-search-policy.md
 c747252ab6fd6ba79f5ad26644f7e5ac4fd26b24e89a884dfc8ffc3e538075cf  ./nhcx-full/milestones/N2-coverage-insurance.md
-20818bb46c7947353397431e88877fbdd5a3e5b260045ae4c8958f2dc4ff4e1e  ./nhcx-full/milestones/N3-preauth-biometric.md
+070e6a114e6c52f0a90fd55108bc0493475fc79d7b10e3137f49d55391c57f42  ./nhcx-full/milestones/N3-preauth-biometric.md
 628096c2643ee64c16ad76596a3adb50dfaa5b0c34ccc106f682c7bd80a5de15  ./nhcx-full/milestones/N4-communication.md
 1faa635553fccca27f16a24c7146e3fc0c81483d26264115eb55f2c506778071  ./nhcx-full/milestones/N5-claim.md
 70ea0702a69b5efdce8be1f941526d1fbf5b8636dedd47104a8240c411283583  ./nhcx-full/milestones/N6-payment.md
-62b84af3a219f41e52c0cdffd7b1af9c0f6077980e5de4085dc9e5b907ea8e0c  ./nhcx-full/payer/SKILL.md
 e587eacfb26807299c93352a323548934b223f25fa29488efd1d2932b184d1f6  ./nhcx-full/payer/apis/A1-eligibility-answer.md
 f0d82607759cb900947ffaf6dd382ef819d0b5d0f54db2b3c09bcfc49bc86fe6  ./nhcx-full/payer/apis/A10-predetermination-quote.md
 deb19bf36f260cfb5054f11d313f89870094277a35420aa1cf82711455602cea  ./nhcx-full/payer/apis/A11-txn-related.md
@@ -817,6 +814,7 @@ cfc6bb7e2a91ea6927be8f2951e3eb2f47e87f2b07d1b3ee1b957359ab384509  ./nhcx-full/pa
 a631166647af8b9abe480ef611730ed9e614722e8c9453c1ceaf9cf3918a4d97  ./nhcx-full/payer/screens/S7-policy-configurator.md
 cec052aafeb6904ba2fb7953f662ca44f324d0266c0d4e12b9e4d4bfacaa1222  ./nhcx-full/payer/screens/S8-procedures.md
 612529a3da79c58b5a82b6482ce94bbbcda1efec1a25c079fa7c7d38d88c4bd0  ./nhcx-full/payer/screens/S9-procedure-configurator.md
+62b84af3a219f41e52c0cdffd7b1af9c0f6077980e5de4085dc9e5b907ea8e0c  ./nhcx-full/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-full/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-full/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-full/payer/steps/L2-mapping.md
@@ -879,6 +877,7 @@ e98e96d3443414a860c9b8bd1fe203b249a37591fc08614059822af438cfe452  ./nhcx-full/sc
 3f6aa5292cd1742cb652efa031c285cd8b2f924d2accbc960ec54ef93165a065  ./nhcx-full/screens/S7-insurance-plan.md
 f6aa60b148a4ca6a1bdd785db4c81d9865fb604fe62ef97fa90fe6566aa0cab1  ./nhcx-full/screens/S8-line-items.md
 7831672bb1494feae89b5e58ac3f6807c785ba704cb559c349e29a3baf5db073  ./nhcx-full/screens/S9-preauthorisation.md
+4dc0b2f80c1a7348c0a5ce1d9d4a6570be4c7f05e768afc6b447155ab63e74be  ./nhcx-full/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-full/steps/INDEX.md
 3287113c18fd75acaf7da86798c6389d7bc4b8da97cc1f8eb307e421e8bc32a4  ./nhcx-full/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-full/steps/L2-mapping.md
@@ -909,7 +908,6 @@ befeb858aaa87ba3b443e0e2c16ef9d3c6b98e947ec3e52e3cc68067e8e7d462  ./nhcx-full/te
 fb721aca458dfd72f2753f4c4e5a859198917e816c29bcafd2d89884a357d436  ./nhcx-full/tests/T7-irdai-query-answered.md
 296c9795251e4e95d37b5a8e521db750b3d9fcedce48433b6ffe552ed29c5102  ./nhcx-full/tests/T8-irdai-enhancement.md
 b4424488ba04f358ff236234f769b905a8b470e65fc2fb91ceb5f0d8986a60e7  ./nhcx-full/tests/T9-irdai-cancel-and-status.md
-dc148cff72f1178a0aa2a921eb56bf68ab68aa243dee69eef671c02a26b1be21  ./nhcx-payment/SKILL.md
 269c8f420c245f1e7d7600aa025364b376c95e58471eab2fc9768dae2e3cfe69  ./nhcx-payment/apis/A10-txn-related.md
 c08b9f743a6d66b74d5f7980e4167d300aa2af84f9f5d90c7deba542eddd845d  ./nhcx-payment/apis/A11-txn-dispatch.md
 d57fe810112027c35704d1fba1ecd7eee57c92e8b0f2db33c0aee68727ef9555  ./nhcx-payment/apis/A12-txn-fhir.md
@@ -953,15 +951,14 @@ d3bdec9409e485c476728dde1bce99a37879ff09e0391478147d22b1568185ef  ./nhcx-payment
 3da90bb1b7e83d50a2ef6ce6a6dc0a83e3aa0bade8ee8d1ea7f0ddbfc6f07b40  ./nhcx-payment/gateway/G8-receive.md
 807b04029789d04b4f7db9b29094414b9eceeda33081933f3ce3162faa890807  ./nhcx-payment/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-payment/gateway/INDEX.md
-37af5040402e342ca1e9541cb1d64c8a8d42258829586127b7d1023a278d38fc  ./nhcx-payment/milestones/INDEX.md
+c3c130d4b27c57dfee97d30b10437e8a06edffcebf8f3773c40a35d14b82cb42  ./nhcx-payment/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-payment/milestones/N0-foundation.md
 c4f0a89d6e90f1f0fc14de5e00dbd8afb18d97062fa8e5ed832b8705eed9e407  ./nhcx-payment/milestones/N1-search-policy.md
 92d0c3ad75c530fb092706e47de4776e17d789bd019cbaa42f4515caf61ea058  ./nhcx-payment/milestones/N2-coverage-insurance.md
-6cdbdd57adbf81faaeda8da1d25a75ee561906135320f70937a18e283e97a56e  ./nhcx-payment/milestones/N3-preauth-biometric.md
+f2619e5fb1e2ff60d708cfd44a9c8873f2144278e2da96462e6fc2f97de7e834  ./nhcx-payment/milestones/N3-preauth-biometric.md
 5b1662032c33c3de1a35036e6d64bc4a0d050c2897205df345a153f0d1cd3444  ./nhcx-payment/milestones/N4-communication.md
 7973b40a1a5b64387dcaa97528192fb6694a32cafbca0fe03522152f56129937  ./nhcx-payment/milestones/N5-claim.md
 70ea0702a69b5efdce8be1f941526d1fbf5b8636dedd47104a8240c411283583  ./nhcx-payment/milestones/N6-payment.md
-2aa7987c685191f2f89afa2123c18bd5871b63b19284ddd0077053699429d270  ./nhcx-payment/payer/SKILL.md
 ed3dae277f25b5f306024172df1ac32303270f96e075261b025d27551f15330a  ./nhcx-payment/payer/apis/A11-txn-related.md
 6c9911dc25b48a9b81908d2cda78561c5bd3ba1dc4a3bf14b77e67bdd2789d9b  ./nhcx-payment/payer/apis/A12-txn-fhir.md
 f7bde422ea036e9dc0f1277ab5d2d73feb717849e01e72d6fb9d6c50c2b5874a  ./nhcx-payment/payer/apis/A14-disburse.md
@@ -1040,6 +1037,7 @@ e5a68407a49c5828796b70955b8fd4c9d2d8cf225585f8ff2401208fee804b0c  ./nhcx-payment
 f4605af1af958b7398642df90bb36ccf7be854008060b766c7efac1a84a7e4ca  ./nhcx-payment/payer/screens/S10-payments.md
 cdd3152731b07fcaa66f700483b1933a35691acb9b9fa8986b584951b0874141  ./nhcx-payment/payer/screens/S2-cases.md
 63e3f6e884a00eda11d2cba6a8f6573eed7437eb34fa0a092ef4d02140d104a4  ./nhcx-payment/payer/screens/S3-case-desk.md
+2aa7987c685191f2f89afa2123c18bd5871b63b19284ddd0077053699429d270  ./nhcx-payment/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-payment/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-payment/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-payment/payer/steps/L2-mapping.md
@@ -1073,6 +1071,7 @@ af197211a8a00c23038bffb27e4c962fd24d4d34b858711489b9e9c14e298ecc  ./nhcx-payment
 23a9ca512005b4d3c3ac0eac37ac3f7943353e7ed23e313150e769d537ae37b6  ./nhcx-payment/screens/S19-nhcx-settings.md
 c8485463e203ed9c7bc212894053fb2ffc1aa66e38636179ebef5185b41025cf  ./nhcx-payment/screens/S5-claim-master.md
 0677636ad695bab1cb818b429a9f2c1ae2ff3330171b5b5424f9eb2434659b69  ./nhcx-payment/screens/S6-claim-detail.md
+0a43b10ca64dcd3ebbc0586ff64ef86de022f74f83db107e16c5ab07c00db872  ./nhcx-payment/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-payment/steps/INDEX.md
 2763b5b6e8036ea7d1ad7da24c7b42cf6ac84277dbc37c66dae10d0008014089  ./nhcx-payment/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-payment/steps/L2-mapping.md
@@ -1088,7 +1087,6 @@ bb58b4c61dcac1da70c9a34dea7f1d7d3064056aafd83f32b076c80fb214b801  ./nhcx-payment
 b507b128440dd22060b47a872c3955bd12f227ff38c571e39c166bc50eb3a224  ./nhcx-payment/tests/T11-irdai-payment.md
 46859b1a3cddf35e59589d06bcb082182002b9c7c379097ee9f0bf2b8ca9bde1  ./nhcx-payment/tests/T18-pmjay-payment-status-cancel.md
 2ecd868bc4c37b6917445fa49bd1734ef91f8108e3b44bc01111b0ab3560ca91  ./nhcx-payment/tests/T2-test-runners.md
-a05100f58280ac28a389e072c331699805e768643e6c1facf23ab832adafe184  ./nhcx-preauth/SKILL.md
 80bd1dcc18ac0b3c0760ef40d8bf3c599785caea93861f5af06047c81492315a  ./nhcx-preauth/apis/A10-txn-related.md
 d8242bf120de6eab878153c8f9dc71c930c28dbfbd29dae308fdc056b845da35  ./nhcx-preauth/apis/A11-txn-dispatch.md
 fd43a7235bfc4a6695ea2ae56ef2b8b4b5d137bae576a76c2b312e6776b6aa6f  ./nhcx-preauth/apis/A12-txn-fhir.md
@@ -1169,15 +1167,14 @@ d6a72075326d0897e59836592c0aa19d37bdb07edd6eeb21f051190ed019a7dd  ./nhcx-preauth
 164300497c8f5e5389e1be6f9a7a3565f3c41f8b2ea9454805479fd57d67fe2a  ./nhcx-preauth/gateway/G8-receive.md
 a9e5431138804477e1f60ec6baacf2082a370d98f370aeccc338ff91b7dfe56e  ./nhcx-preauth/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-preauth/gateway/INDEX.md
-70607e3e1eda6c8c28199aee4a022f4358be7221447ef0d827753e2a40334a33  ./nhcx-preauth/milestones/INDEX.md
+fbdc2d57002f3630d40cd9711f03e790048e24a81edf9412fcbaaa56910a4732  ./nhcx-preauth/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-preauth/milestones/N0-foundation.md
 e7caa0b7c0ecd4be0145400dd56c4f28a45af4d32815305328bec75a510a99ef  ./nhcx-preauth/milestones/N1-search-policy.md
 7cdff3273a020ca8465f6a3213f7bb54f63443bb3fac6ce8b2a3fc3127c4dd93  ./nhcx-preauth/milestones/N2-coverage-insurance.md
-20818bb46c7947353397431e88877fbdd5a3e5b260045ae4c8958f2dc4ff4e1e  ./nhcx-preauth/milestones/N3-preauth-biometric.md
+070e6a114e6c52f0a90fd55108bc0493475fc79d7b10e3137f49d55391c57f42  ./nhcx-preauth/milestones/N3-preauth-biometric.md
 5b1662032c33c3de1a35036e6d64bc4a0d050c2897205df345a153f0d1cd3444  ./nhcx-preauth/milestones/N4-communication.md
 6844464f85c84a4b5e0012171168757dfb17017150ea87705d469cc335d70cd9  ./nhcx-preauth/milestones/N5-claim.md
 16f5cc5d9cb295c356842cb19ce04c78727004a412ccebc6033bb7432caaa0aa  ./nhcx-preauth/milestones/N6-payment.md
-982169bca897e423fb6d1a0af8b2f56695139923944eb9f8cdab4f4ea66b320e  ./nhcx-preauth/payer/SKILL.md
 04dce7d57e80dbcd0e113637c5e7ee66590f503befe00c3ac286f98c9950af5d  ./nhcx-preauth/payer/apis/A10-predetermination-quote.md
 65054b2aba53b005df27150ca65e2fca73ef5cf5ed3770804c292360f33cd3af  ./nhcx-preauth/payer/apis/A11-txn-related.md
 3d975801d3acfc5f6e6d090454b1b963de9c45e23df50a32958b6a23f2ff82d5  ./nhcx-preauth/payer/apis/A12-txn-fhir.md
@@ -1273,6 +1270,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./nhcx-preauth
 337e9812552e5514769f0940e95e9dc4a592b191f25f9b374e8a7a7335bfa749  ./nhcx-preauth/payer/screens/S1-overview.md
 519672ecbaf080bb8eecb10098c2d2cdcc7ff7a677b4afeacf7a50db8eb35d56  ./nhcx-preauth/payer/screens/S2-cases.md
 a5fec4f0c01320509990bc32f4ec0b75650865f7cd4690508e8ca0e5e02fc7ed  ./nhcx-preauth/payer/screens/S3-case-desk.md
+982169bca897e423fb6d1a0af8b2f56695139923944eb9f8cdab4f4ea66b320e  ./nhcx-preauth/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-preauth/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-preauth/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-preauth/payer/steps/L2-mapping.md
@@ -1319,6 +1317,7 @@ c9a8b72476de21a17e9fbe5ae470d762884ed8b028c71064cbdc83786119c9a5  ./nhcx-preauth
 020c9d34168c73fce80155c306cc354a1d4c8cfc836fa4796ddb4821778e8fce  ./nhcx-preauth/screens/S7-insurance-plan.md
 6eff26adedf1902ad5accc88d46a47ba77ae1377e3e647143eec4fc54168abaa  ./nhcx-preauth/screens/S8-line-items.md
 aff50bfe24a5afe31b8a8fef7053e9bf428a3984b09d7116f439c9a9100b183a  ./nhcx-preauth/screens/S9-preauthorisation.md
+f3818bc3937e4ec0031d5f48ae9d8148c5bf20f884ac28d55c158e9c8dbfaaef  ./nhcx-preauth/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-preauth/steps/INDEX.md
 108a45714e7fa68c425015ebe635a0d67190a633d26014a98f58ad186dd9c6c7  ./nhcx-preauth/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-preauth/steps/L2-mapping.md
@@ -1343,7 +1342,6 @@ f732f001ae03f7518ae17e491be417f82e279606ffda6dd12d1d5c0e0b9cf4a0  ./nhcx-preauth
 2aebc228c0efa9cc742d27efe03fb31d82f0bcc44844414805db2cb5c2592a48  ./nhcx-preauth/tests/T7-irdai-query-answered.md
 69a323b116c43fad7b7c8b6aa84d95b27aead172ea45f8929d4b3eed3dcafc79  ./nhcx-preauth/tests/T8-irdai-enhancement.md
 b4fabcba040ef06b990597dd1fbfbd30d0b1a35d4621d6245fb88f23d9aa78b6  ./nhcx-preauth/tests/T9-irdai-cancel-and-status.md
-3a1cff5fbf33f59e175754319a446c72ccd1027edbb5d2a292fa4e59b804dfbb  ./nhcx-reprocess/SKILL.md
 0feca703747473aad565a65e03eca9ed3d2c96b527aa7470ef36260729119c26  ./nhcx-reprocess/apis/A10-txn-related.md
 7d6c139a35bb2d4402b0f5ef0c7ad364eb92a69a4358306fd162062a9007d8be  ./nhcx-reprocess/apis/A11-txn-dispatch.md
 159c7cbe4019872be09c8473e06ec91f7f4f20886f12d7b413d88f3fa97a8a3a  ./nhcx-reprocess/apis/A12-txn-fhir.md
@@ -1394,15 +1392,14 @@ b83b1c3e807ff6589fb4b6fbef66f40be2bd38c696fd289713264e889d794ef1  ./nhcx-reproce
 b8b65ddd14aa797f050690de96ca5368a2fbab4ab1a9f777e1d91983edc8aff3  ./nhcx-reprocess/gateway/G8-receive.md
 41b5582b85e8b918b93b79aae70b4731d428278debaa7d5f056816bc91575171  ./nhcx-reprocess/gateway/G9-ledger.md
 59bfce29f506cfc593d5147a13335915798c8a30df4ff37e1b02df11cb6d21f4  ./nhcx-reprocess/gateway/INDEX.md
-9c262138a4e092a54489275db28e83b7e809dcb01a6e59d69387273b3a79d315  ./nhcx-reprocess/milestones/INDEX.md
+684d0cdd92d49a9102432dfe827cf5d469831bcafe6b8f3fa5ce466ff5027e2d  ./nhcx-reprocess/milestones/INDEX.md
 17babf1f31ecf63e9d47db3db943f4af5a56ac0e58dcbf91d11ee8e0151afbdd  ./nhcx-reprocess/milestones/N0-foundation.md
 c4f0a89d6e90f1f0fc14de5e00dbd8afb18d97062fa8e5ed832b8705eed9e407  ./nhcx-reprocess/milestones/N1-search-policy.md
 92d0c3ad75c530fb092706e47de4776e17d789bd019cbaa42f4515caf61ea058  ./nhcx-reprocess/milestones/N2-coverage-insurance.md
-9af992fe07cf0c6248b7b973d59be4154da915f81d2796c7a2a841114cd6c1b5  ./nhcx-reprocess/milestones/N3-preauth-biometric.md
+2dcd3d36d5d864b132b973c7737d7134e7601de75391b3c37ade471fa1d441c0  ./nhcx-reprocess/milestones/N3-preauth-biometric.md
 5b1662032c33c3de1a35036e6d64bc4a0d050c2897205df345a153f0d1cd3444  ./nhcx-reprocess/milestones/N4-communication.md
 e4a6a16a9021f2c115d3e2a7e040ca64160b49aa0082c11eec834ae4e576c2c8  ./nhcx-reprocess/milestones/N5-claim.md
 16f5cc5d9cb295c356842cb19ce04c78727004a412ccebc6033bb7432caaa0aa  ./nhcx-reprocess/milestones/N6-payment.md
-bafdd58de6c04732afaacb72dc76996e9cf96863c155dc9ff351e4376cb5838f  ./nhcx-reprocess/payer/SKILL.md
 65054b2aba53b005df27150ca65e2fca73ef5cf5ed3770804c292360f33cd3af  ./nhcx-reprocess/payer/apis/A11-txn-related.md
 10f0c46f86c7fbc6d2df1d4ccd581974dbd5bf6fd32736a3014456012c024f6a  ./nhcx-reprocess/payer/apis/A12-txn-fhir.md
 6489c732eb53b4572ce2d042f3f1ddd9979599f0f5d1a19ec40443767102699d  ./nhcx-reprocess/payer/apis/A13-adjudicate.md
@@ -1493,6 +1490,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./nhcx-reproce
 337e9812552e5514769f0940e95e9dc4a592b191f25f9b374e8a7a7335bfa749  ./nhcx-reprocess/payer/screens/S1-overview.md
 ff694be249b308bc3022d2cd3f0018422ac64e81c944262cfad46a5cd9f2c2f8  ./nhcx-reprocess/payer/screens/S2-cases.md
 ad9ad2cae418d8894d861ddb47523c65a6d7923597ba54589e7538b1634dfd02  ./nhcx-reprocess/payer/screens/S3-case-desk.md
+bafdd58de6c04732afaacb72dc76996e9cf96863c155dc9ff351e4376cb5838f  ./nhcx-reprocess/payer/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./nhcx-reprocess/payer/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./nhcx-reprocess/payer/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./nhcx-reprocess/payer/steps/L2-mapping.md
@@ -1527,6 +1525,7 @@ e0c195a7fc86c7ab8dcb5c73c96596c0d837c767c1f18aefcf8d810a2f7d1ba7  ./nhcx-reproce
 44476417146ca02409e6d1a0886bf3cf04dc964ce8851d59d061e201568b3138  ./nhcx-reprocess/screens/S19-nhcx-settings.md
 71aac34c840d64fff52bee204429788b8387ad56d9b8230c80a6f27586634bd9  ./nhcx-reprocess/screens/S5-claim-master.md
 ee4d1b2cae3a64b3c4cbb0057204e1e271b4191ec9f31c74071d63030e48d546  ./nhcx-reprocess/screens/S6-claim-detail.md
+fd45dc9f825442be20b5abe87ec8bece6aebf515a6b3a92c6d4ff0b62e44e46f  ./nhcx-reprocess/SKILL.md
 9cdcebd88e8b2b35fb4f64051d22154c02b8a65958f55a539bfcd5b50cabcc68  ./nhcx-reprocess/steps/INDEX.md
 0ec4e0ddf120108a38384a6616ebf3a73fc17b6166bf689902f9fa4c066f0c95  ./nhcx-reprocess/steps/L1-discovery.md
 fb6abef605011b455a16dd21f103fcdeb84596dc2cc0cb7cfac8375d576455be  ./nhcx-reprocess/steps/L2-mapping.md
@@ -1541,9 +1540,7 @@ b8750906ee33e59e2199b9a9c7324e7a7017ffd27c1f16789d762797fc94f5ee  ./nhcx-reproce
 70b97ce61aee389deca0ef364d556dd22d8a7e1d8f2d1252678db316fb734d16  ./nhcx-reprocess/tests/T1-test-configuration.md
 1ee59c8ee1185f2b7e0feee3ff5103a41d9ea40cbd284366121bcef984886fe0  ./nhcx-reprocess/tests/T12-irdai-reprocess-and-release.md
 1d12eb501ac069f2b8c576b043a83f59a3067e3ec0337469d9bed83866408108  ./nhcx-reprocess/tests/T2-test-runners.md
-f31f84b4f56a2f757385e267107ad70ab48acf194a96cf9139963cddfa5767e9  ./payer/README.md
-c754b99d762c708ca05a4091878e4475e8f5dcfcd482219f65453eb0196a9a69  ./payer/manifest.json
-07bd628f9e74b0e00081385cce8ca11048d046cb6cc3643f78a4926c5708d417  ./payer/nhcx-payer-claim/SKILL.md
+17711e866728e24c4d4a31d801da87cd68a2cb66e423eecbf46838fb1086c7e6  ./payer/manifest.json
 6d1128c8ece1143cf4928888bb0e97e3000f6c394f8575ba0a4a7cc8d0263c52  ./payer/nhcx-payer-claim/apis/A11-txn-related.md
 f234673a500cd7a575f7f527ab3b93dd8381bb2b198ab7d627f6dad226b34f12  ./payer/nhcx-payer-claim/apis/A12-txn-fhir.md
 a40650e9626f2fdcabecbb8a6bee6f54da4eaa8186e502f68873f63a8e6aa671  ./payer/nhcx-payer-claim/apis/A13-adjudicate.md
@@ -1634,6 +1631,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./payer/nhcx-p
 337e9812552e5514769f0940e95e9dc4a592b191f25f9b374e8a7a7335bfa749  ./payer/nhcx-payer-claim/screens/S1-overview.md
 17b953e67b29054f931d27d54b2bbd1e3a10fb4815e6a44c8b7b73daa00939ed  ./payer/nhcx-payer-claim/screens/S2-cases.md
 977b50f375426e4b89c848a890cd5c4efeb3eddc3b1bb3c4876c32de2c94a08e  ./payer/nhcx-payer-claim/screens/S3-case-desk.md
+07bd628f9e74b0e00081385cce8ca11048d046cb6cc3643f78a4926c5708d417  ./payer/nhcx-payer-claim/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-claim/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-claim/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-claim/steps/L2-mapping.md
@@ -1650,7 +1648,6 @@ e4a932f9f4f41f75a1d6d38aa8da757b619b856032e170d4331228610bd96ece  ./payer/nhcx-p
 f2bf31c3e1440d5e26527f5cbc517d838aec890acc5b842957cdd6c9183b2260  ./payer/nhcx-payer-claim/tests/T13-claim-lama-death.md
 095034397c995ef1f214212de542a847415d88e670b66b749cc1307044c2efdb  ./payer/nhcx-payer-claim/tests/T14-reprocess-and-release.md
 b3523221375e9c55d1a9970b037588ef9b5f134e586070a3632574984420418d  ./payer/nhcx-payer-claim/tests/T2-test-runners.md
-2d2909ee90f4e7bcbdcde757da038904609dd23ece1d8faac780ee5b0bf3838d  ./payer/nhcx-payer-communication/SKILL.md
 639a598379b6596c8775e9b58529e9cbb1e7934dade777939c33799c1ac5b19e  ./payer/nhcx-payer-communication/apis/A11-txn-related.md
 67814dbe56a7ca9b88d5e12b2bfcb6cd436ae7ca3e99c04bd9ca8092dfbcd2ab  ./payer/nhcx-payer-communication/apis/A12-txn-fhir.md
 fc495af3d3f88bd14c26a9956e887f33725f89bf444cc137603d17431c8fa5a0  ./payer/nhcx-payer-communication/apis/A13-adjudicate.md
@@ -1712,6 +1709,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./payer/nhcx-p
 5c4a11c3ce0a3fce58a194ce1d5cced0889a56001f95235f1d38514e07bb2b9d  ./payer/nhcx-payer-communication/screens/S1-overview.md
 cb4f0ed3d2d6d53a73b87db7648fd08e378db6f751cbc900e037be003a787d18  ./payer/nhcx-payer-communication/screens/S2-cases.md
 f185d12b8060406a35360291208203efd97988f528f5886fb452356f9021f26a  ./payer/nhcx-payer-communication/screens/S3-case-desk.md
+2d2909ee90f4e7bcbdcde757da038904609dd23ece1d8faac780ee5b0bf3838d  ./payer/nhcx-payer-communication/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-communication/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-communication/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-communication/steps/L2-mapping.md
@@ -1726,7 +1724,6 @@ f682cdeab381cc4b78d63518759c2ab1c4b4491f15bf16c00ef9793867b001d8  ./payer/nhcx-p
 047e8cba5e2753a00c752b0ea5e4dd16eba0e6b0f30a37932f6f3c2284896eb1  ./payer/nhcx-payer-communication/tests/T1-test-configuration.md
 0717cfed76fdb65f34140707e5a4ea950e26cfdd2b6b7e6135d94f926999ec38  ./payer/nhcx-payer-communication/tests/T2-test-runners.md
 81815a0c12dfe5527628db32c10523dc8376e1b9e89134d786f634b871c84b93  ./payer/nhcx-payer-communication/tests/T8-preauth-queried.md
-0a0d6ca2825f9a5c181c3b378e117a788ff5f7c253178bdbdfc4f4192e97cce5  ./payer/nhcx-payer-coverage/SKILL.md
 12137dafde1a5ab43cd3d1729fe6b65a90126ce5de8acfc10f8e5b985158275e  ./payer/nhcx-payer-coverage/apis/A1-eligibility-answer.md
 6d1128c8ece1143cf4928888bb0e97e3000f6c394f8575ba0a4a7cc8d0263c52  ./payer/nhcx-payer-coverage/apis/A11-txn-related.md
 b72bf429f930674e067db5dd7d5835dd859a770c3b7e0b1e61259516021cc111  ./payer/nhcx-payer-coverage/apis/A12-txn-fhir.md
@@ -1818,6 +1815,7 @@ c19bfa1e8d29823db31d20c0f3b6ec56a9bed07a1cc6e33f47c63f8732be01e4  ./payer/nhcx-p
 a631166647af8b9abe480ef611730ed9e614722e8c9453c1ceaf9cf3918a4d97  ./payer/nhcx-payer-coverage/screens/S7-policy-configurator.md
 8bcdcb1a29ff2a777e37bb596aa63ef1417a2553bb1ea536f7f4e88ba09b07d7  ./payer/nhcx-payer-coverage/screens/S8-procedures.md
 612529a3da79c58b5a82b6482ce94bbbcda1efec1a25c079fa7c7d38d88c4bd0  ./payer/nhcx-payer-coverage/screens/S9-procedure-configurator.md
+0a0d6ca2825f9a5c181c3b378e117a788ff5f7c253178bdbdfc4f4192e97cce5  ./payer/nhcx-payer-coverage/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-coverage/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-coverage/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-coverage/steps/L2-mapping.md
@@ -1834,7 +1832,6 @@ ebaa7c15051096b2d6500e7c4561b5b7b0a2c3560a50d2e37015d760580113ad  ./payer/nhcx-p
 a4a579514835742585399e6138131995c5f92b3aa8205bfca3b3a1f358eb41d5  ./payer/nhcx-payer-coverage/tests/T3-eligibility-answered.md
 ab2ba5e606e875f38a77fee9b1bdda5437d34a26a05f3f52c427a43bbe72b2a2  ./payer/nhcx-payer-coverage/tests/T4-auth-requirements-ruled.md
 3b14ff8a305d9a4eb348c51cc07142c23104bf942474d9133f9d4b2c2da781ca  ./payer/nhcx-payer-coverage/tests/T5-insurance-plan-served.md
-40b8cdea63338f6712ea5b6ee51b389f6598880d41f7a7dd7ffe1ad05c3115dd  ./payer/nhcx-payer-full/SKILL.md
 e587eacfb26807299c93352a323548934b223f25fa29488efd1d2932b184d1f6  ./payer/nhcx-payer-full/apis/A1-eligibility-answer.md
 f0d82607759cb900947ffaf6dd382ef819d0b5d0f54db2b3c09bcfc49bc86fe6  ./payer/nhcx-payer-full/apis/A10-predetermination-quote.md
 deb19bf36f260cfb5054f11d313f89870094277a35420aa1cf82711455602cea  ./payer/nhcx-payer-full/apis/A11-txn-related.md
@@ -1960,6 +1957,7 @@ cfc6bb7e2a91ea6927be8f2951e3eb2f47e87f2b07d1b3ee1b957359ab384509  ./payer/nhcx-p
 a631166647af8b9abe480ef611730ed9e614722e8c9453c1ceaf9cf3918a4d97  ./payer/nhcx-payer-full/screens/S7-policy-configurator.md
 cec052aafeb6904ba2fb7953f662ca44f324d0266c0d4e12b9e4d4bfacaa1222  ./payer/nhcx-payer-full/screens/S8-procedures.md
 612529a3da79c58b5a82b6482ce94bbbcda1efec1a25c079fa7c7d38d88c4bd0  ./payer/nhcx-payer-full/screens/S9-procedure-configurator.md
+40b8cdea63338f6712ea5b6ee51b389f6598880d41f7a7dd7ffe1ad05c3115dd  ./payer/nhcx-payer-full/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-full/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-full/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-full/steps/L2-mapping.md
@@ -1989,7 +1987,6 @@ aa712eece13a061bce73892ac220c2a352e89e53871469fa69cd0bf038e56d0b  ./payer/nhcx-p
 5608a27c81605c4eed04cccfa2fd9376b88783831877da6980e5ac535c17916d  ./payer/nhcx-payer-full/tests/T7-preauth-rejected.md
 3aa9d28f00e0992bdc5e8f5cbacb1a069f34e0c6f184f1a374543fe1f41e19d0  ./payer/nhcx-payer-full/tests/T8-preauth-queried.md
 9eae209aedaf699ea896a6ef0b27abaae3f9dd37e44603f91f8ac7ef930324f5  ./payer/nhcx-payer-full/tests/T9-enhancement-approved.md
-5c5868d9d65581996780ddd15a2f9ab935e9458c3093144ccffb19ee1531598b  ./payer/nhcx-payer-payment/SKILL.md
 d35dc1a67468c15623a5e7be943d6a33d1034689b6bccc35361e4219cbab7a7d  ./payer/nhcx-payer-payment/apis/A11-txn-related.md
 23f1bb037574269c5d073ded73532586788d67ddd289660cfca988f2ae64647e  ./payer/nhcx-payer-payment/apis/A12-txn-fhir.md
 f7bde422ea036e9dc0f1277ab5d2d73feb717849e01e72d6fb9d6c50c2b5874a  ./payer/nhcx-payer-payment/apis/A14-disburse.md
@@ -2068,6 +2065,7 @@ fab8399edb7dc8562f2f02bd3325286b18e52ef7fbe35dab8e18c7347344cb4c  ./payer/nhcx-p
 f4605af1af958b7398642df90bb36ccf7be854008060b766c7efac1a84a7e4ca  ./payer/nhcx-payer-payment/screens/S10-payments.md
 5fc7abed4cf8c3cfdf010ed2a7ca24f0f78e74c298bb752e1f8d6c7270bada4f  ./payer/nhcx-payer-payment/screens/S2-cases.md
 abe61ad030d92439fd74e66963f7892ea2c73b08b674c06b0057488af8046912  ./payer/nhcx-payer-payment/screens/S3-case-desk.md
+5c5868d9d65581996780ddd15a2f9ab935e9458c3093144ccffb19ee1531598b  ./payer/nhcx-payer-payment/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-payment/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-payment/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-payment/steps/L2-mapping.md
@@ -2083,7 +2081,6 @@ c725faf313e683999f0f680c315502394d771593a7954aea93c3ee96b585613d  ./payer/nhcx-p
 cae5741288ebc4906a948b0936b537a0cb2eeaa7019e3a0004ecc1922b833d2b  ./payer/nhcx-payer-payment/tests/T15-payment-noticed.md
 d57de3944c2da0916d6bf32a9be69a101661741c69e69a625120c2122d185b4e  ./payer/nhcx-payer-payment/tests/T16-payment-enquiry-answered.md
 7a4b8bf4071cbaf396c029b96acaf4dc7a825c04018a15f0319440ed23f51e4a  ./payer/nhcx-payer-payment/tests/T2-test-runners.md
-a796023a8f799fe2b8b49624de8ccb19e5096404cb1ce6d8a92d15431fc2190a  ./payer/nhcx-payer-preauth/SKILL.md
 4eeed2df538cf2ed76b7fafef12d5a8478e1103b280977d080d02c45aa147c38  ./payer/nhcx-payer-preauth/apis/A10-predetermination-quote.md
 6d1128c8ece1143cf4928888bb0e97e3000f6c394f8575ba0a4a7cc8d0263c52  ./payer/nhcx-payer-preauth/apis/A11-txn-related.md
 aa7f5526beaa00d4af0c18d63d9487e6558400c2ce1ae0061cae808db01091bd  ./payer/nhcx-payer-preauth/apis/A12-txn-fhir.md
@@ -2179,6 +2176,7 @@ d7140ca61ce2d5fe0d65008dd08273bb61f3f0d185f22e68b9d0a1d0cb5e3280  ./payer/nhcx-p
 337e9812552e5514769f0940e95e9dc4a592b191f25f9b374e8a7a7335bfa749  ./payer/nhcx-payer-preauth/screens/S1-overview.md
 3a71b547cbaa56259bb3b146eb5386fd3ecefd9b71a0f06a10cc0776b0898bd7  ./payer/nhcx-payer-preauth/screens/S2-cases.md
 181f245846745977938a206885159d060cc9762583f034ed3ded93bfb15b344c  ./payer/nhcx-payer-preauth/screens/S3-case-desk.md
+a796023a8f799fe2b8b49624de8ccb19e5096404cb1ce6d8a92d15431fc2190a  ./payer/nhcx-payer-preauth/SKILL.md
 becb9b6a665247e10a482c682b5f507bc55c8f1d92f3f578e934e344ee8254a3  ./payer/nhcx-payer-preauth/steps/INDEX.md
 581ff4f46dc7bc789c8e0e912f80c19a5a9649d206b8666c0a8b320feb32ea50  ./payer/nhcx-payer-preauth/steps/L1-discovery.md
 5aa922d43973e6719ace3fa6429d5e0a4b7d1f50fa232d4e46812dad09d78644  ./payer/nhcx-payer-preauth/steps/L2-mapping.md
@@ -2199,3 +2197,5 @@ b3523221375e9c55d1a9970b037588ef9b5f134e586070a3632574984420418d  ./payer/nhcx-p
 9996c53ba4b6fcff0a9c4209dcbdc644ae3978307a3d72e355ab0a3272106a80  ./payer/nhcx-payer-preauth/tests/T6-preauth-approved.md
 e880cf4e09eede148ea6007eb2104f355a00b3b5fb4e28a1f26efab05a596b41  ./payer/nhcx-payer-preauth/tests/T7-preauth-rejected.md
 9b34a3aa03f14f7eecef3f5f2b68915b3d8b17015319d327ef54d4da6ea810cf  ./payer/nhcx-payer-preauth/tests/T9-enhancement-approved.md
+f31f84b4f56a2f757385e267107ad70ab48acf194a96cf9139963cddfa5767e9  ./payer/README.md
+0262136ae8b655bfb1e9aad5a66362b4d0223d4ee41b0e08b39a409fdcfb76da  ./README.md

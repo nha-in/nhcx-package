@@ -6,13 +6,13 @@ Each skill also carries the other side of the exchange as `payer/` (from `src/pa
 
 | Skill | Specs | Files | Words | `payer/` folder | Specs | Files | Words |
 |---|---|---|---|---|---|---|---|
-| [nhcx-full](nhcx-full/SKILL.md) | 128 | 167 | 218506 | [nhcx-payer-full](nhcx-full/payer/SKILL.md) | 124 | 155 | 157452 |
-| [nhcx-coverage](nhcx-coverage/SKILL.md) | 66 | 105 | 137364 | [nhcx-payer-coverage](nhcx-coverage/payer/SKILL.md) | 77 | 108 | 108526 |
-| [nhcx-preauth](nhcx-preauth/SKILL.md) | 100 | 139 | 182370 | [nhcx-payer-preauth](nhcx-preauth/payer/SKILL.md) | 85 | 116 | 114681 |
-| [nhcx-claim](nhcx-claim/SKILL.md) | 66 | 105 | 141062 | [nhcx-payer-claim](nhcx-claim/payer/SKILL.md) | 76 | 107 | 105954 |
-| [nhcx-communication](nhcx-communication/SKILL.md) | 47 | 86 | 110067 | [nhcx-payer-communication](nhcx-communication/payer/SKILL.md) | 45 | 76 | 81171 |
-| [nhcx-payment](nhcx-payment/SKILL.md) | 46 | 85 | 104181 | [nhcx-payer-payment](nhcx-payment/payer/SKILL.md) | 63 | 94 | 93095 |
-| [nhcx-reprocess](nhcx-reprocess/SKILL.md) | 52 | 91 | 119948 | [nhcx-payer-claim](nhcx-reprocess/payer/SKILL.md) | 76 | 107 | 105954 |
+| [nhcx-full](nhcx-full/SKILL.md) | 128 | 167 | 218743 | [nhcx-payer-full](nhcx-full/payer/SKILL.md) | 124 | 155 | 157452 |
+| [nhcx-coverage](nhcx-coverage/SKILL.md) | 66 | 105 | 137601 | [nhcx-payer-coverage](nhcx-coverage/payer/SKILL.md) | 77 | 108 | 108526 |
+| [nhcx-preauth](nhcx-preauth/SKILL.md) | 100 | 139 | 182607 | [nhcx-payer-preauth](nhcx-preauth/payer/SKILL.md) | 85 | 116 | 114681 |
+| [nhcx-claim](nhcx-claim/SKILL.md) | 66 | 105 | 141299 | [nhcx-payer-claim](nhcx-claim/payer/SKILL.md) | 76 | 107 | 105954 |
+| [nhcx-communication](nhcx-communication/SKILL.md) | 47 | 86 | 110304 | [nhcx-payer-communication](nhcx-communication/payer/SKILL.md) | 45 | 76 | 81171 |
+| [nhcx-payment](nhcx-payment/SKILL.md) | 46 | 85 | 104418 | [nhcx-payer-payment](nhcx-payment/payer/SKILL.md) | 63 | 94 | 93095 |
+| [nhcx-reprocess](nhcx-reprocess/SKILL.md) | 52 | 91 | 120185 | [nhcx-payer-claim](nhcx-reprocess/payer/SKILL.md) | 76 | 107 | 105954 |
 
 ## Claude Code plugin
 

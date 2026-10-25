@@ -10,6 +10,7 @@ The IRDAI tests run against the IRDAI test payer and decide its side through the
 |---|---|---|---|
 | [T1](T1-test-configuration.md) | Test Configuration | both | [T1-test-configuration.md](T1-test-configuration.md) |
 | [T2](T2-test-runners.md) | Test Runners | both | [T2-test-runners.md](T2-test-runners.md) |
+| [T20](T20-functional-test-report.md) | Functional Test Report | both | [T20-functional-test-report.md](T20-functional-test-report.md) |
 
 ## IRDAI payer
 
@@ -19,4 +20,4 @@ The IRDAI tests run against the IRDAI test payer and decide its side through the
 
 ## Order
 
-T1 and T2 first: nothing runs without the configuration and the two runners. Then the IRDAI tests in order, T3 to T12, then the PMJAY tests, T13 to T19. Within a payer the order is the claim's own: eligibility and plan, pre-authorisation, the payer's questions, claim, payment, and what follows a decision. Each test opens its own claim, so a failure in one does not leave the next without a starting point.
+T1 and T2 first: nothing runs without the configuration and the two runners. Then the IRDAI tests in order, T3 to T12, then the PMJAY tests, T13 to T19. T20 last: it is not a scenario but the functional test report compiled from the run, a PDF of the whole process in screenshots and an Excel workbook of every step. Within a payer the order is the claim's own: eligibility and plan, pre-authorisation, the payer's questions, claim, payment, and what follows a decision. Each test opens its own claim, so a failure in one does not leave the next without a starting point.

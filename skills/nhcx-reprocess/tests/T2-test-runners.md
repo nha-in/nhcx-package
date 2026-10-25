@@ -25,7 +25,7 @@ Before the first test, both runners run the setup checks of [G11. Startup Checks
 - Drive a real browser: the target's own automation, else Playwright with Chromium. A run that fetches pages in-process or over plain HTTP without a browser, or that re-runs the CLI scenario and saves the page's HTML, is not a GUI run: the report records it `blocked`, cause `setup`, never `pass` (one run reported 17 such passes [SANDBOX](../references/PAYERS.md#markers)). Each GUI entry names the browser and version it drove.
 - Sign in through the HMIS login screen, then drive the screens a test names, by their visible labels, the way an operator would: [S5. Claim Master](../screens/S5-claim-master.md) to open a claim, [S6. Claim Detail](../screens/S6-claim-detail.md) and its tabs for everything after.
 - Open the runner's own claim: a GUI run never reads or reuses the claim the CLI run made (T2X, fresh claims).
-- Take a screenshot (a PNG, never a saved HTML page) at the end of each step and on every failure, into `tests/nhcx/e2e/artifacts/<test>/<step>.png`.
+- Screenshot the whole process, not only the end of each step: the runner (never the scenario) takes a full-page PNG at the sign-in screen filled in, before and after every step's action, on every refusal, and of each tab the test touched at the end, into `tests/nhcx/e2e/artifacts/<test>/<runner>/<nn>-<step slug>-<before|after|refusal>.png`, and names them on the step's `screenshots` in the report ([T20. Functional Test Report](T20-functional-test-report.md)). Where `NHCX_TEST_PAYER_DESK_URL` is set, the case on the payer's desk is screenshotted after each decision too. A saved HTML page is never a screenshot.
 - Read results off the screen (status chips, amounts, messages) as the S spec describes them, never off the database.
 - Run headless by default; `--headed` shows the browser, for a person watching the run, slowed by `NHCX_TEST_SLOWMO_MS` between actions.
 - When the test's patient is already on the patient master, start from it: "Search insurance policy" on the chart (S15. Patient Detail (in nhcx-coverage)) or the patient-list row (S13. Patient List (in nhcx-coverage)) opens S1. Search Policy (in nhcx-coverage) prefilled, so the case is linked to the patient when it opens.
@@ -41,7 +41,10 @@ The command, in the target's form:
 nhcx-e2e list
 nhcx-e2e check
 nhcx-e2e run [T3 T5 ... | irdai | pmjay] [--mode cli|gui|both] [--headed] [--report <path>]
+nhcx-e2e report [--report <path>] [--out <dir>]
 ```
+
+`report` compiles the functional test report, a PDF and an Excel workbook, from the run's `e2e.json` and screenshots ([T20. Functional Test Report](T20-functional-test-report.md)); `run` calls it itself once both runners have finished.
 
 `run` prints each step as it happens, one line each, so a person can watch it:
 
@@ -76,7 +79,8 @@ It exits 0 when every test asked for passed, 1 when any failed, 2 when any was b
     {
       "id": "T5", "runner": "gui | cli", "browser": "chromium 131 | none", "plan_source": "seed | payer | n/a",
       "claim": "", "correlation_ids": [], "ledger_ids": [], "decisions": [],
-      "steps": [{"at": "", "what": "", "result": "pass | fail", "got": ""}],
+      "started_at": "", "ended_at": "",
+      "steps": [{"at": "", "what": "", "expected": "", "result": "pass | fail", "got": "", "screenshots": ["tests/nhcx/e2e/artifacts/T5/gui/03-s9-send-preauth-after.png"]}],
       "result": "pass | fail | blocked | skipped",
       "cause": "ours | sandbox | setup", "detail": "", "attempts": 1
     }
@@ -86,3 +90,5 @@ It exits 0 when every test asked for passed, 1 when any failed, 2 when any was b
 ```
 
 **Triage.** A failure is ours (fix, then re-run the test), the sandbox's (retry, then report), or setup (back to the setup checks). At most 3 attempts per test and runner.
+
+**The functional test report.** `e2e.json` is the record; the document a hospital, a payer or an auditor reads is built from it by `nhcx-e2e report` ([T20. Functional Test Report](T20-functional-test-report.md)): a PDF walking the whole process in screenshots, one numbered proof section per test step, and an Excel workbook with one row per step. It names no company and prints no credential.

@@ -36,6 +36,12 @@ The two test payers and their defaults are the table in [PAYERS.md](../reference
 | `NHCX_TEST_WAIT_SECONDS` | How long a step waits for the payer's answer before it fails. | `120` |
 | `NHCX_TEST_POLL_AFTER_SECONDS` | How long a step waits for the callback before it also polls the ledger (A10 to A13). | `30` |
 | `NHCX_TEST_REPORT` | Where the run is written. | `nhcx-plan/e2e.json` |
+| `NHCX_TEST_FT_DIR` | Where the functional test report (PDF and workbook, [T20. Functional Test Report](T20-functional-test-report.md)) is written. | `nhcx-plan/ft-report/` |
+| `NHCX_TEST_FT_ENTITY` | The hospital or entity under test, named on the report's cover and tables. | the facility's name ([D1. organization](../database/D1-organization.md)) |
+| `NHCX_TEST_FT_PRODUCT` | The HMIS under test, as the report names it. | the target's name from `discovery.json` |
+| `NHCX_TEST_FT_PREPARED_BY` | Who the report says prepared it. | `nhcx-e2e runner, <skill> <version>` |
+| `NHCX_TEST_FT_DOC_VERSION`, `NHCX_TEST_FT_REPORT_TYPE` | The document version and the type of report on the cover. | `V1`, `First Functional Test Report` |
+| `NHCX_TEST_PAYER_DESK_URL` | A web desk of the test payer the GUI runner may open to screenshot the case after each decision ([T20. Functional Test Report](T20-functional-test-report.md)). | none: the decision's trail is printed instead |
 
 The facility's own participant code, client id and secret, private key and public URL are the application's configuration, not the tests': the tests use whatever the application runs with, and [T2. Test Runners](T2-test-runners.md) checks them before the first test.
 

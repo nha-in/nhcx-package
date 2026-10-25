@@ -38,9 +38,9 @@ Names and folders here are placeholders. [L4 Code Planning](../steps/L4-code-pla
   <existing navigation>                the "Claims" entry
   tests/nhcx/
     dry_run/                           L7
-    e2e/                               L8
+    e2e/                               L8 (scenarios, the two runners, the report builder T20)
     fixtures/
-  nhcx-plan/                           L1 to L8 outputs and the progress log
+  nhcx-plan/                           L1 to L8 outputs, the progress log, the FT report (ft-report/)
 ```
 
 ## 3. The NHCX module, file by file
@@ -257,6 +257,9 @@ tests/nhcx/
   e2e/                     L8, NHCX sandbox
     setup                  G11 checks
     scenarios              T3 to T19, one scenario each, run by the GUI and the CLI runner (T1, T2)
+    gui/, cli/, payer/     the two runners and the payer-side drivers (T2)
+    artifacts/             <test>/<runner>/ full-page screenshots of the whole process (T2, T20)
+    report/                the functional test report builder: PDF and workbook from e2e.json (T20)
 ```
 
 ## 10. Plan files
@@ -271,6 +274,7 @@ nhcx-plan/
   validation.json     L6: per-file checks against the specs
   dry-run.json        L7: test results and coverage
   e2e.json            L8: sandbox exchanges and results
+  ft-report/          L8: the functional test report, FT-report-<date>.pdf and .xlsx (T20)
   knowledge.json      L1.0: the knowledge source chosen (MCP or package) and its version
   knowledge/          the GitHub package zip and its extracted folder, when the package is the source
   progress.json       every step: the log of sub-steps and file changes (steps/LOG.md)

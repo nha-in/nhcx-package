@@ -57,4 +57,4 @@ Payers are not rows in this table. A claim carries its payer on [D9. claim](D9-c
 - APIs: [A12. Transaction FHIR](../apis/A12-txn-fhir.md)
 - FHIR: [F17. Organization](../fhir/F17-organization.md)
 - Database: [D3. patient](D3-patient.md)
-- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md)
+- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md), [T20. Functional Test Report](../tests/T20-functional-test-report.md)

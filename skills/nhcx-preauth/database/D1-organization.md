@@ -57,4 +57,4 @@ Payers are not rows in this table. A claim carries its payer on [D9. claim](D9-c
 - APIs: [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A14. Adjudicator User Role](../apis/A14-adjudicator-user-role.md), [A15. Adjudicator Process Case](../apis/A15-adjudicator-process-case.md), [A16. Gateway Token](../apis/A16-gateway-token.md)
 - FHIR: [F2. CoverageEligibilityRequest](../fhir/F2-coverage-eligibility-request.md), [F4. Task (InsurancePlan discovery)](../fhir/F4-task-insuranceplan.md), [F17. Organization](../fhir/F17-organization.md), [F19. Other bundle resources](../fhir/F19-other-resources.md)
 - Database: [D3. patient](D3-patient.md), [D10. claim_plan](D10-claim-plan.md)
-- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md)
+- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md), [T20. Functional Test Report](../tests/T20-functional-test-report.md)

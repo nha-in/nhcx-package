@@ -175,4 +175,4 @@ Screen: any failure above is shown as the lookup's error; the legal actions offe
 #### A14U. USED BY
 - APIs: [A15. Adjudicator Process Case](A15-adjudicator-process-case.md), [A16. Gateway Token](A16-gateway-token.md), [A17. Claim State](A17-claim-state.md)
 - Database: [D24. claim_adjudication](../database/D24-claim-adjudication.md)
-- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md), [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md)
+- Tests: [T1. Test Configuration](../tests/T1-test-configuration.md), [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md), [T20. Functional Test Report](../tests/T20-functional-test-report.md)

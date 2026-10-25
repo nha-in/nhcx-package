@@ -245,4 +245,4 @@ Screen after PROCESS:
 #### A15U. USED BY
 - APIs: [A14. Adjudicator User Role](A14-adjudicator-user-role.md), [A16. Gateway Token](A16-gateway-token.md)
 - Database: [D1. organization](../database/D1-organization.md), [D24. claim_adjudication](../database/D24-claim-adjudication.md)
-- Tests: [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md)
+- Tests: [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md), [T20. Functional Test Report](../tests/T20-functional-test-report.md)

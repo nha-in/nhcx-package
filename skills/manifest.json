@@ -1,6 +1,6 @@
 {
   "version": "1.11.0",
-  "built_at": "2026-10-25T16:50:40.669Z",
+  "built_at": "2026-10-25T17:00:14.019Z",
   "source": "src/nhcx",
   "companion": {
     "config": "skill.payer.config.mjs",
@@ -11,8 +11,8 @@
   "skills": [
     {
       "name": "nhcx-full",
-      "files": 167,
-      "words": 221190,
+      "files": 168,
+      "words": 223657,
       "ids": [
         "S1",
         "S2",
@@ -141,7 +141,8 @@
         "T16",
         "T17",
         "T18",
-        "T19"
+        "T19",
+        "T20"
       ],
       "pulled_in": {},
       "companion": {
@@ -279,8 +280,8 @@
     },
     {
       "name": "nhcx-coverage",
-      "files": 105,
-      "words": 139335,
+      "files": 106,
+      "words": 141799,
       "ids": [
         "S1",
         "S2",
@@ -347,7 +348,8 @@
         "T2",
         "T3",
         "T13",
-        "T19"
+        "T19",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",
@@ -454,8 +456,8 @@
     },
     {
       "name": "nhcx-preauth",
-      "files": 139,
-      "words": 184495,
+      "files": 140,
+      "words": 186962,
       "ids": [
         "S4",
         "S5",
@@ -556,7 +558,8 @@
         "T14",
         "T15",
         "T16",
-        "T19"
+        "T19",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",
@@ -681,8 +684,8 @@
     },
     {
       "name": "nhcx-claim",
-      "files": 105,
-      "words": 143112,
+      "files": 106,
+      "words": 145581,
       "ids": [
         "S5",
         "S6",
@@ -749,7 +752,8 @@
         "T1",
         "T2",
         "T10",
-        "T17"
+        "T17",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",
@@ -856,8 +860,8 @@
     },
     {
       "name": "nhcx-communication",
-      "files": 86,
-      "words": 111677,
+      "files": 87,
+      "words": 114143,
       "ids": [
         "S5",
         "S6",
@@ -905,7 +909,8 @@
         "G11",
         "T1",
         "T2",
-        "T7"
+        "T7",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",
@@ -974,8 +979,8 @@
     },
     {
       "name": "nhcx-payment",
-      "files": 85,
-      "words": 106235,
+      "files": 86,
+      "words": 108701,
       "ids": [
         "S5",
         "S6",
@@ -1022,7 +1027,8 @@
         "T1",
         "T2",
         "T11",
-        "T18"
+        "T18",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",
@@ -1107,8 +1113,8 @@
     },
     {
       "name": "nhcx-reprocess",
-      "files": 91,
-      "words": 121879,
+      "files": 92,
+      "words": 124345,
       "ids": [
         "S5",
         "S6",
@@ -1161,7 +1167,8 @@
         "G11",
         "T1",
         "T2",
-        "T12"
+        "T12",
+        "T20"
       ],
       "pulled_in": {
         "D32": "G4",

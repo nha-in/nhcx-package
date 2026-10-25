@@ -65,7 +65,8 @@ Entries are appended, never rewritten. A mistake in an entry is fixed by a new `
 - `id` counts up from `LOG-0001` and is never reused.
 - `milestone` is the slice the entry belongs to (`N0` to `N6`), or `bootstrap` for the one-time global bootstrap (L0 skill-update and L1.0 to L1.3); every entry carries one.
 - `files` is a flat list of paths touched (target source and `nhcx-plan/`), the plan files under the milestone's own folder (`nhcx-plan/N3/...`), except the bootstrap's `knowledge.json` and the root `discovery.json`, `plan.json`, which sit at the plan root.
-- `commit` is filled when the change is committed (L5.5 commits per batch).
+- `commit` is filled when the change is committed (L5.5 commits per batch). After an amend, rebase or squash every `commit` an entry names is checked to be an ancestor of `HEAD` (`git merge-base --is-ancestor`) and corrected through a `corrected` entry; the report builder flags one that is not on the branch.
+- An entry is appended when its sub-step runs, never back-filled: consecutive sub-steps carry their own timestamps, and a block of entries sharing one second (one run logged all of a milestone's L1 to L4 at `09:32:41Z`) is a log written after the fact, which the report builder flags.
 - `status` is recomputed from `entries` after each append: `overall`, then `bootstrap`, then one block per milestone, then `e2e`. Each milestone runs L1 to L7 only; `steps_done` counts its steps in state `done` out of `steps_total` (7); `done_when` is the milestone's **dry-run** done-when; the milestone's `state` is `done` only when `done_when` is `pass`. The root `e2e` block is the single final end-to-end run across the whole lifecycle, run after every milestone is `done`.
 - Ids in the JSON stay bare (`"milestone": "N3"`, `"step": "L5"`); the name is added wherever a person reads them (LOGN).
 

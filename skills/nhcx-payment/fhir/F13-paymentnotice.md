@@ -21,12 +21,12 @@ A bundle with neither a PaymentNotice nor a PaymentReconciliation is refused: "T
 
 **Redelivery and updates.**
 - A notice on a correlation id already in `D21 claim_payment.correlation_id` is `ignored`.
-- A notice whose `PaymentNotice.id` matches `D21 claim_payment.notice_id` on the same claim is the same payment further along (initiated, then cleared): that row is overwritten, its details replaced, and its acknowledgement reset to `pending` so it is acknowledged again on the new thread.
+- A notice whose payment identity (`PaymentNotice.id`, else the payment id in the PaymentReconciliation `detail[]` placer identifier `<paymentId>/Payment`) matches `D21 claim_payment.notice_id` on the same claim is the same payment further along (initiated, then cleared): that row is overwritten, its details replaced, and its acknowledgement reset to `pending` so it is acknowledged again on the new thread. With no identity at all, the newest `paid` row without a UTR, same amount and payment date, is the one completed ([D21. claim_payment](../database/D21-claim-payment.md) rule 4).
 - Otherwise a new row.
 
 Every recorded notice is acknowledged at once (F14); a failed acknowledgement is kept on the row and the notice stays recorded.
 
-**What counts as paid.** A payment is initiated on workflow `30` as a PaymentNotice with `paymentStatus` `paid`, every amount, date and TDS line, and no UTR; it is completed on workflow `31` as `cleared` with the UTR. Both carry the same PaymentNotice id, each on its own thread [PAYER](../references/PAYERS.md#markers). A row counts toward the paid total when `payment_status` is `cleared`, or `paid` with a UTR. A `paid` row without a UTR is a payment initiated, whatever its disposition says, and does not count. Rows sharing a UTR count once.
+**What counts as paid.** A payment is initiated on workflow `30` as a PaymentNotice with `paymentStatus` `paid`, every amount, date and TDS line, and no UTR; it is completed on workflow `31` as `cleared` with the UTR. Both carry the same payment identity, each on its own thread: the live payer a shared PaymentNotice id [PAYER](../references/PAYERS.md#markers), the sandbox payer no `PaymentNotice.id` but the same `<paymentId>/Payment` detail identifier [SANDBOX](../references/PAYERS.md#markers). A `paymentIdentifier.value` that is a placeholder (`Not available`, `N/A`, `NA`, `none`, `null`, `-`) is no UTR. A row counts toward the paid total when `payment_status` is `cleared`, or `paid` with a UTR. A `paid` row without a UTR is a payment initiated, whatever its disposition says, and does not count. Rows sharing a UTR count once.
 
 #### F13F. FIELDS
 Read and stored (`D21 claim_payment` unless stated):
@@ -34,7 +34,7 @@ Read and stored (`D21 claim_payment` unless stated):
 | Element path | Stored in | Notes |
 |---|---|---|
 | `PaymentNotice.identifier[type CLN]` (fallbacks above) | `claim_ref` | Match key |
-| `PaymentNotice.id` | `notice_id` | Empty when absent (the live notices carry none [SANDBOX](../references/PAYERS.md#markers)) |
+| `PaymentNotice.id`, else the part before the slash of `PaymentReconciliation.detail[].identifier.value` (type `PLAC`, `<paymentId>/Payment`) | `notice_id` | The sandbox payer's notices carry no `PaymentNotice.id` and name the payment only on the detail lines [SANDBOX](../references/PAYERS.md#markers) |
 | `PaymentNotice.amount.value`, `.currency` | `amount`, `currency` | Else `PaymentReconciliation.paymentAmount` |
 | `PaymentNotice.paymentStatus` first coding `code` | `payment_status` | `paid`, `adjusted`, `cleared`, ... |
 | `PaymentReconciliation.disposition` | `disposition` | Else `Task.description`, else the paymentStatus display (or text), else `PaymentReconciliation.outcome`, else `Payment notice` |
@@ -59,3 +59,4 @@ Not read: `PaymentNotice.status`, `.payment`, `.recipient`, `.created` (except a
 #### F13U. USED BY
 - Callbacks: [C10. Payment Notice](../callbacks/C10-paymentnotice-request.md)
 - FHIR: [F14. Payment acknowledgement](F14-payment-acknowledgement.md)
+- Database: [D21. claim_payment](../database/D21-claim-payment.md)

@@ -11,6 +11,8 @@ Find out what the target HMIS already has for every spec item: screens, APIs, ca
 ### L1.A Ask the integrator first
 Some behaviour is the hospital's to decide, not the protocol's, and the skill never guesses it. **Before anything else in L1, before the knowledge source is picked or a file is read**, ask the user every question below in one numbered message and wait for the answers, record every answer in `nhcx-plan/plan.json` under `decisions` with the key given, and build the screens to the answer. A question whose answer the user leaves open is recorded as the default in brackets and flagged in the progress log.
 
+**A spec in SCOPE is never dropped by the run on its own.** A19 and the S13 to S15 ABHA screens, for example, are built whenever the HMIS has no M1 (L1.3); leaving them out is the integrator's call, taken in their own words, recorded in `decisions` with `source: integrator` and the words quoted, and shown in the progress log, so a later reader can tell an owner's choice from a shortcut. A decision recorded as the integrator's with no quoted words is read as the default, and the spec is built.
+
 | Key | Question | Default | Where it lands |
 |---|---|---|---|
 | `claim.registrationRequired` | Must a claim start from a patient on the register, or may a walk-in start one on identifiers alone? | required | S1. Search Policy (in nhcx-coverage), [S19. NHCX Settings](../screens/S19-nhcx-settings.md), [D1. organization](../database/D1-organization.md) |

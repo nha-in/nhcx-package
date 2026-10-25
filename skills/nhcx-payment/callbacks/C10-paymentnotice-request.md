@@ -4,13 +4,13 @@
 Delivered in-process by [G8. Receive](../gateway/G8-receive.md) for NHCX route `v1/paymentnotice/request`, passed to `C1.receive` with `delivery.type` `payment`. Payer-initiated; acknowledged by A8 automatically.
 
 #### C10D. DESCRIPTION
-The one leg the payer starts: it posts a notice when money moves, often twice per payment: initiated on workflow `30` (`paid`, every amount, no UTR), then completed on workflow `31` (`cleared`, with the UTR), under one PaymentNotice id [PAYER](../references/PAYERS.md#markers). For payment notice the provider exposes `paymentnotice/request` and calls `paymentnotice/on_request`, the opposite way round from every other exchange.
+The one leg the payer starts: it posts a notice when money moves, often twice per payment: initiated on workflow `30` (`paid`, every amount, no UTR), then completed on workflow `31` (`cleared`, with the UTR), under one payment identity: a shared `PaymentNotice.id` where the payer sets one [PAYER](../references/PAYERS.md#markers), else the payment id its reconciliation detail lines carry (`<paymentId>/Payment`); the sandbox payer sets no `PaymentNotice.id` [SANDBOX](../references/PAYERS.md#markers) ([D21. claim_payment](../database/D21-claim-payment.md) rule 4). For payment notice the provider exposes `paymentnotice/request` and calls `paymentnotice/on_request`, the opposite way round from every other exchange.
 
 **Matching by claim number, not correlation id.** Nothing of ours was sent, so the notice is matched by the case number it carries. The number is read, in order, from the PaymentNotice, the PaymentReconciliation, the Task, then the first entry's own resource; on each resource an identifier typed `CLN` wins, and an untyped identifier is taken rather than ignored (the live payer sends the number with no type) [SANDBOX](../references/PAYERS.md#markers). The bundle identifier is never tried: live it is a message uuid [SANDBOX](../references/PAYERS.md#markers). The number is looked up against the case (D9 `claim_no`), then the number each leg went out under (D20 `claim_ref`, then D18 `claim_ref`), because a cancel retires a number. Nothing matching: `unmatched`.
 
 **Redelivery.** A notice whose correlation id is already on a payment row (D21 `correlation_id`) is `ignored`.
 
-**Same payment, further along.** A notice whose `PaymentNotice.id` is already on a payment row of the same case updates that row instead of adding one (the IRDAI sandbox payer keeps the id) [SANDBOX](../references/PAYERS.md#markers), and is acknowledged again on its new thread.
+**Same payment, further along.** A notice whose payment identity (D21 `notice_id`: `PaymentNotice.id`, else the payment id in the reconciliation's detail placer identifiers) is already on a payment row of the same case updates that row instead of adding one, and is acknowledged again on its new thread. The sandbox payer sends no `PaymentNotice.id`; its two notices share the detail identifiers `<paymentId>/Payment` and `<paymentId>/TDS` [SANDBOX](../references/PAYERS.md#markers). A notice with no identity at all completes the newest `paid` row of the same claim that has no UTR, the same amount and the same payment date.
 
 **Acknowledgement is best-effort.** The notice is recorded first, then acknowledged through A8. A failed acknowledgement is kept on the row and the result is still `settled`, so G8 accepts the message; failing it would only have NHCX deliver it again.
 
@@ -29,7 +29,9 @@ C10(envelope, corr):
     claim = claim_for_reference(notice.claim_ref)
     if none: return "unmatched"
     earlier = D21 row with claim_id == claim.id and notice_id == notice.notice_id
-              (only when notice_id is set)
+              (only when notice_id is set);
+              when notice_id is null: newest D21 row with claim_id == claim.id, utr null,
+              payment_status "paid", the same amount and payment_date
     in one transaction:
         values = notice (without details) + {claim_id, correlation_id: corr or null,
                   sender_code: x-hcx-sender_code or null, workflow_id: x-hcx-workflow_id or null,
@@ -64,13 +66,15 @@ read_payment_notice(body):
         # identifier(r): the one typed "CLN", else the first untyped one with a value
     money = notice.amount or recon.paymentAmount
     return {claim_ref,
-            notice_id: notice.id or null,
+            notice_id: notice.id, else the part before the slash of recon.detail[].identifier.value
+                       (type PLAC, value "<paymentId>/Payment"), else null,
             disposition: recon.disposition or task.description or paymentStatus display
                          or recon.outcome or "Payment notice",
             payment_status: notice.paymentStatus code,
             payment_date: recon.paymentDate or first 10 characters of notice.created,
             amount: money.value, currency: money.currency,
-            utr: recon.paymentIdentifier.value,
+            utr: recon.paymentIdentifier.value, null when it is a placeholder
+                 ("Not available", "N/A", "NA", "none", "null", "-", case ignored),
             details: per recon.detail[i]: seq i, reference (id, else identifier.value),
                      type_code, type_display, date, amount}
 

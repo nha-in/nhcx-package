@@ -6,7 +6,7 @@ After discharge the claim leg goes out ([A5. Claim Submit](../apis/A5-claim-subm
 
 #### T10S. SETUP
 
-Three claims, each with an approved pre-authorisation (T5. IRDAI Pre-authorisation Approved (in nhcx-preauth)), the IPD admission linked on the Claim tab (found by the case's ABHA number) and a discharge recorded.
+Three claims, each with an approved pre-authorisation (T5. IRDAI Pre-authorisation Approved (in nhcx-preauth)), the IPD admission linked on the Claim tab (found by the case's ABHA number) and a discharge recorded. Before the claim is sent, the admission's bill is issued through the HMIS's own billing module (the record L1.3 `billing` found: an invoice, a bill, an account), so that the payment of T11. IRDAI Payment Notice and Acknowledgement (in nhcx-payment) has something to post to; a run that skips this leaves every payment `failed` with "The case is not on an encounter with a billing account; open the account first." and the D21 hook unproven [SANDBOX](../references/PAYERS.md#markers).
 
 #### T10G. GUI
 

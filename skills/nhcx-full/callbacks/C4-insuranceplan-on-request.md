@@ -8,7 +8,7 @@ The payer's package master for the policy, a few seconds after A3 went out. Matc
 
 The reply is large (a PMJAY master is some 45 MB encrypted [SANDBOX](../references/PAYERS.md#markers)). The handler reads the decrypted bundle once, writes `response_json` once on the plan row, never logs or pretty-prints it, and parses the benefits in a single pass; the inbound path that gets it this far is described in [G8. Receive](../gateway/G8-receive.md) and [G6. Encryption](../gateway/G6-encryption.md).
 
-Only a plan still `fetching` takes it; a settled plan answers `ignored`. The payer redelivers the same master several times on one thread [SANDBOX](../references/PAYERS.md#markers). A plan on record as a failed send (`error`) is reopened and the reply applied.
+Only a plan still `fetching` takes it; a settled plan answers `ignored`, with two exceptions. A plan on record as a failed send (`error`) is reopened and the reply applied. And a `ready` plan that is the **test seed** ([T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md): its D10 `error_message` carries the seed note and its `correlation_id` is the real request's) takes the reply and is replaced by it, benefits and forms included: the seed stands in only until the payer answers, and a handler that ignores the answer because the seed set the row `ready` leaves every PMJAY test on two packages with no stage information (a run on 24 Oct 2026 did exactly that and never saw PMJAY's master) [SANDBOX](../references/PAYERS.md#markers). The payer redelivers the same master several times on one thread [SANDBOX](../references/PAYERS.md#markers); once one is applied the rest are `ignored`.
 
 A bundle with no InsurancePlan at all (only the payer's Organization) is the payer saying it has nothing filed under this policy [SANDBOX](../references/PAYERS.md#markers). It is settled as an empty plan with a message, not rejected, so the plan does not sit in `fetching`. Polling looks only for replies that carry an InsurancePlan, so this outcome is reached through the callback only.
 
@@ -23,8 +23,8 @@ A reply that carries no InsurancePlan is settled as `empty`. A refusal arrives a
 C4(envelope, corr):
     row = newest D10 where correlation_id == corr
     if none: return "unmatched"
-    if row.status != "fetching" and not failed_send(row):
-        return "ignored"
+    if row.status != "fetching" and not failed_send(row) and not test_seed(row):
+        return "ignored"           # test_seed: D10 error_message carries the T13 seed note
     body = payload(envelope)
     if body.type == "ProtocolResponse":
         write D10: status = "error", error_message = rejection(body)
@@ -70,7 +70,7 @@ apply_plan(row, parsed, body):
 ```
 
 #### C4S. RESPONSE
-`settled`, `unmatched`, or `ignored` for a plan no longer `fetching`. No InsurancePlan in the bundle is not `rejected`; only a missing `fhir` is.
+`settled`, `unmatched`, or `ignored` for a plan no longer `fetching` (a seeded plan is not settled: it takes the reply). No InsurancePlan in the bundle is not `rejected`; only a missing `fhir` is.
 
 State changes:
 

@@ -18,12 +18,14 @@ Where the files go, in the target's own test layout:
 | `tests/nhcx/e2e/cli/` | The CLI runner and its command (`nhcx-e2e`), registered the target's way (npm script, management command, Gradle task, Make target). |
 | `tests/nhcx/e2e/payer/` | The payer-side drivers: the IRDAI desk transport and the Payer Service role walk, both through A14. Adjudicator User Role (in nhcx-preauth) and A15. Adjudicator Process Case (in nhcx-preauth). |
 
-Before the first test, both runners run the setup checks of [G11. Startup Checks and Health](../gateway/G11-startup-checks.md) (session token, participant record, certificate match, endpoint probe) and stop with `blocked`, cause `setup`, if any fails.
+Before the first test, both runners run the setup checks of [G11. Startup Checks and Health](../gateway/G11-startup-checks.md) (session token, participant record, certificate match, endpoint probe) and stop with `blocked`, cause `setup`, if any fails. Installing the browser driver and its browser (`pip install playwright && playwright install chromium`, or the target's equivalent) is part of `nhcx-e2e check` and of L8.1, done without asking: it is a test dependency of the target like any other, and the only questions a run asks are ASK FIRST and the PMJAY member id ([T1. Test Configuration](T1-test-configuration.md)). A run that cannot install it records every GUI entry `blocked`, cause `setup`, naming the command to run.
 
 #### T2G. GUI
 
+- Drive a real browser: the target's own automation, else Playwright with Chromium. A run that fetches pages in-process or over plain HTTP without a browser, or that re-runs the CLI scenario and saves the page's HTML, is not a GUI run: the report records it `blocked`, cause `setup`, never `pass` (one run reported 17 such passes [SANDBOX](../references/PAYERS.md#markers)). Each GUI entry names the browser and version it drove.
 - Sign in through the HMIS login screen, then drive the screens a test names, by their visible labels, the way an operator would: [S5. Claim Master](../screens/S5-claim-master.md) to open a claim, [S6. Claim Detail](../screens/S6-claim-detail.md) and its tabs for everything after.
-- Take a screenshot at the end of each step and on every failure, into `tests/nhcx/e2e/artifacts/<test>/`.
+- Open the runner's own claim: a GUI run never reads or reuses the claim the CLI run made (T2X, fresh claims).
+- Take a screenshot (a PNG, never a saved HTML page) at the end of each step and on every failure, into `tests/nhcx/e2e/artifacts/<test>/<step>.png`.
 - Read results off the screen (status chips, amounts, messages) as the S spec describes them, never off the database.
 - Run headless by default; `--headed` shows the browser, for a person watching the run, slowed by `NHCX_TEST_SLOWMO_MS` between actions.
 - When the test's patient is already on the patient master, start from it: "Search insurance policy" on the chart ([S15. Patient Detail](../screens/S15-patient-detail.md)) or the patient-list row ([S13. Patient List](../screens/S13-patient-list.md)) opens [S1. Search Policy](../screens/S1-search-policy.md) prefilled, so the case is linked to the patient when it opens.
@@ -72,7 +74,7 @@ It exits 0 when every test asked for passed, 1 when any failed, 2 when any was b
   "setup_checks": [{"check": "session token", "result": "pass | fail", "detail": ""}],
   "tests": [
     {
-      "id": "T5", "runner": "gui | cli",
+      "id": "T5", "runner": "gui | cli", "browser": "chromium 131 | none", "plan_source": "seed | payer | n/a",
       "claim": "", "correlation_ids": [], "ledger_ids": [], "decisions": [],
       "steps": [{"at": "", "what": "", "result": "pass | fail", "got": ""}],
       "result": "pass | fail | blocked | skipped",

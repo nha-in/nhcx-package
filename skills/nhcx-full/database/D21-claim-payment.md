@@ -11,7 +11,7 @@ This is the one leg the payer starts. It posts a payment notice when money moves
 1. The bundle is flattened from its `PaymentNotice`, `PaymentReconciliation` and `Task`. A bundle with neither of the first two is refused ("That is not a payment notice.").
 2. A notice whose correlation id is already on a row is a redelivery and is ignored.
 3. The claim number is read from the `CLN`-typed identifier on the PaymentNotice, else the PaymentReconciliation, else the Task, else the first entry's untyped identifier. It is matched against `claim.claim_no`, then against the `claim_ref` of D20 and D18 (a cancellation retires numbers). No match: the notice is `unmatched` and nothing is stored.
-4. If a row on the same claim has the same `notice_id` (the payer sends one notice when the transfer is initiated, workflow `30`, `paid`, no UTR, and one when it clears, workflow `31`, `cleared`, with the UTR [PAYER](../references/PAYERS.md#markers)), that row is updated with the new notice, its acknowledgement is reset (`ack_status` `pending`, `ack_txn_id`, `ack_correlation_id`, `acknowledged_at`, `ack_error` cleared) and its D22 rows are replaced. Otherwise a new row is inserted.
+4. If a row on the same claim has the same `notice_id` (the payer sends one notice when the transfer is initiated, workflow `30`, `paid`, no UTR, and one when it clears, workflow `31`, `cleared`, with the UTR [PAYER](../references/PAYERS.md#markers)), that row is updated with the new notice, its acknowledgement is reset (`ack_status` `pending`, `ack_txn_id`, `ack_correlation_id`, `acknowledged_at`, `ack_error` cleared) and its D22 rows are replaced. `notice_id` is the payment's identity, read in this order ([F13. PaymentNotice](../fhir/F13-paymentnotice.md)): `PaymentNotice.id`; else the payment id in the PaymentReconciliation's `detail[]` placer identifier (`<paymentId>/Payment`, the part before the slash: the sandbox payer sends no `PaymentNotice.id` at all and names the payment only this way, on both notices [SANDBOX](../references/PAYERS.md#markers)); else nothing. With no identity at all, the earlier row is the newest `paid` row on the same claim with no `utr`, the same `amount` and the same `payment_date` (the initiation this notice completes). Otherwise a new row is inserted. A build that keyed on `PaymentNotice.id` alone showed every payment twice on S12, an "Initiated, UTR awaited" card that never filled beside the cleared one, and the desk read it as a missing UTR [SANDBOX](../references/PAYERS.md#markers).
 5. The acknowledgement is sent at once (below), right after the billing posting of step 6. A failed acknowledgement does not fail the callback.
 6. Before the acknowledgement, a notice that reports money that moved is **posted to the HMIS's billing** (below). A failed posting does not fail the callback either, and the acknowledgement still goes.
 
@@ -50,14 +50,14 @@ This is the one leg the payer starts. It posts a payment notice when money moves
 | payment_date | TEXT | null | `PaymentReconciliation.paymentDate`, else the date part of `PaymentNotice.created` |
 | amount | REAL | null | `PaymentNotice.amount.value`, else `PaymentReconciliation.paymentAmount.value` |
 | currency | TEXT | null | Currency of that amount |
-| utr | TEXT | null | Unique Transaction Reference: `PaymentReconciliation.paymentIdentifier.value` |
+| utr | TEXT | null | Unique Transaction Reference: `PaymentReconciliation.paymentIdentifier.value`; a placeholder value (`Not available`, `N/A`, `NA`, `none`, `null`, `-`, case ignored) is stored as null so it never reads as a UTR [SANDBOX](../references/PAYERS.md#markers) |
 | notice_json | TEXT | null | The notice bundle as received |
 | ack_status | TEXT | NOT NULL, default `pending` | `pending`, `sent`, `error` |
 | ack_txn_id | TEXT | null | Ledger id of the acknowledgement |
 | ack_correlation_id | TEXT | null | Correlation id the acknowledgement went out under |
 | acknowledged_at | TEXT | null | When the acknowledgement went |
 | ack_error | TEXT | null | Why the acknowledgement failed |
-| notice_id | TEXT | null | `PaymentNotice.id`; a later notice with the same id updates this row. Migration only |
+| notice_id | TEXT | null | The payment's identity: `PaymentNotice.id`, else the payment id from the reconciliation's `detail[]` placer identifier (rule 4); a later notice with the same identity updates this row. Migration only |
 | billing_status | TEXT | null | empty (not posted yet), `posted`, `failed`: whether the payment reached the HMIS's billing. Added by migration |
 | billing_ref | TEXT | null | The id of the HMIS payment record the posting created or updated. Added by migration |
 | billing_error | TEXT | null | Why the posting failed. Added by migration |
@@ -75,3 +75,4 @@ This is the one leg the payer starts. It posts a payment notice when money moves
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C10. Payment Notice](../callbacks/C10-paymentnotice-request.md)
 - FHIR: [F13. PaymentNotice](../fhir/F13-paymentnotice.md), [F14. Payment acknowledgement](../fhir/F14-payment-acknowledgement.md)
 - Database: [D9. claim](D9-claim.md), [D22. claim_payment_detail](D22-claim-payment-detail.md), [D29. claim_enquiry](D29-claim-enquiry.md)
+- Tests: [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T11. IRDAI Payment Notice and Acknowledgement](../tests/T11-irdai-payment.md)

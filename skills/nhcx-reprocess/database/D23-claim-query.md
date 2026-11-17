@@ -4,12 +4,12 @@
 One row is one message the payer started on a claim over the communication route: a query for the desk to answer, a notification to acknowledge, or a note to read. Primary key `id`. Parent table: `claim` (D9), many rows per claim.
 
 #### D23D. DESCRIPTION
-A payer asks for more in one of two ways, set per payer by its adapter's query mode. A `resubmit` payer (PMJAY, see [PAYERS.md](../references/PAYERS.md)) queries inside the ClaimResponse [PAYER](../references/PAYERS.md#markers); that query lives on the leg (D18 or D20 `query_note`) and is answered by sending the leg again from its own tab (Pre-authorisation or Claim). It never creates a row here. A **line-item query** from any payer, a ClaimResponse on the pre-authorisation's `on_submit` with outcome `partial` and queried items, is the same: it lives on the leg and is answered by resubmitting from the Pre-authorisation tab, never on Communication. A `communication` payer (generic NHCX, IRDAI payers) sends a CommunicationRequest on a thread of its own, and that is a row here, answered on the Communication tab; a payer may raise one before any decision on the leg.
+A payer asks for more in two ways. A query **on the lines** comes inside the ClaimResponse (outcome `partial`, queried items) and is answered by sending the leg again from its tab; it lives on the leg (D18 or D20 `query_note`) and never creates a row here. A **CommunicationRequest** is a row here, answered on the Communication tab with a Communication: from a `communication`-mode payer (generic NHCX, IRDAI payers) for any question, and from a `resubmit`-mode payer (PMJAY) when it asks for documents or information on a leg (workflow 24 on the pre-authorisation, 27 on the claim) [PAYER](../references/PAYERS.md#markers); a payer may raise one before any decision on the leg.
 
 **Created.** By the communication callback (C9):
 
 - **Bundle with a CommunicationRequest.** A redelivery (its correlation id already on a row) is ignored. The claim is found by the references on `about`, `basedOn` and `identifier` (claim number, then an old leg `claim_ref`), then by a `request_id` already held, then by the message's correlation id, then by `x-hcx-workflow_id` matched against the `correlation_id` of D20 (leg `claim`) or D18 (leg `preauth`). No claim found: `unmatched`, nothing stored. `stage` is the leg the workflow id named, else `claim` when the claim leg has been sent (D20 not `draft`), else `preauth`.
-  - `kind` is decided by the sender's adapter (else the claim's): a `resubmit` payer's request is always a `notification`. Otherwise the Task's `intent` decides (`proposal` is a `notification`, `order` is a `query`); with no intent, a reason code of `additionalinfo`, `questionnaire`, `query` or none is a `query`, any other reason a `notification` [REF](../references/PAYERS.md#markers).
+  - `kind` is decided by the sender's adapter (else the claim's): a `resubmit` payer's (PMJAY's) request is a `query` unless its Task `intent` is `proposal` (a `notification`) [PAYER](../references/PAYERS.md#markers). Otherwise the Task's `intent` decides (`proposal` is a `notification`, `order` is a `query`); with no intent, a reason code of `additionalinfo`, `questionnaire`, `query` or none is a `query`, any other reason a `notification` [REF](../references/PAYERS.md#markers).
   - The row is inserted with `status` `open`. A `query` recomputes the claim's stage (an open query on a leg still with the payer puts the case into `queried`). A `notification` is acknowledged at once.
 - **Bundle with a bare Communication.** Stored as `kind` `note`, `status` `noted`. It is matched like a request. A note whose Communication id is already held as a note on the same claim is ignored. The message's correlation id is stored only if no other row already holds it, otherwise null.
 
@@ -55,6 +55,8 @@ A query counts as waiting on the desk while `kind` is `query` and `status` is `o
 | acknowledged_at | TEXT | null | When the acknowledgement went. Migration also adds it |
 | error_message | TEXT | null | Why the reply or acknowledgement failed |
 | reply_json | TEXT | null | The reply or acknowledgement bundle as sent |
+| reply_items | TEXT | null | JSON list of the line notes sent with the reply, `[{sequence, code, display, note}]` (A7. Communication Reply (in nhcx-communication)). Migration only |
+| reply_workflow_id | TEXT | null | The `x-hcx-workflow_id` the reply went out under (19 or 161 for PMJAY). Migration only |
 
 #### D23K. KEYS AND INDEXES
 - Primary key `id` (integer).

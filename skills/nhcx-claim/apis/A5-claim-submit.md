@@ -10,7 +10,10 @@ Files the claim once the patient has left: the pre-authorisation's bundle with `
 
 | Where the claim stands | Kind |
 |---|---|
-| No claim record, or `draft` | `claim` |
+| No claim record, or `draft` | `discharge` where the discharge stage applies ([D20. claim_submission](../database/D20-claim-submission.md)), else `claim` |
+| a discharge `queried` | `discharge_query_response` |
+| a discharge `rejected` | `discharge`, corrected and sent again |
+| a discharge `approved` or `partial` | `claim`, the final claim |
 | `queried` | `claim_query_response` |
 | `approved`, `partial` or `rejected` | refused: "The payer has decided this claim; it goes back for another look as a reprocess request, not as a claim sent again." |
 | `error` (refused at the door, never reached the payer) | the kind that failed is sent again (`claim_query_response`, or `claim_resubmit` on a row written before resubmission was retired), else `claim` |
@@ -25,18 +28,22 @@ FHIR: [F1. Bundle](../fhir/F1-bundle.md) (the bundle id and Claim anchor of each
 | Kind | `gov` | `generic` |
 |---|---|---|
 | `claim` | 15 | 15 |
-| `claim_query_response` | 151 (adapter default; 161 as a sandbox configuration override [SANDBOX](../references/PAYERS.md#markers)) | 151 |
+| `claim_query_response` | 161 [PAYER](../references/PAYERS.md#markers) | 151 |
 | `claim_resubmit` | none (not offered) | none (not offered) |
+| `discharge` | 14 | 14 |
+| `discharge_query_response` | 141 | 141 |
 
 No adapter offers `claim_resubmit`: a decided claim is never sent again [REF](../references/PAYERS.md#markers). A rejected claim goes back as a reprocess Task (A6, workflow 36), and a claim refused at the door may be sent again as the kind that failed.
 
-The SHA sandbox refuses 16, 151 and 19 on a claim with PAYR-1321 "Invalid workflow id" and takes 161 for a query answer [SANDBOX](../references/PAYERS.md#markers). The adapter's value stays the published 151; a sandbox run sets 161 through the per-environment override, so the sandbox quirk never becomes the adapter's default.
+PMJAY takes 161 for a claim query answer and refuses 16, 151 and 19 on a claim with PAYR-1321 "Invalid workflow id" [SANDBOX](../references/PAYERS.md#markers); its "NHCX - HMIS (Provider side) requirements V1.2" names 161 for the claim reply too [PAYER](../references/PAYERS.md#markers). The `gov` adapter therefore sends 161; the `generic` adapter keeps the published 151.
 
-**Use case (`x-hcx-use_case`).** Every claim send carries it, to every payer, whether or not the payer reads it: `New` for `claim`, `Resubmit` for `claim_query_response` (see [PAYERS.md](../references/PAYERS.md)).
+**Use case (`x-hcx-use_case`).** Every claim send carries it, to every payer, whether or not the payer reads it: `New` for `claim` and `discharge`, `Resubmit` for `claim_query_response` and `discharge_query_response` (see [PAYERS.md](../references/PAYERS.md)).
 
 **Headers set by the application** (G7 generates the rest, [G5. Protocol Headers](../gateway/G5-protocol-headers.md)): `x-hcx-sender_code` = facility participant code; `x-hcx-recipient_code` = the case's processing id (D9 `processing_id`), else the claim's payer id, else the configured default payer code; `x-hcx-workflow_id` as above; `x-hcx-status` `request.initiated`; `x-hcx-use_case` as above; `x-hcx-ben-abha-id` = the token's ABHA when [A18. Biometric Authentication](A18-biometric-authentication.md) holds a stage-`Discharge` authentication, else the case's ABHA number, left out when none is known; the user-token header with the stage-`Discharge` token when one is held.
 
 **The claim bills a stay.** Unlike the pre-authorisation, the claim needs the IPD admission linked to the case (D9 `encounter_id`). The admission is linked on the Claim tab ([S11. Claim Submission](../screens/S11-claim-submission.md)), chosen among the current IPD stays of patients holding the case's ABHA number, once the policy is in force; the next action reads "Link the IPD admission" once the pre-authorisation is approved and nothing is linked.
+
+**The discharge stage** [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge first (PMJAY; the decision `claim.dischargeStep`, [D20. claim_submission](../database/D20-claim-submission.md)), the first send from the Claim tab is the discharge: the same bundle as the claim (`Claim.use` `claim`, the Claim anchored `claim/request`, the discharge date, mode and stage on `supportingInfo`, the discharge summary under `HDS`, the claim-stage documents and forms, the stage-`Discharge` proof of presence) under workflow 14, `x-hcx-use_case` `New`, success flash "Discharge submitted to the payer.". A discharge query is answered here under 141 (`Resubmit`, the Claim anchored `claim/queryupdate`, the reply as the claim query detail); a rejected discharge is corrected and sent again under 14; once the discharge is approved (261, or an approving ClaimResponse) the next send is the final claim under 15, flash "Claim submitted to the payer.". Every check below applies to a discharge send as to a claim.
 
 **Checks before sending**, in order:
 1. "Claim not found."
@@ -44,14 +51,15 @@ The SHA sandbox refuses 16, 151 and 19 on a claim with PAYR-1321 "Invalid workfl
 3. On `claim_query_response` with no reply text: "Write the reply to the payer's query before answering it."
 4. no admission linked: "Link the patient's IPD admission on the Claim tab before sending the claim."
 5. "Record how the patient was discharged before claiming."
-6. "A claim goes in against an approved pre-authorisation." (the pre-auth must be `approved` or `queried`)
+6. "A claim goes in against an approved pre-authorisation." (the pre-auth must be `approved`, `partial` or `queried`; `partial` is an approval for less than asked)
 7. "Set the facility's HFR ID and NHCX participant code under Settings before submitting."
 8. "Enter the planned admission date on the pre-authorisation."
 9. "Quote at least one ICD-10 diagnosis."
 10. "Add at least one doctor to the care team."
 11. "Add at least one line, the procedure being done."
+12. A custom line priced at 0 ([D16. claim_line](../database/D16-claim-line.md)): "<name> (<code>) has no price: enter its price in the line items."
 
-Success flash: "Claim submitted to the payer."
+Success flash: "Claim submitted to the payer.", or "Discharge submitted to the payer." for a discharge send.
 
 #### A5Q. REQUEST
 
@@ -79,7 +87,7 @@ Envelope (a government payer, first claim):
 }
 ```
 
-A query answer under the `gov` adapter goes under the claim query-response workflow id (151; 161 under the sandbox override [SANDBOX](../references/PAYERS.md#markers)) [PAYER](../references/PAYERS.md#markers), still `request.initiated`, with the reply text riding on the Claim as the "Claim query detail" entry (F8), for example "Final bill and discharge summary attached again; the ward stay was two days as billed.".
+A query answer under the `gov` adapter goes under the claim query-response workflow id (161) [PAYER](../references/PAYERS.md#markers) [PAYER](../references/PAYERS.md#markers), still `request.initiated`, with the reply text riding on the Claim as the "Claim query detail" entry (F8), for example "Final bill and discharge summary attached again; the ward stay was two days as billed.".
 
 #### A5S. RESPONSE
 
@@ -103,7 +111,8 @@ function submit_claim(case_id, reply):
     case  = claim[case_id]                 or refuse "Claim not found."
     kind  = claim_send_kind(case_id)                       // may refuse
     state = claim_submission for the case
-    answering = (kind == claim_query_response)
+    discharge = kind in {discharge, discharge_query_response}   // the discharge stage (D20)
+    answering = kind in {claim_query_response, discharge_query_response}
     question  = (state.query_note or state.disposition) if answering and state exists
     answer = null
     if answering:
@@ -114,10 +123,12 @@ function submit_claim(case_id, reply):
     if state missing or state.discharge_mode empty:
         refuse "Record how the patient was discharged before claiming."
     granted = claim_preauth for the case
-    if granted missing or granted.status not in {approved, queried}:
-        refuse "A claim goes in against an approved pre-authorisation."
-    lines = claim_line rows, or, for a LAMA / DAMA discharge before or during surgery, the single
-            procedure LM100 at its claim_plan_benefit rate, quantity = days admitted (admission to
+    if granted missing or granted.status not in {approved, partial, queried}:   // partial: approved for less than asked
+        refuse "A claim goes in against an approved pre-authorisation."   // a cancelled one never qualifies
+    preauth_ref = granted.preauth_ref       // D18 clears it on a cancel: a withdrawn reference is never quoted
+    procedure = payer_config_for(case.payer_id).lama_dama_procedure    // D33; LM100 on both defaults
+    lines = claim_line rows, or, for a LAMA / DAMA discharge before or during surgery when
+            procedure is not empty, the single procedure at its claim_plan_benefit rate, quantity = days admitted (admission to
             discharge, at least 1) [PAYER](../references/PAYERS.md#markers) (display "LAMA / DAMA procedure", rate 0 when the plan
             has no such package [REF](../references/PAYERS.md#markers))
     token = biometric_headers(case, case.payer_id, Discharge)  // A18: {} when none is held
@@ -155,17 +166,32 @@ function submit_claim(case_id, reply):
               submission_kind: kind, workflow_id: workflow, request_json: bundle,
               response_json: null, reply_text: answer}
     if question: values.query_note = question
+    if discharge:
+        values += {discharge_status: submitting, discharge_correlation_id: ack.correlation_id,
+                   discharge_submitted_at: now, discharge_settled_at: null}
     if failed:                                              // refused at the door
         values.status = error; values.error_message = failed.message
         if answering:
             values.status = queried; values.disposition = question   // the question stays open
+        if discharge: values.discharge_status = values.status
+        if kind == claim and state.submission_kind in {discharge, discharge_query_response}:
+            values = {error_message: failed.message, txn_id: failed.txn_id}  // the approved discharge stands
     UPDATE claim_submission[state.id] SET values; recompute case stage
     if failed: raise failed
-    return "Claim submitted to the payer."
+    return "Discharge submitted to the payer." if discharge else "Claim submitted to the payer."
 
 function claim_send_kind(case_id):
     state = claim_submission for the case
-    if state is none or state.status == draft: return claim
+    if state is none or state.status == draft:
+        return discharge if discharge_step(case.payer_id) else claim   // D20, claim.dischargeStep
+    if state.submission_kind in {discharge, discharge_query_response}:  // the discharge stage
+        if state.status == error:    return state.submission_kind
+        if state.status == queried:  return discharge_query_response
+        if state.status == rejected: return discharge               // corrected, sent again
+        if state.status in {approved, partial}: return claim         // the final claim
+        if state.status == submitting:
+            refuse "The claim is with the payer; wait for its answer before sending again."
+        return discharge
     if state.status == error:
         return state.submission_kind if in {claim_query_response, claim_resubmit} else claim
     if state.status == queried: return claim_query_response
@@ -174,6 +200,12 @@ function claim_send_kind(case_id):
     if state.status == submitting:
         refuse "The claim is with the payer; wait for its answer before sending again."
     return claim
+
+function discharge_step(payer_id):
+    decision = integration decision claim.dischargeStep or where-payer-requires
+    if decision == always: return true
+    if decision == never:  return false
+    return adapter(payer_id).discharge_step                // gov yes, generic no (PAYERS.md)
 ```
 
 #### A5U. USED BY
@@ -181,5 +213,5 @@ function claim_send_kind(case_id):
 - APIs: [A6. Task Submit (cancel, status, reprocess, release)](A6-task-submit.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A13. Transaction List](A13-txn-list.md), [A17. Claim State](A17-claim-state.md), [A18. Biometric Authentication](A18-biometric-authentication.md)
 - Callbacks: [C6. Claim Reply](../callbacks/C6-claim-on-submit.md)
 - FHIR: [F8. Claim](../fhir/F8-claim.md), [F9. ClaimResponse](../fhir/F9-claimresponse.md), [F15. Patient](../fhir/F15-patient.md), [F17. Organization](../fhir/F17-organization.md), [F18. Coverage](../fhir/F18-coverage.md)
-- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D31. biometric_auth](../database/D31-biometric-auth.md)
-- Tests: [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md)
+- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D20. claim_submission](../database/D20-claim-submission.md), [D31. biometric_auth](../database/D31-biometric-auth.md), [D33. payer_config](../database/D33-payer-config.md)
+- Tests: [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T17. PMJAY Claim Through the Role Walk](../tests/T17-pmjay-claim-adjudicated.md), [T21. PMJAY Discharge Stage Before the Final Claim](../tests/T21-pmjay-discharge-stage.md)

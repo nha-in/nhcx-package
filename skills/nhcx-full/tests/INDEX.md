@@ -38,6 +38,7 @@ The IRDAI tests run against the IRDAI test payer and decide its side through the
 | [T17](T17-pmjay-claim-adjudicated.md) | PMJAY Claim Through the Role Walk | PMJAY test payer | [T17-pmjay-claim-adjudicated.md](T17-pmjay-claim-adjudicated.md) |
 | [T18](T18-pmjay-payment-status-cancel.md) | PMJAY Payment Notice, Status Refusal and Cancel | PMJAY test payer | [T18-pmjay-payment-status-cancel.md](T18-pmjay-payment-status-cancel.md) |
 | [T19](T19-pmjay-biometric-and-abha.md) | PMJAY Beneficiary Verification and ABHA | PMJAY test payer | [T19-pmjay-biometric-and-abha.md](T19-pmjay-biometric-and-abha.md) |
+| [T21](T21-pmjay-discharge-stage.md) | PMJAY Discharge Stage Before the Final Claim | PMJAY test payer | [T21-pmjay-discharge-stage.md](T21-pmjay-discharge-stage.md) |
 
 ## Order
 

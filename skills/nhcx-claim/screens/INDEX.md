@@ -16,6 +16,7 @@ Each file has ROUTE (R), DESCRIPTION (D), LAYOUT (L) and ACTIONS (A) sections. D
 | # | Screen | Route | File |
 |---|---|---|---|
 | [S19](S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | [S19-nhcx-settings.md](S19-nhcx-settings.md) |
+| [S20](S20-payer-configuration.md) | Payer Configuration | `settings/nhcx/payers` | [S20-payer-configuration.md](S20-payer-configuration.md) |
 
 ## Flow
 

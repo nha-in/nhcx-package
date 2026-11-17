@@ -15,6 +15,7 @@ Every screen of the claim, patient and practitioner flows, in one list. Each row
 | # | Screen | Route | What it does | APIs | Callbacks |
 |---|---|---|---|---|---|
 | [S19](../screens/S19-nhcx-settings.md) | NHCX Settings | `settings/nhcx` | The facility's NHCX setup, kept by the desk's administrator under the HMIS's facility settings: the facility profile (HFR id, from the ABDM module when it has one; participant code, the gateway's default when blank; how a claim starts), the participant registry record with the endpoint and certificate verdicts and an Update the registry action, key rotation (stage, register certificate, activate, retire), the participant master with its counts and Refresh now, and a link to the doctors and staff master. | none | none |
+| [S20](../screens/S20-payer-configuration.md) | Payer Configuration | `settings/nhcx/payers` | Settings > NHCX > Payer configuration: the payer configuration master (D33) as a list (the GOV and PVT defaults, then one row per configured payer) and an editor for one row, every behaviour grouped (checks, coverage, proof of presence, queries, claim, workflow ids), with the inherited value shown beside each field a payer row leaves empty. | none | none |
 
 ## Component kit
 

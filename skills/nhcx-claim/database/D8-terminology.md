@@ -10,7 +10,7 @@ Kinds the claim flow reads:
 - `diagnosis`: ICD-10 concept in `code` / `display` (`system` `http://hl7.org/fhir/sid/icd-10`), with the mapped SNOMED CT concept in `alt_code` / `alt_display` (`alt_system` `http://snomed.info/sct`), empty when no mapping is known. The desk picks the ICD-10 (S4. Pre-authorisation Details and Admission Link (in nhcx-preauth)); the pre-auth sends it as the first coding and the SNOMED CT `alt_code` as the second ([F8. Claim](../fhir/F8-claim.md)).
 - `claim_package`: a local HBP package list, kept as a reference list only; no line is quoted from it, since every line comes from the payer's insurance plan (D10 (in nhcx-coverage), [D16](D16-claim-line.md)); `extra` is the package rate in rupees [PAYER](../references/PAYERS.md#markers).
 - `charge`: charge master the retired custom line items read (`case_type` `nonpackage`, D27. claim_item); `extra` is `price|invoice type code`. No screen of the claim flow reads it now.
-- `payer_adapter`: maps a payer's NHCX participant code (`code`, for example `<payer code>`) to the adapter key in `extra`: `gov` or `generic`, the only two adapters (see [PAYERS.md](../references/PAYERS.md)). A row is read only for a payer the participant master ([D32. participant](D32-participant.md)) does not hold; a payer in the master is chosen by its entity type. Rows stored with a retired key are read as today's: `pmjay` as `gov`, `kyrocare` as `generic`. The claim's `payer_id` is matched on its numeric part, so `<n>`, `<n>@hcx` and `<n>@HCX` reach the same row. A payer with no row and no `SHA` name falls back to `generic`.
+- `payer_adapter`: read by earlier builds only. Its rows (a payer's participant code in `code`, the adapter key `gov` or `generic` in `extra`) are migrated into payer rows of the payer configuration master ([D33. payer_config](D33-payer-config.md)) and no longer read; a new build writes none.
 - `department`, `service_type`: practitioner department and specialty ([D2](D2-practitioner.md)).
 - `vital`: the vitals written to D6 (in nhcx-coverage), with `unit`, `ref_low`, `ref_high`.
 - `allergen`, `reaction`: allergies (D7 (in nhcx-coverage)); an allergen's `extra` is its default category.
@@ -50,5 +50,5 @@ Lifecycle:
 
 #### D8U. USED BY
 - FHIR: [F8. Claim](../fhir/F8-claim.md)
-- Database: [D1. organization](D1-organization.md), [D2. practitioner](D2-practitioner.md), [D32. participant](D32-participant.md)
+- Database: [D2. practitioner](D2-practitioner.md), [D32. participant](D32-participant.md), [D33. payer_config](D33-payer-config.md)
 - Tests: [T1. Test Configuration](../tests/T1-test-configuration.md)

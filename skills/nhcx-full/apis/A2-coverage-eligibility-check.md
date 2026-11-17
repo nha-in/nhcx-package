@@ -21,6 +21,8 @@ The first three are the eligibility check, sent with the purpose, policy code an
 
 **The validation gate.** A case is provisional (hidden from the claim lists) from the moment it is opened (a policy chosen from the search, S2, or a cover taken from a discovery, S17) until a validation answers that the policy is in force. Opening it sends the validation at once; a refused send leaves it provisional with the reason ("The validation was not sent: <reason>"), and the desk sends it again. The verdict (C2) clears the flag only for a `validation` answering in force, and only once the patient is known: on a cover with several members the desk first chooses the patient ([S3. Policy Discovery](../screens/S3-policy-discovery.md)). A discovery's answer names covers and never makes a case.
 
+**Automatic checks, by payer.** Whether the auth-requirements check and the benefits check go out by themselves is the payer's configuration ([D33. payer_config](../database/D33-payer-config.md) `auth_requirements`, `coverage_benefits`: `auto`, `manual`, `off`), never the code. With `auto` the check is sent after every change to the line items ([D16. claim_line](../database/D16-claim-line.md)) whose procedure set differs from the one last sent, and the auth-requirements check also before each pre-authorisation and enhancement send (A4); with `manual` only the desk sends it; with `off` its card is hidden and it is refused ("This payer does not take that check."). A check sent automatically while one for an older set is still out is not sent twice: when the older answer lands ([C2. Coverage Eligibility Verdict](../callbacks/C2-coverage-eligibility-on-check.md), [C3. Authorisation Requirements Ruling](../callbacks/C3-auth-requirements-on-check.md)) and the set has changed since, it is sent again at once. While a check is out, its card polls it every `check_poll_seconds` ([S8. Line Items](../screens/S8-line-items.md)).
+
 **`in_force(case)`.** Every gate that asks "is the policy in force?" (the automatic and the manual auth-requirements check, the admission link, the pre-authorisation send, the pre-authorisation screen, the plan refetch row) reads this, never the raw status: the validation said `eligible`, and a later benefits check that is waiting (`checking`) or whose send failed (`error`) does not withdraw it. So `in_force` is true when the case's status is `eligible`, or when the case is not provisional, its last purpose is `benefits` and its status is `checking` or `error`.
 
 **The insurance plan follows the validation.** When a validation leaves an open case (not provisional) `eligible` and the case holds no plan row, and again when choosing the patient on a several-member cover opens the case, the plan is fetched without the desk asking (A3 `plan_on_case_created`): a `ready` plan of the same policy, HFR id and payer is copied first, else the payer is asked. It never raises; the desk can still fetch.
@@ -237,7 +239,9 @@ function request_auth(case_id):
     case = claim[case_id]                  or refuse "Claim not found."
     if not in_force(case):
         refuse "Check the policy's eligibility before validating a procedure set against it."
-    // any payer may be asked: the adapter decides only the automatic send below
+    if payer_config_for(case.payer_id).auth_requirements == off:   // D33
+        refuse "This payer does not take that check."
+    // auto or manual: the desk may always ask; D33 decides the automatic send below
     lines = claim_line rows of the case
     if lines empty:
         refuse "Choose the line items first, this checks the procedure set, so there has to be one."
@@ -268,13 +272,30 @@ function request_auth(case_id):
 function ensure_auth_requirements(case_id):
     case = claim[case_id]
     if case missing or not in_force(case) or no claim_line rows: return false
-    if not adapter.auth_requirements:                                  return false
+    if payer_config_for(case.payer_id).auth_requirements != auto:     return false   // D33
     ruling = claim_auth for the case
     if ruling exists and ruling.status != error
        and ruling.asked_codes == fingerprint of current set:           return false
     try: request_auth(case_id)
     catch any refusal or G7 error: return false                        // swallowed; the send goes on
     return true
+
+// benefits on the quoted set, automatic (called after every D16 write when D33 says auto)
+function ensure_benefits(case_id):
+    case = claim[case_id]
+    if case missing or not in_force(case) or no claim_line rows: return false
+    if payer_config_for(case.payer_id).coverage_benefits != auto:     return false
+    if case.status == checking:                                        return false   // resent by C2 if stale
+    if case.purpose == benefits and case.benefits_codes == fingerprint of current set: return false
+    try: run_check(case_id, benefits, case.policy_code, case.member_id)  // as the card's button
+    catch any refusal or G7 error: return false                        // the card shows the state
+    UPDATE claim[case_id] SET benefits_codes = fingerprint of current set
+    return true
+
+// after every D16 write, once committed
+function on_lines_changed(case_id):
+    ensure_auth_requirements(case_id)       // skips unless auto, and unless the set changed
+    ensure_benefits(case_id)
 ```
 
 #### A2U. USED BY
@@ -282,6 +303,6 @@ function ensure_auth_requirements(case_id):
 - APIs: [A1. Policy Search](A1-policy-search.md), [A3. Insurance Plan Request](A3-insurance-plan-request.md), [A4. Pre-auth Submit](A4-preauth-submit.md), [A5. Claim Submit](A5-claim-submit.md), [A6. Task Submit (cancel, status, reprocess, release)](A6-task-submit.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A13. Transaction List](A13-txn-list.md), [A18. Biometric Authentication](A18-biometric-authentication.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C2. Coverage Eligibility Verdict](../callbacks/C2-coverage-eligibility-on-check.md), [C3. Authorisation Requirements Ruling](../callbacks/C3-auth-requirements-on-check.md)
 - FHIR: [F1. Bundle](../fhir/F1-bundle.md), [F15. Patient](../fhir/F15-patient.md), [F18. Coverage](../fhir/F18-coverage.md)
-- Database: [D9. claim](../database/D9-claim.md), [D13. claim_auth](../database/D13-claim-auth.md), [D31. biometric_auth](../database/D31-biometric-auth.md)
+- Database: [D9. claim](../database/D9-claim.md), [D13. claim_auth](../database/D13-claim-auth.md), [D16. claim_line](../database/D16-claim-line.md), [D31. biometric_auth](../database/D31-biometric-auth.md), [D33. payer_config](../database/D33-payer-config.md)
 - Gateway: [G1. Embedding](../gateway/G1-embedding.md), [G5. Protocol Headers](../gateway/G5-protocol-headers.md), [G7. Send](../gateway/G7-send.md)
 - Tests: [T3. IRDAI Policy Search and Eligibility](../tests/T3-irdai-policy-and-eligibility.md), [T4. IRDAI Insurance Plan and Authorisation Requirements](../tests/T4-irdai-plan-and-auth-requirements.md), [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md), [T19. PMJAY Beneficiary Verification and ABHA](../tests/T19-pmjay-biometric-and-abha.md)

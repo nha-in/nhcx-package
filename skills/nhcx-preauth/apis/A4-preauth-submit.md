@@ -10,7 +10,7 @@ Sends the pre-authorisation Claim bundle (`Claim.use = preauthorization`) for on
 
 **Read only once the claim is with the payer** ([CORE.md](../references/CORE.md) Instruction 14). Once the claim (A5, D20) has reached the payer (`submitting`, `queried`, `approved`, `partial` or `rejected`), the pre-authorisation can no longer change: every send here, and every write to the pre-authorisation leg (its lines, its details, its documents, forms and records, a document taken off its list), is refused with "The claim has gone to the payer, so the pre-authorisation is read only: no enhancement or change can be made. It can only be cancelled while the payer is deciding the claim." A claim still a draft, or refused at the door (`error`, it never reached the payer), leaves the pre-authorisation open. The claim leg's own writes are never refused by this rule. The cancel ([A6. Task Submit (cancel, status, reprocess, release)](A6-task-submit.md)) stays possible until the payer decides the claim (`approved`, `partial` or `rejected`); then it is refused with "The payer has decided the claim; the pre-authorisation can no longer be cancelled."
 
-**Every line is quoted from the insurance plan.** The lines are the D16 rows quoted from the case's plan; there are no custom line items, and the only price the desk types is a rate the plan leaves open. The case type is always `package`.
+**The lines.** The lines are the case's D16 rows: quoted from the case's plan (the desk types a price only where the plan leaves the rate open), and, where the payer's configuration allows them ([D33. payer_config](../database/D33-payer-config.md) `custom_lines`), custom lines the hospital added with its own code, name and price. Both go out alike as `Claim.item`. The case type is always `package`.
 
 **Send kinds.** The kind is worked out from where the pre-authorisation stands:
 
@@ -56,7 +56,7 @@ A per-environment override (a JSON object of kind to workflow id, per adapter or
 | `x-hcx-ben-abha-id` | The token's ABHA when [A18. Biometric Authentication](A18-biometric-authentication.md) holds a stage-`Preauth` authentication, else the case's ABHA number (14 digits, hyphenated); left out when none is known |
 | the user-token header | The stage-`Preauth` user token when one is held ([A18. Biometric Authentication](A18-biometric-authentication.md)); left out otherwise |
 
-**Before a send**, the app fires the payer's `auth-requirements` coverage check (A2 `ensure_auth_requirements`) when the adapter sends it unasked (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers), the policy is in force, lines exist, and this procedure set has not been ruled on (or the last ruling is in `error`). It never waits for the answer, and a failure of that check does not stop the send.
+**Before a send**, the app fires the payer's `auth-requirements` coverage check (A2 `ensure_auth_requirements`) when the payer's configuration sends it automatically ([D33. payer_config](../database/D33-payer-config.md) `auth_requirements` `auto`; the GOV default does, see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers), the policy is in force, lines exist, and this procedure set has not been ruled on (or the last ruling is in `error`). It never waits for the answer, and a failure of that check does not stop the send.
 
 **Proof of presence.** It is required on the case when the payer's adapter requires it, or when the case's insurance plan asks for the Aadhaar proof of identity (a plan-level requirement coded `ADN`, PMJAY's `NHCXProofOfIdentity`, category POI). Then the next action reads "Authenticate the beneficiary" until a stage-`Preauth` token is held, and without a token the scheme's Authentication Consent form rides instead ([A18. Biometric Authentication](A18-biometric-authentication.md)).
 
@@ -71,6 +71,7 @@ A per-environment override (a JSON object of kind to workflow id, per adapter or
 8. "Quote at least one ICD-10 diagnosis."
 9. "Add at least one doctor to the care team."
 10. "Add at least one line, the procedure being done."
+11. A custom line priced at 0 ([D16. claim_line](../database/D16-claim-line.md)): "<name> (<code>) has no price: enter its price in the line items."
 
 Success flash: "Pre-authorisation submitted to the payer."
 
@@ -247,8 +248,11 @@ function gather(case, kind, leg, lines = none, reply, preauth_ref = none, discha
     forms      = leg_forms(case, leg, holds_token, requires_proof(case))   // A17 required_forms, then:
                  the leg's consent form added when proof is required and no token is held, left out
                  when a token is held; answers saved for the leg; unanswered forms dropped
-    documents  = claim_document rows at stage `leg`, minus files given as form answers
+    documents  = claim_document rows at stage `leg` not yet delivered (sent_at null, D28),
+                 minus files given as form answers
                  (on the claim leg, the discharge summary taken out, A5)
+    // after an accepted send, the caller marks every document it carried (and the summary)
+    // sent_at = now, sent_kind = kind, sent_correlation_id = ack.correlation_id (D28)
     return {input for F8, adapter, org.participant_code}
 
 // every write to the pre-authorisation leg (lines, details, its documents, forms, records,

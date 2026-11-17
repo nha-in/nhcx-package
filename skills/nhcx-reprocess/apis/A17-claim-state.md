@@ -78,7 +78,7 @@ Row objects are the stored rows with every column, or `null` when the row does n
 | `enquiries` | array | Status and task enquiry rows, newest first. |
 | `poll_notes` | array of strings | The error message of each poll that failed, for example a G9 error. Empty when all polls ran cleanly. |
 
-Each per-item verdict (`preauth_items`, `submission_items`) is `{"sequence", "status", "eligible", "percent", "quantity", "deductible", "deduction_reason", "reason"}`, plus `benefit` and `submitted` when the payer sent those categories. It is an empty array before the payer has answered. FHIR: F9. ClaimResponse (in nhcx-preauth).
+Each per-item verdict (`preauth_items`, `submission_items`) is `{"sequence", "status", "eligible", "percent", "quantity", "deductible", "deduction_reason", "reason"}`, plus `benefit` and `submitted` when the payer sent those categories. It is an empty array before the payer has answered. FHIR: [F9. ClaimResponse](../fhir/F9-claimresponse.md).
 
 ```json
 {

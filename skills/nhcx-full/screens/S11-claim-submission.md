@@ -25,7 +25,7 @@ Breadcrumb: Claims (claims/list, S5) > <case number>
 #### S11D. DESCRIPTION
 The claim is filed once the patient has left, against the stay it bills.
 
-**When the claim can start.** The claim needs a pre-authorisation with status `approved` or `queried`. Until one exists the tab shows a single card titled "Claim": "A claim goes in against an **approved** pre-authorisation, once the patient has left. Get the pre-authorisation answered on the previous tab first." (the proof of presence card, when needed, still shows above it). A `partial` pre-authorisation does not open the claim.
+**When the claim can start.** The claim needs a pre-authorisation with status `approved`, `partial` or `queried`. A `partial` pre-authorisation is an approval for less than was asked (outcome `partial`, reason `approved`, [F9. ClaimResponse](../fhir/F9-claimresponse.md)): it is an approval, and it opens the claim, which then bills against the amount approved. Until one exists the tab shows a single card titled "Claim": "A claim goes in against an **approved** pre-authorisation, once the patient has left. Get the pre-authorisation answered on the previous tab first." (the proof of presence card, when needed, still shows above it).
 
 **What the tab shows**, top to bottom:
 1. **Proof of presence** ([S18. Beneficiary Verification](S18-beneficiary-verification.md), stage `Discharge`), only when the payer or its plan asks for it: a fresh capture whose token rides on the claim. The pre-authorisation's token never serves the claim. Without one, a payer that requires proof of presence gets the Discharge Consent form answered in the bundle instead.
@@ -65,7 +65,7 @@ Money shows as `₹12,345`; a missing value as `-`. No card shows a correlation 
 | Surgery date | date picker | "Leave blank for a conservative case." |
 | Date and time of death | date and time picker | "Required when the discharge type is death." |
 
-**LAMA / DAMA rule.** When the type is LAMA or DAMA and the stage is Before Surgery or During Surgery, a warning chip "Claimed as LM100 only" appears with: "The payer accepts only **LM100** for a LAMA / DAMA case that ended before or during surgery, and disqualifies everything the pre-authorisation approved. The claim below quotes it in their place." [PAYER](../references/PAYERS.md#markers) The claim then quotes the single procedure `LM100` at the plan's rate, quantity the number of days admitted (admission to discharge, at least 1), in place of every pre-authorised line. Its name falls back to "LAMA / DAMA procedure", its rate to 0 when the plan has no such package.
+**LAMA / DAMA rule.** Only when the payer's configuration names a LAMA / DAMA procedure ([D33. payer_config](../database/D33-payer-config.md) `lama_dama_procedure`; `LM100` on both defaults, shown below as `LM100`; another code reads in its place, and none shows no chip and changes no line): when the type is LAMA or DAMA and the stage is Before Surgery or During Surgery, a warning chip "Claimed as LM100 only" appears with: "The payer accepts only **LM100** for a LAMA / DAMA case that ended before or during surgery, and disqualifies everything the pre-authorisation approved. The claim below quotes it in their place." [PAYER](../references/PAYERS.md#markers) The claim then quotes the single procedure `LM100` at the plan's rate, quantity the number of days admitted (admission to discharge, at least 1), in place of every pre-authorised line. Its name falls back to "LAMA / DAMA procedure", its rate to 0 when the plan has no such package.
 
 "Save discharge" (primary, save icon), right-aligned, is hidden while the claim is `submitting`; the server refuses the save then too. Checks, in order, each a red flash:
 - "The claim is with the payer; wait for its answer before changing the discharge."
@@ -106,6 +106,18 @@ API: [A5. Claim Submit](../apis/A5-claim-submit.md) (answered forms)
 
 ---
 
+**The discharge stage** ([D20. claim_submission](../database/D20-claim-submission.md), [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge before the final claim (PMJAY, or the decision `claim.dischargeStep` `always`), the card is titled "Discharge" until the discharge is approved, and while nothing is sent it shows an info alert "Discharge validation first": "This payer validates the discharge before the final claim: the first send is the discharge (workflow 14) with the discharge details, summary and documents. Once it is approved, the final claim (workflow 15) goes out." On a discharge row the chip reads:
+
+| `discharge_status` | Label | Tone |
+|---|---|---|
+| `submitting` | Discharge with payer | info |
+| `approved`, `partial` | Discharge approved | success |
+| `queried` | Discharge queried | warning |
+| `rejected` | Discharge rejected | danger |
+| `error` | Discharge refused | danger |
+
+A **discharge verdict** alert, titled "Discharge stage" with that chip, shows on a discharge row once sent, and beside the claim once the final claim went: approved "The payer validated the discharge (workflow 14). Proceed to the final claim."; rejected "The payer rejected the discharge. Correct what it names, then submit the discharge again."; queried "The payer queried the discharge. Answer below; the answer goes out on workflow 141."; submitting "The discharge is with the payer; the final claim opens once it is approved."; error the refusal, else "The exchange refused the discharge; send it again.". Under it: "Payer:" and `discharge_disposition` when given, Sent at and Decided at, and once the final claim went the discharge's per-item verdicts. On a discharge row the first stat tile reads "Billed at discharge", the Reprocess and Balance release sections are not shown, and the send button stays offered after a decided discharge (approved: the final claim; rejected: the discharge again), confirmed with "Send the discharge to the payer for validation?" for a discharge send.
+
 **Claim card.** Title "Claim", with the status chip once a claim row exists.
 
 | Status | Label | Tone |
@@ -142,13 +154,17 @@ States of the card:
 
 | Where the claim stands | Button label |
 |---|---|
+| Not sent / `draft`, the discharge stage applying | Submit discharge (<workflow id>) |
+| a discharge `queried` | Answer the discharge query (<workflow id>) |
+| a discharge `rejected` or `error` | Submit discharge (<workflow id>) |
+| a discharge `approved` / `partial` | Submit claim |
 | Not sent / `draft` | Submit claim |
 | `queried` | Answer the query (<workflow id>) [PAYER](../references/PAYERS.md#markers) |
 | `error` | the label of the kind that failed |
 | `approved` / `partial` / `rejected` | no button; refused: "The payer has decided this claim; it goes back for another look as a reprocess request, not as a claim sent again." |
 | `submitting` | refused: "The claim is with the payer; wait for its answer before sending again." |
 
-**Replying to a query** (status `queried`, answered here). A form with the required multi-line field "Reply to the payer's query", the help text "Goes to the payer as the claim query detail, with everything attached and answered on this tab since the query.", and the small primary button "Answer the query (<workflow id>)" (151, or 161 under the sandbox override [SANDBOX](../references/PAYERS.md#markers)). The question being answered is kept, so the card still shows it while the answer is out. A standalone query shows only the Communication pointer with "Open the Communication tab", and the claim is not sent again.
+**Replying to a query** (status `queried`, answered here). A form with the required multi-line field "Reply to the payer's query", the help text "Goes to the payer as the claim query detail, with everything attached and answered on this tab since the query.", and the small primary button "Answer the query (<workflow id>)" (161 under the GOV default, 151 under PVT [PAYER](../references/PAYERS.md#markers)). The question being answered is kept, so the card still shows it while the answer is out. A standalone query shows only the Communication pointer with "Open the Communication tab", and the claim is not sent again.
 
 **Submit checks**, on the server in this order, each a red flash:
 - The send-kind refusals above.
@@ -302,8 +318,9 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 7. File link: open the upload in a new tab, or a record on its own HMIS page.
 8. Remove: after the confirm, delete the document, re-read the case.
 9. Save answers: store one claim-stage form's answers and files.
-10. Submit claim / Answer the query: confirm (Submit claim from draft only), run the checks, send the claim, re-read the case with the card awaiting the payer.
-11. Ask where it stands: send the status Task; the answer appears in the enquiry rows.
+10. Submit discharge / Answer the discharge query / Submit claim / Answer the query: confirm (Submit claim from draft only), run the checks, send the claim, re-read the case with the card awaiting the payer.
+11. Ask where it stands: send the status Task, or the claim search for a payer configured for it ([D33. payer_config](../database/D33-payer-config.md) `claim_search`); the answer appears in the enquiry rows.
+11a. Check on the exchange (claim `submitting` with no answer): post `v1/status` for the claim's last send ([A6. Task Submit (cancel, status, reprocess, release)](../apis/A6-task-submit.md) `position`) and show `request.queued` or `request.dispatched` at once.
 12. Send reprocess request (rejected claim only): send the reprocess Task; the answer appears in the reprocess rows.
 13. Ask for the balance: send the release Task; the payment follows on S12.
 14. Open the Communication tab: go to S10.

@@ -43,7 +43,7 @@ Lifecycle:
 - `auth_id` references [D13. claim_auth](D13-claim-auth.md) `id`, `ON DELETE CASCADE`.
 - No unique constraint (de-duplication is done by the parser).
 - Index: `ix_claim_auth_req (auth_id, seq)`.
-- `form_url` names a D12. claim_plan_form (in nhcx-coverage) `url`, and `for_code` a D16. claim_line (in nhcx-preauth) `code` (no foreign keys). Uploaded files are matched to a document requirement by `code` in [D28. claim_document](D28-claim-document.md).
+- `form_url` names a D12. claim_plan_form (in nhcx-coverage) `url`, and `for_code` a [D16. claim_line](D16-claim-line.md) `code` (no foreign keys). Uploaded files are matched to a document requirement by `code` in [D28. claim_document](D28-claim-document.md).
 
 #### D15U. USED BY
 - Screens: [S10. Communication](../screens/S10-communication.md)

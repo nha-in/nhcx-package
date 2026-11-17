@@ -18,7 +18,7 @@ Guards that read it:
 - The eligibility check refuses to send while `identifier_value` is blank ("Set the facility's HFR ID under Settings before raising claims.") or `participant_code` is blank ("Set the facility's NHCX participant code under Settings before raising claims."). The InsurancePlan request refuses the same way, ending "before fetching a package master." instead.
 - The session token call (A16, served by [G3. Session Token](../gateway/G3-session-token.md)) and the payer adjudication calls (A15) use `participant_code` to name the participant.
 
-Payers are not rows in this table. A claim carries its payer on [D9. claim](D9-claim.md) (`payer_id`, `payer_name`), the payer's participant code is mapped to a payer adapter by the `payer_adapter` kind of [D8. terminology](D8-terminology.md), and every participant on the exchange is listed in the participant master [D32. participant](D32-participant.md).
+Payers are not rows in this table. A claim carries its payer on [D9. claim](D9-claim.md) (`payer_id`, `payer_name`), how the application behaves towards the payer is its payer configuration ([D33. payer_config](D33-payer-config.md), the GOV or PVT default unless the payer has a row of its own), and every participant on the exchange is listed in the participant master [D32. participant](D32-participant.md).
 
 #### D1C. COLUMNS
 | column | type | null/default | meaning (and allowed values) |

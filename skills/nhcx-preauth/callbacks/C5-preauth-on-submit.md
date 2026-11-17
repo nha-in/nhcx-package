@@ -12,6 +12,8 @@ A pre-authorisation is answered several times on one correlation id: an acknowle
 
 **Legs that have moved on.** A `cancelled` pre-authorisation ignores every reply. While a cancel is out (`cancelling`), only a ClaimResponse adjudicated `cancelled` is applied, as the payer confirming the withdrawal on the pre-authorisation's own thread; anything else is left for the cancel Task (C7).
 
+**Documents of a refused send.** A ProtocolResponse or an error answer delivered nothing: the documents marked under that correlation id are un-marked (D28 `sent_*` cleared) and go with the next send [PAYER](../references/PAYERS.md#markers).
+
 **Errors.** A reply that is an error (`response.error` on the envelope, `ClaimResponse.error`, or an `error` outcome that is not a rejection, [F9. ClaimResponse](../fhir/F9-claimresponse.md)) is not a decision. The leg goes to `error` with the payer's errors, disposition and process notes as its message, nothing else on it changes, and the same send is offered again. An enhancement in error leaves the approved pre-authorisation standing, as a refusal at the door does.
 
 **Status by workflow id.** The reply's `x-hcx-workflow_id` gives the status when it is one of the payer-side codes (20 acknowledgement, 21 or 22 approved, 23 or 231 rejected, 24 or 241 queried, see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers); otherwise the bundle does. So a reply under 20 is an acknowledgement whatever its ClaimResponse restates, and the screen shows the case as under adjudication.
@@ -163,5 +165,5 @@ D19 claim_predetermination: `answered` whatever the outcome, with `outcome`, `ad
 - Screens: [S9. Pre-authorisation](../screens/S9-preauthorisation.md)
 - APIs: [A4. Pre-auth Submit](../apis/A4-preauth-submit.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](C1-callback-door.md), [C7. Cancel Reply](C7-cancel-on-submit.md), [C8. Enquiry Reply](C8-enquiry-on-submit.md)
-- Database: [D18. claim_preauth](../database/D18-claim-preauth.md), [D19. claim_predetermination](../database/D19-claim-predetermination.md)
+- Database: [D18. claim_preauth](../database/D18-claim-preauth.md), [D19. claim_predetermination](../database/D19-claim-predetermination.md), [D28. claim_document](../database/D28-claim-document.md)
 - Tests: [T5. IRDAI Pre-authorisation Approved](../tests/T5-irdai-preauth-approved.md), [T6. IRDAI Pre-authorisation Rejected and Sent Again](../tests/T6-irdai-preauth-rejected.md), [T7. IRDAI Query Answered](../tests/T7-irdai-query-answered.md), [T8. IRDAI Enhancement](../tests/T8-irdai-enhancement.md), [T9. IRDAI Status Enquiry and Cancel](../tests/T9-irdai-cancel-and-status.md), [T14. PMJAY Pre-authorisation Through the Payer Service](../tests/T14-pmjay-preauth-adjudicated.md), [T15. PMJAY Query Answered by Resubmission](../tests/T15-pmjay-query-by-resubmission.md), [T16. PMJAY Rejection and Enhancement](../tests/T16-pmjay-rejection-and-enhancement.md)

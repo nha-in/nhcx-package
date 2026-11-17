@@ -1,12 +1,12 @@
 # C8. Enquiry Reply
 
 #### C8E. ENDPOINT
-Delivered in-process by [G8. Receive](../gateway/G8-receive.md) for NHCX route `v1/task/on_submit` (type `task`) or a status route such as `v1/on_status` (type `status`), passed to `C1.receive`. Answers A6 sent as a status enquiry, a reprocess request or a balance release.
+Delivered in-process by [G8. Receive](../gateway/G8-receive.md) for NHCX route `v1/task/on_submit` (type `task`), `v1/on_status` (type `status`) or `v1/search/on_submit` (type `search`), passed to `C1.receive`. Answers A6 sent as a status enquiry, a reprocess request, a balance release, a claim search, or (on `v1/on_status`) the payer's answer to a position check that was `request.dispatched`.
 
 #### C8D. DESCRIPTION
 The payer's answer to one of the small exchanges. Each enquiry waits on a correlation id of its own, so C1 looks for it before the main legs: a `task` or `status` message whose `x-hcx-correlation_id` matches an enquiry (D29 `correlation_id`) comes here, whatever else is on the case. A `status` message matching no enquiry is `unmatched`; a `task` message matching none goes to C7.
 
-The live status reply arrives as `task` (the enquiry goes out on `task/submit`, because the sandbox refuses `v1/status`) [SANDBOX](../references/PAYERS.md#markers), and the payer usually redelivers the decision on the pre-authorisation's own thread right after it (C5) [SANDBOX](../references/PAYERS.md#markers).
+The live status reply arrives as `task` (the status Task goes out on `task/submit`) [SANDBOX](../references/PAYERS.md#markers), and the payer usually redelivers the decision on the pre-authorisation's own thread right after it (C5) [SANDBOX](../references/PAYERS.md#markers). A claim search is answered on `v1/search/on_submit`; PMJAY's answer seen so far is a ProtocolResponse with `x-hcx-error_details` (`ERR-PYR-SR-002` "No Claim History with requested Details"), filed as the enquiry's `error` answer with that code and message [SANDBOX](../references/PAYERS.md#markers).
 
 Only an enquiry still `asking` takes the answer; an answered one answers `ignored`, which covers the payer's redeliveries. An enquiry on record as a failed send (`error`) is reopened and the answer applied.
 

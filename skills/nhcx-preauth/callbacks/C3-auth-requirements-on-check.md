@@ -6,6 +6,8 @@ Delivered in-process by [G8. Receive](../gateway/G8-receive.md) for NHCX route `
 #### C3D. DESCRIPTION
 The payer's ruling on the procedure set: for each quoted line, whether it needs authorisation, whether it is excluded, what it would allow, and which documents and forms have to accompany it. Matched by `x-hcx-correlation_id` against the ruling (D13 `correlation_id`, newest row). Nothing matching answers `unmatched`.
 
+Once the ruling is applied, when the payer's configuration sends this check automatically ([D33. payer_config](../database/D33-payer-config.md) `auth_requirements` `auto`) and the case's quoted set has changed since this ruling was asked, the check is sent again at once ([A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md) `ensure_auth_requirements`).
+
 Only a ruling still `checking` takes it; a settled ruling answers `ignored` (redelivery). A ruling on record as a failed send (`error`) is reopened and the reply applied.
 
 #### C3Q. REQUEST
@@ -73,5 +75,5 @@ A reply with no `authorizationSupporting` is valid: the ruling is `ready` with n
 - APIs: [A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](C1-callback-door.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md)
-- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D13. claim_auth](../database/D13-claim-auth.md)
+- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D13. claim_auth](../database/D13-claim-auth.md), [D16. claim_line](../database/D16-claim-line.md)
 - Tests: [T4. IRDAI Insurance Plan and Authorisation Requirements](../tests/T4-irdai-plan-and-auth-requirements.md), [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

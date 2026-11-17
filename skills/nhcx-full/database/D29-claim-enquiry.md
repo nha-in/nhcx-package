@@ -12,6 +12,8 @@ Each ask is its own Task on `task/submit` with its own correlation id, so each i
 |---|---|---|---|---|---|
 | `status` | "Ask where it stands": on the pre-authorisation only while it is `submitting`; once it is decided, on the claim once the claim is raised | the leg has been sent (D18 exists, "No pre-authorisation has been sent yet."; D20 not `draft`, "The claim has not been submitted yet.") and the payer's adapter answers status enquiries [PAYER](../references/PAYERS.md#markers) | `preauth` or `claim` | always `1`: no NHCX workflow code names a status check, so never the leg's correlation id nor a stage code | none |
 | `reprocess` | S11 | D20 is `rejected`, never `partial` or `approved` ("Only a claim the payer has rejected can be sent back for reprocessing."; a claim is never resubmitted, D20), and the claim is not paid in full (D21 paid total below D20 `requested_amount`; "A claim that has been paid in full cannot be reprocessed.") | `claim` | adapter's `reprocess` (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers) | `reason` (required text), `reason_code`, `document_ids` |
+| `search` | S11, "Ask where it stands" for a payer with [D33. payer_config](D33-payer-config.md) `claim_search` 1 and no status Task | the claim has been sent (D20 not `draft`) and the case has a policy code ("The case has no policy number to search with.") [PAYER](../references/PAYERS.md#markers) | `claim` | none | none |
+| `position` | S9 and S11, "Check on the exchange", while the leg is `submitting` | the leg's last send is in the gateway ledger ("The gateway no longer holds that request.") | `preauth` or `claim` | none | `answer` `request.queued` or `request.dispatched`, written at once from the HTTP reply |
 | `release` | S11 | D20 is `approved` or `partial` and not paid in full; the amount must be above 0 | `claim` | adapter's `release` (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers) | `reason` (the optional note), `amount` (the amount asked for, two decimals) |
 
 A reprocess is checked in this order: the claim is `rejected`; not paid in full; a reason text ("Say why the claim should be looked at again."); the facility's HFR ID and participant code; a `reason_code` both adapters allow, `claimrejected` or `rejectiondisputed` ("Choose why the claim is being sent back.") [PAYER](../references/PAYERS.md#markers). `partialpayment` is no reprocess reason, since a partly paid claim is not rejected: its unpaid part is asked for as a `release`. The reprocess Task carries the chosen D28 documents (each must be on this claim, "That document is not on this claim."; a repeated id counts once); `document_ids` records their ids. `reason_code` and `document_ids` (reprocess) and `amount` (release) are written with the row.
@@ -32,7 +34,7 @@ A reprocess is checked in this order: the claim is `rejected`; not paid in full;
 |---|---|---|---|
 | id | INTEGER | primary key | Row id |
 | claim_id | INTEGER | NOT NULL | The claim (D9) |
-| kind | TEXT | NOT NULL | `status`, `reprocess`, `release` |
+| kind | TEXT | NOT NULL | `status`, `reprocess`, `release`, `search`, `position` |
 | stage | TEXT | null | `preauth` or `claim` (always `claim` for reprocess and release) |
 | txn_id | TEXT | null | [G9. Ledger](../gateway/G9-ledger.md) id of the Task |
 | correlation_id | TEXT | null | Correlation id the answer arrives on |

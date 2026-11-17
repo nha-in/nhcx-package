@@ -43,7 +43,7 @@ The list carries only these four fields per participant (code, name, address, st
 - No foreign keys. [D9. claim](D9-claim.md) `payer_id` is not a foreign key to this table: a case may name a code the list has retired.
 
 #### D32U. USED BY
-- Screens: [S2. Select Policy](../screens/S2-select-policy.md), [S17. Beneficiary Discovery](../screens/S17-beneficiary-discovery.md), [S19. NHCX Settings](../screens/S19-nhcx-settings.md)
+- Screens: [S2. Select Policy](../screens/S2-select-policy.md), [S17. Beneficiary Discovery](../screens/S17-beneficiary-discovery.md), [S19. NHCX Settings](../screens/S19-nhcx-settings.md), [S20. Payer Configuration](../screens/S20-payer-configuration.md)
 - APIs: [A1. Policy Search](../apis/A1-policy-search.md)
-- Database: [D1. organization](D1-organization.md), [D8. terminology](D8-terminology.md)
+- Database: [D1. organization](D1-organization.md), [D33. payer_config](D33-payer-config.md)
 - Gateway: [G4. Registry and Certificates](../gateway/G4-registry.md)

@@ -56,6 +56,11 @@ How the desk learns of an answer is the integrator's decision `responses.check` 
 | Same, admission linked, no discharge recorded | Record the discharge | Claim (S11. Claim Submission (in nhcx-claim)) |
 | Same, discharge recorded | File the claim | Claim |
 | Stage `preauth`/`enhancement`, `requested`/`answered`/`resubmitted` | With the payer; ask where it stands | Pre-authorisation |
+| Stage `discharge`, `queried` | Answer the discharge query | Claim |
+| Stage `discharge`, `approved`/`partial` | File the final claim | Claim |
+| Stage `discharge`, `rejected` | Correct and resubmit the discharge | Claim |
+| Stage `discharge`, `refused` | Send the discharge again | Claim |
+| Stage `discharge`, any other sub-stage | With the payer; ask where it stands | Claim |
 | Stage `claim`, `queried`, and the payer takes answers by resubmission or no standalone query is open | Answer the claim query | Claim |
 | Stage `claim`, `rejected` | Ask for a reprocess | Claim |
 | Stage `claim`, `requested`/`answered`/`resubmitted` | With the payer; ask where it stands | Claim |

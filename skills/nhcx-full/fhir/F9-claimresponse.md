@@ -78,6 +78,7 @@ Predetermination, into D19 `claim_predetermination`: `outcome`, `adjudication`, 
 In a Task reply (F10) the same fields are read, then used by the Task's rules there.
 
 #### F9U. USED BY
+- Screens: [S11. Claim Submission](../screens/S11-claim-submission.md)
 - APIs: [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C5. Pre-auth Reply](../callbacks/C5-preauth-on-submit.md), [C6. Claim Reply](../callbacks/C6-claim-on-submit.md), [C7. Cancel Reply](../callbacks/C7-cancel-on-submit.md), [C8. Enquiry Reply](../callbacks/C8-enquiry-on-submit.md)
 - FHIR: [F1. Bundle](F1-bundle.md), [F10. Task (claim actions)](F10-task-claim-actions.md), [F11. CommunicationRequest](F11-communicationrequest.md)

@@ -37,7 +37,7 @@ Server refusals: "That enrolment is on a different policy", "That case belongs t
 
 **Rendering notes**: each issue with its severity (error red, warning amber, info blue), its path and its message. A message recorded without its bundle shows the warning "This message was recorded without its bundle."
 
-**Stats strip**: Bundle Type and Entries always; then for a case document Resource, Outcome (or status), Status (the claim-level adjudication reason, or the payment status), Amount (the `benefit` total or the payment amount), Items (items or payload entries); for a plan Coverage ("`<n>` groups / `<n>` benefits"), Doc Requirements, Sum Insured, Plan Type, Period; for eligibility In Force, Sum Assured (benefit[0] allowedMoney), Utilised (usedMoney), Balance (benefit[1] allowedMoney), Benefit Period, Outcome.
+**Stats strip**: Bundle Type and Entries always; then for a case document Resource, Outcome (or status), Status (the claim-level adjudication reason, or the payment status), Amount (the `benefit` total or the payment amount), Items (items or payload entries); for a plan Coverage ("`<n>` groups / `<n>` benefits"), Doc Requirements, Sum Insured, Plan Type, Period; for eligibility In Force, Balance (the `benefit` row's allowedMoney), Utilised (its usedMoney), Sum Assured (the two added), Benefit Period, Outcome.
 
 **The bundle**: two tabs, Resource Tree and Raw JSON, with "`<n>` lines · `<kb>` KB". Empty messages: "Choose a policy to render a bundle.", "Choose an enrolment to answer an eligibility enquiry.", "Choose a case that came off the exchange, and a message on it.", "Choose a case to render its document."; "Rendering…" while loading.
 

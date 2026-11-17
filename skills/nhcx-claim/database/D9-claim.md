@@ -42,7 +42,7 @@ Pre-authorisation details (on the Pre-authorisation tab):
 
 Stage (`stage`, `sub_stage`):
 - Derived from the legs and stored whenever a leg is written, the verdict lands, the draft is saved or the state endpoint (A17) runs. The stored pair lets the claim list (S5) show and filter it without reading the legs.
-- `stage`: `payment` when any payment notice exists; else `claim` when the claim leg exists and is not `draft`; else `enhancement` (last pre-auth send was `enhancement` or `enhancement_resubmit`) or `preauth` when a pre-auth leg exists; else `preauth` with `sub_stage = 'draft'` when `preauth_saved_at` is set; else `eligibility`.
+- `stage`: `payment` when any payment notice exists; else `discharge` when the claim leg exists, is not `draft` and its last send was `discharge` or `discharge_query_response` (the discharge stage, [D20. claim_submission](D20-claim-submission.md)); else `claim` when the claim leg exists and is not `draft`; else `enhancement` (last pre-auth send was `enhancement` or `enhancement_resubmit`) or `preauth` when a pre-auth leg exists; else `preauth` with `sub_stage = 'draft'` when `preauth_saved_at` is set; else `eligibility`.
 - `sub_stage`: `draft`, `checking`, `eligible`, `not-eligible`, `requested`, `resubmitted`, `answered`, `queried`, `approved`, `partial`, `rejected`, `cancelling`, `cancelled`, `refused`, `noticed`, `paid`. At `eligibility` it is `status`, with `error` read as `draft`. At `payment` it is `paid` when anything has been paid, else `noticed`. On a leg it is the leg's status: a leg still `submitting` reads by its send kind (`requested`, `resubmitted` or `answered`), a leg in `error` reads `refused`, and an open payer query ([D23](D23-claim-query.md) `kind = 'query'`, status `open` or `error`) on a leg in `requested`, `answered` or `resubmitted` reads `queried`.
 
 Other writes:
@@ -80,6 +80,7 @@ Other writes:
 | product_name | TEXT | null | insurance product name |
 | policy_json | TEXT | null | JSON: the raw policy row as the search returned it |
 | purpose | TEXT | null | last eligibility purpose: `validation`, `benefits`, `discovery` |
+| benefits_codes | TEXT | null | fingerprint of the quoted procedure set the last benefits check was sent for (as [D13. claim_auth](D13-claim-auth.md) `asked_codes`); the automatic benefits check ([D33. payer_config](D33-payer-config.md) `coverage_benefits` `auto`) resends when the set differs. Migration only |
 | txn_id | TEXT | null | [G9. Ledger](../gateway/G9-ledger.md) id of the outbound check |
 | correlation_id | TEXT | null | `x-hcx-correlation_id` tying the last check to its on_check (also kept in `correlation_ids`) |
 | checked_at | TEXT | null | ISO timestamp the check was sent |
@@ -103,12 +104,12 @@ Other writes:
 | encounter_id | INTEGER | null | linked IPD admission (D4 (in nhcx-coverage)) |
 | admission_date | TEXT | null | `YYYY-MM-DD`, planned or actual; the check's `servicedDate` and the pre-auth period start |
 | expected_discharge_date | TEXT | null | provisional discharge, `YYYY-MM-DD`; the pre-auth period end |
-| case_type | TEXT | null | always `package` on a save: every line is quoted from the payer's insurance plan, and custom line items are retired. `nonpackage` is kept only as a value old rows may hold; the stored value never appears on a screen |
+| case_type | TEXT | null | always `package` on a save: lines are D16 rows, from the payer's insurance plan or custom D16 lines (`custom` 1); the old custom line items of D27 are retired. `nonpackage` is kept only as a value old rows may hold; the stored value never appears on a screen |
 | package_code | TEXT | null | the first Procedure line's code |
 | package_name | TEXT | null | its name |
 | preauth_total | REAL | null | the lines' total ([D16](D16-claim-line.md)) when the details were saved |
 | preauth_saved_at | TEXT | null | ISO timestamp the draft was last saved; set means the case has reached `preauth` / `draft` |
-| stage | TEXT | null | `eligibility`, `preauth`, `enhancement`, `claim`, `payment`; migration only |
+| stage | TEXT | null | `eligibility`, `preauth`, `enhancement`, `discharge`, `claim`, `payment`; migration only |
 | sub_stage | TEXT | null | one of the sub-stages listed above; migration only |
 
 #### D9K. KEYS AND INDEXES
@@ -126,3 +127,4 @@ Other writes:
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C6. Claim Reply](../callbacks/C6-claim-on-submit.md), [C8. Enquiry Reply](../callbacks/C8-enquiry-on-submit.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md), [F8. Claim](../fhir/F8-claim.md), [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md), [F15. Patient](../fhir/F15-patient.md), [F17. Organization](../fhir/F17-organization.md), [F18. Coverage](../fhir/F18-coverage.md), [F19. Other bundle resources](../fhir/F19-other-resources.md)
 - Database: [D1. organization](D1-organization.md), [D3. patient](D3-patient.md), [D13. claim_auth](D13-claim-auth.md), [D16. claim_line](D16-claim-line.md), [D17. claim_form_answer](D17-claim-form-answer.md), [D18. claim_preauth](D18-claim-preauth.md), [D20. claim_submission](D20-claim-submission.md), [D21. claim_payment](D21-claim-payment.md), [D23. claim_query](D23-claim-query.md), [D24. claim_adjudication](D24-claim-adjudication.md), [D28. claim_document](D28-claim-document.md), [D29. claim_enquiry](D29-claim-enquiry.md), [D30. counter](D30-counter.md), [D31. biometric_auth](D31-biometric-auth.md), [D32. participant](D32-participant.md)
+- Tests: [T21. PMJAY Discharge Stage Before the Final Claim](../tests/T21-pmjay-discharge-stage.md)

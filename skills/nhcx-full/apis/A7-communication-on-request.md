@@ -20,10 +20,14 @@ Reply: [C9. Payer Communication](../callbacks/C9-communication-request.md) (how 
 | `x-hcx-sender_code` | The facility's participant code |
 | `x-hcx-recipient_code` | The request's `x-hcx-sender_code`, else the case's processing id, else the claim's payer id, else the configured default payer code |
 | `x-hcx-correlation_id` | The correlation id the request arrived on. This is how the payer ties the answer to the question |
-| `x-hcx-workflow_id` | The request's own `x-hcx-workflow_id`, else the queried leg's correlation id, else the claim number (the fallbacks are [REF](../references/PAYERS.md#markers)) |
+| `x-hcx-workflow_id` | On a reply: the payer configuration's reply workflow for the queried leg ([D33. payer_config](../database/D33-payer-config.md) `workflow_ids` `communication_preauth` / `communication_claim`; GOV `19` / `161`, as PMJAY's V1.2 requirements name them) [PAYER](../references/PAYERS.md#markers). When the configuration names none (PVT), and on an acknowledgement: the request's own `x-hcx-workflow_id`, else the queried leg's correlation id, else the claim number (the fallbacks are [REF](../references/PAYERS.md#markers)) |
 | `x-hcx-status` | `response.complete`: this is an `on_` path, the answer to the payer's request (see [PAYERS.md](../references/PAYERS.md)) |
 
-The workflow id does not come from the payer adapter. G7 completes the other headers ([G5. Protocol Headers](../gateway/G5-protocol-headers.md)); when the correlation id is blank, G7 takes it from the newest inbound communication request from the recipient in the [G9. Ledger](../gateway/G9-ledger.md).
+Only a reply's workflow id comes from the payer configuration (above); an acknowledgement's never does.
+
+**Line notes** (QRY-05, QRY-06) [PAYER](../references/PAYERS.md#markers). A reply may carry a note on individual lines of the queried leg: `items`, a list of `{sequence, note}`, where `sequence` is the `Claim.item.sequence` of the leg's last bundle sent (D18 or D20 `request_json`; before any send, the D16 lines in order). Blank notes are dropped; a sequence the leg did not send is refused: "A line note names an item the payer was not sent." A reply of line notes alone is an answer (the empty-answer refusal applies only when there is no text, no document and no note). Each note rides as a Procedure (F12) and is kept on the query (D23 `reply_items`).
+
+**Reply shape by payer** ([D33. payer_config](../database/D33-payer-config.md) `communication_reply`): `pmjay` (the GOV default) builds PMJAY's CommunicationOnRequestDocument (F12 PMJAY reply); `generic` the reply bundle of F12. The documents a reply carries are marked sent (D28, `sent_kind` `communication`) once NHCX accepts it. G7 completes the other headers ([G5. Protocol Headers](../gateway/G5-protocol-headers.md)); when the correlation id is blank, G7 takes it from the newest inbound communication request from the recipient in the [G9. Ledger](../gateway/G9-ledger.md).
 
 **Checks.**
 
@@ -176,6 +180,6 @@ function acknowledge_notification(query_id, case_id = none):
 - APIs: [A4. Pre-auth Submit](A4-preauth-submit.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C9. Payer Communication](../callbacks/C9-communication-request.md)
 - FHIR: [F11. CommunicationRequest](../fhir/F11-communicationrequest.md), [F12. Communication](../fhir/F12-communication.md), [F15. Patient](../fhir/F15-patient.md), [F18. Coverage](../fhir/F18-coverage.md)
-- Database: [D23. claim_query](../database/D23-claim-query.md)
+- Database: [D23. claim_query](../database/D23-claim-query.md), [D33. payer_config](../database/D33-payer-config.md)
 - Gateway: [G7. Send](../gateway/G7-send.md)
 - Tests: [T7. IRDAI Query Answered](../tests/T7-irdai-query-answered.md)

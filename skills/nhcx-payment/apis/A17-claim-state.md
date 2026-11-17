@@ -48,7 +48,7 @@ GET /claims/42/state
 
 `200` with a JSON object. An unknown claim returns `404` `{"error": "No such claim"}`.
 
-Row objects are the stored rows with every column, or `null` when the row does not exist. Data: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), D11. claim_plan_benefit (in nhcx-coverage), D4. encounter (in nhcx-coverage), D16. claim_line (in nhcx-preauth), [D13. claim_auth](../database/D13-claim-auth.md), D15. claim_auth_requirement (in nhcx-coverage), D12. claim_plan_form (in nhcx-coverage), D28. claim_document (in nhcx-coverage), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), D23. claim_query (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), [D21. claim_payment](../database/D21-claim-payment.md), D29. claim_enquiry (in nhcx-preauth).
+Row objects are the stored rows with every column, or `null` when the row does not exist. Data: [D9. claim](../database/D9-claim.md), D10. claim_plan (in nhcx-coverage), D11. claim_plan_benefit (in nhcx-coverage), D4. encounter (in nhcx-coverage), D16. claim_line (in nhcx-coverage), [D13. claim_auth](../database/D13-claim-auth.md), D15. claim_auth_requirement (in nhcx-coverage), D12. claim_plan_form (in nhcx-coverage), D28. claim_document (in nhcx-coverage), D18. claim_preauth (in nhcx-preauth), D19. claim_predetermination (in nhcx-preauth), D23. claim_query (in nhcx-preauth), [D20. claim_submission](../database/D20-claim-submission.md), [D21. claim_payment](../database/D21-claim-payment.md), D29. claim_enquiry (in nhcx-preauth).
 
 | Key | Type | Content |
 |---|---|---|

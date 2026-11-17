@@ -162,5 +162,5 @@ function reuse_on_open(case_id):
 - APIs: [A2. Coverage Eligibility Check](A2-coverage-eligibility-check.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A13. Transaction List](A13-txn-list.md)
 - Callbacks: [C4. Insurance Plan Reply](../callbacks/C4-insuranceplan-on-request.md)
 - FHIR: [F4. Task (InsurancePlan discovery)](../fhir/F4-task-insuranceplan.md)
-- Database: [D10. claim_plan](../database/D10-claim-plan.md), [D11. claim_plan_benefit](../database/D11-claim-plan-benefit.md)
+- Database: [D10. claim_plan](../database/D10-claim-plan.md), [D11. claim_plan_benefit](../database/D11-claim-plan-benefit.md), [D33. payer_config](../database/D33-payer-config.md)
 - Tests: [T4. IRDAI Insurance Plan and Authorisation Requirements](../tests/T4-irdai-plan-and-auth-requirements.md), [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

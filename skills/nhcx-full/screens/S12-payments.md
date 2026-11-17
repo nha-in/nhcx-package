@@ -24,7 +24,7 @@ Below the text are four stat tiles, in this order:
 | Notices | Count of notices on the claim | default |
 | Shortfall | The claim's approved amount minus what the notices account for (see below), never below zero; `-` until the claim has an approved amount and a notice has arrived | warning when above zero |
 | Paid so far | Paid total (see below) | success when above zero |
-| Approved | The claim's approved amount (the claim leg's `approved_amount`), `-` before the payer has approved the claim | default |
+| Approved | The claim's approved amount (the claim leg's `approved_amount`), `-` before the payer has approved the claim; a discharge's approval ([D20. claim_submission](../database/D20-claim-submission.md), the discharge stage) is not the claim's and shows `-` | default |
 
 **Shortfall.** It is measured against the claim's approved amount, never the claimed amount. What the notices account for: per notice (the newest row of each payment identity, D21 `notice_id`, else each row), the sum of its reference lines ([D22. claim_payment_detail](../database/D22-claim-payment-detail.md): the payment, the TDS and every other deduction line), else its `amount` when it has no lines; summed over the notices. When that adds up to the approved amount there is no shortfall (0); otherwise the shortfall is the approved amount minus what is accounted for, never below 0. A notice whose payment and deductions together make up the approved amount therefore shows no shortfall, even though the payment alone is less. The claim detail carries the three figures as `payment_approved`, `payment_accounted` and `payment_shortfall` ([A17. Claim State](../apis/A17-claim-state.md)).
 

@@ -8,7 +8,7 @@ The InsurancePlan comes in one of two shapes, and both flatten to this table:
 - Approach 1, package master: `plan -> specificCost -> category -> benefit -> cost`.
 - Approach 2, indemnity: `coverage -> benefit -> limit`.
 
-When a bundle carries both, they are merged on the pair **(category `category_code`, package `code`)**, never on the code alone. `specificCost` wins, and `coverage` adds only pairs it did not carry. A payer lists the same package under several categories: PMJAY lists Dengue (`MG004A`, `MG004B`, `MG004C`) under Cardiology (`MC`), General Medicine (`MG`) and Paediatric medical management (`MP`), and repeats 545 of its 1,537 codes across categories [PAYER](../references/PAYERS.md#markers). Each such listing is one row, so a code can appear more than once per plan but a pair at most once. A parser that keeps the first listing of a code shows Dengue under Cardiology only and loses the category the case is treated under.
+When a bundle carries both, they are merged on the pair **(category `category_code`, package `code`)**, never on the code alone. Cover benefits (`kind` `Benefit`, from `coverage[]`) are kept apart **by name** as well: two covers with the same code and category but different names (`type.text`, else the coding's display) are two rows, so "Maternity Cover" is never merged into another cover that shares its code [PAYER](../references/PAYERS.md#markers). `specificCost` wins, and `coverage` adds only pairs it did not carry. A payer lists the same package under several categories: PMJAY lists Dengue (`MG004A`, `MG004B`, `MG004C`) under Cardiology (`MC`), General Medicine (`MG`) and Paediatric medical management (`MP`), and repeats 545 of its 1,537 codes across categories [PAYER](../references/PAYERS.md#markers). Each such listing is one row, so a code can appear more than once per plan but a pair at most once. A parser that keeps the first listing of a code shows Dengue under Cardiology only and loses the category the case is treated under.
 
 Approach 1 row:
 - `category_*` from `specificCost.category`; `code` / `display` from `benefit.type`.
@@ -33,7 +33,7 @@ Lifecycle:
 - Deleted when the plan is refetched (the request deletes them at once) or when the plan row is deleted (`ON DELETE CASCADE`).
 - Never updated in place.
 
-**Quotable.** A row is quotable as a line only when `kind` is `Procedure` or `Implant`. A `Benefit` row (a cover benefit such as Blood or Ambulance) and a row with no `kind` (a package-master benefit with neither a rate nor an implant tier) are shown in the plan but are never a line, and are not counted in the line search's Category list [PAYER](../references/PAYERS.md#markers). Quoting a cover benefit put SNOMED CT `87612001` "Blood" on a pre-authorisation as an item.
+**Quotable.** A row is quotable as a line when `kind` is `Procedure` or `Implant`; and, **on a plan with no `Procedure` or `Implant` row at all** (an indemnity plan: the payer lists what the policy covers, with no package master, such as Aditya Birla's "Activ One" with 18 `coverage[]` entries and empty `specificCost` / `generalCost`) [PAYER](../references/PAYERS.md#markers), its `Benefit` rows are quotable too, as **cover lines**: each under its coverage type as the category, priced by the desk ([D16. claim_line](D16-claim-line.md)). On any plan that has a package master, the rule below stands. A `Benefit` row (a cover benefit such as Blood or Ambulance) and a row with no `kind` (a package-master benefit with neither a rate nor an implant tier) are shown in the plan but are never a line, and are not counted in the line search's Category list [PAYER](../references/PAYERS.md#markers). Quoting a cover benefit put SNOMED CT `87612001` "Blood" on a pre-authorisation as an item.
 
 Reads:
 - The line picker filters by `category_code` (the desk's "Category"; "All" by default), `kind` ("All", `Procedure`, `Implant`), and `code` or `display` LIKE the search text (2 letters or more), ordered by `seq`. Its Category list holds only categories with a quotable row, each counted by its quotable rows; the plan summary keeps the full list, counted by every row. The package detail is read by the row's `id`; the add call names the row by its `kind` and the pair (`category_code`, `code`), never by `code` alone.
@@ -73,14 +73,14 @@ The classification is a chip on every requirement table (S7.1, S8.2, S9, S11): "
 #### D11K. KEYS AND INDEXES
 - Primary key `id` (integer).
 - `plan_id` references [D10. claim_plan](D10-claim-plan.md) `id`, `ON DELETE CASCADE`.
-- Unique: `(plan_id, category_code, code)`. The same code under another category is another row.
+- Unique: `(plan_id, category_code, code, display)`. The same code under another category is another row, and so is a cover benefit of the same code and category under another name (pre- and post-hospitalisation expenses share one code) [PAYER](../references/PAYERS.md#markers).
 - Index: `ix_claim_plan_benefit (plan_id, seq)`.
 - `supporting_info[].form` names a [D12. claim_plan_form](D12-claim-plan-form.md) `url` (no foreign key).
 
 #### D11U. USED BY
-- Screens: [S7. Insurance Plan](../screens/S7-insurance-plan.md), [S8. Line Items](../screens/S8-line-items.md), [S9. Pre-authorisation](../screens/S9-preauthorisation.md)
+- Screens: [S7. Insurance Plan](../screens/S7-insurance-plan.md), [S8. Line Items](../screens/S8-line-items.md), [S9. Pre-authorisation](../screens/S9-preauthorisation.md), [S20. Payer Configuration](../screens/S20-payer-configuration.md)
 - APIs: [A3. Insurance Plan Request](../apis/A3-insurance-plan-request.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C3. Authorisation Requirements Ruling](../callbacks/C3-auth-requirements-on-check.md), [C4. Insurance Plan Reply](../callbacks/C4-insuranceplan-on-request.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md), [F5. InsurancePlan](../fhir/F5-insuranceplan.md), [F6. Questionnaire](../fhir/F6-questionnaire.md), [F8. Claim](../fhir/F8-claim.md)
-- Database: [D10. claim_plan](D10-claim-plan.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D15. claim_auth_requirement](D15-claim-auth-requirement.md), [D16. claim_line](D16-claim-line.md), [D28. claim_document](D28-claim-document.md)
+- Database: [D10. claim_plan](D10-claim-plan.md), [D12. claim_plan_form](D12-claim-plan-form.md), [D15. claim_auth_requirement](D15-claim-auth-requirement.md), [D16. claim_line](D16-claim-line.md), [D28. claim_document](D28-claim-document.md), [D33. payer_config](D33-payer-config.md)
 - Tests: [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

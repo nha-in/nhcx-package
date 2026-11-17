@@ -4,7 +4,7 @@
 One row is the payer's ruling on one line of the procedure set; primary key `id`; parent table [D13. claim_auth](D13-claim-auth.md).
 
 #### D14D. DESCRIPTION
-One row per `insurance[0].item[]` of the payer's CoverageEligibilityResponse to the `auth-requirements` check. The item codes are compared with the quoted lines (D16 (in nhcx-preauth), Stratification excluded) to tell whether the ruling still describes the set being sent. When the codes differ the ruling is stale.
+One row per `insurance[0].item[]` of the payer's CoverageEligibilityResponse to the `auth-requirements` check. The item codes are compared with the quoted lines ([D16](D16-claim-line.md), Stratification excluded) to tell whether the ruling still describes the set being sent. When the codes differ the ruling is stale.
 
 Values:
 - `code` / `display`: `productOrService`.
@@ -38,9 +38,9 @@ Lifecycle:
 - `auth_id` references [D13. claim_auth](D13-claim-auth.md) `id`, `ON DELETE CASCADE`.
 - No unique constraint.
 - Index: `ix_claim_auth_item (auth_id, seq)`.
-- `code` corresponds to D16. claim_line (in nhcx-preauth) `code` (no foreign key).
+- `code` corresponds to [D16. claim_line](D16-claim-line.md) `code` (no foreign key).
 
 #### D14U. USED BY
 - APIs: [A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md)
-- Database: [D13. claim_auth](D13-claim-auth.md)
+- Database: [D13. claim_auth](D13-claim-auth.md), [D16. claim_line](D16-claim-line.md)

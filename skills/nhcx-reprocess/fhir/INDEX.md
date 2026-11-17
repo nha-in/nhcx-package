@@ -18,6 +18,7 @@ The FHIR resources the application builds for NHCX and reads back from it. APIs 
 
 | # | Resource | Direction | File |
 |---|---|---|---|
+| [F9](F9-claimresponse.md) | ClaimResponse | received | [F9-claimresponse.md](F9-claimresponse.md) |
 | [F10](F10-task-claim-actions.md) | Task (claim actions) | sent and received | [F10-task-claim-actions.md](F10-task-claim-actions.md) |
 
 ## Parties and supporting resources

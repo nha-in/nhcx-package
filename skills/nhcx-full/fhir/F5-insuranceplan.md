@@ -48,7 +48,7 @@ Into D11 `claim_plan_benefit`, from `plan[].specificCost[]`:
 | Element read | Stored in | Notes |
 |---|---|---|
 | `specificCost[].category.coding[0]` code / display | `category_code` / `category_display` | the category |
-| `benefit[].type.coding[0]` code / display (else `text`) | `code` / `display` | a benefit without a code is skipped; a (category, code) pair already seen is skipped, the same code under another category is kept |
+| `benefit[].type.coding[0]` code / display (else `text`) | `code` / `display` | a benefit without a code is skipped; a (category, code) pair already seen is skipped, the same code under another category is kept; a cover benefit (from `coverage[]`) is keyed by (category, code, name), its name `type.text` else the coding's display, so same-code covers with different names are each kept [PAYER](../references/PAYERS.md#markers) |
 | `benefit[].cost[]` with `type` code `Procedure`: `value.value`, `value.unit` (else `value.code`) | `rate`, `currency` | first such cost; `cost_type` = `Procedure` when present |
 | other `cost[]`: `type` code, `qualifiers[0].coding[0]` code / display, `value.value`, `value.unit` | `extras` (JSON list of `{type, code, label, rate, currency}`) | `Stratification`, `Implant` |
 | computed | `kind` | `Procedure` with a rate, else `Implant` with an Implant extra, else null |

@@ -13,7 +13,7 @@ Parts in this file:
 Every action here posts to its own endpoint, re-reads the case and leaves a flash above the tabs (S6): green with the message on success, red with the refusal verbatim.
 
 #### S8D. DESCRIPTION
-What the pre-authorisation quotes: the procedures being done, the implants the payer approves for them, and the ward or ICU tier the stay runs at. **Every line comes from the payer's insurance plan** ([S7. Insurance Plan](S7-insurance-plan.md)), priced at the payer's rate. There are no custom line items and no local price list: the only price the desk ever types is an open rate (below). D9 `case_type` is always `package`; the stored value `nonpackage` is kept only for old rows.
+What the pre-authorisation quotes: the procedures being done, the implants the payer approves for them, and the ward or ICU tier the stay runs at. **A line comes from the payer's insurance plan** ([S7. Insurance Plan](S7-insurance-plan.md)), priced at the payer's rate, and the desk types a price only where the rate is open (below). **Where the payer's configuration allows it** ([D33. payer_config](../database/D33-payer-config.md) `custom_lines`), the desk may also add a **custom line**: an item or procedure that is not on the plan, with the hospital's own code, name and price (S8.1). There is no local price list. D9 `case_type` is always `package`; the stored value `nonpackage` is kept only for old rows.
 
 Line kinds:
 
@@ -27,11 +27,11 @@ A ward or ICU tier is not a line of its own. Its rate is inside the amount of th
 
 **"Category" everywhere.** The plan's grouping of packages (PMJAY calls it a speciality) is labelled **Category** on every screen and in every message the desk reads, refusals included.
 
-**Before the plan is ready** (no plan, or a status other than `ready`): the card is replaced by the Insurance plan fetch card of [S7. Insurance Plan](S7-insurance-plan.md) (fetch, waiting, error), so the desk fetches the plan where the lines are quoted.
+**Before the plan is ready** (no plan, or a status other than `ready`): the Insurance plan fetch card of [S7. Insurance Plan](S7-insurance-plan.md) (fetch, waiting, error) shows where the lines are quoted, so the desk fetches the plan. When the payer's configuration allows custom lines ([D33. payer_config](../database/D33-payer-config.md) `custom_lines` 1), the Line items card shows under it as well, with only "Add a custom line" and the lines table (no code type-ahead and no suggestions until the plan is ready), so a case whose payer publishes no package master can still be quoted.
 
 **With the plan ready**: a card titled "Line items", in three parts (S8.1): the add row, the lines table, and the suggestions.
 
-**The two checks** sit side by side under the Line items card (stacked on a narrow screen), and only once at least one line is quoted: the **Benefits check** card (left) and the **Authorisation requirements** card (right, S8.2). Whether each is offered is the integrator's decision `preauth.benefitsFirst` and `preauth.authRequirementsFirst` ([L1.A](../steps/L1-discovery.md)), offered by default. Both are checks, never gates: a pre-authorisation is sent with or without them, an unfavourable answer is shown and does not block, and a payer that never answers (PMJAY's sandbox) holds nothing up [SANDBOX](../references/PAYERS.md#markers). A benefits check in flight (`checking`) or whose send failed (`error`) does not withdraw the case's validation: the case stays in force and the Pre-authorisation tab stays open.
+**The two checks** sit side by side under the Line items card (stacked on a narrow screen), and only once at least one line is quoted: the **Benefits check** card (left) and the **Authorisation requirements** card (right, S8.2). Whether each is offered is the integrator's decision `preauth.benefitsFirst` and `preauth.authRequirementsFirst` ([L1.A](../steps/L1-discovery.md)), offered by default, and then the payer's configuration ([D33. payer_config](../database/D33-payer-config.md) `coverage_benefits`, `auth_requirements`): `off` hides the card; `auto` sends the check by itself after every change to the quoted set (a line added, changed or removed, [D16. claim_line](../database/D16-claim-line.md)), so the card shows a chip "Automatic" (info) in its header and the button reads "Check again"; `manual` is the card as described here. **Polling:** while a card's check is out with the payer (the case `checking` for benefits, the ruling `checking` for authorisation requirements), the card re-reads that check every `check_poll_seconds` seconds ([D33. payer_config](../database/D33-payer-config.md); 0, only on each load of the case), through the same poll as a load of S6, and re-renders itself when the answer lands; it stops after 10 minutes with "Still waiting for the payer. Use Check again or Refresh." Only the card is re-read, never the page, so the line items being typed are kept. Both are checks, never gates: a pre-authorisation is sent with or without them, an unfavourable answer is shown and does not block, and a payer that never answers (PMJAY's sandbox) holds nothing up [SANDBOX](../references/PAYERS.md#markers). A benefits check in flight (`checking`) or whose send failed (`error`) does not withdraw the case's validation: the case stays in force and the Pre-authorisation tab stays open.
 
 **Benefits check card.** Title "Benefits check". Header button "Ask what the policy covers" (wallet icon, outline style); while the case is `checking` it reads "Awaiting the payer" and is disabled. Body: "Sends the <n> quoted line(s) to the payer as a benefits check: what does the policy cover for these packages? Optional, before the pre-authorisation; the pre-authorisation can go without it." Once a benefits check has been sent (the case's last purpose is `benefits`):
 - "Last benefits check: <status>, <when>."
@@ -121,6 +121,10 @@ No route of its own: the add row, the lines table and the suggestions are the bo
 
 The matches list opens under the Code field. Each match shows the package name (else its code) over a muted line `<code> · <category>`, and on the right the kind chip with the rate under it: the rate in whole rupees; "<rate> +<k> tier(s), up to <rate plus the dearest tier>" when ward or ICU tiers are priced over it; "tiers only" when the rate is zero and tiers exist; "open" when the plan names no rate, or zero with no tier. A benefit a pre-authorisation cannot quote (a policy-wide allowance) is never listed. While the first search runs the list reads "Loading..."; with no match it reads "Nothing matches that search." Escape closes the list; a click outside closes it.
 
+**Add a custom line.** Under the add row, only when the payer's configuration allows custom lines ([D33. payer_config](../database/D33-payer-config.md) `custom_lines` 1; the button is not shown otherwise), an outline button "Add a custom line" (plus icon). It opens, in place, a dashed box titled "Custom line" with the hint "For an item or procedure that is not on the payer's plan. Enter its code, name and price as the hospital bills it." and the fields Code (text), Name (text), Type (select: `Procedure`, `Implant`; default `Procedure`), Category (select: `-` and the plan's quotable categories, by name; optional) and Rate (number, min 0, step 0.01; optional, typed later on the table otherwise). Buttons: primary "Add line" (plus icon; disabled until Code and Name are filled, a spinner while sending) and "Cancel" (closes the box and clears it). The server is told `custom` true with the kind, code, name (`display`), price and category; its refusals are the [D16. claim_line](../database/D16-claim-line.md) custom-line rules, verbatim. On success the box closes and clears and the lines table re-reads.
+
+**On a plan with no package master** ([D11. claim_plan_benefit](../database/D11-claim-plan-benefit.md): an indemnity plan) the type-ahead and the Category select list the plan's **cover benefits** instead, each under its coverage type as the category, with the chip "Cover" and no rate. Picking one sends `kind` `Benefit` and its row id as `benefit_id` (covers share codes, so the id says which), and adds a cover line the desk prices on the table ([D16. claim_line](../database/D16-claim-line.md)).
+
 Picking a match adds it: the server is told the kind, the code and the category (`category_code`). One row per package **per category**: Dengue `MG004A` is three rows on a PMJAY master, and the desk picks the one for the category the case is treated under, which is what goes out as `Claim.item.category` [PAYER](../references/PAYERS.md#markers).
 
 **The lines table.** One form. Columns:
@@ -128,10 +132,10 @@ Picking a match adds it: the server is told the kind, the code and the category 
 | Column | Content |
 |---|---|
 | Kind | Kind chip |
-| Item | Name, code underneath; a small "cycle <n>" tag for the second cycle onward |
+| Item | Name, code underneath; a small "cycle <n>" tag for the second cycle onward; a neutral chip "Custom" on a custom line |
 | Category | Category name, or `-` |
 | Ward / ICU tier | One chip per tier, `<tier label> · <tier code>`, with `+₹<amount>` beside it and its own red "Remove" button (confirm "Take this tier off the preauth?"); `-` when none |
-| Rate | The plan's rate, `₹` whole rupees. Where the price is **open** (the plan names no rate, or names zero and offers no ward or ICU tier for the package), a number field instead (min 0, step 0.01), since such a package is billed at the hospital's own price [PAYER](../references/PAYERS.md#markers). A zero rate with tiers is not open: the package is priced by its tiers alone and cannot be typed over |
+| Rate | The plan's rate, `₹` whole rupees. Where the price is **open** (a custom line, always; or the plan names no rate, or names zero and offers no ward or ICU tier for the package), a number field instead (min 0, step 0.01), since such a package is billed at the hospital's own price [PAYER](../references/PAYERS.md#markers). A zero rate with tiers is not open: the package is priced by its tiers alone and cannot be typed over |
 | Quantity | Number field (min 1, step 1), whole numbers |
 | Amount | `₹` whole rupees |
 | (action) | Red "Remove" button, confirm "Take this line off the preauth?" |
@@ -180,6 +184,7 @@ See S8L: the add row, the table with its footer and the suggestions are three pa
 2. Update lines: store the quantities and open rates, recompute amounts.
 3. Remove (line or tier): after the confirm, take it off.
 4. Add (suggested implant or tier): add the line at the plan's rate.
+5. Add a custom line (only where the payer's configuration allows it): open the box; Add line sends the custom line and closes it; Cancel closes it.
 
 ---
 
@@ -197,8 +202,9 @@ States:
 
 | State | Body | Header action |
 |---|---|---|
+| Never asked, the payer's configuration `auto` | "The procedure set goes to the payer by itself whenever the line items change; it is on its way." (shown only for the instant before the automatic send lands, or when it was refused, with the refusal under it) | "Validate procedure set" |
 | Never asked | "The <n> quoted line(s) can go to the payer as a auth-requirements check: it rules on each one and names the documents and forms this particular procedure set needs. The check is optional; the pre-authorisation can be sent without it." | primary "Validate procedure set" (shield-check icon) |
-| `checking` | "Procedure set sent; awaiting the payer's ruling. Use Refresh to check for it." with Sent at | "Check again" (refresh icon) |
+| `checking` | "Procedure set sent; awaiting the payer's ruling." then "Checking every <n> seconds." when the card polls, else "Use Refresh to check for it.", with Sent at | "Check again" (refresh icon) |
 | `error` | The error in the danger colour, or "The exchange failed." | "Check again" |
 | `ready` | Ruling (below) | "Check again" |
 

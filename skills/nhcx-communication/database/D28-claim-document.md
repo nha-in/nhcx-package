@@ -4,6 +4,8 @@
 One row is one supporting file (PDF or image) attached to a claim for one leg, stored inline with the payer requirement it answers. Primary key `id`. Parent table: `claim` (D9).
 
 #### D28D. DESCRIPTION
+**Sent once** [PAYER](../references/PAYERS.md#markers). A document goes to the payer once. Every send that carries documents (a pre-authorisation, an enhancement, a query answer, a discharge, a claim, a Communication reply) carries only the rows of its leg the payer has not received (`sent_at` null), and, once NHCX accepts the send, marks each row it carried: `sent_at` now, `sent_kind` the send's kind (`preauth`, `preauth_query_response`, `enhancement`, `discharge`, `claim`, `communication`, ...), `sent_correlation_id` its correlation id. A send refused at the door delivered nothing: the callback (C5, C6) clears the three columns of every row marked under that correlation id, so they go with the next send. PMJAY's own requirements say the documents mandatory at claim are the plan's list less those already sent [PAYER](../references/PAYERS.md#markers). S9, S10 and S11 show each sent row with a muted "Sent with <kind>" and the Communication reply form marks it "already with the payer".
+
 **Created.** Every path goes through one insert that checks the file:
 
 - The claim must exist.
@@ -58,6 +60,9 @@ Common codes offered on every upload: `CD` Clinical document (the default), `HDS
 | data | BLOB | NOT NULL | The file |
 | uploaded_at | TEXT | NOT NULL | When it was attached |
 | source | TEXT | NOT NULL, default `upload` | `upload` (a chosen file) or `record` (a health record of the HMIS, through its ABDM module). Added by migration |
+| sent_at | TEXT | null | When a send that carried this row was accepted by NHCX; null while the payer has not received it. Migration only |
+| sent_kind | TEXT | null | The kind of that send. Migration only |
+| sent_correlation_id | TEXT | null | Its correlation id, to un-mark the row when the payer refuses that send at the door. Migration only; indexed |
 | record_ref | TEXT | null | `<hiType>:<source>:<id>` of the HMIS record the bytes were taken from (source = the record's table, for example the encounter, prescription, diagnostic report, discharge summary upload, file upload or invoice); null for an upload. Added by migration |
 
 A `source = record` row whose `content_type` is `application/fhir+json` holds the record's bundle; its `filename` ends `.json`. The screens show it as "From records · <hiType>" and open it **on its own HMIS page** ("Open diagnostic report", "Open prescription", "Open OP consultation", "Open invoice", the encounter's files), found from `record_ref`, never as its `.json` or a file download (S9). It is still sent to the payer as FHIR. When the record is gone or has no page, no link is shown.

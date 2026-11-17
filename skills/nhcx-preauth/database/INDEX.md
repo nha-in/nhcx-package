@@ -15,6 +15,7 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 | [D7](D7-allergy.md) | allergy | Allergy or intolerance of a patient. | [D7-allergy.md](D7-allergy.md) |
 | [D8](D8-terminology.md) | terminology | Concept in one code list (a picker), for example one ICD-10 diagnosis with its SNOMED mapping, one department or one payer adapter mapping. | [D8-terminology.md](D8-terminology.md) |
 | [D32](D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [D32-participant.md](D32-participant.md) |
+| [D33](D33-payer-config.md) | payer_config | The payer configuration master: how the application behaves towards each payer (automatic checks, polling, proof of presence, query mode, discharge stage, LAMA / DAMA procedure, workflow ids and the rest of the adapter properties). Row 0 is the GOV default and row 1 the PVT default, seeded with today's values; a row per payer overrides them, an empty value inheriting from its default. Primary key `id`. No parent table. | [D33-payer-config.md](D33-payer-config.md) |
 
 ## Claim
 

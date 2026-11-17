@@ -25,7 +25,7 @@ The payer opens a communication thread of its own to ask for something (a **quer
 Only the **first** CommunicationRequest and the **first** Task are read. The Claim, Patient, Practitioner and Coverage the payer sends are not read; they are kept in the stored bundle.
 
 **Query or notification.** Decided by the sender's payer adapter (the one for `x-hcx-sender_code`, else the claim's payer) and the Task:
-1. Adapter `query_mode` is `resubmit` (PMJAY, see [PAYERS.md](../references/PAYERS.md)): always a **notification**. PMJAY asks inside the ClaimResponse instead (F9) [PAYER](../references/PAYERS.md#markers).
+1. Adapter `query_mode` is `resubmit` (PMJAY, see [PAYERS.md](../references/PAYERS.md)): `Task.intent` `proposal` is a **notification**; anything else is a **query** on the leg its `x-hcx-workflow_id` names (24 or 241 the pre-authorisation, 27 or 263 the claim), as PMJAY's V1.2 requirements (3.5, QRY-07) have it [PAYER](../references/PAYERS.md#markers). PMJAY also queries lines inside the ClaimResponse (F9); those are answered by resubmitting.
 2. Otherwise (`communication` mode: Sandbox Payer, Generic): `Task.intent` `proposal` is a **notification**, `order` is a **query** [PAYER](../references/PAYERS.md#markers).
 3. No intent: the Task's reason code (normalised, below) of empty, `additionalinfo`, `questionnaire` or `query` is a **query**; any other reason (`tatquery`, `grievance`, `walletupdate`, `policychange`, `claimarbitration`, ...) is a **notification** [REF](../references/PAYERS.md#markers).
 

@@ -22,7 +22,7 @@ Everything the payer has said on this case outside a verdict, on both legs, and 
 | Inside the payer's verdict on the leg's own thread: the leg stands `queried`, with the queried items on the reply (a line-item query) | The leg is submitted again with the reply, from the Pre-authorisation tab ([S9. Pre-authorisation](S9-preauthorisation.md)) or the Claim tab ([S11. Claim Submission](S11-claim-submission.md)). It never shows here as a query |
 | A separate payer message on a thread of its own, kind `query` | A reply, from this tab |
 
-The adapter's query mode ([PAYERS.md](../references/PAYERS.md)) says which a payer uses. A payer in `resubmit` mode [PAYER](../references/PAYERS.md#markers) is always answered by resubmitting; what it sends as a separate message is a notification. A payer in `communication` mode asks by a separate message. Whichever mode, a leg that is `queried` with no open separate query on it is answered by resubmitting.
+The adapter's query mode ([PAYERS.md](../references/PAYERS.md)) says which a payer uses. A payer in `resubmit` mode [PAYER](../references/PAYERS.md#markers) has its line queries answered by resubmitting; a separate CommunicationRequest from it (PMJAY asking for documents, workflow 24 or 27) is a query answered on this tab, and only a `proposal` from it is a notification. A payer in `communication` mode asks by a separate message. Whichever mode, a leg that is `queried` with no open separate query on it is answered by resubmitting.
 
 **Empty state.** When the payer has sent nothing yet, one card shows an icon (a speech-bubble icon, about 2rem, muted) above one centred line: "No messages from the payer yet. Its questions and notices for this case will appear here." No protocol word (no message type, no thread, no mode) appears on it.
 
@@ -46,13 +46,14 @@ Each message is one accordion item. Several can be open at once, and every open 
 - When a reply failed, a line in the danger colour with the error followed by "Nothing reached the payer, send it again."
 - The reply form, multipart:
   - "Reply": a 4-row text area named `text`, prefilled with the last reply attempted.
-  - "Send documents already on the claim": one checkbox per document on the claim (`document_ids`). Each shows the label or filename, then its code (or `-`) and stage, muted. Help: "Each ticked file rides on the reply as a contentAttachment under its own code." Shown only when the claim holds documents.
+  - "Send documents already on the claim": one checkbox per document on the claim (`document_ids`). Each shows the label or filename, then its code (or `-`) and stage, muted, and "already with the payer" when a send has delivered it (D28 `sent_at`). Help: "Each ticked file rides on the reply as a contentAttachment under its own code." Shown only when the claim holds documents.
   - "Documents the payer named": shown when the leg has named documents ([S9. Pre-authorisation](S9-preauthorisation.md), [S11. Claim Submission](S11-claim-submission.md)). A table of Code, Document (with the package code as a muted sub-line) and Choose a PDF (a file input `req_<code>`). Help: "Each file is filed and sent under the payer's own code, so the reply quotes it back."
   - "Attach anything else": "Add files (PDF or image)" (a multiple file input), "Filed as" (a select of the NHCX document codes of [S9. Pre-authorisation](S9-preauthorisation.md), each as `<code> - <label>`, default `CD`; never a plan's own codes) and "Label". Help: "Any number of files. They are kept on the claim as well as sent, choose the payer's code where it named one."
   - "From records": the health-record picker of [S9. Pre-authorisation](S9-preauthorisation.md), when the HMIS has an ABDM module, with the muted help "A record picked here is filed on the claim at this leg's stage and can be ticked above to ride on the reply." The record is filed at the queried leg's stage (D28 `source = record`) and rides on the reply as a `DocumentReference` entry (F19), as a file does by attachment.
+  - "Notes on individual items" (optional): a table of the queried leg's items as last sent (SNO, Item with its code as a sub-line, and a text input "Note to the payer", placeholder "e.g. report attached"). Help: "Optional. Each note goes to the payer as a Procedure naming the item's serial number (SNO) with the note, so the answer is read line by line." Blank notes are not sent ([A7. Communication Reply](../apis/A7-communication-on-request.md) line notes).
   - The primary button "Send reply to payer" (send icon), right-aligned.
 
-**2. Answered query.** Title: "Query answered <date>" (the answer's date). The same detail list, then "What the payer asked", "Our reply" (a code block, or `-`), "Attached" (a bullet list of links to each file that went, shown when any did), and Sent at.
+**2. Answered query.** Title: "Query answered <date>" (the answer's date). Under "Our reply", when line notes were sent, "Item notes": one line per note, `SNO <n>` and the item code, then the note. The same detail list, then "What the payer asked", "Our reply" (a code block, or `-`), "Attached" (a bullet list of links to each file that went, shown when any did), and Sent at.
 
 **3. Notification** (kind `notification`). Title: "<reason in words> <date>, acknowledged" or "<reason in words> <date>, not yet acknowledged".
 - A five-column detail list: Received, From, About, Reason, and Status. The Status chip reads "Acknowledged" (success), "Acknowledgement failed" (danger) or "Awaiting acknowledgement" (warning).
@@ -71,7 +72,8 @@ No correlation id, transaction id or thread id is shown on this tab. They are on
 - "That message is not a question: a notification is acknowledged and a note is read, neither takes an answer."
 - New files are filed on the claim first, at the queried leg's stage. Files chosen against a named code carry that code. General files share the chosen code and label. The upload errors of [S9. Pre-authorisation](S9-preauthorisation.md) apply ("Choose a PDF or image to attach.", "Only JPEG image, PDF, PNG image, WebP image files can be attached.", "That file is empty.", "A document may be at most 10 MB."). One bad file refuses the whole reply before anything is sent.
 - "Set the facility's HFR ID and NHCX participant code under Settings before answering a query."
-- "Write a reply or attach a document, an empty answer tells the payer nothing."
+- "A line note names an item the payer was not sent."
+- "Write a reply or attach a document, an empty answer tells the payer nothing." (a reply of line notes alone is an answer)
 - "One of the chosen documents is not on this claim."
 
 API: [A7. Communication Reply](../apis/A7-communication-on-request.md) (reply)

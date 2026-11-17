@@ -6,6 +6,10 @@ Delivered in-process by [G8. Receive](../gateway/G8-receive.md) for NHCX route `
 #### C2D. DESCRIPTION
 The payer's verdict on an eligibility check, seconds after A2 went out. Matched by `x-hcx-correlation_id` against the case itself (D9 `correlation_id`, newest row). When no case waits on that id, the same message is tried as a ruling (C3), because two coverage exchanges run per case.
 
+**A stale automatic benefits check.** Once a `benefits` answer is applied, when the payer's configuration sends that check automatically ([D33. payer_config](../database/D33-payer-config.md) `coverage_benefits` `auto`) and the quoted set has changed since it was sent (D9 `benefits_codes`), it is sent again at once ([A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md) `ensure_benefits`).
+
+**In force** is read by the rule of [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md): `insurance[0].inforce` when sent, else an `active` CoverageEligibilityResponse or Coverage `status`, never on an `error` outcome [PAYER](../references/PAYERS.md#markers).
+
 **The validation gate.** A case opened from a search or a discovery is provisional (hidden from the claim lists) until a validation answers in force. On that answer the case becomes a case, unless the cover returned several members: then the desk always chooses the patient first on [S3. Policy Discovery](../screens/S3-policy-discovery.md) (even when a member id matches), and choosing creates the case. A discovery's answer names covers and never makes a case. Once a validation leaves an open case in force with no insurance plan row, the plan is fetched without the desk asking (A3 `plan_on_case_created`), after the verdict is written and beside the callback's answer, so it never delays or fails the reply.
 
 Only a case still `checking` takes the verdict. A case that has settled answers `ignored`, which is what makes a redelivery harmless. A case on record as a failed send (C1 `failed_send`: status `error`) is reopened and the verdict applied, so a verdict that follows a `ProtocolResponse` still lands.
@@ -98,6 +102,6 @@ State changes, D9 claim:
 - APIs: [A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A11. Transaction Dispatch](../apis/A11-txn-dispatch.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](C1-callback-door.md)
 - FHIR: [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md), [F15. Patient](../fhir/F15-patient.md)
-- Database: [D9. claim](../database/D9-claim.md)
+- Database: [D9. claim](../database/D9-claim.md), [D16. claim_line](../database/D16-claim-line.md)
 - Gateway: [G7. Send](../gateway/G7-send.md)
 - Tests: [T3. IRDAI Policy Search and Eligibility](../tests/T3-irdai-policy-and-eligibility.md), [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md)

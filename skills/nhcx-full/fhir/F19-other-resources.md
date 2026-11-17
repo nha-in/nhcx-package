@@ -15,7 +15,7 @@
 - `performedDateTime`: on the claim, the surgery date (`D20 claim_submission.surgery_date`) when recorded, else the admission; on every other leg the admission (`D9 claim.admission_date`). Dates are sent as instants: a bare date becomes `T00:00:00+05:30`.
 - The Claim refers to each one from `procedure[]` (F8): `id` `Procedure/<n>`, `sequence` n, `type` the plan's procedure type for the package under `https://nhcx.abdm.gov.in/procedure-type` (code lower-cased, display capitalised; `conservative` when the plan does not say), `date` the same instant, `procedureReference` `{reference: <fullUrl>, display: <package display>}`. An item that is a procedure lists its own sequence in `procedureSequence`; any other item lists all of them.
 
-On a LAMA or DAMA claim discharged before or during surgery the claim lines collapse to the single package `LM100`, so the claim carries one Procedure for it [PAYER](../references/PAYERS.md#markers).
+On a LAMA or DAMA claim discharged before or during surgery the claim lines collapse to the single package `LM100` (the payer's configured LAMA / DAMA procedure ([D33. payer_config](../database/D33-payer-config.md) `lama_dama_procedure`, `LM100` on both defaults)), so the claim carries one Procedure for it [PAYER](../references/PAYERS.md#markers).
 
 **Location.** The facility as the place of service, referenced by `CoverageEligibilityRequest.facility` (F2). Fixed shape: the facility name and a pointer to the provider Organization. Same for every eligibility purpose. It is not sent in claim bundles.
 

@@ -10,7 +10,8 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 | [D2](../database/D2-practitioner.md) | practitioner | Doctor or staff member of the facility. | none | none | none | [F8](../fhir/F8-claim.md), [F16](../fhir/F16-practitioner.md) |
 | [D3](../database/D3-patient.md) | patient | Registered patient. | none | none | none | [F15](../fhir/F15-patient.md) |
 | [D8](../database/D8-terminology.md) | terminology | Concept in one code list (a picker), for example one ICD-10 diagnosis with its SNOMED mapping, one department or one payer adapter mapping. | none | none | none | [F8](../fhir/F8-claim.md) |
-| [D32](../database/D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [S19](../screens/S19-nhcx-settings.md) | none | none | none |
+| [D32](../database/D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [S19](../screens/S19-nhcx-settings.md), [S20](../screens/S20-payer-configuration.md) | none | none | none |
+| [D33](../database/D33-payer-config.md) | payer_config | The payer configuration master: how the application behaves towards each payer (automatic checks, polling, proof of presence, query mode, discharge stage, LAMA / DAMA procedure, workflow ids and the rest of the adapter properties). Row 0 is the GOV default and row 1 the PVT default, seeded with today's values; a row per payer overrides them, an empty value inheriting from its default. Primary key `id`. No parent table. | [S19](../screens/S19-nhcx-settings.md), [S20](../screens/S20-payer-configuration.md) | [A7](../apis/A7-communication-on-request.md) | none | [F8](../fhir/F8-claim.md), [F12](../fhir/F12-communication.md) |
 
 ## Claim
 
@@ -24,6 +25,12 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 |---|---|---|---|---|---|---|
 | [D13](../database/D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [S6](../screens/S6-claim-detail.md), [S19](../screens/S19-nhcx-settings.md) | [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) | [F3](../fhir/F3-coverage-eligibility-response.md) |
 | [D15](../database/D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | [S10](../screens/S10-communication.md) | [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
+
+## Pre-authorisation draft
+
+| # | Table | What one row is | Screens | APIs | Callbacks | FHIR |
+|---|---|---|---|---|---|---|
+| [D16](../database/D16-claim-line.md) | claim_line | Line the pre-authorisation quotes from the payer's package master: a procedure, an implant or a ward / ICU stratification tier. Primary key `id`. Parent table: `claim` (D9). | none | [A7](../apis/A7-communication-on-request.md), [A17](../apis/A17-claim-state.md) | none | [F8](../fhir/F8-claim.md) |
 
 ## Payer messages and payments
 

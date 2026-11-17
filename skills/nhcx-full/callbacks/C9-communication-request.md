@@ -12,7 +12,7 @@ The payer speaking first, on a thread the payer mints, so nothing here waits on 
 | a CommunicationRequest, classified as a notification | `notification` | acknowledged at once through A7; the case is untouched |
 | a Communication and no CommunicationRequest | `note`, `noted` | shown, never acted on; nothing goes back |
 
-**Classification** (by the sender's payer adapter: `x-hcx-sender_code` when present, else the case's payer; an unknown sender gets the generic adapter; query modes in [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). A `resubmit`-mode payer (PMJAY) queries inside the ClaimResponse (C5, C6), so every CommunicationRequest from it is a notification [PAYER](../references/PAYERS.md#markers). For a `communication`-mode payer: Task `intent` `proposal` is a notification and `order` a query; with no intent, a Task reason code of empty, `additionalinfo`, `questionnaire` or `query` is a query and anything else a notification [REF](../references/PAYERS.md#markers).
+**Classification** (by the sender's payer adapter: `x-hcx-sender_code` when present, else the case's payer; an unknown sender gets the generic adapter; query modes in [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). A `resubmit`-mode payer (PMJAY) queries lines inside the ClaimResponse (C5, C6), and also sends a CommunicationRequest to ask for documents or information: under PMJAY's "NHCX - HMIS (Provider side) requirements V1.2" (3.5, QRY-07) that request is a **query** on the leg its workflow id names, answered with a Communication; only a Task `intent` `proposal` from it (an FYI) is a notification [PAYER](../references/PAYERS.md#markers). The leg: workflow `24` or `241` names the pre-authorisation, even after a claim was filed; `27` (and `263`, the discharge) names the claim; any other falls back to the leg asked about as before. For a `communication`-mode payer: Task `intent` `proposal` is a notification and `order` a query; with no intent, a Task reason code of empty, `additionalinfo`, `questionnaire` or `query` is a query and anything else a notification [REF](../references/PAYERS.md#markers).
 
 **Matching**, first hit wins:
 1. each claim reference the resource names (reference, its last path segment, display, identifier value; from `about`, `basedOn`, `identifier` on a request, plus `inResponseTo` and `partOf` on a note) against the case number (D9 `claim_no`), then the number a leg went out under (D20 `claim_ref`, then D18 `claim_ref`), because a cancel retires a number;
@@ -55,6 +55,8 @@ record_query(body, corr, sender, workflow):
     if corr and a D23 row has correlation_id == corr: return "ignored"
     claim, stage = match_claim(references, corr, workflow)
     if none: return "unmatched"
+    if adapter.query_mode == resubmit and workflow in {24, 241}: stage = preauth   # names the pre-auth even after a claim
+    if adapter.query_mode == resubmit and workflow in {27, 263}: stage = claim
     stage = stage or leg_asked_about(claim)
     adapter = adapter_for(sender) if sender else adapter of the case's payer
     kind = classify(adapter, reason, intent)                     # "query" | "notification"

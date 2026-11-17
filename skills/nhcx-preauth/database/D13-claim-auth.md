@@ -15,7 +15,7 @@ Request:
 - The first request inserts the row. A later one deletes its items and requirements and updates the row, in one transaction.
 
 Reply (C3 callback, or polling by `txn_id`):
-- The last CoverageEligibilityResponse in the bundle is the payer's. Written: `outcome`, `disposition`, `inforce` (from `insurance[0].inforce`), `status = 'ready'`, `settled_at` = now, `error_message` = null, `response_json`. Items and requirements are deleted and re-inserted in the same transaction.
+- The last CoverageEligibilityResponse in the bundle is the payer's. Written: `outcome`, `disposition`, `inforce` (the in-force rule of [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md): `insurance[0].inforce`, else an `active` response or Coverage status), `status = 'ready'`, `settled_at` = now, `error_message` = null, `response_json`. Items and requirements are deleted and re-inserted in the same transaction.
 - `status = 'error'` with `error_message` on a ProtocolResponse, a protocol error in the ledger, a dispatch status of `dispatch_failed`, `dead` or `failed`, or a ledger 404 ("... Check again.").
 - A coverage reply whose correlation id matches no claim's eligibility check ([D9](D9-claim.md)) is matched here by `correlation_id`.
 - A redelivery for a row no longer `checking` is ignored unless the last send is on record as failed; then it is revived to `checking` and applied.
@@ -42,7 +42,7 @@ Delete: never directly. The row goes with its claim (`ON DELETE CASCADE`) or wit
 | error_message | TEXT | null | why the check failed |
 | outcome | TEXT | null | CoverageEligibilityResponse.outcome |
 | disposition | TEXT | null | CoverageEligibilityResponse.disposition |
-| inforce | INTEGER | null | `1` / `0` from `insurance[0].inforce` |
+| inforce | INTEGER | null | `1` / `0` by the in-force rule of [F3. CoverageEligibilityResponse](../fhir/F3-coverage-eligibility-response.md) |
 | response_json | TEXT | null | JSON: the full on_check bundle, for audit |
 | asked_codes | TEXT | null | the procedure set asked about: sorted `<code>x<quantity>[<tier codes>]` entries joined by `|`. Migration only |
 

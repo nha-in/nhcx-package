@@ -16,17 +16,19 @@ Unmarked statements are the protocol or this application's own design, and are f
 
 ## Choosing the adapter
 
-There are two adapters, `gov` (a government scheme: PMJAY and the State Health Agencies) and `generic` (every other payer). They are chosen per payer, in this order:
+The two adapters are now rows of the **payer configuration master** ([D33. payer_config](../database/D33-payer-config.md), edited on [S20. Payer Configuration](../screens/S20-payer-configuration.md)): `gov` is **row 0, the GOV default** (a government scheme: PMJAY and the State Health Agencies) and `generic` is **row 1, the PVT default** (every other payer). A payer may also have a row of its own that overrides its default column by column; a value it leaves empty is the default's. The table under [The adapters](#the-adapters) is what the migration seeds rows 0 and 1 with, and wherever a spec reads "the adapter's" property, or names the `gov` or `generic` adapter, it reads `payer_config_for(payer_id)` ([D33. payer_config](../database/D33-payer-config.md)):
 
-1. **The participant master's entity type** ([D32. participant](../database/D32-participant.md), the registry's list of PAYER and TPA participants pulled daily, each flagged `gov` or `pvt`): a payer flagged `gov` gets the `gov` adapter, any other flag gets `generic`. This decides for every payer the master holds.
-2. A payer the master does not hold: a **configuration row** mapping its participant code to an adapter key (in the reference implementation, rows of kind `payer_adapter` in the code lists, [D8. terminology](../database/D8-terminology.md), with the participant code as `code`, a label as `display` and the adapter key as `extra`), then a module setting mapping codes to adapter keys.
-3. Else its **registered name**: a name that starts with `SHA` (a State Health Agency) gets `gov`. The match ignores case and leading spaces. The name is the one remembered, else the participant master's, else looked up once on the participant registry ([G4. Registry and Certificates](../gateway/G4-registry.md)) when the payer is first used and remembered; a lookup that fails is tried again after a few minutes.
-4. Else `generic`: a plain NRCeS bundle with none of a scheme's extras. A new payer therefore needs no configuration.
+1. **The payer's own row** in [D33. payer_config](../database/D33-payer-config.md), matched on the code's numeric part, when it is active: its values, with its `base` (`gov` or `pvt`) naming the default it inherits from.
+2. Else **the participant master's entity type** ([D32. participant](../database/D32-participant.md), the registry's list of PAYER and TPA participants pulled daily, each flagged `gov` or `pvt`): `gov` reads row 0, any other flag row 1.
+3. Else its **registered name**: a name that starts with `SHA` (a State Health Agency) reads row 0. The match ignores case and leading spaces. The name is the one remembered, else the participant master's, else looked up once on the participant registry ([G4. Registry and Certificates](../gateway/G4-registry.md)) when the payer is first used and remembered; a lookup that fails is tried again after a few minutes.
+4. Else row 1, the PVT default: a plain NRCeS bundle with none of a scheme's extras. A new payer therefore needs no configuration.
 
-- The retired keys are read as today's, so stored rows and overrides keep working: `pmjay` reads as `gov`, `kyrocare` as `generic`.
+The `payer_adapter` rows of [D8. terminology](../database/D8-terminology.md) and the module setting that mapped codes to adapter keys, read by earlier builds, are migrated into payer rows of [D33. payer_config](../database/D33-payer-config.md) and no longer read.
+
+- The retired keys are read as today's when the migration meets them: `pmjay` reads as `gov`, `kyrocare` as `generic`.
 - The adapter is chosen by the policy's **payer id**. Messages are addressed to its **processing id** (the participant that handles the policy on NHCX), which can be a different code; see [CORE.md](CORE.md).
 - Codes are matched on their numeric part, so `1518`, `1518@hcx` and `1518@HCX` are the same payer.
-- **The adapter's name is never shown to the desk.** The payer's name shown anywhere is its registered name on the participant registry ([G4. Registry and Certificates](../gateway/G4-registry.md)), from the master or cached in the application, never a configuration row's `display`, the adapter's name, the search row's `payerName` or a configured default (registry names seen in the sandbox: `Sandbox Payer` for the IRDAI test payer, `SHA HP` for the PMJAY test payer). A payer whose registry lookup failed is shown by its code.
+- **The adapter's name is never shown to the desk** outside [S20. Payer Configuration](../screens/S20-payer-configuration.md). The payer's name shown anywhere is its registered name on the participant registry ([G4. Registry and Certificates](../gateway/G4-registry.md)), from the master or cached in the application, never a configuration row's `note` or `display`, the adapter's name, the search row's `payerName` or a configured default (registry names seen in the sandbox: `Sandbox Payer` for the IRDAI test payer, `SHA HP` for the PMJAY test payer). A payer whose registry lookup failed is shown by its code.
 - A workflow id missing from an adapter's table falls back to the `gov` table's value for that kind; a kind no table defines is refused ("No workflow id is defined for '<kind>'.").
 
 ## The adapters
@@ -35,17 +37,25 @@ There are two adapters, `gov` (a government scheme: PMJAY and the State Health A
 |---|---|---|
 | Payer code system | `https://payer.pmjay.nha.gov.in` | `https://nhcx.abdm.gov.in` |
 | Programme code on every claim line | `AB-PMJAY` ("Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)") | none |
-| Authorisation requirements check (A2 `auth-requirements`, C3) sent on its own before a pre-authorisation or an enhancement | yes | no (a payer with nothing to say only slows the send) |
+| Authorisation requirements check (A2 `auth-requirements`, C3), [D33. payer_config](../database/D33-payer-config.md) `auth_requirements` | `auto`: sent on its own whenever the line items change and before a pre-authorisation or an enhancement, and polled while out | `manual`: asked by the desk only (a payer with nothing to say only slows the send) |
 | Authorisation requirements check asked by the desk (the "Authorisation requirements" card on the Pre-authorisation tab, once a line is quoted) | allowed, optional, never a condition of the send | allowed, optional, never a condition of the send |
-| Benefits check on the quoted set (A2 `benefits`, the "Coverage benefits check" card beside it) | allowed, optional, never a condition of the send | allowed, optional, never a condition of the send |
-| Discharge intimation before the claim (S11, only when the integration asks for it) | none over NHCX: the discharge rides on the claim | none, unless the payer defines one |
+| Benefits check on the quoted set (A2 `benefits`, the "Coverage benefits check" card beside it), [D33. payer_config](../database/D33-payer-config.md) `coverage_benefits` | `manual`: allowed, optional, never a condition of the send | `manual`: the same |
+| How often an open check is polled by its card ([D33. payer_config](../database/D33-payer-config.md) `check_poll_seconds`) | 15 seconds | 15 seconds |
+| Custom line items: the desk may add a line not on the payer's plan, with the hospital's own code, name and price, and sees "Add a custom line" ([D33. payer_config](../database/D33-payer-config.md) `custom_lines`, [D16. claim_line](../database/D16-claim-line.md), [S8. Line Items](../screens/S8-line-items.md)) | no: a scheme quotes its package master; an unpriced need goes as its unspecified package | yes |
+| LAMA / DAMA procedure: a LAMA or DAMA discharge before or during surgery claims this one procedure instead of the lines ([D33. payer_config](../database/D33-payer-config.md) `lama_dama_procedure`) | `LM100` [PAYER](PAYERS.md#markers) | `LM100` (as before; a payer row may empty it) |
+| Discharge intimation before the claim (S11, only when the integration asks for it) | none over NHCX as a Task: the discharge travels as the discharge stage below | none, unless the payer defines one |
+| Discharge stage before the final claim (`discharge_step`; A5. Claim Submit (in nhcx-claim), [D20. claim_submission](../database/D20-claim-submission.md)) | yes: the first claim-leg send is the discharge (`v1/claim/submit`, `use` `claim`, workflow 14), validated by the payer before the final claim (15) may go [PAYER](PAYERS.md#markers) | no: the claim goes directly |
 | Document stages wanted at pre-authorisation | `pre` | `pre` |
 | Health records as FHIR (D28 "From records" sent as a `DocumentReference` with `application/fhir+json`, F19) | yes: the live PMJAY provider sends the hospital's structured records this way and PMJAY adjudicates them [PAYER](PAYERS.md#markers) | yes, the NRCES Claim profile allows it; a payer that refuses the entry is set to `no` and gets the record's PDF as a `valueAttachment` instead |
 | STG checklists (D12 `stgquestionnaire`) | called STQ; one per package per stage, a pre-authorisation STQ and a claim STQ, classified by D11's stage rule from the requirement and the questionnaire title; the ruling never names them | those the plan ships, staged by the same D11 rule |
 | Publishes a package master (A3, C4) | yes; a second request for the same policy is refused while one is outstanding (PAYR-1406), so none is sent while one is `fetching` [SANDBOX](PAYERS.md#markers) | yes |
 | Multiple-procedure factors (`Claim.item.factor`) | 1, 0.5, 0.25 (costliest in full, second at half, the rest at a quarter) | none |
-| How it asks for more (query mode) | `resubmit`: the query is a ClaimResponse on the case's own thread (a line-item query names the queried items), answered by submitting the leg again from its tab under the query-response workflow id; a CommunicationRequest from it is a notification, acknowledged, never answered | `communication`: a CommunicationRequest on a thread of its own, answered with a Communication (A7) on the Communication tab; a line-item query in a ClaimResponse is still answered by resubmitting |
+| How it asks for more (query mode) | `resubmit`: the query is a ClaimResponse on the case's own thread (a line-item query names the queried items), answered by submitting the leg again from its tab under the query-response workflow id; a CommunicationRequest from it asks for documents or information: its CommunicationRequest is a **query** on the leg its workflow names (24 pre-authorisation, 27 claim), answered with a Communication (A7) under 19 or 161; only a Task `intent` `proposal` from it is a notification [PAYER](PAYERS.md#markers) | `communication`: a CommunicationRequest on a thread of its own, answered with a Communication (A7) on the Communication tab; a line-item query in a ClaimResponse is still answered by resubmitting |
 | Task input naming the case beside `claimNumber` (A6, F10), one value per adapter for every Task kind | `initimationNumber`, the payer's own misspelling (`intimationNumber` is refused on a cancel with ERR-PYR-CLM-007) [SANDBOX](PAYERS.md#markers); an earlier run saw a reprocess spelt `initimationNumber` refused with PAYR-1008 [SANDBOX](PAYERS.md#markers), so the value is set from what the payer accepts | `intimationNumber` |
+| Claim search for "Ask where it stands" (A6 `search`, [D33. payer_config](../database/D33-payer-config.md) `claim_search`) | yes: `v1/search/submit` with `ClaimNumber` and `PolicyNumber`; PMJAY answers on `v1/search/on_submit` [SANDBOX](PAYERS.md#markers) | no |
+| A CommunicationRequest from it (C9) | a query on the leg its workflow names (24 pre-authorisation, 27 claim); a `proposal` is a notification [PAYER](PAYERS.md#markers) | as its query mode says |
+| Communication reply (A7, F12; [D33. payer_config](../database/D33-payer-config.md) `communication_reply`) | PMJAY's CommunicationOnRequestDocument, under 19 (pre-authorisation) or 161 (claim), with line notes as Procedures (SNO) [PAYER](PAYERS.md#markers) | the generic reply, echoing the request's workflow id |
+| Documents per send (D28) | only those the payer has not received | the same |
 | Answers a status enquiry (A6 status) | no: it refuses the Task (PAYR-1018, or PAYR-1008 with a reason code); read the case's state from its desk instead | yes |
 | Proof of presence (A18, S18) | required: the beneficiary's user token on the headers of the eligibility check, pre-authorisation and claim, else the Authentication Consent (questionnaire `100024`) answered in the pre-authorisation bundle and the Discharge Consent (`100466`) in the claim bundle; both are attachment questions (the signed declaration), so the desk uploads them on the leg's forms card, which offers the form whenever no token is held even when nothing lists it; refused by name without either (PAYR-1256, PAYR-1363) | optional: the token is sent when the desk has one; required as under `gov` when the plan's policy documents carry code ADN (proof of identity POI/ADN) |
 | Reprocess reason codes | `claimrejected`, `rejectiondisputed`: a reprocess is asked only of a rejected claim | same |
@@ -66,9 +76,11 @@ The `x-hcx-workflow_id` each send travels under, per adapter, the `x-hcx-status`
 | Enhancement (`enhancement`) | 13 | 13 | A4 | `request.initiated` | `request.initiated` |
 | Enhancement query answer (`enhancement_resubmit`) | 131 | 131 | A4 | `response.complete` | `request.initiated` [SANDBOX](PAYERS.md#markers) |
 | Cancel (`cancel`) | PC01 | PC01 | A6 | `request.initiated` | `request.initiated` |
+| Discharge (`discharge`, only where the discharge stage applies) | 14 | 14 | A5 | `request.initiated` | `request.initiated` |
+| Discharge query answer (`discharge_query_response`) | 141 | 141 | A5 | `response.complete` | `request.initiated`: it goes on `v1/claim/submit`, a request path, where NHCX refuses `response.complete` with NHCX-1011, as for 19 [SANDBOX](PAYERS.md#markers) |
 | Claim (`claim`) | 15 | 15 | A5 | `request.initiated` | `request.initiated` |
 | Claim resubmitted (`claim_resubmit`) | not offered: PMJAY refuses 16 with PAYR-1321 [SANDBOX](PAYERS.md#markers) | not offered: a decided claim is never sent again; a rejected one goes back as a reprocess (A6, 36) | A5 | `request.initiated` | `request.initiated` |
-| Claim query answer (`claim_query_response`) | 151, the published value, as the adapter default; the SHA sandbox refuses 151 and 19 with PAYR-1321 and takes 161, so a sandbox run sets 161 as a configuration override, never as the adapter's value [SANDBOX](PAYERS.md#markers) | 151 | A5 | `response.complete` | `request.initiated` [SANDBOX](PAYERS.md#markers) |
+| Claim query answer (`claim_query_response`) | 161: PMJAY refuses 151 and 19 with PAYR-1321 and takes 161 [SANDBOX](PAYERS.md#markers), as its V1.2 requirements name [PAYER](PAYERS.md#markers) | 151 | A5 | `response.complete` | `request.initiated` [SANDBOX](PAYERS.md#markers) |
 | Payment acknowledgement (`payment_ack`) | 17 | the notice's own workflow id, echoed back | A8 | `response.complete` | `response.complete` |
 | Reprocess (`reprocess`) | 36 | 36 | A6 | `request.initiated` | `request.initiated` |
 | Balance release (`release`) | 36 | 36 | A6 | `request.initiated` | `request.initiated` |
@@ -83,6 +95,9 @@ The payer's replies carry workflow ids of their own [PAYER](PAYERS.md#markers). 
 | 21, 22, 26, 252 | `approved` (`partial` when the bundle says the approval is partial) |
 | 23, 231, 291, 253 | `rejected` |
 | 24, 241, 27, 254 | `queried` |
+| 261 | `approved`: the discharge approved (`partial` when the bundle says so) |
+| 262 | `rejected`: the discharge rejected |
+| 263 | `queried`: the discharge queried |
 
 An error wins over both: a reply with `x-hcx-status` `response.error`, a `ClaimResponse.error`, or an `error` outcome that is not a rejection is an error whatever its workflow id (see [F9. ClaimResponse](../fhir/F9-claimresponse.md)).
 
@@ -92,9 +107,9 @@ Every pre-authorisation and claim send carries `x-hcx-use_case`, to every payer,
 
 | Send (kind) | `x-hcx-use_case` |
 |---|---|
-| `preauth`, `claim` | `New` |
+| `preauth`, `claim`, `discharge` | `New` |
 | `enhancement` | `Enhancement` |
-| `preauth_resubmit`, `preauth_query_response`, `enhancement_resubmit`, `claim_query_response`, `claim_resubmit` | `Resubmit` |
+| `preauth_resubmit`, `preauth_query_response`, `enhancement_resubmit`, `claim_query_response`, `claim_resubmit`, `discharge_query_response` | `Resubmit` |
 
 ## Sandbox participant codes
 

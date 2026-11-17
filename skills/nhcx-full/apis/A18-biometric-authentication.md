@@ -164,5 +164,5 @@ function biometric_headers(case, payer_code, stage):
 - Screens: [S14. Patient Registration Form](../screens/S14-patient-registration-form.md), [S18. Beneficiary Verification](../screens/S18-beneficiary-verification.md)
 - APIs: [A2. Coverage Eligibility Check](A2-coverage-eligibility-check.md), [A4. Pre-auth Submit](A4-preauth-submit.md), [A5. Claim Submit](A5-claim-submit.md), [A19. ABHA Create and Verify (ABDM M1)](A19-abha-m1.md)
 - FHIR: [F6. Questionnaire](../fhir/F6-questionnaire.md), [F7. QuestionnaireResponse](../fhir/F7-questionnaireresponse.md)
-- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D31. biometric_auth](../database/D31-biometric-auth.md)
+- Database: [D12. claim_plan_form](../database/D12-claim-plan-form.md), [D31. biometric_auth](../database/D31-biometric-auth.md), [D33. payer_config](../database/D33-payer-config.md)
 - Tests: [T13. PMJAY Eligibility, Package Master and Ruling](../tests/T13-pmjay-eligibility-and-package-master.md), [T19. PMJAY Beneficiary Verification and ABHA](../tests/T19-pmjay-biometric-and-abha.md)

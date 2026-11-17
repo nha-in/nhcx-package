@@ -12,12 +12,16 @@ Every follow-up request that is not a Claim goes on this route as a Task bundle.
 | status | Where does this leg stand? | pre-auth or claim |
 | reprocess | Look at a rejected claim again (a decided claim is never sent again, A5) | claim |
 | release | Pay the unpaid balance of a partly paid claim | claim |
+| search | The payer's history of this claim, on `v1/search/submit` (below) | claim |
+| position | Where a request this facility sent stands on the exchange, on `v1/status` (below) | the leg asked about |
 
 FHIR: [F1. Bundle](../fhir/F1-bundle.md) (the bundle id and Task anchor of each kind), [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md)
 
 **The intimation input.** Beside `claimNumber`, a cancel and a reprocess name the case once more in an input whose type code comes from the payer adapter (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers): `initimationNumber` (the payer's own misspelling) under the `gov` adapter, which the PMJAY sandbox otherwise refuses with ERR-PYR-CLM-007 [SANDBOX](../references/PAYERS.md#markers), and `intimationNumber` under `generic`. A status Task carries `claimNumber` alone.
 
-The status Task goes on `task/submit`, not on the NHCX status route, because the NHCX sandbox refuses `v1/status` with NHCX-1012 whatever correlation id it carries [SANDBOX](../references/PAYERS.md#markers).
+**Two different status questions.** `v1/status` is NHCX's own **position check**, not a status Task: it asks the exchange where a request this facility sent stands on the exchange, and is answered at once, in the HTTP reply, `request.queued` (the payer has not received it; no callback follows) or `request.dispatched` (the payer has it; it answers on `v1/on_status`). Its encrypted payload is an empty string, `x-hcx-status` is `request.initiated`, `x-hcx-ben-abha-id` is carried, and `x-hcx-correlation_id` is the **`x-hcx-api_call_id` of the request being asked about**, read from the gateway ledger by that send's `txn_id` ([G9. Ledger](../gateway/G9-ledger.md)); a fresh `x-hcx-api_call_id` goes on each check. NHCX-1012 means no message matches the id given: earlier builds sent the case's or the leg's correlation id there, which is why the sandbox answered NHCX-1012 every time, not because the route is refused. The gateway must seal an empty payload for this one route ([G7. Send](../gateway/G7-send.md)). Where a leg is `submitting` with no answer, S9 and S11 offer "Check on the exchange" (D29 kind `position`); the answer is shown at once, never retried in a loop. The **status Task** (kind `status`, below) is the separate business question "what has the payer decided", on `task/submit`, for a payer that answers one.
+
+**Claim search** (kind `search`) [PAYER](../references/PAYERS.md#markers). A payer that answers no status Task can still be asked for the claim's history by NHCX's search API (nha:B6): `v1/search/submit`, answered on `v1/search/on_submit`. Seen live against PMJAY: a Task bundle (the bundle and Task identified by the case's claim number, `meta.profile` TaskBundle and Task) with `code` `search` (`https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-task-codes`, display "Search"), `status` `requested`, `intent` `order`, the requester the provider Organization and the owner the payer Organization, and **two inputs** typed in `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code`: `ClaimNumber` (the case's claim number) and `PolicyNumber` (the case's policy code); the provider and payer Organizations follow in the bundle. Headers: `x-hcx-status` `request.initiated`, `x-hcx-ben-abha-id` the case's ABHA number, **no `x-hcx-workflow_id`**. With `ClaimNumber` alone PMJAY never answered; with `PolicyNumber` added it answered on `v1/search/on_submit` with a ProtocolResponse `x-hcx-entity-type` `search`, `x-hcx-error_details` `ERR-PYR-SR-002` "No Claim History with requested Details" (a case it held under another number) [SANDBOX](../references/PAYERS.md#markers). Where the payer's configuration sends it ([D33. payer_config](../database/D33-payer-config.md) `claim_search` 1, the GOV default) and it answers no status Task, "Ask where it stands" sends this search instead. The answer is filed on the enquiry (D29) by [C8. Enquiry Reply](../callbacks/C8-enquiry-on-submit.md): an error is shown with its code and message; a bundle is kept as the answer and its claim decisions shown as the payer sent them.
 
 **Workflow ids (`x-hcx-workflow_id`).** From the payer adapter (see [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers), except the status enquiry.
 
@@ -27,6 +31,8 @@ The status Task goes on `task/submit`, not on the NHCX status route, because the
 | status | `1` | `1` |
 | reprocess | 36 | 36 |
 | release | 36 | 36 |
+| search | none: no workflow id is sent [SANDBOX](../references/PAYERS.md#markers) | none |
+| position | none | none |
 
 Cancel, reprocess and release are read from the adapter and can be overridden per environment (a JSON object of kind to workflow id), for example to send cancel as `122`, which one NHA source gives in place of PC01. The status enquiry always goes under `1`: no NHCX workflow code names a status check (the Task codes are 36, reprocess, and PC01, cancel), so it never carries the leg's correlation id (a UUID is not a workflow id) nor a stage code that means something else.
 
@@ -40,8 +46,8 @@ Cancel, reprocess and release are read from the adapter and can be overridden pe
 |---|---|
 | cancel | "There is no pre-authorisation to cancel."; "A pre-authorisation that is `<status label, lower case>` cannot be cancelled." (only `submitting`, `approved`, `partial`, `queried` can be); once the payer has decided the claim (D20 `approved`, `partial` or `rejected`): "The payer has decided the claim; the pre-authorisation can no longer be cancelled."; "Choose why the pre-authorisation is being cancelled."; with reason `other` and no note: "Describe the reason, with “Other reason” the note is the only thing the payer can read."; "Set the facility's HFR ID and NHCX participant code under Settings first." |
 | status | "Ask about the pre-authorisation or the claim."; the adapter refusal above; "No pre-authorisation has been sent yet." (pre-auth) or "The claim has not been submitted yet." (claim); the Settings error |
-| reprocess | "Only a claim the payer has rejected can be sent back for reprocessing." (claim must be `rejected`; the next action "Ask for a reprocess" is offered on a rejected claim only); "A claim that has been paid in full cannot be reprocessed."; "Say why the claim should be looked at again."; the Settings error; "Choose why the claim is being sent back." (a reason code the adapter does not allow); "That document is not on this claim." |
-| release | "Only a decided claim can have its balance asked for." (`approved` or `partial`); "A claim that has been paid in full has no balance."; "Say how much of the claim is still owed." (blank, zero or negative); the Settings error |
+| reprocess | "Only a claim the payer has rejected can be sent back for reprocessing." (claim must be `rejected`, and not a discharge, [D20. claim_submission](../database/D20-claim-submission.md); the next action "Ask for a reprocess" is offered on a rejected claim only); "A claim that has been paid in full cannot be reprocessed."; "Say why the claim should be looked at again."; the Settings error; "Choose why the claim is being sent back." (a reason code the adapter does not allow); "That document is not on this claim." |
+| release | "Only a decided claim can have its balance asked for." (`approved` or `partial`, and not a discharge, [D20. claim_submission](../database/D20-claim-submission.md)); "A claim that has been paid in full has no balance."; "Say how much of the claim is still owed." (blank, zero or negative); the Settings error |
 
 "Paid in full" means the paid total from payment notices (A8) is at least the claimed amount.
 
@@ -198,7 +204,8 @@ function ask_status(case_id, stage):
 
 function ask_reprocess(case_id, reason, reason_code, document_ids):
     state = claim_submission for the case
-    if state missing or state.status != rejected:          // never approved or partial
+    if state missing or state.status != rejected or
+       state.submission_kind in {discharge, discharge_query_response}:   // a rejected discharge is sent again, D20
         refuse "Only a claim the payer has rejected can be sent back for reprocessing."
     paid = paid total from claim_payment (settled notices, once per UTR, newest wins)
     if paid and paid >= state.requested_amount:
@@ -222,7 +229,8 @@ function ask_reprocess(case_id, reason, reason_code, document_ids):
 
 function ask_release(case_id, amount, note):
     state = claim_submission for the case
-    if state missing or state.status not in {approved, partial}:
+    if state missing or state.status not in {approved, partial} or
+       state.submission_kind in {discharge, discharge_query_response}:   // a discharge approval is not the claim's
         refuse "Only a decided claim can have its balance asked for."
     paid = paid total from claim_payment (settled notices, once per UTR, newest wins)
     if paid and paid >= state.requested_amount:
@@ -242,4 +250,6 @@ function ask_release(case_id, amount, note):
 - APIs: [A5. Claim Submit](A5-claim-submit.md), [A10. Transaction Related](A10-txn-related.md), [A11. Transaction Dispatch](A11-txn-dispatch.md), [A13. Transaction List](A13-txn-list.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md), [C8. Enquiry Reply](../callbacks/C8-enquiry-on-submit.md)
 - FHIR: [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md)
-- Tests: [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md)
+- Database: [D33. payer_config](../database/D33-payer-config.md)
+- Gateway: [G7. Send](../gateway/G7-send.md)
+- Tests: [T2. Test Runners](../tests/T2-test-runners.md), [T10. IRDAI Claim Approved, Part-approved and Rejected](../tests/T10-irdai-claim.md), [T21. PMJAY Discharge Stage Before the Final Claim](../tests/T21-pmjay-discharge-stage.md)

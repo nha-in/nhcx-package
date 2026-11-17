@@ -15,6 +15,7 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 | [D7](D7-allergy.md) | allergy | Allergy or intolerance of a patient. | [D7-allergy.md](D7-allergy.md) |
 | [D8](D8-terminology.md) | terminology | Concept in one code list (a picker), for example one ICD-10 diagnosis with its SNOMED mapping, one department or one payer adapter mapping. | [D8-terminology.md](D8-terminology.md) |
 | [D32](D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [D32-participant.md](D32-participant.md) |
+| [D33](D33-payer-config.md) | payer_config | The payer configuration master: how the application behaves towards each payer (automatic checks, polling, proof of presence, query mode, discharge stage, LAMA / DAMA procedure, workflow ids and the rest of the adapter properties). Row 0 is the GOV default and row 1 the PVT default, seeded with today's values; a row per payer overrides them, an empty value inheriting from its default. Primary key `id`. No parent table. | [D33-payer-config.md](D33-payer-config.md) |
 
 ## Claim
 
@@ -32,6 +33,12 @@ The tables behind the claim, patient and practitioner screens. Screens (S), APIs
 | [D13](D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [D13-claim-auth.md](D13-claim-auth.md) |
 | [D14](D14-claim-auth-item.md) | claim_auth_item | The payer's ruling on one line of the procedure set. | [D14-claim-auth-item.md](D14-claim-auth-item.md) |
 | [D15](D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | [D15-claim-auth-requirement.md](D15-claim-auth-requirement.md) |
+
+## Pre-authorisation draft
+
+| # | Table | What one row is | File |
+|---|---|---|---|
+| [D16](D16-claim-line.md) | claim_line | Line the pre-authorisation quotes from the payer's package master: a procedure, an implant or a ward / ICU stratification tier. Primary key `id`. Parent table: `claim` (D9). | [D16-claim-line.md](D16-claim-line.md) |
 
 ## Draft details, documents and enquiries
 

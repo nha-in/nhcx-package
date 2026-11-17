@@ -351,6 +351,7 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 10. Remove: after the confirm, delete the document, re-read the case.
 11. Submit to payer / Submit enhancement / Answer the query: run the checks, send the bundle, re-read the case with the card awaiting the payer.
 12. Cancel pre-authorisation: after the confirm, send the cancel Task, re-read the case in `cancelling`.
+13a. Check on the exchange (while `submitting` with no answer): post `v1/status` for the pre-authorisation's last send ([A6. Task Submit (cancel, status, reprocess, release)](../apis/A6-task-submit.md) `position`) and show `request.queued` or `request.dispatched` at once.
 13. Ask where it stands (while `submitting`): send the status Task, re-read the case; the answer appears in the enquiry rows.
 14. Open the Communication tab: go to S10.
 15. Refresh (S6 header): re-read the case, polling every exchange still open.

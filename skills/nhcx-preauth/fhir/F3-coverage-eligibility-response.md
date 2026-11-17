@@ -11,7 +11,7 @@ The payer's answer to F2, carried in a bundle that repeats the request's seven e
 The same resource is read two ways, depending on which exchange the correlation id belongs to:
 
 **Eligibility verdict** (answer to `validation`, `benefits`, `discovery`; C2). Read into the case row, D9 `claim`:
-- `insurance[0].inforce` decides eligible or not. `outcome: error` makes the case `error`, else `inforce` true makes it `eligible`, else `not-eligible`.
+- **In force** [PAYER](../references/PAYERS.md#markers): `insurance[0].inforce`, when the payer sends it, decides (an explicit `false` is not in force). When it is missing, the policy is in force if the CoverageEligibilityResponse's `status` or the payer's Coverage `status` is `active`; some payers (Aditya Birla, an indemnity insurer on the sandbox) send no `inforce` at all, only an active Coverage and an `error[0]` of code `0` "Record Found" that reports success. An `outcome` of `error` is never in force. The same rule reads the auth-requirements reply. `outcome: error` makes the case `error`, else in force makes it `eligible`, else `not-eligible`.
 - The wallet (sum insured, utilised, balance). Every `insurance[0].item[].benefit[]` that has `allowedMoney` is a candidate. The one typed `benefit` wins, then the one typed `30` ("Health Benefit Plan Coverage"), then the first benefit on the admission item (`productOrService` 305056002) or on an item naming no product [PAYER](../references/PAYERS.md#markers). **A benefit on a procedure line is that package's rate, never the cover**, and is never read as the wallet: a benefits answer that lists packages without a wallet row leaves `allowed_amount` and `used_amount` as they were (reading a package rate as the sum insured showed a negative balance). `allowedMoney` is what is left on the wallet and `usedMoney` what has gone; both are always taken from the same row. The sum insured is stored as left plus used, so the balance shown (sum insured minus used) equals `allowedMoney`.
 - `item[].authorizationRequired`: the last item that states it wins.
 - The beneficiaries: every payer Patient, with name, gender, birth date, address, ABHA, photo and member id, and from its Coverage the relationship. **The photo** is kept as the base64 of the image: data that already starts as a JPEG (`/9j/`) or PNG (`iVBORw0`) is kept as it is; data that decodes to such base64 (the PMJAY gateway encodes the photo twice) is peeled once; anything that is not an image is dropped [PAYER](../references/PAYERS.md#markers). A `photo[0].url` is kept when there is no data. Each entry also carries the policy from its Coverage (`policy_code`: `class[0].value`, else the first identifier, else `subscriberId`; `plan_name`: `class[0].name`). The whole list goes to D9 `beneficiaries_json`. The person columns of D9 are filled from **one** of them only when the choice is unambiguous: one person returned, or one whose member id equals the case's `member_id` (or an earlier choice, `beneficiary_member_id`). Otherwise they are left as they were and the desk chooses on S3. Policy Discovery (in nhcx-coverage) (C2. Coverage Eligibility Verdict (in nhcx-coverage)). On a provisional case (D9 `provisional`) with several members the desk always chooses, even when one member id matches, before the case opens.
@@ -37,7 +37,7 @@ Eligibility verdict, into D9 `claim`:
 |---|---|---|
 | `outcome` | `claim.outcome` | `error` sets `claim.status` = `error` |
 | `disposition` | `claim.disposition` | for example "Policy is currently in-force" |
-| `insurance[0].inforce` | `claim.inforce` (1/0) | true sets `claim.status` = `eligible`, else `not-eligible` |
+| `insurance[0].inforce`, else `status` / Coverage `status` `active` (rule above) | `claim.inforce` (1/0) | in force sets `claim.status` = `eligible`, else `not-eligible` |
 | `insurance[0].item[].authorizationRequired` | `claim.auth_required` (1/0) | last item stating it |
 | `insurance[0].item[].benefit[].type.coding[].code` | chooses the wallet | `benefit`, then `30`, then the first on the admission item (305056002) or an item with no product; never a procedure line's benefit. No wallet row: the two amounts are not written |
 | wallet `allowedMoney.value` + `usedMoney.value` | `claim.allowed_amount` | the sum insured |
@@ -61,7 +61,7 @@ Authorisation-requirements ruling, the **last** CoverageEligibilityResponse in t
 | Element read | Stored in | Notes |
 |---|---|---|
 | `outcome`, `disposition` | D13 `claim_auth.outcome`, `.disposition` | `claim_auth.status` = `ready` |
-| `insurance[0].inforce` | D13 `claim_auth.inforce` (1/0) | |
+| `insurance[0].inforce`, else `status` / Coverage `status` `active` (rule above) | D13 `claim_auth.inforce` (1/0) | |
 | `insurance[0].item[].productOrService.coding[0]` code / display (else `text`) | D14 `claim_auth_item.code` / `.display` | one row per item, `seq` from 1 |
 | `item[].category.coding[0].code` | D14 `claim_auth_item.category_code` | |
 | `item[].authorizationRequired` | D14 `claim_auth_item.auth_required` (1/0) | |
@@ -79,4 +79,4 @@ Authorisation-requirements ruling, the **last** CoverageEligibilityResponse in t
 #### F3U. USED BY
 - Callbacks: [C3. Authorisation Requirements Ruling](../callbacks/C3-auth-requirements-on-check.md)
 - FHIR: [F1. Bundle](F1-bundle.md), [F2. CoverageEligibilityRequest](F2-coverage-eligibility-request.md), [F5. InsurancePlan](F5-insuranceplan.md), [F6. Questionnaire](F6-questionnaire.md), [F15. Patient](F15-patient.md)
-- Database: [D9. claim](../database/D9-claim.md)
+- Database: [D9. claim](../database/D9-claim.md), [D13. claim_auth](../database/D13-claim-auth.md)

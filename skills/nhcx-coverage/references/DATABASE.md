@@ -14,7 +14,8 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 | [D6](../database/D6-observation.md) | observation | Measured or coded finding (a vital sign reading, a lab analyte, a wellness or dialysis reading). | [S15](../screens/S15-patient-detail.md) | none | none | none |
 | [D7](../database/D7-allergy.md) | allergy | Allergy or intolerance of a patient. | [S15](../screens/S15-patient-detail.md) | none | none | none |
 | [D8](../database/D8-terminology.md) | terminology | Concept in one code list (a picker), for example one ICD-10 diagnosis with its SNOMED mapping, one department or one payer adapter mapping. | [S15](../screens/S15-patient-detail.md) | none | none | none |
-| [D32](../database/D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [S2](../screens/S2-select-policy.md), [S17](../screens/S17-beneficiary-discovery.md), [S19](../screens/S19-nhcx-settings.md) | [A1](../apis/A1-policy-search.md) | none | none |
+| [D32](../database/D32-participant.md) | participant | The participant master: every payer and TPA on the exchange, government and private, pulled from the registry's participant list over a configured window (one year by default, ten in the sandbox) and refreshed daily. Primary key `code`. No parent table. | [S2](../screens/S2-select-policy.md), [S17](../screens/S17-beneficiary-discovery.md), [S19](../screens/S19-nhcx-settings.md), [S20](../screens/S20-payer-configuration.md) | [A1](../apis/A1-policy-search.md) | none | none |
+| [D33](../database/D33-payer-config.md) | payer_config | The payer configuration master: how the application behaves towards each payer (automatic checks, polling, proof of presence, query mode, discharge stage, LAMA / DAMA procedure, workflow ids and the rest of the adapter properties). Row 0 is the GOV default and row 1 the PVT default, seeded with today's values; a row per payer overrides them, an empty value inheriting from its default. Primary key `id`. No parent table. | [S19](../screens/S19-nhcx-settings.md), [S20](../screens/S20-payer-configuration.md) | [A2](../apis/A2-coverage-eligibility-check.md) | [C2](../callbacks/C2-coverage-eligibility-on-check.md) | [F19](../fhir/F19-other-resources.md) |
 
 ## Claim
 
@@ -27,11 +28,17 @@ Every table behind the claim, patient and practitioner flows, in one list. Each 
 | # | Table | What one row is | Screens | APIs | Callbacks | FHIR |
 |---|---|---|---|---|---|---|
 | [D10](../database/D10-claim-plan.md) | claim_plan | The payer's package master (InsurancePlan) for one claim's policy and provider pair. | [S6](../screens/S6-claim-detail.md), [S17](../screens/S17-beneficiary-discovery.md) | [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) | none |
-| [D11](../database/D11-claim-plan-benefit.md) | claim_plan_benefit | Package (or covered benefit) in a claim's package master. | none | [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
+| [D11](../database/D11-claim-plan-benefit.md) | claim_plan_benefit | Package (or covered benefit) in a claim's package master. | [S20](../screens/S20-payer-configuration.md) | [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
 | [D12](../database/D12-claim-plan-form.md) | claim_plan_form | Payer questionnaire (dynamic form) shipped with a claim's package master. | none | [A17](../apis/A17-claim-state.md) | none | [F7](../fhir/F7-questionnaireresponse.md) |
 | [D13](../database/D13-claim-auth.md) | claim_auth | The payer's authorisation-requirements ruling on a claim's procedure set. | [S6](../screens/S6-claim-detail.md), [S19](../screens/S19-nhcx-settings.md) | [A2](../apis/A2-coverage-eligibility-check.md), [A10](../apis/A10-txn-related.md), [A11](../apis/A11-txn-dispatch.md), [A13](../apis/A13-txn-list.md), [A17](../apis/A17-claim-state.md) | [C1](../callbacks/C1-callback-door.md) | [F3](../fhir/F3-coverage-eligibility-response.md) |
 | [D14](../database/D14-claim-auth-item.md) | claim_auth_item | The payer's ruling on one line of the procedure set. | none | [A2](../apis/A2-coverage-eligibility-check.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
 | [D15](../database/D15-claim-auth-requirement.md) | claim_auth_requirement | Document or form the payer's ruling says the procedure set must be accompanied by. | none | [A2](../apis/A2-coverage-eligibility-check.md), [A17](../apis/A17-claim-state.md) | none | [F3](../fhir/F3-coverage-eligibility-response.md) |
+
+## Pre-authorisation draft
+
+| # | Table | What one row is | Screens | APIs | Callbacks | FHIR |
+|---|---|---|---|---|---|---|
+| [D16](../database/D16-claim-line.md) | claim_line | Line the pre-authorisation quotes from the payer's package master: a procedure, an implant or a ward / ICU stratification tier. Primary key `id`. Parent table: `claim` (D9). | none | [A2](../apis/A2-coverage-eligibility-check.md), [A17](../apis/A17-claim-state.md) | none | [F2](../fhir/F2-coverage-eligibility-request.md), [F19](../fhir/F19-other-resources.md) |
 
 ## Draft details, documents and enquiries
 

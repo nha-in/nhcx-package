@@ -51,7 +51,7 @@ Applying a reply writes `outcome`, `adjudication`, `disposition`, `preauth_ref` 
 
 **Cancellation.** Allowed from `submitting`, `approved`, `partial` or `queried`, and only until the payer decides the claim (D20 `approved`, `partial` or `rejected`: "The payer has decided the claim; the pre-authorisation can no longer be cancelled.", [CORE.md](../references/CORE.md) Instruction 14). It writes `pre_cancel_status` (the status it had), `status` `cancelling`, `cancel_txn_id`, `cancel_correlation_id`, `cancel_requested_at`, `cancel_reason` (a key: `treatmentplanchanged`, `patientrequest`, `financialconstraints`, `alternativetreatment`, `duplicateclaim`, `administrativeerror`, `other`; `other` requires a note), `cancel_note`, and clears `error_message` (`error` when the send failed). The payer's Task reply (C7, or polling) then:
 
-- accepted (Task status none, `completed` or `accepted`, and outcome not `error`): `status` `cancelled`, `settled_at`, `outcome`, `disposition`, `response_json`, and the claim is given a fresh claim number from the counter (D30). The withdrawn number stays here in `claim_ref`.
+- accepted (Task status none, `completed` or `accepted`, and outcome not `error`): `status` `cancelled`, `settled_at`, `outcome`, `disposition`, `response_json`, and the claim is given a fresh claim number from the counter (D30). The withdrawn number stays here in `claim_ref`. The payer's reference for the withdrawn pre-authorisation is retired with it: `preauth_ref` moves to `cancelled_preauth_ref` and is cleared, so no claim ever quotes a withdrawn pre-authorisation's reference; the episode's claim quotes only the reference of the pre-authorisation approved under the fresh number.
 - refused: `status` back to `pre_cancel_status` (`approved` when none was recorded) with `error_message` "The payer did not accept the cancellation.". The reference implementation always set `approved`, even for a cancel sent from `submitting` or `queried`; restoring the earlier status is a correction. For 15 minutes after that, polling still looks for an acceptance on the thread [REF](../references/PAYERS.md#markers).
 
 - refused at the door (a `ProtocolResponse` on the cancel thread): `status` back to `pre_cancel_status` (`approved` when none was recorded) with `error_message` `<code>: <message>`, so a corrected cancel can be sent from that status; the leg is not left in `error`.
@@ -76,6 +76,7 @@ Every change goes through a write that also recomputes the claim's `stage` and `
 | claim_ref | TEXT | null | The claim number sent as `Claim.identifier`; keeps a number later retired by a cancellation |
 | preauth_ref | TEXT | null | `ClaimResponse.preAuthRef`, the payer's case reference |
 | api_call_id | TEXT | null | `x-hcx-api_call_id` of the last reply applied, to ignore redeliveries |
+| cancelled_preauth_ref | TEXT | null | The payer's reference of a withdrawn pre-authorisation, kept for display ("Withdrawn under"); never sent. Migration only |
 | adjudication | TEXT | null | Claim-level adjudication reason code, lower case (the reason on the entry categorised `status` first) |
 | query_note | TEXT | null | The payer's query trail: item adjudication `reason` texts and `processNote` texts, one per line |
 | outcome | TEXT | null | `ClaimResponse.outcome`: `complete`, `error`, `partial`, `queued` |
@@ -108,5 +109,5 @@ Every change goes through a write that also recomputes the claim's `stage` and `
 - Screens: [S5. Claim Master](../screens/S5-claim-master.md), [S6. Claim Detail](../screens/S6-claim-detail.md), [S11. Claim Submission](../screens/S11-claim-submission.md)
 - APIs: [A6. Task Submit (cancel, status, reprocess, release)](../apis/A6-task-submit.md), [A10. Transaction Related](../apis/A10-txn-related.md), [A11. Transaction Dispatch](../apis/A11-txn-dispatch.md), [A12. Transaction FHIR](../apis/A12-txn-fhir.md), [A13. Transaction List](../apis/A13-txn-list.md), [A17. Claim State](../apis/A17-claim-state.md)
 - Callbacks: [C1. Callback Door](../callbacks/C1-callback-door.md)
-- FHIR: [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md)
+- FHIR: [F9. ClaimResponse](../fhir/F9-claimresponse.md), [F10. Task (claim actions)](../fhir/F10-task-claim-actions.md)
 - Database: [D9. claim](D9-claim.md), [D16. claim_line](D16-claim-line.md), [D20. claim_submission](D20-claim-submission.md), [D21. claim_payment](D21-claim-payment.md), [D23. claim_query](D23-claim-query.md), [D29. claim_enquiry](D29-claim-enquiry.md), [D30. counter](D30-counter.md)

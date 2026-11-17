@@ -66,6 +66,7 @@ Every NHCX message carries its routing and tracking headers in the JWE protected
 | `v1/communication/request`, `.../on_request` | `communication` |
 | `v1/paymentnotice/request`, `.../on_request` | `payment` |
 | `v1/status`, `v1/on_status` | `status` |
+| `v1/search/submit`, `v1/search/on_submit` | `search` |
 | `v1/error` | `error` |
 
 **Codes.** `normalize_code` trims and appends `@hcx` when missing; empty stays empty. `same_code` compares normalised codes case-insensitively.
@@ -173,5 +174,5 @@ target_url(base, path):
 #### G5U. USED BY
 - APIs: [A6. Task Submit (cancel, status, reprocess, release)](../apis/A6-task-submit.md)
 - FHIR: [F1. Bundle](../fhir/F1-bundle.md)
-- Database: [D32. participant](../database/D32-participant.md)
+- Database: [D32. participant](../database/D32-participant.md), [D33. payer_config](../database/D33-payer-config.md)
 - Gateway: [G2. Configuration and Participants](G2-configuration.md), [G4. Registry and Certificates](G4-registry.md), [G6. Encryption](G6-encryption.md), [G7. Send](G7-send.md), [G8. Receive](G8-receive.md), [G9. Ledger](G9-ledger.md)

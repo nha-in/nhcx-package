@@ -68,6 +68,8 @@ When the configuration holds the active key inline rather than as a file referen
 
 **Card 4: Participants on the exchange.** The participant master ([D32. participant](../database/D32-participant.md)). Description: "Every payer and TPA registered on NHCX in the last <windowYears> years, government and private, pulled from the participant registry and refreshed every 24 hours. The payer picker reads from this list." (the window is [D32. participant](../database/D32-participant.md)'s setting: 1 in production, 10 in the sandbox). The master holds payers and TPAs only: providers are never pulled, and rows of any other role left from an earlier pull are dropped on refresh. Two tiles (Payers, TPAs), each with the active count and "<n> government · <n> private" under it; the line "Last refreshed <when>." with an amber chip "Older than a day" when stale, or "Not pulled yet. The list fills on the first payer search, or on Refresh now."; then a **Role** select (Payers, TPAs; an unknown role is refused "Choose a participant role: PAYER or TPA.") and a **Find** box (debounced) over a scrollable table (Name, Participant code, Kind as a chip Government or Private, State) of up to 200 rows, "No participant matches." when empty. Header action **"Refresh now"** posts to `settings/nhcx/participants/refresh`, pulls the payer and TPA roles for both kinds ([G4. Registry and Certificates](../gateway/G4-registry.md) `fetch_participants`), upserts the master and flashes "Participant list refreshed: <n> payers, <n> TPAs."; a registry failure flashes red and changes nothing. The schedule ([SCAFFOLDING.md](../references/SCAFFOLDING.md), section 7) does the same daily.
 
+**Card 6: Payer configuration.** Title "Payer configuration". Description: "How the application behaves towards each payer: automatic checks, polling, proof of presence, queries, the discharge stage, the LAMA / DAMA procedure and the workflow ids. Government schemes follow the GOV default and every other payer the PVT default unless configured." A line "<n> payer(s) configured" (payer rows of [D33. payer_config](../database/D33-payer-config.md)) and one button, "Open payer configuration", to [S20. Payer Configuration](S20-payer-configuration.md).
+
 **Card 5: Doctors and staff.** The practitioner master's title and description (S16. Practitioner Master (in nhcx-preauth)) and one button, "Open Doctors & staff", to S16 (`settings/nhcx/practitioners` when the HMIS has no practitioner screen of its own that carries the HPR id).
 
 When [G2. Configuration and Participants](../gateway/G2-configuration.md) lists extra hosted `participants`, a read-only list of them follows card 2: code, name, whether it shares the default key, and [G11. Startup Checks and Health](../gateway/G11-startup-checks.md) check 4's outcome. Hosted participants are configuration; the screen shows them and does not edit them.
@@ -117,6 +119,9 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 |  Role [Payers v]  Find [sha        ]                             |
 |  SHA HP          <payer code> [Government]   Himachal Pradesh    |
 |------------------------------------------------------------------|
+| [Card] Payer configuration        [Open payer configuration]     |
+|  2 payer(s) configured                                           |
+|------------------------------------------------------------------|
 | [Card] Doctors and staff                 [Open Doctors & staff]  |
 |------------------------------------------------------------------|
 ```
@@ -134,4 +139,5 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 7. Retire previous: after the confirm, empty the previous slot.
 8. Refresh now: pull the payer and TPA lists for both kinds, upsert the master, drop rows of other roles, flash the counts.
 9. Open Doctors & staff: to S16.
+9a. Open payer configuration: to [S20. Payer Configuration](S20-payer-configuration.md).
 10. Breadcrumb "Settings": back to the HMIS's settings page.

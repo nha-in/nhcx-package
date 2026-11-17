@@ -106,7 +106,7 @@ API: [A5. Claim Submit](../apis/A5-claim-submit.md) (answered forms)
 
 ---
 
-**The discharge stage** ([D20. claim_submission](../database/D20-claim-submission.md), [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge before the final claim (PMJAY, or the decision `claim.dischargeStep` `always`), the card is titled "Discharge" until the discharge is approved, and while nothing is sent it shows an info alert "Discharge validation first": "This payer validates the discharge before the final claim: the first send is the discharge (workflow 14) with the discharge details, summary and documents. Once it is approved, the final claim (workflow 15) goes out." On a discharge row the chip reads:
+**The discharge stage** ([D20. claim_submission](../database/D20-claim-submission.md), [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge before the final claim (every payer by default, GOV and PVT, unless its payer row sends the claim directly; or the decision `claim.dischargeStep` `always`), the card is titled "Discharge" until the discharge is approved, and while nothing is sent it shows an info alert "Discharge validation first": "This payer validates the discharge before the final claim: the first send is the discharge with the discharge details, summary and documents. Once it is approved, the final claim (workflow 15) goes out." On a discharge row the chip reads:
 
 | `discharge_status` | Label | Tone |
 |---|---|---|
@@ -116,7 +116,7 @@ API: [A5. Claim Submit](../apis/A5-claim-submit.md) (answered forms)
 | `rejected` | Discharge rejected | danger |
 | `error` | Discharge refused | danger |
 
-A **discharge verdict** alert, titled "Discharge stage" with that chip, shows on a discharge row once sent, and beside the claim once the final claim went: approved "The payer validated the discharge (workflow 14). Proceed to the final claim."; rejected "The payer rejected the discharge. Correct what it names, then submit the discharge again."; queried "The payer queried the discharge. Answer below; the answer goes out on workflow 141."; submitting "The discharge is with the payer; the final claim opens once it is approved."; error the refusal, else "The exchange refused the discharge; send it again.". Under it: "Payer:" and `discharge_disposition` when given, Sent at and Decided at, and once the final claim went the discharge's per-item verdicts. On a discharge row the first stat tile reads "Billed at discharge", the Reprocess and Balance release sections are not shown, and the send button stays offered after a decided discharge (approved: the final claim; rejected: the discharge again), confirmed with "Send the discharge to the payer for validation?" for a discharge send.
+A **discharge verdict** alert, titled "Discharge stage" with that chip, shows on a discharge row once sent, and beside the claim once the final claim went: approved "The payer validated the discharge. Proceed to the final claim."; rejected "The payer rejected the discharge. Correct what it names, then submit the discharge again."; queried "The payer queried the discharge. Answer below."; submitting "The discharge is with the payer; the final claim opens once it is approved."; error the refusal, else "The exchange refused the discharge; send it again.". Under it: "Payer:" and `discharge_disposition` when given, Sent at and Decided at, and once the final claim went the discharge's per-item verdicts. On a discharge row the first stat tile reads "Billed at discharge", the Reprocess and Balance release sections are not shown, and the send button stays offered after a decided discharge (approved: the final claim; rejected: the discharge again), confirmed with "Send the discharge to the payer for validation?" for a discharge send.
 
 **Claim card.** Title "Claim", with the status chip once a claim row exists.
 
@@ -154,17 +154,17 @@ States of the card:
 
 | Where the claim stands | Button label |
 |---|---|
-| Not sent / `draft`, the discharge stage applying | Submit discharge (<workflow id>) |
-| a discharge `queried` | Answer the discharge query (<workflow id>) |
-| a discharge `rejected` or `error` | Submit discharge (<workflow id>) |
+| Not sent / `draft`, the discharge stage applying | Submit discharge |
+| a discharge `queried` | Answer the discharge query |
+| a discharge `rejected` or `error` | Submit discharge |
 | a discharge `approved` / `partial` | Submit claim |
 | Not sent / `draft` | Submit claim |
-| `queried` | Answer the query (<workflow id>) [PAYER](../references/PAYERS.md#markers) |
+| `queried` | Answer the query [PAYER](../references/PAYERS.md#markers) |
 | `error` | the label of the kind that failed |
 | `approved` / `partial` / `rejected` | no button; refused: "The payer has decided this claim; it goes back for another look as a reprocess request, not as a claim sent again." |
 | `submitting` | refused: "The claim is with the payer; wait for its answer before sending again." |
 
-**Replying to a query** (status `queried`, answered here). A form with the required multi-line field "Reply to the payer's query", the help text "Goes to the payer as the claim query detail, with everything attached and answered on this tab since the query.", and the small primary button "Answer the query (<workflow id>)" (161 under the GOV default, 151 under PVT [PAYER](../references/PAYERS.md#markers)). The question being answered is kept, so the card still shows it while the answer is out. A standalone query shows only the Communication pointer with "Open the Communication tab", and the claim is not sent again.
+**Replying to a query** (status `queried`, answered here). A form with the required multi-line field "Reply to the payer's query", the help text "Goes to the payer as the claim query detail, with everything attached and answered on this tab since the query.", and the small primary button "Answer the query" (it goes out under 161 on the GOV default, 151 on PVT [PAYER](../references/PAYERS.md#markers); the workflow id is never shown). The question being answered is kept, so the card still shows it while the answer is out. A standalone query shows only the Communication pointer with "Open the Communication tab", and the claim is not sent again.
 
 **Submit checks**, on the server in this order, each a red flash:
 - The send-kind refusals above.

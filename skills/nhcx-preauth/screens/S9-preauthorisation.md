@@ -185,23 +185,23 @@ States of the card:
 5. **`error`.** The error text in the danger colour, or "The exchange failed.", then "What the payer said" (below) when the payer answered with an error. Header: the send button for the kind of send that failed. An error is shown, never obeyed: nothing else on the case is blocked, and the send can be made again.
 6. **Decided or queried** (`approved`, `partial`, `rejected`, `queried`):
    - Three stat tiles: "Requested"; "Approved" (success tone when `approved`, warning otherwise); "Pre-auth reference".
-   - Detail grid: Status, Disposition, Outcome (`<outcome> · <adjudication>`, because the outcome alone does not say what happened), Settled at, Enhancements (round count or `-`), Sent as (the button words of the last send, such as "Answer the query (19)" [PAYER](../references/PAYERS.md#markers)), Our reply, and Case stands at (only when the payer gave an eligible amount).
+   - Detail grid: Status, Disposition, Outcome (`<outcome> · <adjudication>`, because the outcome alone does not say what happened), Settled at, Enhancements (round count or `-`), Sent as (the button words of the last send, such as "Answer the query" [PAYER](../references/PAYERS.md#markers)), Our reply, and Case stands at (only when the payer gave an eligible amount).
    - "What the payer said", when the reply carries any: its `ClaimResponse.error` entries in the danger colour, its process notes, and "Open <title> (PDF)" for a `form` attachment, opened in a new tab.
    - The per-item verdict table, when the payer ruled per item: Item (sequence), Status (chip: approved success, queried warning, rejected danger, anything else info), Eligible, Eligible %, Deducted (amount, the deduction reason muted under it), The payer's note (`|` shown as ` · `, cut to 240 characters).
    - The enhancement block (below), on `approved` or `partial` with lines added.
    - "What the payer says": the payer's query text as a code block.
    - On `queried`: the reply form when the query is answered here (a payer that takes answers by resubmission, or no standalone query open on this leg), else the Communication pointer.
    - The cancel form, on `approved`, `partial` and `queried`.
-   - Header: with lines added since an `approved` or `partial` decision, "Submit enhancement (₹<added total>, workflow 13)" [PAYER](../references/PAYERS.md#markers) with the confirm "Send the added lines to the payer as an enhancement of this pre-authorisation?"; on `rejected` "Submit to payer" (a fresh pre-authorisation). No send button on `approved` or `partial` with nothing added, and none in the header on `queried` (the reply form carries it).
+   - Header: with lines added since an `approved` or `partial` decision, "Submit enhancement (₹<added total>)" [PAYER](../references/PAYERS.md#markers) with the confirm "Send the added lines to the payer as an enhancement of this pre-authorisation?"; on `rejected` "Submit to payer" (a fresh pre-authorisation). No send button on `approved` or `partial` with nothing added, and none in the header on `queried` (the reply form carries it).
 
 **Send kinds.**
 
 | Where the pre-auth stands | Button label |
 |---|---|
 | Not sent, `cancelled`, `error`, `rejected` | Submit to payer |
-| `queried` | Answer the query (19) [PAYER](../references/PAYERS.md#markers) |
-| `queried` after an enhancement | Answer the enhancement query (131) [PAYER](../references/PAYERS.md#markers) |
-| `approved` / `partial` with lines added | Submit enhancement (₹<added total>, workflow 13) [PAYER](../references/PAYERS.md#markers) |
+| `queried` | Answer the query [PAYER](../references/PAYERS.md#markers) |
+| `queried` after an enhancement | Answer the enhancement query [PAYER](../references/PAYERS.md#markers) |
+| `approved` / `partial` with lines added | Submit enhancement (₹<added total>) [PAYER](../references/PAYERS.md#markers) |
 | `approved` / `partial`, nothing added | refused: "The pre-authorisation is already decided; add a line to ask for an enhancement." |
 | `submitting` / `cancelling` | refused: "The pre-authorisation is with the payer; wait for its answer before sending again." |
 | any, once the claim is with the payer | no button; refused: "The claim has gone to the payer, so the pre-authorisation is read only: no enhancement or change can be made. It can only be cancelled while the payer is deciding the claim." |
@@ -306,7 +306,7 @@ The arrangement below is the reference implementation's [REF](../references/PAYE
 | [Card] Proof of presence (S18, stage Preauth; only when needed)  |
 |------------------------------------------------------------------|
 | [Card] Pre-authorisation [Approved]                              |
-|                      [(>) Submit enhancement (₹5,000, workflow 13)]
+|                      [(>) Submit enhancement (₹5,000)]
 |  [Requested ₹25,000]  [Approved ₹20,000]  [Pre-auth ref ABC123]  |
 |  STATUS  DISPOSITION  OUTCOME  SETTLED AT  ENHANCEMENTS  SENT AS |
 |  Item | Status | Eligible | Eligible % | Deducted | Payer's note |

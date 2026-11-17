@@ -43,7 +43,7 @@ PMJAY takes 161 for a claim query answer and refuses 16, 151 and 19 on a claim w
 
 **The claim bills a stay.** Unlike the pre-authorisation, the claim needs the IPD admission linked to the case (D9 `encounter_id`). The admission is linked on the Claim tab ([S11. Claim Submission](../screens/S11-claim-submission.md)), chosen among the current IPD stays of patients holding the case's ABHA number, once the policy is in force; the next action reads "Link the IPD admission" once the pre-authorisation is approved and nothing is linked.
 
-**The discharge stage** [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge first (PMJAY; the decision `claim.dischargeStep`, [D20. claim_submission](../database/D20-claim-submission.md)), the first send from the Claim tab is the discharge: the same bundle as the claim (`Claim.use` `claim`, the Claim anchored `claim/request`, the discharge date, mode and stage on `supportingInfo`, the discharge summary under `HDS`, the claim-stage documents and forms, the stage-`Discharge` proof of presence) under workflow 14, `x-hcx-use_case` `New`, success flash "Discharge submitted to the payer.". A discharge query is answered here under 141 (`Resubmit`, the Claim anchored `claim/queryupdate`, the reply as the claim query detail); a rejected discharge is corrected and sent again under 14; once the discharge is approved (261, or an approving ClaimResponse) the next send is the final claim under 15, flash "Claim submitted to the payer.". Every check below applies to a discharge send as to a claim.
+**The discharge stage** [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge first (every payer by default, GOV and PVT; a payer row with `discharge_step` 0 sends the claim directly; the decision `claim.dischargeStep`, [D20. claim_submission](../database/D20-claim-submission.md)), the first send from the Claim tab is the discharge: the same bundle as the claim (`Claim.use` `claim`, the Claim anchored `claim/request`, the discharge date, mode and stage on `supportingInfo`, the discharge summary under `HDS`, the claim-stage documents and forms, the stage-`Discharge` proof of presence) under workflow 14, `x-hcx-use_case` `New`, success flash "Discharge submitted to the payer.". A discharge query is answered here under 141 (`Resubmit`, the Claim anchored `claim/queryupdate`, the reply as the claim query detail); a rejected discharge is corrected and sent again under 14; once the discharge is approved (261, or an approving ClaimResponse) the next send is the final claim under 15, flash "Claim submitted to the payer.". Every check below applies to a discharge send as to a claim.
 
 **Checks before sending**, in order:
 1. "Claim not found."
@@ -205,7 +205,7 @@ function discharge_step(payer_id):
     decision = integration decision claim.dischargeStep or where-payer-requires
     if decision == always: return true
     if decision == never:  return false
-    return adapter(payer_id).discharge_step                // gov yes, generic no (PAYERS.md)
+    return payer_config(payer_id).discharge_step          // D33: GOV and PVT defaults 1; a payer row may set 0 (claim directly)
 ```
 
 #### A5U. USED BY

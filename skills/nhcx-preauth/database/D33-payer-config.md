@@ -25,7 +25,7 @@ Everything the application does differently from one payer to another is read fr
 | `task_case_input` | `initimationNumber` [SANDBOX](../references/PAYERS.md#markers) | `intimationNumber` |
 | `status_enquiry` | 0 | 1 |
 | `claim_search` | 1 | 0 |
-| `discharge_step` | 1 | 0 |
+| `discharge_step` | 1 | 1 |
 | `lama_dama_procedure` | `LM100` | `LM100` |
 | `custom_lines` | 0 | 1 |
 | `communication_reply` | `pmjay` | `generic` |
@@ -52,7 +52,7 @@ A per-environment workflow override (a JSON object of kind to workflow id, as be
 - `coverage_benefits`: the same three values for the benefits check on the quoted set ([A2. Coverage Eligibility Check](../apis/A2-coverage-eligibility-check.md) `benefits`, the "Benefits check" card on [S8. Line Items](../screens/S8-line-items.md)): `auto` sends it after every change of the set and polls while the case is `checking`; `manual` leaves it to the desk; `off` hides the card.
 - `check_poll_seconds`: how often a card whose check is out with the payer re-reads that check by itself (0: only on each load of the case, as before). Polling re-reads the one check, never the page, so nothing typed elsewhere is lost.
 - `proof_of_presence`: `required` or `optional`, as [A18. Biometric Authentication](../apis/A18-biometric-authentication.md) reads it; the integration decision `verification.biometric` `where-payer-requires` follows it.
-- `discharge_step`: 1, the claim goes as the discharge (workflow 14) first ([D20. claim_submission](D20-claim-submission.md)); the decision `claim.dischargeStep` `where-payer-requires` follows it.
+- `discharge_step`: 1 on both defaults, so every payer gets the discharge (workflow 14) first ([D20. claim_submission](D20-claim-submission.md)); a payer row set to 0 sends the claim directly (15). The decision `claim.dischargeStep` `where-payer-requires` follows it.
 - `communication_reply`: the shape of a Communication reply (A7. Communication Reply (in nhcx-communication), F12): `pmjay` on GOV, `generic` on PVT. `workflow_ids` `communication_preauth` / `communication_claim` give a reply's workflow id (GOV `19` / `161`; PVT none, so the request's own id is echoed).
 - `custom_lines`: 1 shows "Add a custom line" on the Line items card ([S8. Line Items](../screens/S8-line-items.md)) and lets the desk add a line that is not on the payer's plan, with the hospital's own code, name and price ([D16. claim_line](D16-claim-line.md)), with or without a fetched plan; 0 hides the button and refuses the add ("This payer takes only lines from its insurance plan."). Lines already added stay. GOV starts at 0 (a scheme quotes its package master, and an unpriced need goes as its unspecified package), PVT at 1.
 - `lama_dama_procedure`: the procedure a LAMA or DAMA discharge before or during surgery collapses the claim lines to ([D20. claim_submission](D20-claim-submission.md), A5. Claim Submit (in nhcx-claim), [F8. Claim](../fhir/F8-claim.md)); empty, the claim keeps its lines.

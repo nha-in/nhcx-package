@@ -10,8 +10,8 @@ Two PMJAY claims with an approved pre-authorisation ([T14. PMJAY Pre-authorisati
 
 #### T21G. GUI
 
-1. First claim, [S11. Claim Submission](../screens/S11-claim-submission.md): the card reads "Discharge" with the "Discharge validation first" alert; press "Submit discharge (14)" and confirm; payer side: `query` cycle with a remark; answer on [S11. Claim Submission](../screens/S11-claim-submission.md) with "Answer the discharge query (141)", attaching one new document; payer side: `approve` cycle; wait for "Discharge approved"; press "Submit claim" for the final claim; payer side: `approve` cycle; wait for the decision.
-2. Second claim, [S11. Claim Submission](../screens/S11-claim-submission.md): "Submit discharge (14)"; payer side: `reject` cycle; the card reads "Discharge rejected" with no Reprocess section; correct the discharge and press "Submit discharge (14)" again.
+1. First claim, [S11. Claim Submission](../screens/S11-claim-submission.md): the card reads "Discharge" with the "Discharge validation first" alert; press "Submit discharge" and confirm; payer side: `query` cycle with a remark; answer on [S11. Claim Submission](../screens/S11-claim-submission.md) with "Answer the discharge query", attaching one new document; payer side: `approve` cycle; wait for "Discharge approved"; press "Submit claim" for the final claim; payer side: `approve` cycle; wait for the decision.
+2. Second claim, [S11. Claim Submission](../screens/S11-claim-submission.md): "Submit discharge"; payer side: `reject` cycle; the card reads "Discharge rejected" with no Reprocess section; correct the discharge and press "Submit discharge" again.
 
 #### T21L. CLI
 

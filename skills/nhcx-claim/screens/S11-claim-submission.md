@@ -106,7 +106,7 @@ API: [A5. Claim Submit](../apis/A5-claim-submit.md) (answered forms)
 
 ---
 
-**The discharge stage** ([D20. claim_submission](../database/D20-claim-submission.md), [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge before the final claim (every payer by default, GOV and PVT, unless its payer row sends the claim directly; or the decision `claim.dischargeStep` `always`), the card is titled "Discharge" until the discharge is approved, and while nothing is sent it shows an info alert "Discharge validation first": "This payer validates the discharge before the final claim: the first send is the discharge with the discharge details, summary and documents. Once it is approved, the final claim (workflow 15) goes out." On a discharge row the chip reads:
+**The discharge stage** ([D20. claim_submission](../database/D20-claim-submission.md), [PAYERS.md](../references/PAYERS.md)) [PAYER](../references/PAYERS.md#markers). Where the payer validates the discharge before the final claim (every payer by default, GOV and PVT, unless its payer row sends the claim directly; or the decision `claim.dischargeStep` `always`), the card is titled "Discharge" until the discharge is approved, and while nothing is sent it shows an info alert "Discharge validation first": "This payer validates the discharge before the final claim: the first send is the discharge with the discharge details, summary and documents. Once it is approved, the final claim goes out." On a discharge row the chip reads:
 
 | `discharge_status` | Label | Tone |
 |---|---|---|
@@ -199,7 +199,7 @@ Callback: [C8. Enquiry Reply](../callbacks/C8-enquiry-on-submit.md)
 | Field | Control |
 |---|---|
 | Why (required) | select: `claimrejected` Reprocess request due to claim rejected by payer (default); `rejectiondisputed` Rejection disputed, additional evidence provided |
-| Ask the payer to reprocess the claim | multi-line text, 2 rows. Help: "A Task coded reprocess under workflow 36. The payer reopens the claim for a person, and the new verdict arrives on the claim's own thread." [PAYER](../references/PAYERS.md#markers) |
+| Ask the payer to reprocess the claim | multi-line text, 2 rows. Help: "A Task coded reprocess. The payer reopens the claim for a person, and the new verdict arrives on the claim's own thread." [PAYER](../references/PAYERS.md#markers) |
 | Evidence to send with it | one checkbox per document on the claim (label or file name, code muted). Help: "Each rides on the Task as a supportingDocument input." Shown only when there are documents |
 
 Button: primary "Send reprocess request"; the reprocess rows sit under it. Refusals, in order:
@@ -223,7 +223,7 @@ The row reads `reopened` when the payer accepts, and the claim goes back to `sub
 | Field | Control |
 |---|---|
 | Balance to release (₹) (required) | number, step 0.01, min 0.01, max the balance, prefilled with the balance. Help: "₹<paid> paid of ₹<claimed>." |
-| Note to the payer | multi-line text, 2 rows. Help: "A Task coded release, reason partialpayment, under the arbitration workflow (36). The payer reopens the claim for the balance; the payment notice follows on the claim's own thread." [PAYER](../references/PAYERS.md#markers) |
+| Note to the payer | multi-line text, 2 rows. Help: "A Task coded release, reason partialpayment. The payer reopens the claim for the balance; the payment notice follows on the claim's own thread." [PAYER](../references/PAYERS.md#markers) |
 
 Button: primary "Ask for the balance"; the release rows sit under it. Refusals: "Only a decided claim can have its balance asked for.", "A claim that has been paid in full has no balance.", "Say how much of the claim is still owed." (blank, zero, or not a number). Success: "Balance release request sent to the payer."
 

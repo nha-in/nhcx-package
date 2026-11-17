@@ -3,10 +3,10 @@ name: nhcx-full
 description: >-
   Build India's NHCX (National Health Claims Exchange) provider-side claims integration into an existing HMIS codebase, end to end: beneficiary policy search, coverage eligibility, the payer's insurance plan, pre-authorisation, payer queries, claim, reprocess and release, and payment notices, with the NHCX gateway (JWE, x-hcx headers, ABDM session tokens, registry, callbacks) embedded in the application. Use when adding NHCX or PMJAY cashless claims to a hospital system as a whole, or when unsure which part of NHCX is needed.
 metadata:
-  version: "1.17.0"
+  version: "1.17.1"
 ---
 
-**Version 1.17.0**, built 2026-11-17, checked against NHA's NHCX package 1.0.0.
+**Version 1.17.1**, built 2026-11-17, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route, bundle, workflow id and callback.
@@ -27,7 +27,7 @@ At the start of every task, before the questions and L1, and at the start of eve
 **Independent of the MCP and of the knowledge source.** The check always reads the package on GitHub, whichever knowledge source L1.0 chose: a connected nhcx-docs MCP neither answers it nor skips it, and the MCP's `catalogue_info` version is never compared with the skill's. The skill's version is its own: it is not the package's release tag, nor the catalogue's version, nor `1.0.0`; only the version in `skills/manifest.json` is compared with it.
 
 1. **Read the package's skills manifest.** The package (github.com/nha-in/nhcx-package) keeps a copy of the built skills under `skills/`, with `skills/manifest.json` naming their version (`version` for the provider skills, `companion.version` for the payer skills under `skills/payer/`) and `skills/CHECKSUMS.sha256` the hash of every file. Read it from `https://raw.githubusercontent.com/nha-in/nhcx-package/main/skills/manifest.json`; else from the latest release zip (`nhcx-package/skills/manifest.json`) (the zip of `https://api.github.com/repos/nha-in/nhcx-package/releases/latest`). A package already downloaded as the knowledge source is not read for this: it may be older than `main`.
-2. **Compare** its `version` with this build's `1.17.0`, part by part as numbers (1.10.0 is newer than 1.9.2).
+2. **Compare** its `version` with this build's `1.17.1`, part by part as numbers (1.10.0 is newer than 1.9.2).
 3. **Newer in the package: pull and install it.** Download the package (the release zip whose skills manifest carries that version, else the `main` archive `https://codeload.github.com/nha-in/nhcx-package/zip/refs/heads/main`) into a new empty folder outside the target repository, and check every file under `skills/` against `CHECKSUMS.sha256`. Then replace the folder this SKILL.md was loaded from, and every sibling NHCX skill folder installed beside it (`nhcx-full`, `nhcx-coverage`, `nhcx-preauth`, `nhcx-claim`, `nhcx-communication`, `nhcx-payment`, `nhcx-reprocess`, and the nested `payer/`), with the package's copy of the same name, whole: no file of the old build is left behind. A skill installed by a plugin manager is updated through it when it offers that version, else its skills folder is replaced the same way. Nothing in the target repository or `nhcx-plan/` is touched by the install. Tell the user in one line ("Updated the NHCX skills from 1.8.0 to 1.9.0 from the NHCX package."), log it, then re-read this SKILL.md and CORE.md from the installed copy and carry on from them; VERSION then re-checks the finished steps against what changed.
 4. **Same or older:** carry on with this build.
 5. **Not reachable, or a checksum fails:** carry on with this build, say so to the user in one line, and log the reason. A copy that fails its checksums is never installed, not even in part.
@@ -130,12 +130,16 @@ Other skills built from the same source:
 - **nhcx-reprocess**: reprocess and balance release on a decided or partly paid claim.
 
 # VERSION
-This is nhcx-full version 1.17.0, built on 2026-11-17. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-full version 1.17.1, built on 2026-11-17. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.
 - If a later prompt runs with a different version of this skill than the one recorded, say so to the user before continuing, log it as a `corrected` entry naming both versions, and re-check the steps already done against the specs that changed.
 - A knowledge source newer than 1.0.0 wins on the protocol, as KNOWLEDGE SOURCE says; note the difference in `knowledge.json`.
+
+Changes in 1.17.1, to re-check against when an earlier build is continued:
+- **The last workflow ids leave the Claim page** ([S11. Claim Submission](screens/S11-claim-submission.md)): the "Discharge validation first" alert ends "Once it is approved, the final claim goes out.", and the Reprocess and Balance release help texts no longer name workflow 36.
+- **Payer configuration has a page of its own** ([S19. NHCX Settings](screens/S19-nhcx-settings.md) card 6, [S20. Payer Configuration](screens/S20-payer-configuration.md)): the NHCX settings page shows only the summary card with "Open payer configuration"; build S20 as its own route, not as a card on S19.
 
 Changes in 1.17.0, to re-check against when an earlier build is continued:
 - **The discharge stage is the default for private payers too** ([D33. payer_config](database/D33-payer-config.md) `discharge_step` 1 on GOV and PVT, [D20. claim_submission](database/D20-claim-submission.md), [A5. Claim Submit](apis/A5-claim-submit.md), [S11. Claim Submission](screens/S11-claim-submission.md), [S20. Payer Configuration](screens/S20-payer-configuration.md), PAYERS): every payer's first Claim-tab send is the discharge (workflow 14) and the final claim (15) follows its approval. A payer row with `discharge_step` 0 sends the claim directly. Builds from 1.12.0 to 1.16.0 seeded PVT with 0: set the PVT default row to 1 (a migration), leave payer rows as they are.

@@ -24,7 +24,7 @@ On a LAMA or DAMA claim discharged before or during surgery the claim lines coll
 - fullUrl `https://nhcx.abdm.gov.in/documentreference/<n>`, `id` `<n>`, n from 1 in D28 `id` order (on the claim, a discharge summary picked from records comes last), after the QuestionnaireResponses (F8 entries table).
 - `status` `current`.
 - `content[0].attachment`: `contentType` `application/fhir+json`, `data` base64 of the D28 `data` (the record's bundle JSON, the same encoding the leg uses for a PDF attachment), `title` the D28 label else filename.
-- The Claim refers to it from `supportingInfo[]` (F8): category D28 `category` else `INV`, code D28 `code` else `ODN` under the document code system, `valueReference {reference: <fullUrl>, display: <label>}`. Nothing else on the resource: no `subject`, `type` or `date`, which the bundle inside carries.
+- The Claim refers to it from `supportingInfo[]` (F8): category D28 `category` else `INV`, code D28 `code` else `ATT` "Additional Document" under the document code system, `valueReference {reference: <fullUrl>, display: <label>}`. Nothing else on the resource: no `subject`, `type` or `date`, which the bundle inside carries.
 
 **Not carried.** The claim-side bundles carry no Encounter, Condition, Binary or Observation. Diagnoses ride on `Claim.diagnosis` (an ICD-10 coding with the SNOMED CT coding beside it, F8); uploaded documents ride inline as base64 attachments on `Claim.supportingInfo` (F8) and `Communication.payload` (F12), health records as the DocumentReference above; admission, surgery and discharge dates ride on `Claim.supportingInfo` scalars (F8).
 

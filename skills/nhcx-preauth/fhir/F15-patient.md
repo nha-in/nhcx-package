@@ -16,6 +16,8 @@ The beneficiary. Three variants are sent, all at fullUrl `https://nhcx.abdm.gov.
 
 **Identifiers.** The member id goes twice, whatever the payer, as NHA's sample bundles send it [REF](../references/PAYERS.md#markers): first typed `PMJAY` "Pradhan Mantri Jan Aarogya Yojana (PMJAY) ID" under `https://nrces.in/ndhm/fhir/r4/CodeSystem/ndhm-identifier-type-code`, last typed `MB` "Member Number" under `http://terminology.hl7.org/CodeSystem/v2-0203`. The ABHA number, typed `ABHA`, goes between the two when one is known. No `system` on any of them. A Patient with no member id (a discovery by policy number) carries the ABHA identifier alone, when given. The facility MRN and the ABHA address are not sent.
 
+**Newborn on the holder's card** [PAYER](../references/PAYERS.md#markers). A newborn with no member id of their own is treated on a parent's card. The claim stays the holder's (`Claim.patient` is the holder's Patient) and the bundle carries a second Patient for the child at `<patient fullUrl>child`: `name[0].text` the child's name, `gender` and `birthDate` (both required: PAYR-1259, PAYR-1262, PAYR-1506, PAYR-1507; a birth date in the future or more than 6 years back is refused, PAYR-1260, PAYR-1269). The holder's Patient points at it with `link [{type: "refer", other: {reference: <child fullUrl>}}]` (PAYR-1508). Every claim-side bundle of the case carries both: pre-authorisation, enhancement, query answers, discharge and claim. The child's proof of birth goes in the pre-authorisation as category `DOB`, code `ATT` (F8); without it the payer refuses with PAYR-1263.
+
 **Fallbacks.** The claim-bundle Patient takes each demographic from the linked patient (`D3 patient`, the one the claim is linked to through `D9 claim.patient_id` when the admission is linked; linking requires a current IPD stay of a patient whose ABHA number matches the claim's, digits only) and falls back to the claim row. The ABHA number is the claim row's, else the linked patient's. The claim row's values come from the policy search (A1: name, ABHA number, mobile number) and are overwritten by the payer's Patient when an eligibility reply arrives (C2: name, gender, birth date, ABHA, address, photo). A pre-authorisation may be sent before admission, with no patient linked: its Patient is then built from the claim row alone.
 
 **Eligibility Patient.** Demographics are deliberately not sent: they are the payer's to return. The builder takes the identifiers only, so A2 need not read the linked patient at all (a check runs before any patient is linked); a name, gender, birth date, phone, MRN, district or state handed to it is ignored.
@@ -37,6 +39,8 @@ The beneficiary. Three variants are sent, all at fullUrl `https://nhcx.abdm.gov.
 | `telecom[0]` | `{system: "phone", value: D3 patient.phone, else D9 claim.mobile_number}` | only when a phone is known |
 | `gender` | `D3 patient.gender`, else `D9 claim.patient_gender`, lower-cased | only when known |
 | `birthDate` | `D3 patient.birth_date`, else `D9 claim.patient_dob` | only when known |
+
+Newborn case: the holder's Patient also carries `link[0]` `{type: "refer", other: {reference: <child Patient fullUrl>}}`, and the child Patient is sent beside it with `name[0].text`, `gender` and `birthDate` (above).
 
 Not sent: `address`, `photo`, `given`/`family` names, MRN, ABHA address, `active`, `deceased`.
 

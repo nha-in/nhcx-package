@@ -3,10 +3,10 @@ name: nhcx-preauth
 description: >-
   Build the NHCX (India's National Health Claims Exchange) pre-authorisation leg into an existing HMIS: the payer's insurance plan (package master, fetched automatically), line items quoted from it, the coverage benefits and authorisation-requirements checks, the pre-auth request (before or after admission), enhancement, query answers, cancel and status, with the embedded NHCX gateway it needs. Use when a hospital system must request cashless approval from an insurer or PMJAY over NHCX.
 metadata:
-  version: "1.17.1"
+  version: "1.17.2"
 ---
 
-**Version 1.17.1**, built 2026-11-17, checked against NHA's NHCX package 1.0.0.
+**Version 1.17.2**, built 2026-11-19, checked against NHA's NHCX package 1.0.0.
 
 # READ FIRST: CORE
 Before anything else, read [references/CORE.md](references/CORE.md) and keep it in mind for the whole task. Its **Instructions** are binding: follow them strictly in every step and every file, and re-read them at the start of each step (L1 to L8). Its **Confusions** settle what easily mixed-up terms mean; when a word is ambiguous, CORE.md decides. It also holds the base URLs and, for every exchange, the route, bundle, workflow id and callback.
@@ -27,7 +27,7 @@ At the start of every task, before the questions and L1, and at the start of eve
 **Independent of the MCP and of the knowledge source.** The check always reads the package on GitHub, whichever knowledge source L1.0 chose: a connected nhcx-docs MCP neither answers it nor skips it, and the MCP's `catalogue_info` version is never compared with the skill's. The skill's version is its own: it is not the package's release tag, nor the catalogue's version, nor `1.0.0`; only the version in `skills/manifest.json` is compared with it.
 
 1. **Read the package's skills manifest.** The package (github.com/nha-in/nhcx-package) keeps a copy of the built skills under `skills/`, with `skills/manifest.json` naming their version (`version` for the provider skills, `companion.version` for the payer skills under `skills/payer/`) and `skills/CHECKSUMS.sha256` the hash of every file. Read it from `https://raw.githubusercontent.com/nha-in/nhcx-package/main/skills/manifest.json`; else from the latest release zip (`nhcx-package/skills/manifest.json`) (the zip of `https://api.github.com/repos/nha-in/nhcx-package/releases/latest`). A package already downloaded as the knowledge source is not read for this: it may be older than `main`.
-2. **Compare** its `version` with this build's `1.17.1`, part by part as numbers (1.10.0 is newer than 1.9.2).
+2. **Compare** its `version` with this build's `1.17.2`, part by part as numbers (1.10.0 is newer than 1.9.2).
 3. **Newer in the package: pull and install it.** Download the package (the release zip whose skills manifest carries that version, else the `main` archive `https://codeload.github.com/nha-in/nhcx-package/zip/refs/heads/main`) into a new empty folder outside the target repository, and check every file under `skills/` against `CHECKSUMS.sha256`. Then replace the folder this SKILL.md was loaded from, and every sibling NHCX skill folder installed beside it (`nhcx-full`, `nhcx-coverage`, `nhcx-preauth`, `nhcx-claim`, `nhcx-communication`, `nhcx-payment`, `nhcx-reprocess`, and the nested `payer/`), with the package's copy of the same name, whole: no file of the old build is left behind. A skill installed by a plugin manager is updated through it when it offers that version, else its skills folder is replaced the same way. Nothing in the target repository or `nhcx-plan/` is touched by the install. Tell the user in one line ("Updated the NHCX skills from 1.8.0 to 1.9.0 from the NHCX package."), log it, then re-read this SKILL.md and CORE.md from the installed copy and carry on from them; VERSION then re-checks the finished steps against what changed.
 4. **Same or older:** carry on with this build.
 5. **Not reachable, or a checksum fails:** carry on with this build, say so to the user in one line, and log the reason. A copy that fails its checksums is never installed, not even in part.
@@ -130,12 +130,17 @@ Other skills built from the same source:
 - **nhcx-reprocess**: reprocess and balance release on a decided or partly paid claim.
 
 # VERSION
-This is nhcx-preauth version 1.17.1, built on 2026-11-17. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
+This is nhcx-preauth version 1.17.2, built on 2026-11-19. Its protocol tables (workflow ids, statuses, base URLs) were checked against NHA's NHCX package 1.0.0 ([github.com/nha-in/nhcx-package](https://github.com/nha-in/nhcx-package)).
 
 - Record it when the work starts: `nhcx-plan/knowledge.json` and the `target` of `nhcx-plan/progress.json` carry `skill` and `skill_version`, and the header of `nhcx-plan/report.html` shows them.
 - UPDATE FIRST may have installed a newer build from the NHCX package at the start of the prompt; the version recorded is then the old one.
 - If a later prompt runs with a different version of this skill than the one recorded, say so to the user before continuing, log it as a `corrected` entry naming both versions, and re-check the steps already done against the specs that changed.
 - A knowledge source newer than 1.0.0 wins on the protocol, as KNOWLEDGE SOURCE says; note the difference in `knowledge.json`.
+
+Changes in 1.17.2, to re-check against when an earlier build is continued:
+- **`informationSequence` marks the cycles of a cyclic package, nothing else** ([F8. Claim](fhir/F8-claim.md)): only the item of a cyclic package carries it, listing each cycle's session entry (category `CD`, code `TD`, a `valueReference` to its DocumentReference). Documents, forms, the discharge summary and the admission and discharge entries are never listed on an item, and no other item carries one. Earlier builds listed every supportingInfo sequence on every item, which PMJAY refuses on newborn cases (PAYR-1263).
+- **A newborn on the holder's card** ([F15. Patient](fhir/F15-patient.md), [D28. claim_document](database/D28-claim-document.md), [F8. Claim](fhir/F8-claim.md)) [PAYER](references/PAYERS.md#markers): a second Patient for the child at `<patient fullUrl>child` with name, gender and birth date, the holder's Patient linking it with `type` `refer`, carried in every claim-side bundle of the case; the proof of birth goes in the pre-authorisation as category `DOB`, code `ATT`.
+- **Document codes** ([D28. claim_document](database/D28-claim-document.md), [F8. Claim](fhir/F8-claim.md), [F19. Other bundle resources](fhir/F19-other-resources.md)): a document whose code matches neither the payer's documents nor the common codes goes as `ATT` "Additional Document" (earlier `ODN`); the discharge summary of a normal discharge goes as code `(Normal)` under category `HDS`, any other as its discharge type.
 
 Changes in 1.17.1, to re-check against when an earlier build is continued:
 - **The last workflow ids leave the Claim page** (S11. Claim Submission (in nhcx-claim)): the "Discharge validation first" alert ends "Once it is approved, the final claim goes out.", and the Reprocess and Balance release help texts no longer name workflow 36.
